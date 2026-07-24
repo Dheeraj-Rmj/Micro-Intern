@@ -1,11 +1,12 @@
-import type { Request, Response, NextFunction } from 'express';
+import { REDIS_KEYS } from '@microintern/shared';
 import jwt from 'jsonwebtoken';
 
 import { config } from '@/core/config.js';
 import { getRedisClient } from '@/core/redis.js';
-import { REDIS_KEYS } from '@microintern/shared';
-import type { JwtAccessPayload, AuthenticatedUser } from '@microintern/shared';
 import { UnauthorizedError } from '@/shared/errors/index.js';
+
+import type { JwtAccessPayload, AuthenticatedUser } from '@microintern/shared';
+import type { Request, Response, NextFunction } from 'express';
 
 /**
  * Extend Express Request to include authenticated user.
@@ -92,6 +93,7 @@ export async function authMiddleware(
  * require authentication. Useful for public endpoints that personalize
  * content for logged-in users.
  */
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function optionalAuthMiddleware(
   req: Request,
   _res: Response,
@@ -126,7 +128,8 @@ export async function optionalAuthMiddleware(
 
 function extractBearerToken(req: Request): string | null {
   const authHeader = req.headers.authorization;
-  if (authHeader === undefined || !authHeader.startsWith('Bearer ')) {
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  if (!authHeader?.startsWith('Bearer ')) {
     return null;
   }
   const token = authHeader.slice(7).trim();

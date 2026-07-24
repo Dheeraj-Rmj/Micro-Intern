@@ -1,10 +1,12 @@
-import Groq from 'groq-sdk';
 import { AIProvider } from '@microintern/shared';
+import Groq from 'groq-sdk';
 
-import type { IAIProvider, AICompletionRequest, AICompletionResponse, AIProviderHealth } from '../interfaces/IAIProvider.js';
-import { AIProviderError } from '../interfaces/IAIProvider.js';
 import { config } from '@/core/config.js';
 import { createModuleLogger } from '@/core/logger.js';
+
+import { AIProviderError } from '../interfaces/IAIProvider.js';
+
+import type { IAIProvider, AICompletionRequest, AICompletionResponse, AIProviderHealth } from '../interfaces/IAIProvider.js';
 
 const log = createModuleLogger('GroqProvider');
 

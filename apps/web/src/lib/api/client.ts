@@ -58,7 +58,7 @@ function createApiClient(): AxiosInstance {
       }
       return config;
     },
-    (error: unknown) => Promise.reject(error),
+    async (error: unknown) => await Promise.reject(error),
   );
 
   // ── Response interceptor: handle 401 with token refresh ──
@@ -72,13 +72,14 @@ function createApiClient(): AxiosInstance {
         error.response?.status === 401 &&
         originalRequest._retried !== true &&
         // Don't retry refresh/login endpoints — prevents infinite loop
-        !originalRequest.url?.includes('/auth/refresh') &&
-        !originalRequest.url?.includes('/auth/login')
+        !(originalRequest.url?.includes('/auth/refresh') ?? false) &&
+        !(originalRequest.url?.includes('/auth/login') ?? false)
       ) {
         originalRequest._retried = true;
 
         try {
           // Deduplicate concurrent refresh requests
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           if (refreshPromise === null) {
             refreshPromise = silentRefresh();
           }
@@ -92,7 +93,7 @@ function createApiClient(): AxiosInstance {
             if (originalRequest.headers !== undefined) {
               originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
             }
-            return client(originalRequest);
+            return await client(originalRequest);
           }
         } catch {
           refreshPromise = null;
@@ -104,7 +105,7 @@ function createApiClient(): AxiosInstance {
         }
       }
 
-      return Promise.reject(error);
+      return await Promise.reject(error);
     },
   );
 
@@ -138,7 +139,9 @@ export class ApiError extends Error {
     this.name = 'ApiError';
     this.status = axiosError.response?.status ?? 500;
     this.code = apiError?.code ?? 'NETWORK_ERROR';
-    this.details = apiError?.details;
+    if (apiError?.details) {
+      this.details = apiError.details;
+    }
   }
 
   get isUnauthorized(): boolean {
@@ -174,7 +177,7 @@ export function toApiError(error: unknown): ApiError {
   if (isAxiosError(error)) {
     return new ApiError(error as AxiosError<{ error: { code: string; message: string; details?: Array<{ field?: string; message: string }> } }>);
   }
-  const generic = new ApiError({ message: String(error), response: undefined } as AxiosError<{ error: { code: string; message: string } }>);
+  const generic = new ApiError({ message: String(error), response: undefined } as unknown as AxiosError<{ error: { code: string; message: string } }>);
   return generic;
 }
 

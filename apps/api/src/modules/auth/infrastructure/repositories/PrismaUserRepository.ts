@@ -1,8 +1,11 @@
-import type { PrismaClient } from '@microintern/database';
+import { AUTH } from '@microintern/shared';
+
+import { User } from '../../domain/entities/User.entity.js';
 
 import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
-import { User } from '../../domain/entities/User.entity.js';
-import { AUTH } from '@microintern/shared';
+import type { PrismaClient } from '@microintern/database';
+
+
 
 /**
  * Prisma User Repository — infrastructure implementation.
@@ -18,7 +21,7 @@ export class PrismaUserRepository implements IUserRepository {
       where: { id, deletedAt: null },
       include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
     });
-    return user !== null ? User.fromPrisma(user as Parameters<typeof User.fromPrisma>[0]) : null;
+    return user !== null ? User.fromPrisma(user) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -26,7 +29,7 @@ export class PrismaUserRepository implements IUserRepository {
       where: { email: email.toLowerCase(), deletedAt: null },
       include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
     });
-    return user !== null ? User.fromPrisma(user as Parameters<typeof User.fromPrisma>[0]) : null;
+    return user !== null ? User.fromPrisma(user) : null;
   }
 
   async createCandidate(data: {
@@ -103,7 +106,7 @@ export class PrismaUserRepository implements IUserRepository {
       return created;
     });
 
-    return User.fromPrisma(user as Parameters<typeof User.fromPrisma>[0]);
+    return User.fromPrisma(user);
   }
 
   async incrementLoginAttempts(userId: string): Promise<void> {

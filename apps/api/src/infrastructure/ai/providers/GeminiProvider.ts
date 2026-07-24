@@ -1,10 +1,12 @@
 import { GoogleGenerativeAI, type GenerationConfig } from '@google/generative-ai';
 import { AIProvider } from '@microintern/shared';
 
-import type { IAIProvider, AICompletionRequest, AICompletionResponse, AIProviderHealth } from '../interfaces/IAIProvider.js';
-import { AIProviderError } from '../interfaces/IAIProvider.js';
 import { config } from '@/core/config.js';
 import { createModuleLogger } from '@/core/logger.js';
+
+import { AIProviderError } from '../interfaces/IAIProvider.js';
+
+import type { IAIProvider, AICompletionRequest, AICompletionResponse, AIProviderHealth } from '../interfaces/IAIProvider.js';
 
 const log = createModuleLogger('GeminiProvider');
 

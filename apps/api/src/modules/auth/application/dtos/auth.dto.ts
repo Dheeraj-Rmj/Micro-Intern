@@ -1,5 +1,5 @@
+import { EmailSchema, PasswordSchema, NameSchema } from '@microintern/shared';
 import { z } from 'zod';
-import { EmailSchema, PasswordSchema, NameSchema, UuidSchema } from '@microintern/shared';
 
 /**
  * Auth module DTOs (Data Transfer Objects).

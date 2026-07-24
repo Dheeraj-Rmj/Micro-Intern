@@ -1,17 +1,19 @@
+import { AuditAction } from '@microintern/shared';
 import { Router } from 'express';
 
-import { AuthController } from './auth.controller.js';
-import { validate } from '@/middleware/validate.middleware.js';
+import { getContainer } from '@/core/container.js';
+import { audit } from '@/middleware/audit.middleware.js';
 import { authMiddleware } from '@/middleware/auth.middleware.js';
 import { authRateLimiter } from '@/middleware/ratelimit.middleware.js';
-import { audit } from '@/middleware/audit.middleware.js';
+import { validate } from '@/middleware/validate.middleware.js';
+
 import {
   LoginSchema,
   RegisterCandidateSchema,
   RefreshTokenSchema,
 } from '../application/dtos/auth.dto.js';
-import { getContainer } from '@/core/container.js';
-import type { ApplicationContainer } from '@/core/container.js';
+
+import type { AuthController } from './auth.controller.js';
 
 /**
  * Auth router factory.
@@ -28,8 +30,8 @@ export function createAuthRouter(): Router {
     '/register/candidate',
     authRateLimiter,
     validate('body', RegisterCandidateSchema),
-    audit('REGISTER', 'User'),
-    (req, res, next) => { void controller.registerCandidate(req, res, next); },
+    audit(AuditAction.REGISTER, 'User'),
+    (req, res, next) => { controller.registerCandidate(req, res, next).catch(next); },
   );
 
   // POST /auth/login
@@ -37,23 +39,23 @@ export function createAuthRouter(): Router {
     '/login',
     authRateLimiter,
     validate('body', LoginSchema),
-    audit('LOGIN', 'User'),
-    (req, res, next) => { void controller.login(req, res, next); },
+    audit(AuditAction.LOGIN, 'User'),
+    (req, res, next) => { controller.login(req, res, next).catch(next); },
   );
 
   // POST /auth/refresh
   router.post(
     '/refresh',
     validate('body', RefreshTokenSchema),
-    (req, res, next) => { void controller.refreshToken(req, res, next); },
+    (req, res, next) => { controller.refreshToken(req, res, next).catch(next); },
   );
 
   // POST /auth/logout
   router.post(
     '/logout',
     authMiddleware,
-    audit('LOGOUT', 'User'),
-    (req, res, next) => { void controller.logout(req, res, next); },
+    audit(AuditAction.LOGOUT, 'User'),
+    (req, res, next) => { controller.logout(req, res, next).catch(next); },
   );
 
   // GET /auth/me

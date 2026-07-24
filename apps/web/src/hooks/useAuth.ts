@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { apiClient, setAccessToken, clearAccessToken } from '@/lib/api/client';
 import { useAuthStore } from '@/stores/auth.store';
+
 import type {
   LoginDto,
   RegisterCandidateDto,
@@ -54,8 +55,8 @@ export function useLogin() {
       return response.data.data;
     },
     onSuccess: (data) => {
-      setAccessToken(data.tokens.accessToken);
-      setUser(data.user as AuthUserResponse);
+      setAccessToken(data.token);
+      setUser(data.user);
       setAuthenticated(true);
 
       // Seed the cache with user data
@@ -98,8 +99,8 @@ export function useRegisterCandidate() {
       return response.data.data;
     },
     onSuccess: (data) => {
-      setAccessToken(data.tokens.accessToken);
-      setUser(data.user as AuthUserResponse);
+      setAccessToken(data.token);
+      setUser(data.user);
       setAuthenticated(true);
       queryClient.setQueryData(authKeys.me(), data.user);
 

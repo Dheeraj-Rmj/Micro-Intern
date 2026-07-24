@@ -1,12 +1,13 @@
+import { config, aiFallbackProviders } from '@/core/config.js';
+
 import { AIFallbackEngine } from './AIFallbackEngine.js';
 import { AISafetyLayer } from './AISafetyLayer.js';
-import { GroqProvider } from './providers/GroqProvider.js';
-import { OpenRouterProvider } from './providers/OpenRouterProvider.js';
 import { GeminiProvider } from './providers/GeminiProvider.js';
+import { GroqProvider } from './providers/GroqProvider.js';
 import { OllamaProvider } from './providers/OllamaProvider.js';
-import { config, aiFallbackProviders } from '@/core/config.js';
+import { OpenRouterProvider } from './providers/OpenRouterProvider.js';
+
 import type { IAIProvider } from './interfaces/IAIProvider.js';
-import type { AIProvider } from '@microintern/shared';
 
 export { AIFallbackEngine } from './AIFallbackEngine.js';
 export { AISafetyLayer } from './AISafetyLayer.js';
@@ -57,6 +58,7 @@ export function getAIGateway(): AIFallbackEngine {
 }
 
 export function getAISafetyLayer(): AISafetyLayer {
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (safetyInstance === null) {
     safetyInstance = new AISafetyLayer();
   }

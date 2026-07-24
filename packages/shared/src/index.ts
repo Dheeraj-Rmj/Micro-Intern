@@ -32,13 +32,8 @@ export type {
 export { UuidSchema, IsoDateSchema } from './types/api.types.js';
 
 // ── Schemas ──────────────────────────────────────────────────────────
-export {
-  PaginationQuerySchema,
-  CursorPaginationQuerySchema,
-  SortQuerySchema,
-  SearchQuerySchema,
-  ListQuerySchema,
-} from './schemas/pagination.schema.js';
+export * from './schemas/pagination.schema.js';
+export * from './schemas/auth.schema.js';
 
 export type {
   PaginationQuery,

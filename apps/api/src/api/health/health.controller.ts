@@ -1,10 +1,9 @@
-import type { Request, Response } from 'express';
 
-import { checkDatabaseHealth, checkRedisHealth } from '@/core/database.js';
 import { config } from '@/core/config.js';
+import { checkDatabaseHealth, checkRedisHealth } from '@/core/database.js';
 import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
-import { authMiddleware } from '@/middleware/auth.middleware.js';
-import { requireRole } from '@/middleware/rbac.middleware.js';
+
+import type { Request, Response } from 'express';
 
 /**
  * Health check controller.

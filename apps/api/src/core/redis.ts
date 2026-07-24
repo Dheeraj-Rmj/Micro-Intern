@@ -49,6 +49,7 @@ export function createRedisClient(options?: { maxRetriesPerRequest?: null }): Re
  * Singleton Redis client for general application use.
  */
 export function getRedisClient(): Redis {
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (redisClient === null) {
     redisClient = createRedisClient();
   }

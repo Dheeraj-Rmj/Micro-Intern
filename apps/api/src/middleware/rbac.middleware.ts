@@ -1,7 +1,9 @@
-import type { Request, Response, NextFunction } from 'express';
-import type { Role } from '@microintern/shared';
 import { hasRoleOrHigher } from '@microintern/shared';
+
 import { ForbiddenError, UnauthorizedError } from '@/shared/errors/index.js';
+
+import type { Role } from '@microintern/shared';
+import type { Request, Response, NextFunction } from 'express';
 
 /**
  * RBAC — Role-Based Access Control middleware.

@@ -1,4 +1,3 @@
-import { Client as MinioClient, type BucketItem } from 'minio';
 import {
   S3Client,
   PutObjectCommand,
@@ -6,11 +5,11 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { StorageBucket , STORAGE } from '@microintern/shared';
+import { Client as MinioClient } from 'minio';
 
 import { config } from '@/core/config.js';
 import { createModuleLogger } from '@/core/logger.js';
-import { StorageBucket } from '@microintern/shared';
-import { STORAGE } from '@microintern/shared';
 
 const log = createModuleLogger('StorageService');
 
@@ -246,6 +245,7 @@ export class StorageService {
 let storageService: StorageService | null = null;
 
 export function getStorageService(): StorageService {
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (storageService === null) {
     storageService = new StorageService();
   }

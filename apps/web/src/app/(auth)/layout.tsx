@@ -1,6 +1,7 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Zap } from 'lucide-react';
+import Link from 'next/link';
+
+import type { Metadata } from 'next';
 
 /**
  * Auth portal layout — minimal, clean, centered form layout.
@@ -37,8 +38,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="relative">
           <blockquote className="space-y-4">
             <p className="text-2xl font-medium text-white leading-relaxed">
-              "MicroIntern helped me land a senior role at a Series B startup —
-              and I didn't submit a single resume."
+              &quot;MicroIntern helped me land a senior role at a Series B startup &mdash;
+              and I didn&apos;t submit a single resume.&quot;
             </p>
             <footer className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white">

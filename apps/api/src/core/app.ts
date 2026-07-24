@@ -1,14 +1,14 @@
-import express, { type Application } from 'express';
 import compression from 'compression';
+import express, { type Application } from 'express';
 import { pinoHttp } from 'pino-http';
 
-import { config } from './config.js';
-import { logger } from './logger.js';
-import { applySecurityMiddleware } from '@/middleware/security.middleware.js';
+import { healthRouter } from '@/api/health/health.routes.js';
+import { v1Router } from '@/api/v1/index.js';
 import { errorMiddleware } from '@/middleware/error.middleware.js';
 import { createRateLimitMiddleware } from '@/middleware/ratelimit.middleware.js';
-import { v1Router } from '@/api/v1/index.js';
-import { healthRouter } from '@/api/health/health.routes.js';
+import { applySecurityMiddleware } from '@/middleware/security.middleware.js';
+
+import { logger } from './logger.js';
 
 /**
  * Express application factory.

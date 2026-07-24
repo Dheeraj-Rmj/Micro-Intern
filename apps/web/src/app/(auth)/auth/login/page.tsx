@@ -1,16 +1,18 @@
 'use client';
 
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { z } from 'zod';
+import { LoginSchema } from '@microintern/shared';
 import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useLogin } from '@/hooks/useAuth';
-import { LoginSchema } from '@microintern/shared';
+
+import type { z } from 'zod';
+
 
 type LoginFormValues = z.infer<typeof LoginSchema>;
 
@@ -78,7 +80,7 @@ export default function LoginPage() {
       </div>
 
       {/* Email form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-4" noValidate>
         <Input
           id="login-email"
           label="Email"
@@ -131,7 +133,7 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-6 text-center text-sm text-[--color-muted-foreground]">
-        Don't have an account?{' '}
+        Don&apos;t have an account?{' '}
         <Link
           href="/auth/register"
           className="font-semibold text-[oklch(0.55_0.24_264)] hover:underline"

@@ -46,9 +46,17 @@ const config: NextConfig = {
   // Experimental features
   experimental: {
     // React compiler (React 19)
-    reactCompiler: true,
-    // Partial prerendering
-    ppr: true,
+    // reactCompiler: true,
+    // ppr: true,
+  },
+
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.mjs': ['.mts', '.mjs'],
+      '.cjs': ['.cts', '.cjs'],
+    };
+    return config;
   },
 
   // Environment variables exposed to browser

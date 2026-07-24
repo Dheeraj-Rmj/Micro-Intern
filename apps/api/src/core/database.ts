@@ -1,7 +1,7 @@
 import { prisma, checkDatabaseHealth } from '@microintern/database';
 
-import { checkRedisHealth } from './redis.js';
 import { createModuleLogger } from './logger.js';
+import { checkRedisHealth } from './redis.js';
 
 export { prisma };
 

@@ -1,7 +1,8 @@
-import type { Request, Response, NextFunction } from 'express';
-import type { AuditAction } from '@microintern/shared';
 import { prisma } from '@/core/database.js';
 import { createModuleLogger } from '@/core/logger.js';
+
+import type { AuditAction } from '@microintern/shared';
+import type { Request, Response, NextFunction } from 'express';
 
 const log = createModuleLogger('AuditMiddleware');
 
@@ -35,10 +36,10 @@ export function audit(action: AuditAction, entityType: string) {
             actorRole: req.user?.role ?? null,
             action,
             entityType,
-            entityId: entityId ?? null,
-            ipAddress: req.ip ?? null,
-            userAgent: req.headers['user-agent'] ?? null,
-            requestId: (req as Request & { id?: string }).id ?? null,
+            entityId: (entityId as string | undefined) ?? null,
+            ipAddress: (req.ip) ?? null,
+            userAgent: (req.headers['user-agent']) ?? null,
+            requestId: ((req as Request & { id?: string }).id as string | undefined) ?? null,
             metadata: {
               method: req.method,
               path: req.path,
@@ -53,6 +54,7 @@ export function audit(action: AuditAction, entityType: string) {
     };
 
     // Don't await — async fire-and-forget
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
     void writeAudit();
 
     next();

@@ -1,9 +1,10 @@
+import { REDIS_KEYS, AUTH } from '@microintern/shared';
 import bcrypt from 'bcryptjs';
 
-import type { IPasswordService, ISessionService } from '../../application/interfaces/IPasswordService.js';
 import { config } from '@/core/config.js';
 import { getRedisClient } from '@/core/redis.js';
-import { REDIS_KEYS, AUTH } from '@microintern/shared';
+
+import type { IPasswordService, ISessionService } from '../../application/interfaces/IPasswordService.js';
 
 /**
  * bcrypt password service — production implementation.

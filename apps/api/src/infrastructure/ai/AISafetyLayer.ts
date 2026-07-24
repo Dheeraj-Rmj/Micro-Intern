@@ -1,6 +1,8 @@
-import type { AICompletionResponse } from './interfaces/IAIProvider.js';
-import { AIProviderError } from './interfaces/IAIProvider.js';
 import { createModuleLogger } from '@/core/logger.js';
+
+import { AIProviderError } from './interfaces/IAIProvider.js';
+
+import type { AICompletionResponse } from './interfaces/IAIProvider.js';
 
 const log = createModuleLogger('AISafetyLayer');
 

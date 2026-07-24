@@ -1,5 +1,6 @@
-import type { PrismaClient } from '../generated/client/index.js';
 import bcrypt from 'bcryptjs';
+
+import type { PrismaClient } from '../generated/client/index.js';
 
 /**
  * Seed platform users.
@@ -70,8 +71,8 @@ export async function seedUsers(prisma: PrismaClient): Promise<void> {
         passwordHash,
       },
     });
-    console.log(`  ✓ ${user.role}: ${user.email}`);
+    console.warn(`  ✓ ${user.role}: ${user.email}`);
   }
 
-  console.log(`  ℹ️  All seed user passwords: ${SEED_PASSWORD}`);
+  console.warn(`  ℹ️  All seed user passwords: ${SEED_PASSWORD}`);
 }

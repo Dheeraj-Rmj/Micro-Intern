@@ -104,7 +104,7 @@ class EventBus {
     await Promise.allSettled(
       handlers.map(async (handler) => {
         try {
-          await handler(event as DomainEvent);
+          await handler(event);
         } catch (error) {
           // Import logger lazily to avoid circular dependencies
           const { logger } = await import('../../core/logger.js');

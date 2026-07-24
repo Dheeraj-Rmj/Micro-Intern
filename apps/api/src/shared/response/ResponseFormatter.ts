@@ -1,5 +1,5 @@
-import type { Response } from 'express';
 import type { PaginationMeta, CursorPaginationMeta } from '@microintern/shared';
+import type { Response } from 'express';
 
 /**
  * Standard API Response Formatter.

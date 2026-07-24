@@ -1,12 +1,13 @@
 import http from 'node:http';
 
+import { prisma } from '@microintern/database';
+
 import { createApp } from './app.js';
 import { config } from './config.js';
-import { logger } from './logger.js';
-import { connectDatabase } from './database.js';
-import { connectRedis, disconnectRedis } from './redis.js';
 import { createContainer } from './container.js';
-import { prisma } from '@microintern/database';
+import { connectDatabase } from './database.js';
+import { logger } from './logger.js';
+import { connectRedis, disconnectRedis } from './redis.js';
 
 /**
  * HTTP server bootstrap and graceful shutdown.
@@ -63,13 +64,14 @@ async function bootstrap(): Promise<void> {
     logger.info({ signal }, '⏹️ Graceful shutdown initiated');
 
     // Stop accepting new connections
-    server.close(async () => {
+    server.close(() => {
       logger.info('HTTP server closed');
     });
 
     // Force exit after timeout
     const forceExit = setTimeout(() => {
       logger.error('Graceful shutdown timeout — forcing exit');
+// eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);
     }, SHUTDOWN_TIMEOUT_MS);
 
@@ -79,9 +81,11 @@ async function bootstrap(): Promise<void> {
       await disconnectRedis();
       await prisma.$disconnect();
       logger.info('✅ Clean shutdown complete');
+// eslint-disable-next-line unicorn/no-process-exit
       process.exit(0);
     } catch (error) {
       logger.error({ err: error }, 'Error during shutdown');
+// eslint-disable-next-line unicorn/no-process-exit
       process.exit(1);
     }
   }
@@ -92,11 +96,13 @@ async function bootstrap(): Promise<void> {
   // ── Unhandled rejection / exception handlers ──────────────────────────────
   process.on('unhandledRejection', (reason, promise) => {
     logger.fatal({ reason, promise }, '🚨 Unhandled Promise Rejection — shutting down');
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
     void gracefulShutdown('unhandledRejection');
   });
 
   process.on('uncaughtException', (error) => {
     logger.fatal({ err: error }, '🚨 Uncaught Exception — shutting down');
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
     void gracefulShutdown('uncaughtException');
   });
 }
@@ -104,5 +110,6 @@ async function bootstrap(): Promise<void> {
 // ── Entry point ────────────────────────────────────────────────────────────
 bootstrap().catch((error: unknown) => {
   console.error('Fatal error during startup:', error);
+// eslint-disable-next-line unicorn/no-process-exit
   process.exit(1);
 });

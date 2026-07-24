@@ -136,6 +136,7 @@ function loadConfig() {
 
     console.error('❌ Invalid environment configuration:\n' + errors);
     console.error('\nEnsure all required variables are set in your .env file.');
+// eslint-disable-next-line unicorn/no-process-exit
     process.exit(1);
   }
 

@@ -1,4 +1,5 @@
 import { prisma } from '../client.js';
+
 import { seedUsers } from './users.seed.js';
 
 /**
@@ -11,12 +12,12 @@ import { seedUsers } from './users.seed.js';
  * 4. (Submissions, Evaluations — seeded in integration tests only)
  */
 async function main(): Promise<void> {
-  console.log('🌱 Starting database seed...');
+  console.warn('🌱 Starting database seed...');
 
-  console.log('👤 Seeding users...');
+  console.warn('👤 Seeding users...');
   await seedUsers(prisma);
 
-  console.log('✅ Database seed complete.');
+  console.warn('✅ Database seed complete.');
 }
 
 main()

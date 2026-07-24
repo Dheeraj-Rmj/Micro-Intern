@@ -1,17 +1,17 @@
-import nodemailer from 'nodemailer';
-import type { Transporter, SendMailOptions } from 'nodemailer';
-import Handlebars from 'handlebars';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+
+import Handlebars from 'handlebars';
+import nodemailer from 'nodemailer';
 
 import { config } from '@/core/config.js';
 import { createModuleLogger } from '@/core/logger.js';
 
+import type { Transporter, SendMailOptions } from 'nodemailer';
+
 const log = createModuleLogger('EmailService');
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const TEMPLATES_DIR = join(__dirname, 'templates');
+const TEMPLATES_DIR = join(process.cwd(), 'src', 'emails', 'templates');
 
 /**
  * Email Service — Nodemailer with Handlebars templating.
@@ -26,6 +26,7 @@ const TEMPLATES_DIR = join(__dirname, 'templates');
 export class EmailService {
   private readonly transporter: Transporter;
   private readonly templateCache = new Map<string, HandlebarsTemplateDelegate>();
+  private readonly templatesDir = TEMPLATES_DIR;
 
   constructor() {
     this.transporter = this.createTransporter();
@@ -83,7 +84,9 @@ export class EmailService {
     };
 
     try {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const info = await this.transporter.sendMail(mailOptions);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       log.info({ messageId: info.messageId, to: options.to }, 'Email sent');
     } catch (error) {
       log.error({ err: error, to: options.to }, 'Email send failed');
@@ -128,6 +131,7 @@ export class EmailService {
 let emailService: EmailService | null = null;
 
 export function getEmailService(): EmailService {
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (emailService === null) {
     emailService = new EmailService();
   }

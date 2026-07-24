@@ -1,4 +1,5 @@
 import { HTTP_STATUS } from '@microintern/shared';
+
 import type { ErrorCode } from '@microintern/shared';
 
 /**

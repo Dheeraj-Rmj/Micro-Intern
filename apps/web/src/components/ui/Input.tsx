@@ -4,9 +4,9 @@ import { cn } from '@/lib/utils';
  * Input component — styled text input with label, helper text, and error state.
  */
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  label?: string;
-  helperText?: string;
-  error?: string;
+  label?: string | undefined;
+  helperText?: string | undefined;
+  error?: string | undefined;
 };
 
 export function Input({
@@ -80,9 +80,9 @@ export function Input({
  * Textarea component — same styling as Input.
  */
 export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-  label?: string;
-  helperText?: string;
-  error?: string;
+  label?: string | undefined;
+  helperText?: string | undefined;
+  error?: string | undefined;
 };
 
 export function Textarea({

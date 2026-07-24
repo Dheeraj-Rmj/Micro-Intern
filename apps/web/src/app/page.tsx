@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { ArrowRight, Zap, Shield, BarChart3, Users, Code2, Briefcase } from 'lucide-react';
+import Link from 'next/link';
 
 /**
  * Homepage — Candidate Portal landing page.

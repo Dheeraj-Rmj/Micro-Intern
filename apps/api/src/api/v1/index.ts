@@ -11,7 +11,7 @@ import { Router } from 'express';
  * - Module routers are imported and mounted by feature teams
  * - This file only orchestrates — no business logic here
  */
-const v1Router = Router();
+const v1Router: Router = Router();
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 // Mounted by: apps/api/src/modules/auth/presentation/auth.routes.ts

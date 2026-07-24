@@ -1,9 +1,8 @@
-import { Queue, Worker, QueueEvents, type Job, type WorkerOptions } from 'bullmq';
-
-import { createRedisClient } from '@/core/redis.js';
-import { config } from '@/core/config.js';
 import { QUEUE_NAMES } from '@microintern/shared';
+import { Queue, Worker, type Job, type WorkerOptions } from 'bullmq';
+
 import { createModuleLogger } from '@/core/logger.js';
+import { createRedisClient } from '@/core/redis.js';
 
 const log = createModuleLogger('QueueRegistry');
 

@@ -1,16 +1,18 @@
 'use client';
 
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { z } from 'zod';
+import { RegisterCandidateSchema } from '@microintern/shared';
 import { Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useRegisterCandidate } from '@/hooks/useAuth';
-import { RegisterCandidateSchema } from '@microintern/shared';
+
+import type { z } from 'zod';
+
 
 type RegisterFormValues = z.infer<typeof RegisterCandidateSchema>;
 
@@ -49,7 +51,7 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-4" noValidate>
         <div className="grid grid-cols-2 gap-3">
           <Input
             id="register-first-name"

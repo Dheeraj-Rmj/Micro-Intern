@@ -1,10 +1,12 @@
-import type { AIProvider } from '@microintern/shared';
 import { AI } from '@microintern/shared';
 
-import type { IAIProvider, AICompletionRequest, AICompletionResponse } from './interfaces/IAIProvider.js';
-import { AIProviderError } from './interfaces/IAIProvider.js';
 import { createModuleLogger } from '@/core/logger.js';
 import { ServiceUnavailableError } from '@/shared/errors/index.js';
+
+import { AIProviderError } from './interfaces/IAIProvider.js';
+
+import type { IAIProvider, AICompletionRequest, AICompletionResponse } from './interfaces/IAIProvider.js';
+import type { AIProvider } from '@microintern/shared';
 
 const log = createModuleLogger('AIFallbackEngine');
 

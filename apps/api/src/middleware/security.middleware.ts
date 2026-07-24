@@ -1,9 +1,10 @@
-import type { Application } from 'express';
-import helmet from 'helmet';
 import cors from 'cors';
+import helmet from 'helmet';
 import hpp from 'hpp';
 
 import { corsOrigins } from '@/core/config.js';
+
+import type { Application } from 'express';
 
 /**
  * Security middleware stack.

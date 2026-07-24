@@ -1,4 +1,5 @@
 import { AppError } from './AppError.js';
+
 import type { ErrorCode } from '@microintern/shared';
 
 /**

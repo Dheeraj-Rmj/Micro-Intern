@@ -1,20 +1,23 @@
-import type { Request, Response, NextFunction } from 'express';
+import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
 
+import {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  RegisterCompanyOwnerSchema
+} from '../application/dtos/auth.dto.js';
+
+import type {
+  LoginSchema,
+  RegisterCandidateSchema,
+  RefreshTokenSchema} from '../application/dtos/auth.dto.js';
 import type {
   LoginUseCase,
   RegisterCandidateUseCase,
   RefreshTokenUseCase,
   LogoutUseCase,
-} from '../../application/use-cases/auth.usecase.js';
-import {
-  LoginSchema,
-  RegisterCandidateSchema,
-  RegisterCompanyOwnerSchema,
-  RefreshTokenSchema,
-} from '../../application/dtos/auth.dto.js';
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
-import { validate } from '@/middleware/validate.middleware.js';
-import { authMiddleware } from '@/middleware/auth.middleware.js';
+} from '../application/use-cases/auth.usecase.js';
+import type { Request, Response, NextFunction } from 'express';
+
+
 
 /**
  * Auth Controller — presentation layer.

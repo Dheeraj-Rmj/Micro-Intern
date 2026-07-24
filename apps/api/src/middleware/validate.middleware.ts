@@ -1,7 +1,8 @@
+import { ValidationError } from '@/shared/errors/index.js';
+
 import type { Request, Response, NextFunction } from 'express';
 import type { ZodSchema, ZodError } from 'zod';
 
-import { ValidationError } from '@/shared/errors/index.js';
 
 type ValidationTarget = 'body' | 'query' | 'params';
 
@@ -43,6 +44,7 @@ export function validate<T>(target: ValidationTarget, schema: ZodSchema<T>) {
  */
 function formatZodErrors(error: ZodError): Record<string, unknown>[] {
   return error.issues.map((issue) => ({
+// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     field: issue.path.join('.') || 'root',
     message: issue.message,
     code: issue.code,

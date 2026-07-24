@@ -1,8 +1,9 @@
+import { prisma } from './database.js';
+import { getRedisClient } from './redis.js';
+
 import type { PrismaClient } from '@microintern/database';
 import type { Redis } from 'ioredis';
 
-import { prisma } from './database.js';
-import { getRedisClient } from './redis.js';
 
 /**
  * Application Service Container — Manual Factory Pattern.
@@ -89,7 +90,7 @@ export function createContainer(): ApplicationContainer {
   }
 
   containerInstance = new ApplicationContainer({
-    db: prisma as unknown as PrismaClient,
+    db: prisma,
     redis: getRedisClient(),
   });
 

@@ -1,11 +1,8 @@
-import type { Request, Response, NextFunction } from 'express';
-import type { ErrorRequestHandler } from 'express';
-import { ZodError } from 'zod';
 import { Prisma } from '@microintern/database';
+import { ZodError } from 'zod';
 
 import { logger } from '@/core/logger.js';
 import {
-  AppError,
   ValidationError,
   ConflictError,
   NotFoundError,
@@ -13,6 +10,10 @@ import {
   isAppError,
 } from '@/shared/errors/index.js';
 import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
+
+import type {
+  AppError} from '@/shared/errors/index.js';
+import type { ErrorRequestHandler , Request, Response, NextFunction } from 'express';
 
 /**
  * Global error handler middleware.

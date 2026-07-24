@@ -1,20 +1,21 @@
-import type { User } from '../../domain/entities/User.entity.js';
+import { createModuleLogger } from '@/core/logger.js';
+import { AuthDomainError } from '@/shared/errors/DomainError.js';
+import {
+  UnauthorizedError,
+  ConflictError,
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  NotFoundError,
+} from '@/shared/errors/index.js';
+
 import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
-import type { IJwtService } from '../interfaces/IJwtService.js';
-import type { IPasswordService } from '../interfaces/IPasswordService.js';
-import type { ISessionService } from '../interfaces/ISessionService.js';
 import type {
   LoginDto,
   LoginResponse,
   RegisterCandidateDto,
 } from '../dtos/auth.dto.js';
-import {
-  UnauthorizedError,
-  ConflictError,
-  NotFoundError,
-} from '@/shared/errors/index.js';
-import { AuthDomainError } from '@/shared/errors/DomainError.js';
-import { createModuleLogger } from '@/core/logger.js';
+import type { IJwtService } from '../interfaces/IJwtService.js';
+import type { IPasswordService } from '../interfaces/IPasswordService.js';
+import type { ISessionService } from '../interfaces/ISessionService.js';
 
 const log = createModuleLogger('LoginUseCase');
 

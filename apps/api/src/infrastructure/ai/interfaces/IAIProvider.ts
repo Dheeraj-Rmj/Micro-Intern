@@ -78,7 +78,7 @@ export class AIProviderError extends Error {
     public readonly provider: AIProvider,
     message: string,
     public readonly isRetryable: boolean = true,
-    public readonly cause?: Error,
+    public override readonly cause?: Error,
   ) {
     super(message);
     this.name = 'AIProviderError';

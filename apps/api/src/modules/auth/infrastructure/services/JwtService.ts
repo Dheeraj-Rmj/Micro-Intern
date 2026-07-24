@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
 
-import type { IJwtService } from '../../application/interfaces/IJwtService.js';
-import type { AuthTokensResponse } from '../../application/dtos/auth.dto.js';
 import { config } from '@/core/config.js';
 import { UnauthorizedError } from '@/shared/errors/index.js';
+
+import type { AuthTokensResponse } from '../../application/dtos/auth.dto.js';
+import type { IJwtService } from '../../application/interfaces/IJwtService.js';
 
 /**
  * JWT service — signs and verifies access and refresh tokens.
@@ -35,6 +36,7 @@ export class JwtService implements IJwtService {
     };
   }
 
+// eslint-disable-next-line @typescript-eslint/require-await
   async generateAccessToken(
     user: { id: string; email: string; role: string; companyId?: string | null },
     sessionId: string,
@@ -75,6 +77,7 @@ export class JwtService implements IJwtService {
     );
   }
 
+// eslint-disable-next-line @typescript-eslint/require-await
   async verifyAccessToken(token: string): Promise<{
     sub: string;
     email: string;
@@ -104,6 +107,7 @@ export class JwtService implements IJwtService {
     }
   }
 
+// eslint-disable-next-line @typescript-eslint/require-await
   async verifyRefreshToken(token: string): Promise<{ sub: string; sessionId: string }> {
     try {
       const payload = jwt.verify(token, this.refreshSecret, {
