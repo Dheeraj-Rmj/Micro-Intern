@@ -5,12 +5,18 @@
   "description": "Shared ESLint, Prettier, and TypeScript configurations for MicroIntern",
   "exports": {
     "./eslint/base": "./eslint/index.js",
+    "./eslint/index.js": "./eslint/index.js",
     "./eslint/next": "./eslint/next.js",
+    "./eslint/next.js": "./eslint/next.js",
     "./eslint/node": "./eslint/node.js",
+    "./eslint/node.js": "./eslint/node.js",
     "./prettier": "./prettier/index.js",
     "./typescript/base": "./typescript/base.json",
+    "./typescript/base.json": "./typescript/base.json",
     "./typescript/nextjs": "./typescript/nextjs.json",
+    "./typescript/nextjs.json": "./typescript/nextjs.json",
     "./typescript/node": "./typescript/node.json",
+    "./typescript/node.json": "./typescript/node.json",
     "./vitest/base": "./vitest/base.ts"
   },
   "devDependencies": {
