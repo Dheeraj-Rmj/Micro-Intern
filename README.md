@@ -31,12 +31,12 @@ microintern/
 
 ### Prerequisites
 
-| Tool | Version |
-|------|---------|
-| Node.js | 20.18.x (see `.nvmrc`) |
-| pnpm | 9.12.x |
-| Docker | 24+ |
-| Docker Compose | 2.x |
+| Tool           | Version                |
+| -------------- | ---------------------- |
+| Node.js        | 20.18.x (see `.nvmrc`) |
+| pnpm           | 9.12.x                 |
+| Docker         | 24+                    |
+| Docker Compose | 2.x                    |
 
 ### 1. Clone and Install
 
@@ -116,22 +116,22 @@ curl http://localhost:3001/health/ready
 
 ## Portals
 
-| Portal | Route | Role |
-|--------|-------|------|
-| Candidate | `/` | Job seekers completing skill trials |
-| Company | `/company` | Companies creating and managing trials |
-| Recruiter | `/recruiter` | Recruiters managing hiring pipelines |
-| Admin | `/admin` | Platform operators |
+| Portal    | Route        | Role                                   |
+| --------- | ------------ | -------------------------------------- |
+| Candidate | `/`          | Job seekers completing skill trials    |
+| Company   | `/company`   | Companies creating and managing trials |
+| Recruiter | `/recruiter` | Recruiters managing hiring pipelines   |
+| Admin     | `/admin`     | Platform operators                     |
 
 ## Seed Accounts
 
-| Role | Email | Password |
-|------|-------|----------|
-| SUPER_ADMIN | superadmin@microintern.io | Password@123 |
-| ADMIN | admin@microintern.io | Password@123 |
-| COMPANY_OWNER | owner@acme.com | Password@123 |
-| RECRUITER | recruiter@acme.com | Password@123 |
-| CANDIDATE | candidate@example.com | Password@123 |
+| Role          | Email                     | Password     |
+| ------------- | ------------------------- | ------------ |
+| SUPER_ADMIN   | superadmin@microintern.io | Password@123 |
+| ADMIN         | admin@microintern.io      | Password@123 |
+| COMPANY_OWNER | owner@acme.com            | Password@123 |
+| RECRUITER     | recruiter@acme.com        | Password@123 |
+| CANDIDATE     | candidate@example.com     | Password@123 |
 
 ## Common Commands
 
@@ -155,15 +155,16 @@ pnpm clean            # Remove all build artifacts
 
 Configure at least one in `apps/api/.env`:
 
-| Provider | Key | Free Tier |
-|----------|-----|-----------|
-| **Groq** (primary) | `GROQ_API_KEY` | ✅ Generous |
-| OpenRouter | `OPENROUTER_API_KEY` | ✅ Pay-per-use |
-| Gemini | `GEMINI_API_KEY` | ✅ AI Studio |
-| Ollama | No key needed | ✅ Local |
+| Provider           | Key                  | Free Tier      |
+| ------------------ | -------------------- | -------------- |
+| **Groq** (primary) | `GROQ_API_KEY`       | ✅ Generous    |
+| OpenRouter         | `OPENROUTER_API_KEY` | ✅ Pay-per-use |
+| Gemini             | `GEMINI_API_KEY`     | ✅ AI Studio   |
+| Ollama             | No key needed        | ✅ Local       |
 
 ## Documentation
 
+- [Architecture Vision & Foundation](docs/architecture/vision-and-foundation.md)
 - [Architecture Overview](docs/architecture/overview.md)
 - [API Standards](docs/api/standards.md)
 - [Getting Started](docs/development/getting-started.md)
@@ -172,19 +173,25 @@ Configure at least one in `apps/api/.env`:
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
+| Layer    | Technology                                                   |
+| -------- | ------------------------------------------------------------ |
 | Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS v4, shadcn/ui |
-| Backend | Node.js, Express.js, TypeScript |
-| Database | PostgreSQL, Prisma ORM |
-| Cache | Redis (ioredis) |
-| Queue | BullMQ |
-| Storage | MinIO (S3-compatible) |
-| AI | Groq, OpenRouter, Gemini, Ollama, HuggingFace |
-| Auth | JWT, OAuth (Google + GitHub), RBAC |
-| Email | Nodemailer + Handlebars |
-| Infra | Docker, Nginx, GitHub Actions |
+| Backend  | Node.js, Express.js, TypeScript                              |
+| Database | PostgreSQL, Prisma ORM                                       |
+| Cache    | Redis (ioredis)                                              |
+| Queue    | BullMQ                                                       |
+| Storage  | MinIO (S3-compatible)                                        |
+| AI       | Groq, OpenRouter, Gemini, Ollama, HuggingFace                |
+| Auth     | JWT, OAuth (Google + GitHub), RBAC                           |
+| Email    | Nodemailer + Handlebars                                      |
+| Infra    | Docker, Nginx, GitHub Actions                                |
 
 ---
 
-*MicroIntern Engineering Foundation — built to scale from 0 to enterprise.*
+_MicroIntern Engineering Foundation — built to scale from 0 to enterprise._
+
+## Copyright & License
+
+&copy; 2026 Sai Dheeraj and the Micro-Intern Team. All rights reserved.
+
+This is a proprietary codebase. Unauthorized copying, distribution, or modification of this project, via any medium, is strictly prohibited. Please see the [LICENSE](LICENSE) file for more details.
