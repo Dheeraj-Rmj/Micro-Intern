@@ -43,15 +43,18 @@ COPY apps/api/package.json ./apps/api/
 RUN pnpm install --frozen-lockfile
 
 # ── Stage 3: Build ──────────────────────────────────────
-FROM deps AS build
+FROM node:22-alpine AS build
 
 # Copy source files
 COPY tsconfig.base.json ./
 COPY packages/ ./packages/
 COPY apps/api/ ./apps/api/
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages ./packages
+COPY --from=deps /app/pnpm-workspace.yaml /app/pnpm-lock.yaml /app/package.json ./
 
 # Generate Prisma client
-RUN pnpm --filter @microintern/database db:generate
+RUN corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm --filter @microintern/database db:generate
 
 # Build shared package first (API depends on it)
 RUN pnpm --filter @microintern/shared build
