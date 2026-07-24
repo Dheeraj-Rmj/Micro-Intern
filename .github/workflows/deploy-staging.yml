@@ -1,0 +1,65 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false  # Don't cancel in-flight deployments
+
+env:
+  NODE_VERSION: "20.18.0"
+  PNPM_VERSION: "9.12.3"
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push API image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -f apps/api/Dockerfile \
+            -t $ECR_REGISTRY/microintern-api:$IMAGE_TAG \
+            -t $ECR_REGISTRY/microintern-api:staging-latest \
+            .
+          docker push $ECR_REGISTRY/microintern-api:$IMAGE_TAG
+          docker push $ECR_REGISTRY/microintern-api:staging-latest
+
+      - name: Run DB migrations (staging)
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter @microintern/database db:migrate
+
+      # Add deployment step here (ECS, EKS, Fly.io, Render, etc.)
+      - name: Deployment placeholder
+        run: |
+          echo "Deploy $ECR_REGISTRY/microintern-api:${{ github.sha }} to staging"
+          echo "Add your deployment command here (aws ecs update-service, kubectl, etc.)"
+
+      - name: Smoke test
+        run: |
+          sleep 30  # Wait for service to start
+          curl -f https://api.staging.microintern.io/health/ready || exit 1
+          echo "✅ Staging smoke test passed"

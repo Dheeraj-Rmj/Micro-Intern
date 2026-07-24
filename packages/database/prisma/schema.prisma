@@ -1,0 +1,604 @@
+// ============================================================
+// MicroIntern — Prisma Schema
+// ============================================================
+// Design Principles:
+//   - UUID v4 primary keys on all entities (non-enumerable, secure)
+//   - Audit fields (createdAt, updatedAt, createdBy, updatedBy) on all entities
+//   - Soft deletes (deletedAt, deletedBy) on all business entities
+//   - Explicit foreign key names for clear migration diffs
+//   - Strategic indexes for all FK columns and common query patterns
+//   - Row-level security ready (userId-scoped queries enforced in repositories)
+// ============================================================
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/generated/client"
+  previewFeatures = ["relationJoins", "queryRaw"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// USERS & AUTHENTICATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  role      Role
+  status    EntityStatus @default(PENDING_VERIFICATION)
+
+  // Profile
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  avatarUrl String?  @map("avatar_url")
+  phone     String?
+
+  // Security
+  passwordHash      String?   @map("password_hash")
+  emailVerifiedAt   DateTime? @map("email_verified_at")
+  lastLoginAt       DateTime? @map("last_login_at")
+  lastLoginIp       String?   @map("last_login_ip")
+  loginAttempts     Int       @default(0) @map("login_attempts")
+  lockedUntil       DateTime? @map("locked_until")
+
+  // Audit
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdBy String?   @map("created_by") @db.Uuid
+  updatedBy String?   @map("updated_by") @db.Uuid
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by") @db.Uuid
+
+  // Relations
+  oauthAccounts     OAuthAccount[]
+  sessions          Session[]
+  candidateProfile  CandidateProfile?
+  companyMembership CompanyMember[]
+  auditLogsCreated  AuditLog[] @relation("AuditLogCreatedBy")
+  notifications     Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model OAuthAccount {
+  id           String      @id @default(uuid()) @db.Uuid
+  userId       String      @map("user_id") @db.Uuid
+  provider     OAuthProvider
+  providerAccountId String @map("provider_account_id")
+  accessToken  String?     @map("access_token") @db.Text
+  refreshToken String?     @map("refresh_token") @db.Text
+  expiresAt    DateTime?   @map("expires_at")
+  tokenType    String?     @map("token_type")
+  scope        String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("oauth_accounts")
+}
+
+model Session {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  refreshTokenHash String @map("refresh_token_hash") @db.Text
+  ipAddress    String?   @map("ip_address")
+  userAgent    String?   @map("user_agent") @db.Text
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  lastUsedAt   DateTime  @default(now()) @map("last_used_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CANDIDATE DOMAIN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model CandidateProfile {
+  id       String @id @default(uuid()) @db.Uuid
+  userId   String @unique @map("user_id") @db.Uuid
+
+  // Profile content
+  headline      String?  @db.VarChar(255)
+  bio           String?  @db.Text
+  location      String?  @db.VarChar(255)
+  resumeUrl     String?  @map("resume_url")
+  portfolioUrl  String?  @map("portfolio_url")
+  linkedinUrl   String?  @map("linkedin_url")
+  githubUrl     String?  @map("github_url")
+  skills        String[] // Array of skill tags
+  yearsOfExperience Int? @map("years_of_experience")
+  isOpenToWork  Boolean  @default(true) @map("is_open_to_work")
+  isPublic      Boolean  @default(false) @map("is_public")
+
+  // Audit
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@index([userId])
+  @@index([isOpenToWork])
+  @@index([deletedAt])
+  @@map("candidate_profiles")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// COMPANY DOMAIN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Company {
+  id          String       @id @default(uuid()) @db.Uuid
+  name        String       @db.VarChar(255)
+  slug        String       @unique @db.VarChar(100)
+  status      EntityStatus @default(PENDING_VERIFICATION)
+
+  // Identity
+  logoUrl     String?  @map("logo_url")
+  websiteUrl  String?  @map("website_url")
+  description String?  @db.Text
+  industry    String?  @db.VarChar(100)
+  size        CompanySize?
+  location    String?  @db.VarChar(255)
+  linkedinUrl String?  @map("linkedin_url")
+
+  // Billing
+  planTier    PlanTier @default(FREE) @map("plan_tier")
+
+  // Audit
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdBy String?   @map("created_by") @db.Uuid
+  updatedBy String?   @map("updated_by") @db.Uuid
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by") @db.Uuid
+
+  members CompanyMember[]
+  trials  Trial[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("companies")
+}
+
+model CompanyMember {
+  id        String      @id @default(uuid()) @db.Uuid
+  companyId String      @map("company_id") @db.Uuid
+  userId    String      @map("user_id") @db.Uuid
+  role      Role        // COMPANY_OWNER or RECRUITER
+  invitedBy String?     @map("invited_by") @db.Uuid
+  joinedAt  DateTime?   @map("joined_at")
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  deletedAt DateTime?   @map("deleted_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, userId])
+  @@index([companyId])
+  @@index([userId])
+  @@index([role])
+  @@map("company_members")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TRIAL DOMAIN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Trial {
+  id          String      @id @default(uuid()) @db.Uuid
+  companyId   String      @map("company_id") @db.Uuid
+  createdById String      @map("created_by_id") @db.Uuid
+  status      TrialStatus @default(DRAFT)
+
+  // Content
+  title           String   @db.VarChar(255)
+  slug            String   @db.VarChar(100)
+  description     String   @db.Text
+  instructions    String   @db.Text
+  skillsRequired  String[] @map("skills_required")
+  roleTitle       String?  @map("role_title") @db.VarChar(255)
+  level           ExperienceLevel?
+
+  // Configuration
+  durationMinutes   Int     @map("duration_minutes")
+  passingScore      Int     @default(70) @map("passing_score")
+  maxAttempts       Int     @default(1) @map("max_attempts")
+  isPublic          Boolean @default(false) @map("is_public")
+
+  // Publishing window
+  publishedAt DateTime? @map("published_at")
+  expiresAt   DateTime? @map("expires_at")
+
+  // Audit
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdBy String?   @map("created_by") @db.Uuid
+  updatedBy String?   @map("updated_by") @db.Uuid
+  deletedAt DateTime? @map("deleted_at")
+  deletedBy String?   @map("deleted_by") @db.Uuid
+
+  company     Company       @relation(fields: [companyId], references: [id])
+  tasks       TrialTask[]
+  submissions Submission[]
+
+  @@unique([companyId, slug])
+  @@index([companyId])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([deletedAt])
+  @@map("trials")
+}
+
+model TrialTask {
+  id          String @id @default(uuid()) @db.Uuid
+  trialId     String @map("trial_id") @db.Uuid
+  sortOrder   Int    @map("sort_order")
+
+  // Content
+  title       String @db.VarChar(255)
+  description String @db.Text
+  taskType    TaskType @map("task_type")
+  isRequired  Boolean  @default(true) @map("is_required")
+
+  // Scoring
+  maxPoints   Int      @default(100) @map("max_points")
+
+  // Metadata (flexible for different task types)
+  config      Json     @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  trial             Trial              @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  submissionAnswers SubmissionAnswer[]
+
+  @@index([trialId, sortOrder])
+  @@map("trial_tasks")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SUBMISSION DOMAIN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Submission {
+  id               String           @id @default(uuid()) @db.Uuid
+  trialId          String           @map("trial_id") @db.Uuid
+  candidateId      String           @map("candidate_id") @db.Uuid
+  status           SubmissionStatus @default(INVITED)
+  attemptNumber    Int              @default(1) @map("attempt_number")
+
+  // Timing
+  invitedAt    DateTime  @default(now()) @map("invited_at")
+  startedAt    DateTime? @map("started_at")
+  submittedAt  DateTime? @map("submitted_at")
+  expiresAt    DateTime? @map("expires_at")
+
+  // Scoring
+  totalScore   Float?   @map("total_score")
+  isPassed     Boolean? @map("is_passed")
+
+  // Workspace
+  workspaceId  String?  @map("workspace_id") @db.Uuid
+
+  // Audit
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  trial       Trial             @relation(fields: [trialId], references: [id])
+  candidate   CandidateProfile  @relation(fields: [candidateId], references: [id])
+  answers     SubmissionAnswer[]
+  evaluation  Evaluation?
+
+  @@unique([trialId, candidateId, attemptNumber])
+  @@index([trialId])
+  @@index([candidateId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("submissions")
+}
+
+model SubmissionAnswer {
+  id           String @id @default(uuid()) @db.Uuid
+  submissionId String @map("submission_id") @db.Uuid
+  taskId       String @map("task_id") @db.Uuid
+
+  // Answer content (flexible for different task types)
+  answerText   String?  @map("answer_text") @db.Text
+  answerFileUrl String? @map("answer_file_url")
+  answerData   Json?    @map("answer_data")
+
+  // Scoring (set by evaluation)
+  earnedPoints Float?  @map("earned_points")
+  feedback     String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  task       TrialTask  @relation(fields: [taskId], references: [id])
+
+  @@unique([submissionId, taskId])
+  @@index([submissionId])
+  @@index([taskId])
+  @@map("submission_answers")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// EVALUATION DOMAIN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Evaluation {
+  id           String           @id @default(uuid()) @db.Uuid
+  submissionId String           @unique @map("submission_id") @db.Uuid
+  status       EvaluationStatus @default(PENDING)
+
+  // AI provider that performed the evaluation
+  aiProvider   String? @map("ai_provider")
+  aiModel      String? @map("ai_model")
+  promptVersion String? @map("prompt_version")
+
+  // Results
+  totalScore        Float?  @map("total_score")
+  maxPossibleScore  Float?  @map("max_possible_score")
+  percentageScore   Float?  @map("percentage_score")
+  isPassed          Boolean? @map("is_passed")
+  summary           String?  @db.Text
+  strengths         String[] 
+  improvements      String[]
+  
+  // Raw AI response (for audit and debugging)
+  rawResponse  Json? @map("raw_response")
+
+  // Human review
+  reviewedBy   String?   @map("reviewed_by") @db.Uuid
+  reviewedAt   DateTime? @map("reviewed_at")
+  reviewNotes  String?   @map("review_notes") @db.Text
+
+  // Timing
+  startedAt    DateTime? @map("started_at")
+  completedAt  DateTime? @map("completed_at")
+
+  // Audit
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  submission Submission @relation(fields: [submissionId], references: [id])
+
+  @@index([submissionId])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("evaluations")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PIPELINE DOMAIN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Pipeline {
+  id        String @id @default(uuid()) @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  name      String @db.VarChar(255)
+  jobTitle  String @map("job_title") @db.VarChar(255)
+  isActive  Boolean @default(true) @map("is_active")
+
+  // Audit
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  createdBy String?   @map("created_by") @db.Uuid
+  updatedBy String?   @map("updated_by") @db.Uuid
+  deletedAt DateTime? @map("deleted_at")
+
+  stages PipelineStage[]
+  candidates PipelineCandidate[]
+
+  @@index([companyId])
+  @@index([deletedAt])
+  @@map("pipelines")
+}
+
+model PipelineStage {
+  id         String            @id @default(uuid()) @db.Uuid
+  pipelineId String            @map("pipeline_id") @db.Uuid
+  name       String            @db.VarChar(255)
+  stageType  PipelineStageType @map("stage_type")
+  sortOrder  Int               @map("sort_order")
+  config     Json              @default("{}")
+
+  pipeline   Pipeline           @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  candidates PipelineCandidate[]
+
+  @@index([pipelineId])
+  @@map("pipeline_stages")
+}
+
+model PipelineCandidate {
+  id         String @id @default(uuid()) @db.Uuid
+  pipelineId String @map("pipeline_id") @db.Uuid
+  stageId    String @map("stage_id") @db.Uuid
+  userId     String @map("user_id") @db.Uuid // Candidate user ID
+  movedAt    DateTime @default(now()) @map("moved_at")
+  movedBy    String?  @map("moved_by") @db.Uuid
+  notes      String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  pipeline Pipeline      @relation(fields: [pipelineId], references: [id])
+  stage    PipelineStage @relation(fields: [stageId], references: [id])
+
+  @@index([pipelineId])
+  @@index([stageId])
+  @@index([userId])
+  @@map("pipeline_candidates")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// AUDIT & NOTIFICATIONS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/// Immutable audit log — never updated, never soft-deleted.
+/// Provides tamper-evident record for compliance.
+model AuditLog {
+  id          String  @id @default(uuid()) @db.Uuid
+  actorId     String? @map("actor_id") @db.Uuid
+  actorRole   String? @map("actor_role")
+  action      String  // AuditAction enum value
+  entityType  String  @map("entity_type")
+  entityId    String? @map("entity_id") @db.Uuid
+  ipAddress   String? @map("ip_address")
+  userAgent   String? @map("user_agent") @db.Text
+  requestId   String? @map("request_id")
+  metadata    Json    @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  actor User? @relation("AuditLogCreatedBy", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Notification {
+  id        String              @id @default(uuid()) @db.Uuid
+  userId    String              @map("user_id") @db.Uuid
+  channel   NotificationChannel
+  type      String              @db.VarChar(100)
+  title     String              @db.VarChar(255)
+  body      String              @db.Text
+  data      Json                @default("{}")
+  isRead    Boolean             @default(false) @map("is_read")
+  readAt    DateTime?           @map("read_at")
+  sentAt    DateTime?           @map("sent_at")
+  createdAt DateTime            @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ENUMS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  COMPANY_OWNER
+  RECRUITER
+  CANDIDATE
+}
+
+enum EntityStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+  ARCHIVED
+}
+
+enum TrialStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+enum SubmissionStatus {
+  INVITED
+  IN_PROGRESS
+  SUBMITTED
+  UNDER_EVALUATION
+  EVALUATION_COMPLETE
+  PASSED
+  FAILED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum EvaluationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REQUIRES_HUMAN_REVIEW
+}
+
+enum PipelineStageType {
+  SCREENING
+  SKILL_TRIAL
+  TECHNICAL_INTERVIEW
+  CULTURE_FIT
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum NotificationChannel {
+  EMAIL
+  IN_APP
+  PUSH
+}
+
+enum OAuthProvider {
+  GOOGLE
+  GITHUB
+}
+
+enum TaskType {
+  SHORT_ANSWER
+  LONG_ANSWER
+  MULTIPLE_CHOICE
+  FILE_UPLOAD
+  CODE_SUBMISSION
+  LINK_SUBMISSION
+}
+
+enum ExperienceLevel {
+  INTERNSHIP
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+enum CompanySize {
+  SOLO
+  SMALL      // 1-10
+  MEDIUM     // 11-50
+  LARGE      // 51-200
+  ENTERPRISE // 200+
+}
+
+enum PlanTier {
+  FREE
+  STARTER
+  GROWTH
+  ENTERPRISE
+}

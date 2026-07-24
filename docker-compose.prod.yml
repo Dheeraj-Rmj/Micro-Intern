@@ -1,0 +1,83 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MicroIntern — Production Docker Compose
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Usage: docker compose -f docker-compose.prod.yml up -d
+#
+# Prerequisites:
+# - Set all env vars in .env.production
+# - SSL certificates in ./infrastructure/nginx/ssl/
+# - Docker images pushed to your registry
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+name: microintern-production
+
+services:
+  # ── Nginx (entry point) ─────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: microintern_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    networks:
+      - microintern_prod
+
+  # ── API ──────────────────────────────────────────────────
+  api:
+    image: ${ECR_REGISTRY}/microintern-api:${IMAGE_TAG:-latest}
+    container_name: microintern_api
+    restart: always
+    env_file: .env.production
+    environment:
+      NODE_ENV: production
+      API_PORT: 3001
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - microintern_prod
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ── Web ──────────────────────────────────────────────────
+  web:
+    image: ${ECR_REGISTRY}/microintern-web:${IMAGE_TAG:-latest}
+    container_name: microintern_web
+    restart: always
+    env_file: .env.production
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - microintern_prod
+
+volumes:
+  nginx_cache:
+
+networks:
+  microintern_prod:
+    driver: bridge
+    # In production, DB/Redis/MinIO are managed services (RDS, ElastiCache, S3)
+    # They are accessed via their connection strings, not Docker networking

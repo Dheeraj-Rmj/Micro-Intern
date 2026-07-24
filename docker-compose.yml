@@ -1,0 +1,152 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MicroIntern — Local Development Docker Compose
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Services:
+#   postgres  → Primary database (port 5432)
+#   redis     → Cache + queue backend (port 6379)
+#   minio     → Object storage, S3-compatible (ports 9000, 9001)
+#   mailhog   → Local email server with web UI (ports 1025, 8025)
+#   ollama    → Local LLM inference (port 11434)
+#
+# Usage:
+#   docker compose up -d          → Start all services
+#   docker compose down -v        → Stop and remove volumes
+#   docker compose logs -f redis  → Follow service logs
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+name: microintern-dev
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: microintern_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: microintern_dev
+      POSTGRES_USER: microintern
+      POSTGRES_PASSWORD: microintern_pass
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U microintern -d microintern_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - microintern
+
+  # ── Redis ───────────────────────────────────────────────
+  redis:
+    image: redis:7.4-alpine
+    container_name: microintern_redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --loglevel notice
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microintern
+
+  # ── MinIO (S3-compatible storage) ───────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: microintern_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_BROWSER: "on"
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # MinIO Console UI
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - microintern
+
+  # ── MinIO Setup (creates default buckets) ───────────────
+  minio-setup:
+    image: minio/mc:latest
+    container_name: microintern_minio_setup
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://minio:9000 minioadmin minioadmin &&
+        mc mb --ignore-existing local/microintern-public &&
+        mc mb --ignore-existing local/microintern-private &&
+        mc anonymous set public local/microintern-public &&
+        echo 'MinIO buckets created successfully'
+      "
+    networks:
+      - microintern
+
+  # ── MailHog (email testing) ──────────────────────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: microintern_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - microintern
+
+  # ── Ollama (local LLM inference) ─────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: microintern_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # GPU support (uncomment if you have an NVIDIA GPU):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    networks:
+      - microintern
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  ollama_data:
+    driver: local
+
+networks:
+  microintern:
+    driver: bridge

@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MicroIntern Design System
+   Tailwind CSS v4 configuration
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@theme {
+  /* ── Color Palette ──────────────────────────────────── */
+
+  /* Brand — Indigo-based primary */
+  --color-brand-50: oklch(0.97 0.02 264);
+  --color-brand-100: oklch(0.93 0.05 264);
+  --color-brand-200: oklch(0.87 0.10 264);
+  --color-brand-300: oklch(0.78 0.16 264);
+  --color-brand-400: oklch(0.67 0.21 264);
+  --color-brand-500: oklch(0.55 0.24 264);
+  --color-brand-600: oklch(0.47 0.22 264);
+  --color-brand-700: oklch(0.40 0.19 264);
+  --color-brand-800: oklch(0.34 0.15 264);
+  --color-brand-900: oklch(0.28 0.11 264);
+  --color-brand-950: oklch(0.18 0.08 264);
+
+  /* Semantic aliases */
+  --color-background: var(--color-background-default);
+  --color-foreground: var(--color-foreground-default);
+
+  /* Neutral (slate-based) */
+  --color-slate-50: oklch(0.984 0.003 247);
+  --color-slate-100: oklch(0.968 0.007 247);
+  --color-slate-200: oklch(0.929 0.013 255);
+  --color-slate-300: oklch(0.869 0.022 252);
+  --color-slate-400: oklch(0.704 0.040 257);
+  --color-slate-500: oklch(0.554 0.046 257);
+  --color-slate-600: oklch(0.446 0.043 256);
+  --color-slate-700: oklch(0.373 0.034 259);
+  --color-slate-800: oklch(0.279 0.029 256);
+  --color-slate-900: oklch(0.208 0.042 264);
+  --color-slate-950: oklch(0.129 0.042 264);
+
+  /* Success, Warning, Error */
+  --color-success-50: oklch(0.971 0.048 162);
+  --color-success-500: oklch(0.527 0.154 162);
+  --color-success-700: oklch(0.396 0.127 162);
+
+  --color-warning-50: oklch(0.987 0.026 102);
+  --color-warning-500: oklch(0.769 0.188 70);
+  --color-warning-700: oklch(0.555 0.163 48);
+
+  --color-error-50: oklch(0.971 0.013 18);
+  --color-error-500: oklch(0.637 0.237 25);
+  --color-error-700: oklch(0.505 0.213 27);
+
+  /* ── Typography ─────────────────────────────────────── */
+  --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* ── Border Radius ──────────────────────────────────── */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  /* ── Shadows ────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 20px oklch(0.55 0.24 264 / 0.3);
+
+  /* ── Animation ──────────────────────────────────────── */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Light mode CSS variables ─────────────────────────── */
+:root {
+  --color-background-default: oklch(0.99 0.002 247);
+  --color-foreground-default: oklch(0.13 0.042 264);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.13 0.042 264);
+  --color-muted: oklch(0.968 0.007 247);
+  --color-muted-foreground: oklch(0.554 0.046 257);
+  --color-border: oklch(0.929 0.013 255);
+  --color-input: oklch(0.929 0.013 255);
+  --color-ring: oklch(0.55 0.24 264);
+}
+
+/* ── Dark mode ────────────────────────────────────────── */
+.dark {
+  --color-background-default: oklch(0.13 0.042 264);
+  --color-foreground-default: oklch(0.97 0.02 264);
+  --color-card: oklch(0.18 0.038 264);
+  --color-card-foreground: oklch(0.97 0.02 264);
+  --color-muted: oklch(0.20 0.034 264);
+  --color-muted-foreground: oklch(0.60 0.04 257);
+  --color-border: oklch(0.25 0.030 264);
+  --color-input: oklch(0.25 0.030 264);
+  --color-ring: oklch(0.67 0.21 264);
+}
+
+/* ── Base styles ──────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-color: var(--color-border);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-background-default);
+  color: var(--color-foreground-default);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+/* ── Focus styles (accessible) ────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* ── Selection ────────────────────────────────────────── */
+::selection {
+  background-color: oklch(0.55 0.24 264 / 0.2);
+}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+/* ── Utility classes ──────────────────────────────────── */
+.glass {
+  background: oklch(1 0 0 / 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid oklch(1 0 0 / 0.1);
+}
+
+.dark .glass {
+  background: oklch(0 0 0 / 0.2);
+  border-color: oklch(1 0 0 / 0.08);
+}
+
+.gradient-brand {
+  background: linear-gradient(
+    135deg,
+    oklch(0.55 0.24 264) 0%,
+    oklch(0.47 0.22 264) 50%,
+    oklch(0.40 0.19 264) 100%
+  );
+}
+
+.text-gradient-brand {
+  background: linear-gradient(135deg, oklch(0.67 0.21 264), oklch(0.55 0.24 264));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Animation keyframes ──────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-from-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s var(--ease-smooth) forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s var(--ease-smooth) forwards;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-muted) 25%,
+    oklch(0.929 0.013 255) 50%,
+    var(--color-muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

@@ -1,0 +1,34 @@
+{
+  "recommendations": [
+    // TypeScript
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+
+    // Prisma
+    "Prisma.prisma",
+
+    // Docker
+    "ms-azuretools.vscode-docker",
+
+    // Git
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+
+    // REST API testing
+    "humao.rest-client",
+    "rangav.vscode-thunder-client",
+
+    // AI
+    "GitHub.copilot",
+
+    // Quality of life
+    "streetsidesoftware.code-spell-checker",
+    "gruntfuggly.todo-tree",
+    "usernamehw.errorlens",
+    "christian-kohler.path-intellisense",
+
+    // Tailwind
+    "bradlc.vscode-tailwindcss"
+  ]
+}
