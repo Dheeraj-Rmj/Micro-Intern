@@ -7,6 +7,9 @@
 ARG NODE_VERSION=20.18.0
 
 FROM node:${NODE_VERSION}-alpine AS base
+# Disable husky in Docker builds
+ENV HUSKY=0
+
 RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 WORKDIR /app
 
@@ -17,7 +20,8 @@ COPY package.json ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/config/package.json ./packages/config/
 COPY apps/web/package.json ./apps/web/
-RUN pnpm install --frozen-lockfile
+RUN npm pkg delete scripts.prepare && \
+    pnpm install --frozen-lockfile
 
 # ── Build ────────────────────────────────────────────────
 FROM deps AS builder

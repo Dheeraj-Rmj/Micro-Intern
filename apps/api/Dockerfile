@@ -23,6 +23,9 @@ ARG NODE_VERSION=20.18.0
 FROM node:${NODE_VERSION}-alpine AS base
 LABEL maintainer="MicroIntern Platform Engineering"
 
+# Disable husky in Docker builds
+ENV HUSKY=0
+
 # Enable pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 
@@ -39,8 +42,9 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/config/package.json ./packages/config/
 COPY apps/api/package.json ./apps/api/
 
-# Install all dependencies (including dev for build)
-RUN pnpm install --frozen-lockfile
+# Remove husky prepare script to prevent Alpine errors
+RUN npm pkg delete scripts.prepare && \
+    pnpm install --frozen-lockfile
 
 # ── Stage 3: Build ──────────────────────────────────────
 FROM node:22-alpine AS build
@@ -72,8 +76,9 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/config/package.json ./packages/config/
 COPY apps/api/package.json ./apps/api/
 
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
+# Install production dependencies only (remove husky first)
+RUN npm pkg delete scripts.prepare && \
+    pnpm install --frozen-lockfile --prod
 
 # ── Stage 5: Production Image ────────────────────────────
 FROM node:${NODE_VERSION}-alpine AS production
