@@ -11,7 +11,7 @@ import type { Transporter, SendMailOptions } from 'nodemailer';
 
 const log = createModuleLogger('EmailService');
 
-const TEMPLATES_DIR = join(process.cwd(), 'src', 'emails', 'templates');
+const TEMPLATES_DIR = join(__dirname, 'templates');
 
 /**
  * Email Service — Nodemailer with Handlebars templating.
