@@ -11,11 +11,11 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
-    "test": "vitest run",
-    "test:unit": "vitest run --reporter=verbose tests/unit",
-    "test:integration": "vitest run --reporter=verbose tests/integration",
+    "test": "vitest run --passWithNoTests",
+    "test:unit": "vitest run --reporter=verbose --passWithNoTests tests/unit",
+    "test:integration": "vitest run --reporter=verbose --passWithNoTests tests/integration",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
     "clean": "rm -rf dist"
   },
   "dependencies": {

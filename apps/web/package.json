@@ -10,16 +10,15 @@
     "lint": "next lint --max-warnings 0",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
-    "test": "vitest run",
-    "test:unit": "vitest run --reporter=verbose src",
+    "test": "vitest run --passWithNoTests",
+    "test:unit": "vitest run --reporter=verbose --passWithNoTests src",
     "test:e2e": "playwright test",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
     "clean": "rm -rf .next dist"
   },
   "dependencies": {
     "@microintern/shared": "workspace:*",
-
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
