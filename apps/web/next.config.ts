@@ -12,6 +12,7 @@ import type { NextConfig } from 'next';
  */
 const config: NextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
 
   // Transpile workspace packages (TypeScript source, not compiled)
   transpilePackages: ['@microintern/shared'],
