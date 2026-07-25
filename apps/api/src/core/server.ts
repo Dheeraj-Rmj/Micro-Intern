@@ -1,11 +1,9 @@
 import http from 'node:http';
 
-import { prisma } from '@microintern/database';
-
 import { createApp } from './app.js';
 import { config } from './config.js';
 import { createContainer } from './container.js';
-import { connectDatabase } from './database.js';
+import { connectDatabase, disconnectDatabase } from './database.js';
 import { logger } from './logger.js';
 import { connectRedis, disconnectRedis } from './redis.js';
 
@@ -79,7 +77,7 @@ async function bootstrap(): Promise<void> {
 
     try {
       await disconnectRedis();
-      await prisma.$disconnect();
+      await disconnectDatabase();
       logger.info('✅ Clean shutdown complete');
 // eslint-disable-next-line unicorn/no-process-exit
       process.exit(0);
