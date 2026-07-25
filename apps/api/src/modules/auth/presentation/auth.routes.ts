@@ -3,7 +3,7 @@ import { Router } from 'express';
 
 
 
-import { getContainer } from '@/core/container.js';
+import { getContainer, type InfrastructureDependencies } from '@/core/container.js';
 import { passport } from '@/core/passport.js';
 import { audit } from '@/middleware/audit.middleware.js';
 import { authMiddleware } from '@/middleware/auth.middleware.js';
@@ -33,36 +33,36 @@ export function createAuthRouter(): Router {
   
   // Register services lazily
   try { container.get('IUserRepository'); } catch {
-    container.register('IUserRepository', (_infra) => new PrismaUserRepository(infra.db));
+    container.register('IUserRepository', (_infra: InfrastructureDependencies) => new PrismaUserRepository(_infra.db));
     container.register('IJwtService', () => new JwtService());
     container.register('IPasswordService', () => new BcryptPasswordService());
-    container.register('ISessionService', (_infra) => new RedisSessionService());
-    container.register('LoginUseCase', (_infra) => new LoginUseCase(
+    container.register('ISessionService', (_infra: InfrastructureDependencies) => new RedisSessionService());
+    container.register('LoginUseCase', (_infra: InfrastructureDependencies) => new LoginUseCase(
       container.get('IUserRepository'),
       container.get('IPasswordService'),
       container.get('IJwtService'),
       container.get('ISessionService')
     ));
-    container.register('RegisterCandidateUseCase', (_infra) => new RegisterCandidateUseCase(
+    container.register('RegisterCandidateUseCase', (_infra: InfrastructureDependencies) => new RegisterCandidateUseCase(
       container.get('IUserRepository'),
       container.get('IPasswordService'),
       container.get('IJwtService'),
       container.get('ISessionService')
     ));
-    container.register('OAuthLoginUseCase', (_infra) => new OAuthLoginUseCase(
+    container.register('OAuthLoginUseCase', (_infra: InfrastructureDependencies) => new OAuthLoginUseCase(
       container.get('IUserRepository'),
       container.get('IJwtService'),
       container.get('ISessionService')
     ));
-container.register('RefreshTokenUseCase', (_infra) => new RefreshTokenUseCase(
+    container.register('RefreshTokenUseCase', (_infra: InfrastructureDependencies) => new RefreshTokenUseCase(
       container.get('IJwtService'),
       container.get('ISessionService'),
       container.get('IUserRepository')
     ));
-    container.register('LogoutUseCase', (_infra) => new LogoutUseCase(
+    container.register('LogoutUseCase', (_infra: InfrastructureDependencies) => new LogoutUseCase(
       container.get('ISessionService')
     ));
-    container.register('AuthController', (_infra) => new AuthController(
+    container.register('AuthController', (_infra: InfrastructureDependencies) => new AuthController(
       container.get('LoginUseCase'),
       container.get('RegisterCandidateUseCase'),
       container.get('RefreshTokenUseCase'),

@@ -57,7 +57,7 @@ export class OAuthLoginUseCase {
       }
 
       // 4. Optionally update avatar if we have a new one and user doesn't
-      if (profile.avatarUrl && !user.avatarUrl) {
+      if (profile.avatarUrl !== undefined && profile.avatarUrl !== null && profile.avatarUrl !== '' && (user.avatarUrl === undefined || user.avatarUrl === null || user.avatarUrl === '')) {
         await this.userRepository.updateAvatar(user.id, profile.avatarUrl);
         // user.updateAvatar(profile.avatarUrl);
       }

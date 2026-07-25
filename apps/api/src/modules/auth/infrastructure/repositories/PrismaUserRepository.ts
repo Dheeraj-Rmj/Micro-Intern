@@ -3,7 +3,7 @@ import { AUTH } from '@microintern/shared';
 import { User } from '../../domain/entities/User.entity.js';
 
 import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
-import type { PrismaClient } from '@microintern/database';
+import type { PrismaClient, OAuthProvider } from '@microintern/database';
 
 
 
@@ -34,7 +34,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async findByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null> {
     const account = await this.db.oAuthAccount.findFirst({
-      where: { provider: provider as any, providerAccountId },
+      where: { provider: provider as OAuthProvider, providerAccountId },
       include: {
         user: {
           include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
@@ -71,7 +71,7 @@ export class PrismaUserRepository implements IUserRepository {
           },
           oauthAccounts: {
             create: {
-              provider: data.provider as any,
+              provider: data.provider as OAuthProvider,
               providerAccountId: data.providerAccountId,
               accessToken: data.accessToken,
               refreshToken: data.refreshToken,
@@ -95,7 +95,7 @@ export class PrismaUserRepository implements IUserRepository {
     await this.db.oAuthAccount.create({
       data: {
         userId,
-        provider: data.provider as any,
+        provider: data.provider as OAuthProvider,
         providerAccountId: data.providerAccountId,
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,

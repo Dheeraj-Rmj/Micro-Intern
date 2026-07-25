@@ -33,11 +33,11 @@ import type { Request, Response, NextFunction } from 'express';
  */
 export class AuthController {
   // OAuth Callbacks
-  handleOAuthCallback = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  handleOAuthCallback = (req: Request, res: Response, next: NextFunction): void => {
     try {
       // The user object here is actually the result of OAuthLoginUseCase from our strategy
-      const result = req.user as unknown as Record<string, unknown>;
-      if (!result || typeof result !== "object") {
+      const result = req.user as Record<string, unknown> | undefined;
+      if (result === undefined || result === null || typeof result !== "object") {
         res.status(401).json({ success: false, error: { message: 'OAuth failed' } });
         return;
       }
