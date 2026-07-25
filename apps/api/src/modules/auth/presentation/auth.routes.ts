@@ -1,7 +1,10 @@
 import { AuditAction } from '@microintern/shared';
 import { Router } from 'express';
 
+
+
 import { getContainer } from '@/core/container.js';
+import { passport } from '@/core/passport.js';
 import { audit } from '@/middleware/audit.middleware.js';
 import { authMiddleware } from '@/middleware/auth.middleware.js';
 import { authRateLimiter } from '@/middleware/ratelimit.middleware.js';
@@ -12,8 +15,14 @@ import {
   RegisterCandidateSchema,
   RefreshTokenSchema,
 } from '../application/dtos/auth.dto.js';
+import { LoginUseCase , RefreshTokenUseCase, LogoutUseCase , RegisterCandidateUseCase } from '../application/use-cases/auth.usecase.js';
+import { OAuthLoginUseCase } from '../application/use-cases/oauth.usecase.js';
+import { PrismaUserRepository } from '../infrastructure/repositories/PrismaUserRepository.js';
+import { BcryptPasswordService, RedisSessionService } from '../infrastructure/services/AuthServices.js';
+import { JwtService } from '../infrastructure/services/JwtService.js';
 
-import type { AuthController } from './auth.controller.js';
+import { AuthController } from './auth.controller.js';
+
 
 /**
  * Auth router factory.
@@ -21,6 +30,46 @@ import type { AuthController } from './auth.controller.js';
  */
 export function createAuthRouter(): Router {
   const container = getContainer();
+  
+  // Register services lazily
+  try { container.get('IUserRepository'); } catch {
+    container.register('IUserRepository', (_infra) => new PrismaUserRepository(infra.db));
+    container.register('IJwtService', () => new JwtService());
+    container.register('IPasswordService', () => new BcryptPasswordService());
+    container.register('ISessionService', (_infra) => new RedisSessionService());
+    container.register('LoginUseCase', (_infra) => new LoginUseCase(
+      container.get('IUserRepository'),
+      container.get('IPasswordService'),
+      container.get('IJwtService'),
+      container.get('ISessionService')
+    ));
+    container.register('RegisterCandidateUseCase', (_infra) => new RegisterCandidateUseCase(
+      container.get('IUserRepository'),
+      container.get('IPasswordService'),
+      container.get('IJwtService'),
+      container.get('ISessionService')
+    ));
+    container.register('OAuthLoginUseCase', (_infra) => new OAuthLoginUseCase(
+      container.get('IUserRepository'),
+      container.get('IJwtService'),
+      container.get('ISessionService')
+    ));
+container.register('RefreshTokenUseCase', (_infra) => new RefreshTokenUseCase(
+      container.get('IJwtService'),
+      container.get('ISessionService'),
+      container.get('IUserRepository')
+    ));
+    container.register('LogoutUseCase', (_infra) => new LogoutUseCase(
+      container.get('ISessionService')
+    ));
+    container.register('AuthController', (_infra) => new AuthController(
+      container.get('LoginUseCase'),
+      container.get('RegisterCandidateUseCase'),
+      container.get('RefreshTokenUseCase'),
+      container.get('LogoutUseCase')
+    ));
+  }
+  
   const controller = container.get<AuthController>('AuthController');
 
   const router = Router();
@@ -65,5 +114,33 @@ export function createAuthRouter(): Router {
     (req, res) => { controller.me(req, res); },
   );
 
+
+  // GET /auth/linkedin
+  router.get(
+    '/linkedin',
+    passport.authenticate('linkedin', { session: false }),
+  );
+
+  // GET /auth/linkedin/callback
+  router.get(
+    '/linkedin/callback',
+    passport.authenticate('linkedin', { session: false, failureRedirect: '/login' }),
+    controller.handleOAuthCallback,
+  );
+
+  // GET /auth/microsoft
+  router.get(
+    '/microsoft',
+    passport.authenticate('microsoft', { session: false }),
+  );
+
+  // GET /auth/microsoft/callback
+  router.get(
+    '/microsoft/callback',
+    passport.authenticate('microsoft', { session: false, failureRedirect: '/login' }),
+    controller.handleOAuthCallback,
+  );
+
   return router;
+
 }

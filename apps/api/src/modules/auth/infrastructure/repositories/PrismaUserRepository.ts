@@ -24,13 +24,85 @@ export class PrismaUserRepository implements IUserRepository {
     return user !== null ? User.fromPrisma(user) : null;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+    async findByEmail(email: string): Promise<User | null> {
     const user = await this.db.user.findFirst({
       where: { email: email.toLowerCase(), deletedAt: null },
       include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
     });
     return user !== null ? User.fromPrisma(user) : null;
   }
+
+  async findByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null> {
+    const account = await this.db.oAuthAccount.findFirst({
+      where: { provider: provider as any, providerAccountId },
+      include: {
+        user: {
+          include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
+        },
+      },
+    });
+    if (!account?.user || account.user.deletedAt) return null;
+    return User.fromPrisma(account.user);
+  }
+
+  async createOAuthCandidate(data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    provider: string;
+    providerAccountId: string;
+    accessToken?: string;
+    refreshToken?: string;
+  }): Promise<User> {
+    const user = await this.db.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email: data.email.toLowerCase(),
+          firstName: data.firstName,
+          lastName: data.lastName,
+          role: 'CANDIDATE',
+          status: 'ACTIVE',
+          emailVerifiedAt: new Date(), // OAuth emails are considered verified
+          candidateProfile: {
+            create: {
+              isPublic: false,
+              isOpenToWork: true,
+            },
+          },
+          oauthAccounts: {
+            create: {
+              provider: data.provider as any,
+              providerAccountId: data.providerAccountId,
+              accessToken: data.accessToken,
+              refreshToken: data.refreshToken,
+            },
+          },
+        },
+        include: { companyMembership: false },
+      });
+      return created;
+    });
+
+    return User.fromPrisma({ ...user, companyMembership: [] });
+  }
+
+  async linkOAuthAccount(userId: string, data: {
+    provider: string;
+    providerAccountId: string;
+    accessToken?: string;
+    refreshToken?: string;
+  }): Promise<void> {
+    await this.db.oAuthAccount.create({
+      data: {
+        userId,
+        provider: data.provider as any,
+        providerAccountId: data.providerAccountId,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      },
+    });
+  }
+
 
   async createCandidate(data: {
     email: string;

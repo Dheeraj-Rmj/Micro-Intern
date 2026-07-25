@@ -53,6 +53,16 @@ const configSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string().optional(),
   GITHUB_CALLBACK_URL: z.string().url().optional(),
 
+  // OAuth — LinkedIn
+  LINKEDIN_CLIENT_ID: z.string().optional(),
+  LINKEDIN_CLIENT_SECRET: z.string().optional(),
+  LINKEDIN_CALLBACK_URL: z.string().url().optional(),
+
+  // OAuth — Microsoft
+  MICROSOFT_CLIENT_ID: z.string().optional(),
+  MICROSOFT_CLIENT_SECRET: z.string().optional(),
+  MICROSOFT_CALLBACK_URL: z.string().url().optional(),
+
   // Storage
   STORAGE_PROVIDER: z.enum(['minio', 's3']).default('minio'),
   MINIO_ENDPOINT: z.string().default('localhost'),

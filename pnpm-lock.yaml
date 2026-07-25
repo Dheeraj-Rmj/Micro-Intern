@@ -116,6 +116,12 @@ importers:
       passport-google-oauth20:
         specifier: ^2.0.0
         version: 2.0.0
+      passport-linkedin-oauth2:
+        specifier: ^2.0.0
+        version: 2.0.0
+      passport-microsoft:
+        specifier: ^2.1.0
+        version: 2.1.0
       pino:
         specifier: ^9.5.0
         version: 9.14.0
@@ -177,6 +183,12 @@ importers:
       '@types/passport-google-oauth20':
         specifier: ^2.0.14
         version: 2.0.17
+      '@types/passport-linkedin-oauth2':
+        specifier: ^1.5.6
+        version: 1.5.6
+      '@types/passport-microsoft':
+        specifier: ^2.1.1
+        version: 2.1.1
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
@@ -2427,6 +2439,12 @@ packages:
   '@types/passport-google-oauth20@2.0.17':
     resolution: {integrity: sha512-MHNOd2l7gOTCn3iS+wInPQMiukliAUvMpODO3VlXxOiwNEMSyzV7UNvAdqxSN872o8OXx1SqPDVT6tLW74AtqQ==}
 
+  '@types/passport-linkedin-oauth2@1.5.6':
+    resolution: {integrity: sha512-LlIwa+GGK8KoUHDxxwO2+5uqB6YmIHysqdLwpn+YJsjfmqFdAH+4YjhXO7riYwfYcpEr/pI+dSEDlwF0Xt+qhg==}
+
+  '@types/passport-microsoft@2.1.1':
+    resolution: {integrity: sha512-mtxO0nUt8PSAQd1MPD4JZXacYRx9MXYCTFjKyBEarmCJYyJlKHMwBRYltBEi/zpvC6xYX0LgK1AFXp+hQI+DEw==}
+
   '@types/passport-oauth2@1.8.0':
     resolution: {integrity: sha512-6//z+4orIOy/g3zx17HyQ71GSRK4bs7Sb+zFasRoc2xzlv7ZCJ+vkDBYFci8U6HY+or6Zy7ajf4mz4rK7nsWJQ==}
 
@@ -4588,6 +4606,13 @@ packages:
 
   passport-google-oauth20@2.0.0:
     resolution: {integrity: sha512-KSk6IJ15RoxuGq7D1UKK/8qKhNfzbLeLrG3gkLZ7p4A6DBCcv7xpyQwuXtWdpyR0+E0mwkpjY1VfPOhxQrKzdQ==}
+    engines: {node: '>= 0.4.0'}
+
+  passport-linkedin-oauth2@2.0.0:
+    resolution: {integrity: sha512-PnSeq2HzFQ/y1/p2RTF/kG2zhJ7kwGVg4xO3E+JNxz2aI0pFJGAqC503FVpUksYbhQdNhL6QYlK9qrEXD7ZYCg==}
+
+  passport-microsoft@2.1.0:
+    resolution: {integrity: sha512-7bOcjEmZCHg5qD55iHaMD/mgBxPtXLbqAwmKox5IsqOSEU50WJk5nQKK4lxKdBHLZ0hf+gzrFgDsTybJP18/JA==}
     engines: {node: '>= 0.4.0'}
 
   passport-oauth2@1.8.0:
@@ -7488,6 +7513,15 @@ snapshots:
       '@types/passport': 1.0.17
       '@types/passport-oauth2': 1.8.0
 
+  '@types/passport-linkedin-oauth2@1.5.6':
+    dependencies:
+      '@types/express': 5.0.6
+      '@types/passport': 1.0.17
+
+  '@types/passport-microsoft@2.1.1':
+    dependencies:
+      '@types/passport-oauth2': 1.8.0
+
   '@types/passport-oauth2@1.8.0':
     dependencies:
       '@types/express': 5.0.6
@@ -9897,6 +9931,14 @@ snapshots:
       passport-oauth2: 1.8.0
 
   passport-google-oauth20@2.0.0:
+    dependencies:
+      passport-oauth2: 1.8.0
+
+  passport-linkedin-oauth2@2.0.0:
+    dependencies:
+      passport-oauth2: 1.8.0
+
+  passport-microsoft@2.1.0:
     dependencies:
       passport-oauth2: 1.8.0
 

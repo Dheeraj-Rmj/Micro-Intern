@@ -10,6 +10,7 @@ import type { User } from '../entities/User.entity.js';
 export interface IUserRepository {
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
+  findByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null>;
   
   createCandidate(data: {
     email: string;
@@ -17,6 +18,23 @@ export interface IUserRepository {
     firstName: string;
     lastName: string;
   }): Promise<User>;
+
+  createOAuthCandidate(data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    provider: string;
+    providerAccountId: string;
+    accessToken?: string;
+    refreshToken?: string;
+  }): Promise<User>;
+
+  linkOAuthAccount(userId: string, data: {
+    provider: string;
+    providerAccountId: string;
+    accessToken?: string;
+    refreshToken?: string;
+  }): Promise<void>;
 
   createCompanyOwner(data: {
     email: string;

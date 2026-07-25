@@ -32,6 +32,28 @@ import type { Request, Response, NextFunction } from 'express';
  * Controllers are thin adapters between HTTP and application layer.
  */
 export class AuthController {
+  // OAuth Callbacks
+  handleOAuthCallback = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      // The user object here is actually the result of OAuthLoginUseCase from our strategy
+      const result = req.user as unknown as Record<string, unknown>;
+      if (!result || typeof result !== "object") {
+        res.status(401).json({ success: false, error: { message: 'OAuth failed' } });
+        return;
+      }
+      
+      // Redirect back to frontend with tokens
+      // For simplicity in this demo, we'll return JSON. In a real app we'd redirect to a frontend deep link
+      // e.g. res.redirect(`http://localhost:3000/auth/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`);
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   constructor(
     private readonly loginUseCase: LoginUseCase,
     private readonly registerCandidateUseCase: RegisterCandidateUseCase,

@@ -716,6 +716,8 @@ enum NotificationChannel {
 enum OAuthProvider {
   GOOGLE
   GITHUB
+  LINKEDIN
+  MICROSOFT
 }
 
 enum TaskType {
