@@ -34,6 +34,7 @@ export { UuidSchema, IsoDateSchema } from './types/api.types.js';
 // ── Schemas ──────────────────────────────────────────────────────────
 export * from './schemas/pagination.schema.js';
 export * from './schemas/auth.schema.js';
+export * from './schemas/candidate.schema.js';
 
 export type {
   PaginationQuery,

@@ -3,7 +3,7 @@ import express, { type Application } from 'express';
 import { pinoHttp } from 'pino-http';
 
 import { healthRouter } from '@/api/health/health.routes.js';
-import { v1Router } from '@/api/v1/index.js';
+import { createV1Router } from '@/api/v1/index.js';
 import { errorMiddleware } from '@/middleware/error.middleware.js';
 import { createRateLimitMiddleware } from '@/middleware/ratelimit.middleware.js';
 import { applySecurityMiddleware } from '@/middleware/security.middleware.js';
@@ -70,7 +70,7 @@ export function createApp(): Application {
 
   // ── Routes ───────────────────────────────────────────────────────────────
   app.use('/health', healthRouter);
-  app.use('/api/v1', v1Router);
+  app.use('/api/v1', createV1Router());
 
   // ── 404 handler ──────────────────────────────────────────────────────────
   app.use((req, res) => {

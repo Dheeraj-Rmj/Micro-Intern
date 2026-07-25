@@ -118,11 +118,15 @@ model CandidateProfile {
   headline      String?  @db.VarChar(255)
   bio           String?  @db.Text
   location      String?  @db.VarChar(255)
+  
+  // Storage
   resumeUrl     String?  @map("resume_url")
-  portfolioUrl  String?  @map("portfolio_url")
-  linkedinUrl   String?  @map("linkedin_url")
-  githubUrl     String?  @map("github_url")
-  skills        String[] // Array of skill tags
+  resumeStatus  ResumeStatus @default(UPLOADED) @map("resume_status")
+  
+  // Scoring / Computed
+  completionPercentage Int @default(0) @map("completion_percentage")
+  
+  // Job Hunting
   yearsOfExperience Int? @map("years_of_experience")
   isOpenToWork  Boolean  @default(true) @map("is_open_to_work")
   isPublic      Boolean  @default(false) @map("is_public")
@@ -132,13 +136,157 @@ model CandidateProfile {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  submissions Submission[]
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions  Submission[]
+  
+  // Candidate Graph Relations
+  aiAnalyses   CandidateAIAnalysis[]
+  skills       CandidateSkill[]
+  experiences  CandidateExperience[]
+  educations   CandidateEducation[]
+  certificates CandidateCertificate[]
+  socials      CandidateSocial[]
+  preferences  CandidatePreference?
 
   @@index([userId])
   @@index([isOpenToWork])
   @@index([deletedAt])
   @@map("candidate_profiles")
+}
+
+model CandidateAIAnalysis {
+  id               String @id @default(uuid()) @db.Uuid
+  candidateId      String @map("candidate_id") @db.Uuid
+  
+  provider         String
+  model            String
+  
+  resumeScore      Float? @map("resume_score")
+  atsScore         Float? @map("ats_score")
+  profileScore     Float? @map("profile_score")
+  summary          String? @db.Text
+  recommendations  String[]
+  
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  candidate        CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@map("candidate_ai_analyses")
+}
+
+model CandidateSkill {
+  id          String   @id @default(uuid()) @db.Uuid
+  candidateId String   @map("candidate_id") @db.Uuid
+  
+  skill       String   @db.VarChar(100)
+  level       Int      @default(1) // 1-5
+  verified    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@map("candidate_skills")
+}
+
+model CandidateExperience {
+  id          String   @id @default(uuid()) @db.Uuid
+  candidateId String   @map("candidate_id") @db.Uuid
+  
+  company     String   @db.VarChar(255)
+  role        String   @db.VarChar(255)
+  startDate   DateTime @map("start_date")
+  endDate     DateTime? @map("end_date")
+  isCurrent   Boolean  @default(false) @map("is_current")
+  description String?  @db.Text
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@map("candidate_experiences")
+}
+
+model CandidateEducation {
+  id           String   @id @default(uuid()) @db.Uuid
+  candidateId  String   @map("candidate_id") @db.Uuid
+  
+  institution  String   @db.VarChar(255)
+  degree       String   @db.VarChar(255)
+  fieldOfStudy String?  @map("field_of_study") @db.VarChar(255)
+  startDate    DateTime @map("start_date")
+  endDate      DateTime? @map("end_date")
+  
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  candidate    CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@map("candidate_educations")
+}
+
+model CandidateCertificate {
+  id           String   @id @default(uuid()) @db.Uuid
+  candidateId  String   @map("candidate_id") @db.Uuid
+  
+  name         String   @db.VarChar(255)
+  issuer       String   @db.VarChar(255)
+  issueDate    DateTime @map("issue_date")
+  expirationDate DateTime? @map("expiration_date")
+  url          String?
+  
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  candidate    CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@map("candidate_certificates")
+}
+
+model CandidateSocial {
+  id          String   @id @default(uuid()) @db.Uuid
+  candidateId String   @map("candidate_id") @db.Uuid
+  
+  platform    String   @db.VarChar(50) // 'github', 'linkedin', etc.
+  url         String   @db.Text
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@unique([candidateId, platform])
+  @@map("candidate_socials")
+}
+
+model CandidatePreference {
+  id             String   @id @default(uuid()) @db.Uuid
+  candidateId    String   @unique @map("candidate_id") @db.Uuid
+  
+  employmentType EmploymentType[] @map("employment_type")
+  workMode       WorkMode[]       @map("work_mode")
+  noticePeriod   NoticePeriod?    @map("notice_period")
+  expectedSalary String?          @map("expected_salary")
+  
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  candidate      CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_preferences")
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -601,4 +749,32 @@ enum PlanTier {
   STARTER
   GROWTH
   ENTERPRISE
+}
+
+enum ResumeStatus {
+  UPLOADED
+  PENDING_PARSE
+  PARSED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ON_SITE
+}
+
+enum NoticePeriod {
+  IMMEDIATE
+  DAYS_15
+  DAYS_30
+  DAYS_60
+  DAYS_90
 }

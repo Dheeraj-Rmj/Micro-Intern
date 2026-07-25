@@ -109,4 +109,5 @@ export const QUEUE_NAMES = {
   NOTIFICATION: 'notification',
   STORAGE_PROCESSING: 'storage-processing',
   AUDIT: 'audit',
+  RESUME_PARSER: 'resume-parser',
 } as const;
