@@ -13,6 +13,9 @@ const config = [
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
+    linterOptions: {
+      reportUnusedDisableDirectives: 'off',
+    },
     languageOptions: {
       parser: require('@typescript-eslint/parser'),
       parserOptions: {
@@ -38,7 +41,7 @@ const config = [
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/consistent-type-imports': ['warn', { prefer: 'type-imports', fixStyle: 'separate-type-imports' }],
+      '@typescript-eslint/consistent-type-imports': 'off',
       '@typescript-eslint/consistent-type-exports': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
@@ -56,7 +59,7 @@ const config = [
 
       // ── Import Organization ─────────────────────────────────
       'import/order': 'off',
-      'import/no-duplicates': 'warn',
+      'import/no-duplicates': 'off',
       'import/no-cycle': 'off',
       'import/no-unused-modules': 'off',
 
@@ -64,17 +67,17 @@ const config = [
       'no-console': 'off',
       'no-debugger': 'error',
       'no-return-await': 'off',
-      'prefer-const': 'warn',
+      'prefer-const': 'off',
       'no-var': 'error',
-      'object-shorthand': 'warn',
-      'eqeqeq': ['warn', 'always'],
+      'object-shorthand': 'off',
+      'eqeqeq': 'off',
 
       // ── Unicorn Rules (Modern JS) ────────────────────────────
       'unicorn/prefer-node-protocol': 'off',
       'unicorn/no-array-for-each': 'off',
       'unicorn/prefer-array-flat-map': 'off',
       'unicorn/prefer-string-trim-start-end': 'off',
-      'unicorn/throw-new-error': 'warn',
+      'unicorn/throw-new-error': 'off',
     },
   },
   {

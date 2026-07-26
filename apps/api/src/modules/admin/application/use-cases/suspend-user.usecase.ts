@@ -38,7 +38,7 @@ export class SuspendUserUseCase {
     log.info({ targetUserId }, 'Revoking all active Redis sessions for suspended user');
     await this.sessionService.revokeAllSessions(targetUserId);
 
-    eventBus.emit(DOMAIN_EVENTS.USER_SUSPENDED, {
+    void eventBus.emit(DOMAIN_EVENTS.USER_SUSPENDED, {
       userId: suspendedUser.id,
       email: suspendedUser.email,
       suspendedBy: adminUserId,

@@ -57,7 +57,7 @@ export class RejectCandidateUseCase {
       ...(reason !== undefined && { notes: reason }),
     });
 
-    eventBus.emit(DOMAIN_EVENTS.PIPELINE_CANDIDATE_MOVED, {
+    void eventBus.emit(DOMAIN_EVENTS.PIPELINE_CANDIDATE_MOVED, {
       entryId,
       pipelineId: pipeline.id,
       candidateUserId: entry.userId,

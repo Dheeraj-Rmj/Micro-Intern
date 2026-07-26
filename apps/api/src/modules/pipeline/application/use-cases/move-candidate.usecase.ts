@@ -53,7 +53,7 @@ export class MoveCandidateUseCase {
       ...(input.notes !== undefined && { notes: input.notes }),
     });
 
-    eventBus.emit(DOMAIN_EVENTS.PIPELINE_CANDIDATE_MOVED, {
+    void eventBus.emit(DOMAIN_EVENTS.PIPELINE_CANDIDATE_MOVED, {
       entryId,
       pipelineId: pipeline.id,
       candidateUserId: entry.userId,

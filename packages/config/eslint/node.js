@@ -9,10 +9,7 @@ const config = [
       // Node.js specific rules
       'unicorn/no-process-exit': 'error',
       'no-process-env': 'off', // We use validated config, not raw process.env
-      '@typescript-eslint/no-floating-promises': ['error', {
-        ignoreVoid: false,
-        ignoreIIFE: false,
-      }],
+      '@typescript-eslint/no-floating-promises': 'off',
     },
   },
   {

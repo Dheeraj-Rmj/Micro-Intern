@@ -27,7 +27,7 @@ export class VerifyCompanyUseCase {
     const updated = await this.adminRepository.updateCompanyStatus(companyId, EntityStatus.ACTIVE);
     log.info({ companyId, slug: updated.slug }, 'Company verified successfully');
 
-    eventBus.emit(DOMAIN_EVENTS.COMPANY_VERIFIED, {
+    void eventBus.emit(DOMAIN_EVENTS.COMPANY_VERIFIED, {
       companyId: updated.id,
       companyName: updated.name,
       verifiedBy: adminUserId,
