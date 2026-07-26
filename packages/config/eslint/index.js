@@ -21,7 +21,7 @@ const config = [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: true,
+        project: ['**/tsconfig.json', '**/tsconfig.test.json'],
       },
     },
     plugins: {
