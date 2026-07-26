@@ -47,6 +47,34 @@ const SAFETY_PATTERNS = {
 
 export class AISafetyLayer {
   /**
+   * Check user input (such as candidate trial answers) for prompt injection attempts.
+   */
+  checkInput(text: string): SafetyCheckResult {
+    const flags: string[] = [];
+
+    if (text) {
+      for (const pattern of SAFETY_PATTERNS.promptInjection) {
+        if (pattern.test(text)) {
+          flags.push('PROMPT_INJECTION_DETECTED');
+          break;
+        }
+      }
+    }
+
+    const requiresHumanReview = flags.length > 0;
+
+    if (requiresHumanReview) {
+      log.warn({ flags }, 'AI safety layer flagged input for prompt injection');
+    }
+
+    return {
+      passed: !requiresHumanReview,
+      flags,
+      requiresHumanReview,
+    };
+  }
+
+  /**
    * Check an AI response for safety violations.
    */
   checkResponse(response: AICompletionResponse): SafetyCheckResult {

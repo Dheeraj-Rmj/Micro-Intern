@@ -29,8 +29,8 @@ The ATS (Applicant Tracking System) component for companies. Tracks candidates a
 - **Candidate Detail Slide-over**: Clicking a card opens a Radix UI `Sheet` component sliding in from the right. It displays their full Submission and AI Evaluation.
 
 ## 4. Acceptance Criteria (Padmashree)
-- [ ] Recruiters can see all candidates who applied to their trial in the pipeline board.
-- [ ] Candidates automatically enter the first stage upon `TRIAL_SUBMITTED`.
-- [ ] Recruiters can move candidates between stages.
+- [x] Recruiters can see all candidates who applied to their trial in the pipeline board. (Completed in Backend via GetTrialPipelineUseCase)
+- [x] Candidates automatically enter the first stage upon `TRIAL_SUBMITTED`. (Completed in Backend via EventBus subscription to TRIAL_SUBMITTED)
+- [x] Recruiters can move candidates between stages. (Completed in Backend via MoveCandidateUseCase and RejectCandidateUseCase)
 - [ ] Moving a candidate triggers necessary notifications (e.g., if moved to "Offer", candidate gets an email).
 - [ ] Performance: The board should load efficiently even with 500+ candidates (pagination or virtualization may be required).

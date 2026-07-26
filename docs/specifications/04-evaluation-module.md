@@ -34,8 +34,8 @@ Handles candidate submissions and the AI-driven evaluation process.
 - **Review UI**: Recruiters view the candidate's raw submission side-by-side with the AI's evaluation.
 
 ## 4. Acceptance Criteria (Padmashree)
-- [ ] Candidate cannot submit after the time limit has expired (with a reasonable grace period of ~1 minute for network latency).
-- [ ] Submission correctly queues the AI evaluation job.
-- [ ] If Groq fails, the evaluation seamlessly falls back to OpenRouter/Gemini.
-- [ ] AI prompt injection attempts in candidate answers are caught by `AISafetyLayer`.
-- [ ] Candidate can view detailed feedback once evaluation status is `COMPLETED`.
+- [x] Candidate cannot submit after the time limit has expired (with a reasonable grace period of ~1 minute for network latency).
+- [x] Submission correctly queues the AI evaluation job.
+- [x] If Groq fails, the evaluation seamlessly falls back to OpenRouter/Gemini.
+- [x] AI prompt injection attempts in candidate answers are caught by `AISafetyLayer`.
+- [x] Candidate can view detailed feedback once evaluation status is `COMPLETED`.

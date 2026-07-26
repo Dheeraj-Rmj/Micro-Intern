@@ -45,6 +45,8 @@ export const DOMAIN_EVENTS = {
   COMPANY_MEMBER_JOINED: 'company.member_joined',
 
   // Trial events
+  TRIAL_CREATED: 'trial.created',
+  TRIAL_UPDATED: 'trial.updated',
   TRIAL_PUBLISHED: 'trial.published',
   TRIAL_INVITATION_SENT: 'trial.invitation_sent',
   TRIAL_STARTED: 'trial.started',
@@ -57,6 +59,10 @@ export const DOMAIN_EVENTS = {
 
   // Pipeline events
   PIPELINE_CANDIDATE_MOVED: 'pipeline.candidate_moved',
+
+  // Admin events
+  COMPANY_VERIFIED: 'company.verified',
+  USER_SUSPENDED: 'user.suspended',
 } as const;
 
 export type DomainEventName = (typeof DOMAIN_EVENTS)[keyof typeof DOMAIN_EVENTS];

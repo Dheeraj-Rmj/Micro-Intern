@@ -11,6 +11,8 @@ export {
   AIProvider,
   StorageBucket,
   AuditAction,
+  CompanySize,
+  PlanTier,
 } from './enums/status.enum.js';
 
 // ── Types ────────────────────────────────────────────────────────────
@@ -35,6 +37,7 @@ export { UuidSchema, IsoDateSchema } from './types/api.types.js';
 export * from './schemas/pagination.schema.js';
 export * from './schemas/auth.schema.js';
 export * from './schemas/candidate.schema.js';
+export * from './schemas/company.schema.js';
 
 export type {
   PaginationQuery,

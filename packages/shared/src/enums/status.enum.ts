@@ -114,3 +114,25 @@ export enum AuditAction {
   EVALUATION_STARTED = 'EVALUATION_STARTED',
   EVALUATION_COMPLETED = 'EVALUATION_COMPLETED',
 }
+
+/**
+ * Company workforce size brackets.
+ */
+export enum CompanySize {
+  SOLO = 'SOLO',
+  SMALL = 'SMALL',
+  MEDIUM = 'MEDIUM',
+  LARGE = 'LARGE',
+  ENTERPRISE = 'ENTERPRISE',
+}
+
+/**
+ * Subscription plan tiers for companies.
+ */
+export enum PlanTier {
+  FREE = 'FREE',
+  STARTER = 'STARTER',
+  GROWTH = 'GROWTH',
+  ENTERPRISE = 'ENTERPRISE',
+}
+
