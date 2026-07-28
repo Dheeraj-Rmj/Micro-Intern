@@ -1,246 +1,357 @@
-import { ArrowRight, Zap, Shield, BarChart3, Users, Code2, Briefcase } from 'lucide-react';
+'use client';
+
 import Link from 'next/link';
+import {
+  Zap,
+  ArrowRight,
+  Code2,
+  ShieldCheck,
+  Trophy,
+  CheckCircle2,
+  Sparkles,
+  Terminal,
+  FileCode,
+  Briefcase
+} from 'lucide-react';
 
-/**
- * Homepage — Candidate Portal landing page.
- *
- * This is a Server Component — all data fetching happens server-side.
- * No useEffect, no useState, no client-side loading states.
- */
-export default function HomePage() {
+export default function CandidateLandingPage() {
   return (
-    <div className="min-h-screen bg-[--color-background-default]">
-      {/* Hero Section */}
-      <header className="relative overflow-hidden">
-        {/* Background gradient */}
-        <div
-          className="absolute inset-0 -z-10"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.55 0.24 264 / 0.15), transparent)',
-          }}
-        />
-
-        {/* Nav */}
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-brand">
-              <Zap className="h-4 w-4 text-white" />
+    <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-500 selection:text-white">
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
+              <Zap className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-bold text-gradient-brand">MicroIntern</span>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold tracking-tight text-white">
+                MicroIntern
+              </span>
+              <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400">
+                Candidate Portal
+              </span>
+            </div>
+          </Link>
 
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[--color-muted-foreground]">
-            <Link href="#features" className="hover:text-[--color-foreground-default] transition-colors">Features</Link>
-            <Link href="#how-it-works" className="hover:text-[--color-foreground-default] transition-colors">How it Works</Link>
-            <Link href="/company" className="hover:text-[--color-foreground-default] transition-colors">For Companies</Link>
-          </div>
+          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex">
+            <a
+              href="#how-it-works"
+              className="transition-colors hover:text-white"
+            >
+              How It Works
+            </a>
+            <a href="#features" className="transition-colors hover:text-white">
+              Features
+            </a>
+            <a
+              href="#testimonials"
+              className="transition-colors hover:text-white"
+            >
+              Success Stories
+            </a>
+          </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Link
               href="/auth/login"
-              className="text-sm font-medium text-[--color-muted-foreground] hover:text-[--color-foreground-default] transition-colors"
+              className="text-sm font-semibold text-slate-300 transition-colors hover:text-white"
             >
-              Sign in
+              Sign In
             </Link>
             <Link
               href="/auth/register"
-              className="flex items-center gap-1.5 rounded-lg gradient-brand px-4 py-2 text-sm font-semibold text-white shadow-[--shadow-sm] transition-all hover:opacity-90 hover:shadow-[--shadow-glow]"
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-indigo-500 active:scale-[0.99]"
             >
-              Get Started
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-        </nav>
-
-        {/* Hero content */}
-        <div className="mx-auto max-w-4xl px-6 pt-24 pb-32 text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[--color-border] bg-[--color-muted] px-4 py-1.5 text-sm text-[--color-muted-foreground]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.527_0.154_162)]" />
-            Now in beta — free for candidates
-          </div>
-
-          <h1 className="mb-6 text-5xl md:text-7xl font-bold tracking-tight leading-tight">
-            Get hired by{' '}
-            <span className="text-gradient-brand">what you can do</span>
-            {', '}
-            not your resume
-          </h1>
-
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-[--color-muted-foreground] leading-relaxed">
-            MicroIntern connects talented candidates with top companies through real-world skill
-            trials. No ATS filters. No resume black holes. Just your work, speaking for itself.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/auth/register?role=candidate"
-              className="flex items-center justify-center gap-2 rounded-xl gradient-brand px-8 py-4 text-base font-semibold text-white shadow-[--shadow-md] transition-all hover:opacity-90 hover:shadow-[--shadow-glow] hover:scale-105"
-            >
-              Start as a Candidate
+              <span>Get Started</span>
               <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/auth/register?role=company"
-              className="flex items-center justify-center gap-2 rounded-xl border border-[--color-border] bg-[--color-card] px-8 py-4 text-base font-semibold text-[--color-foreground-default] shadow-[--shadow-sm] transition-all hover:bg-[--color-muted] hover:shadow-[--shadow-md]"
-            >
-              <Briefcase className="h-4 w-4" />
-              Hire with Trials
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Stats bar */}
-      <section className="border-y border-[--color-border] bg-[--color-muted]">
-        <div className="mx-auto max-w-5xl px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { label: 'Active Candidates', value: '12,000+' },
-            { label: 'Companies Hiring', value: '340+' },
-            { label: 'Trials Completed', value: '48,000+' },
-            { label: 'Avg. Time to Offer', value: '6 days' },
-          ].map(({ label, value }) => (
-            <div key={label} className="text-center">
-              <p className="text-2xl md:text-3xl font-bold text-gradient-brand">{value}</p>
-              <p className="mt-1 text-sm text-[--color-muted-foreground]">{label}</p>
-            </div>
-          ))}
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-20 pb-24 lg:pt-32 lg:pb-36">
+        {/* Background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="h-[500px] w-[800px] rounded-full bg-gradient-to-tr from-blue-600/20 via-indigo-600/15 to-purple-600/10 blur-[140px]" />
         </div>
-      </section>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* Features */}
-      <section id="features" className="mx-auto max-w-7xl px-6 py-24">
-        <div className="mb-16 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Everything you need to hire smarter
-          </h2>
-          <p className="text-[--color-muted-foreground] max-w-xl mx-auto">
-            AI-powered evaluations, structured pipelines, and real work samples — all in one platform.
+        <div className="relative z-10 mx-auto max-w-5xl px-6 text-center lg:px-12">
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-blue-400">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Candidate Portal &bull; Enterprise Architecture 2026</span>
+          </div>
+
+          <h1 className="mt-8 text-4xl font-extrabold tracking-tight text-white sm:text-6xl sm:leading-tight">
+            Skip the resume black hole.{' '}
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+              Prove your engineering skills.
+            </span>
+          </h1>
+
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
+            Complete short, verified micro-internships from top engineering
+            teams. Get evaluated on real code quality, build your portfolio, and
+            earn direct interview fast-tracks.
           </p>
-        </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="group rounded-2xl border border-[--color-border] bg-[--color-card] p-6 transition-all hover:shadow-[--shadow-lg] hover:border-[oklch(0.55_0.24_264_/_0.3)] hover:-translate-y-0.5"
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/auth/register"
+              className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-blue-600/25 transition-all hover:from-blue-500 hover:to-indigo-500 sm:w-auto"
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl gradient-brand">
-                <feature.icon className="h-5 w-5 text-white" />
+              <span>Create Candidate Account</span>
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+            <Link
+              href="/auth/login"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/80 px-8 py-4 text-base font-semibold text-slate-200 transition-colors hover:border-slate-700 hover:bg-slate-800 sm:w-auto"
+            >
+              <span>Sign In to Portal</span>
+            </Link>
+          </div>
+
+          {/* Feature highlights bar */}
+          <div className="mt-16 grid grid-cols-1 gap-6 border-y border-slate-800/80 py-8 text-left sm:grid-cols-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
+                <Code2 className="h-5 w-5" />
               </div>
-              <h3 className="mb-2 font-semibold text-[--color-foreground-default]">{feature.title}</h3>
-              <p className="text-sm text-[--color-muted-foreground] leading-relaxed">{feature.description}</p>
+              <div>
+                <h3 className="text-sm font-semibold text-white">
+                  Real Code Evaluation
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Judged on architecture, tests, and clean code
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* How it works */}
-      <section id="how-it-works" className="bg-[--color-muted] py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="mb-16 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
-            <p className="text-[--color-muted-foreground]">From trial to offer in three steps</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {steps.map((step, i) => (
-              <div key={step.title} className="text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl gradient-brand text-xl font-bold text-white shadow-[--shadow-glow]">
-                  {i + 1}
-                </div>
-                <h3 className="mb-2 font-semibold">{step.title}</h3>
-                <p className="text-sm text-[--color-muted-foreground] leading-relaxed">{step.description}</p>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                <ShieldCheck className="h-5 w-5" />
               </div>
-            ))}
+              <div>
+                <h3 className="text-sm font-semibold text-white">
+                  Verified Skill Tags
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Backed by completed trial submissions
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400">
+                <Trophy className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white">
+                  Direct Interview Fast-Track
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Bypass initial recruiter screening rounds
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-3xl px-6 py-24 text-center">
-        <h2 className="mb-4 text-3xl md:text-4xl font-bold">
-          Ready to find your next role?
-        </h2>
-        <p className="mb-8 text-[--color-muted-foreground]">
-          Join thousands of candidates who landed jobs through real work — not resume keywords.
-        </p>
-        <Link
-          href="/auth/register?role=candidate"
-          className="inline-flex items-center gap-2 rounded-xl gradient-brand px-10 py-4 text-base font-semibold text-white shadow-[--shadow-lg] transition-all hover:opacity-90 hover:shadow-[--shadow-glow] hover:scale-105"
-        >
-          Create Your Free Account
-          <ArrowRight className="h-4 w-4" />
-        </Link>
+      {/* How it Works Section */}
+      <section id="how-it-works" className="py-24 bg-slate-900/40">
+        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-400">
+              How MicroIntern Works
+            </h2>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Three steps from trial submission to job offer
+            </p>
+          </div>
+
+          <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="relative rounded-3xl border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-md transition-all hover:border-slate-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400 font-bold">
+                01
+              </div>
+              <h3 className="mt-6 text-xl font-bold text-white">
+                Browse Verified Trials
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Explore paid micro-internships and real-world engineering tasks
+                published by verified hiring managers and tech leads.
+              </p>
+              <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-blue-400">
+                <Terminal className="h-4 w-4" />
+                <span>React, Node.js, Python, PostgreSQL</span>
+              </div>
+            </div>
+
+            <div className="relative rounded-3xl border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-md transition-all hover:border-slate-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-400 font-bold">
+                02
+              </div>
+              <h3 className="mt-6 text-xl font-bold text-white">
+                Submit Production Artifacts
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Write clean architecture code, attach unit tests, and submit
+                your solution directly to our automated evaluation pipeline.
+              </p>
+              <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-indigo-400">
+                <FileCode className="h-4 w-4" />
+                <span>Automated syntax &amp; lint verification</span>
+              </div>
+            </div>
+
+            <div className="relative rounded-3xl border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-md transition-all hover:border-slate-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-400 font-bold">
+                03
+              </div>
+              <h3 className="mt-6 text-xl font-bold text-white">
+                Get Hired Faster
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Top-scoring candidates bypass HR screens and receive immediate
+                interview invitations with engineering decision-makers.
+              </p>
+              <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-purple-400">
+                <Briefcase className="h-4 w-4" />
+                <span>Direct pipeline stage progression</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof / Testimonials Section */}
+      <section id="testimonials" className="py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-blue-400">
+              Success Stories
+            </h2>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Candidates hired through real code, not keywords
+            </p>
+          </div>
+
+          <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-bold">
+                  SR
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-white">
+                    Sarah Jenkins
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    Senior Frontend Engineer
+                  </p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                &ldquo;Traditional resume screeners always filtered me out
+                because of my non-traditional background. MicroIntern allowed me
+                to demonstrate my React 19 and Next.js skills directly.&rdquo;
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 font-bold">
+                  AK
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-white">
+                    Alex Kumar
+                  </h4>
+                  <p className="text-xs text-slate-400">Full-Stack Engineer</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                &ldquo;The trial evaluation score gave me verified proof of my
+                backend architecture abilities. Within 10 days I had two formal
+                job offers.&rdquo;
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 font-bold">
+                  ML
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-white">
+                    Marcus Lee
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    TypeScript &amp; Node.js Engineer
+                  </p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                &ldquo;Clean architecture and strict TypeScript are what I love
+                building. MicroIntern connected me with a team that values high
+                engineering standards.&rdquo;
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Banner */}
+      <section className="relative overflow-hidden py-20 bg-gradient-to-b from-slate-950 to-slate-900 border-t border-slate-800">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            Ready to prove your engineering talent?
+          </h2>
+          <p className="mt-4 text-base text-slate-400">
+            Join thousands of candidates using MicroIntern to bypass recruiter
+            screens and land their next engineering role.
+          </p>
+          <div className="mt-8 flex justify-center gap-4">
+            <Link
+              href="/auth/register"
+              className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-blue-600/25 transition-all hover:from-blue-500 hover:to-indigo-500"
+            >
+              <span>Create Free Candidate Account</span>
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[--color-border] py-12">
-        <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-slate-800/80 bg-slate-950 py-12 text-sm text-slate-400">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 sm:flex-row lg:px-12">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md gradient-brand">
-              <Zap className="h-3 w-3 text-white" />
-            </div>
-            <span className="font-semibold text-sm">MicroIntern</span>
+            <Zap className="h-5 w-5 text-blue-500" />
+            <span className="font-bold text-white">
+              MicroIntern Candidate Portal
+            </span>
           </div>
-          <p className="text-sm text-[--color-muted-foreground]">
-            © {new Date().getFullYear()} MicroIntern. All rights reserved.
+          <p className="text-xs">
+            &copy; {new Date().getFullYear()} MicroIntern Inc. All rights
+            reserved. Candidate-First Public Architecture.
           </p>
-          <div className="flex gap-6 text-sm text-[--color-muted-foreground]">
-            <Link href="/privacy" className="hover:text-[--color-foreground-default] transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-[--color-foreground-default] transition-colors">Terms</Link>
-            <Link href="/contact" className="hover:text-[--color-foreground-default] transition-colors">Contact</Link>
+          <div className="flex gap-6 text-xs">
+            <Link href="/terms" className="hover:text-white">
+              Terms of Service
+            </Link>
+            <Link href="/privacy" className="hover:text-white">
+              Privacy Policy
+            </Link>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-const features = [
-  {
-    icon: Code2,
-    title: 'Real-World Trials',
-    description: 'Complete short, paid skill trials crafted by the company. Show what you can actually do.',
-  },
-  {
-    icon: Zap,
-    title: 'AI Evaluation',
-    description: 'Instant, consistent, unbiased evaluation of every submission. Get feedback in minutes.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Transparent Pipeline',
-    description: 'Always know where you stand. No ghosting, no black holes — real-time status updates.',
-  },
-  {
-    icon: Shield,
-    title: 'Bias-Free Screening',
-    description: 'Evaluated on your work, not your name, school, or resume format.',
-  },
-  {
-    icon: Users,
-    title: 'Company Profiles',
-    description: 'Research companies before applying. See team culture, tech stack, and trial difficulty.',
-  },
-  {
-    icon: Briefcase,
-    title: 'Direct Offers',
-    description: 'Top performers receive direct offers. Skip the interview rounds.',
-  },
-];
-
-const steps = [
-  {
-    title: 'Browse & Apply',
-    description: 'Discover trials from companies hiring for roles that match your skills and interests.',
-  },
-  {
-    title: 'Complete the Trial',
-    description: 'Submit your work in 2-7 days. Our AI gives you detailed feedback immediately.',
-  },
-  {
-    title: 'Get Hired',
-    description: 'Top submissions go straight to the company. The best candidates get fast-tracked to offers.',
-  },
-];

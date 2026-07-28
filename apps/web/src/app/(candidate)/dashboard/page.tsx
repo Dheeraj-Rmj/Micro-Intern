@@ -1,47 +1,87 @@
-import { SkeletonCard } from '@/components/ui/Skeleton';
+'use client';
 
-import type { Metadata } from 'next';
+import Link from 'next/link';
+import {
+  Sparkles,
+  ArrowRight,
+  PlusCircle,
+  FileText,
+  UserCheck
+} from 'lucide-react';
+import { useAuthStore } from '@/stores/auth.store';
+import {
+  StatCards,
+  ProfileCompletionCard,
+  ResumeStatusCard,
+  RecentApplicationsTable,
+  UpcomingInterviewsCard
+} from '@/features/dashboard/components';
 
-export const metadata: Metadata = { title: 'Dashboard' };
-
-/**
- * Candidate dashboard home page.
- * Server Component — data fetched server-side.
- */
 export default function CandidateDashboardPage() {
+  const user = useAuthStore((state) => state.user);
+
   return (
-    <div className="animate-fade-in space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-[--color-foreground-default]">
-          Your Dashboard
-        </h1>
-        <p className="text-[--color-muted-foreground] text-sm mt-1">
-          Track your trials, applications, and progress.
-        </p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {['Trials Completed', 'Applications', 'Interviews', 'Offers'].map((stat) => (
-          <div
-            key={stat}
-            className="rounded-2xl border border-[--color-border] bg-[--color-card] p-5"
-          >
-            <p className="text-xs text-[--color-muted-foreground] font-medium">{stat}</p>
-            <p className="mt-2 text-3xl font-bold text-gradient-brand">0</p>
+    <div className="space-y-8">
+      {/* Welcome Banner */}
+      <div className="flex flex-col justify-between gap-4 border-b border-slate-800/80 pb-6 sm:flex-row sm:items-center">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-blue-400">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Candidate Engineering Portal</span>
           </div>
-        ))}
-      </div>
+          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+            Welcome back, {user?.firstName ?? 'Candidate'}!
+          </h1>
+          <p className="mt-1 text-sm text-slate-400">
+            Here is your verified micro-internship evaluation summary and trial
+            activity.
+          </p>
+        </div>
 
-      {/* Recent activity — skeleton placeholders */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4">Available Trials</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <SkeletonCard key={i} />
-          ))}
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/resume"
+            className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:border-slate-700 hover:text-white"
+          >
+            <FileText className="h-3.5 w-3.5 text-indigo-400" />
+            <span>Update Resume</span>
+          </Link>
+
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-xs font-semibold text-slate-300 transition-colors hover:border-slate-700 hover:text-white"
+          >
+            <UserCheck className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Edit Profile</span>
+          </Link>
+
+          <Link
+            href="/applications"
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-indigo-500 active:scale-[0.99]"
+          >
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span>Browse Trials</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
       </div>
+
+      {/* Top statistics metrics */}
+      <StatCards />
+
+      {/* Main dashboard cards grid */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <ProfileCompletionCard />
+          <ResumeStatusCard />
+        </div>
+        <div className="lg:col-span-1">
+          <UpcomingInterviewsCard />
+        </div>
+      </div>
+
+      {/* Recent trial applications table */}
+      <RecentApplicationsTable />
     </div>
   );
 }
