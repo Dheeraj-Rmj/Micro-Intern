@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 import {
   Zap,
   ArrowRight,
@@ -11,8 +11,8 @@ import {
   Sparkles,
   Terminal,
   FileCode,
-  Briefcase
-} from 'lucide-react';
+  Briefcase,
+} from "lucide-react";
 
 export default function CandidateLandingPage() {
   return (
@@ -20,17 +20,12 @@ export default function CandidateLandingPage() {
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
-          >
+          <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
               <Zap className="h-5 w-5 text-white" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold tracking-tight text-white">
-                MicroIntern
-              </span>
+              <span className="text-xl font-bold tracking-tight text-white">MicroIntern</span>
               <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400">
                 Candidate Portal
               </span>
@@ -38,19 +33,13 @@ export default function CandidateLandingPage() {
           </Link>
 
           <nav className="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex">
-            <a
-              href="#how-it-works"
-              className="transition-colors hover:text-white"
-            >
+            <a href="#how-it-works" className="transition-colors hover:text-white">
               How It Works
             </a>
             <a href="#features" className="transition-colors hover:text-white">
               Features
             </a>
-            <a
-              href="#testimonials"
-              className="transition-colors hover:text-white"
-            >
+            <a href="#testimonials" className="transition-colors hover:text-white">
               Success Stories
             </a>
           </nav>
@@ -88,16 +77,15 @@ export default function CandidateLandingPage() {
           </div>
 
           <h1 className="mt-8 text-4xl font-extrabold tracking-tight text-white sm:text-6xl sm:leading-tight">
-            Skip the resume black hole.{' '}
+            Skip the resume black hole.{" "}
             <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
               Prove your engineering skills.
             </span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-            Complete short, verified micro-internships from top engineering
-            teams. Get evaluated on real code quality, build your portfolio, and
-            earn direct interview fast-tracks.
+            Complete short, verified micro-internships from top engineering teams. Get evaluated on
+            real code quality, build your portfolio, and earn direct interview fast-tracks.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -123,9 +111,7 @@ export default function CandidateLandingPage() {
                 <Code2 className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">
-                  Real Code Evaluation
-                </h3>
+                <h3 className="text-sm font-semibold text-white">Real Code Evaluation</h3>
                 <p className="text-xs text-slate-400">
                   Judged on architecture, tests, and clean code
                 </p>
@@ -137,12 +123,8 @@ export default function CandidateLandingPage() {
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">
-                  Verified Skill Tags
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Backed by completed trial submissions
-                </p>
+                <h3 className="text-sm font-semibold text-white">Verified Skill Tags</h3>
+                <p className="text-xs text-slate-400">Backed by completed assessment submissions</p>
               </div>
             </div>
 
@@ -151,12 +133,8 @@ export default function CandidateLandingPage() {
                 <Trophy className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">
-                  Direct Interview Fast-Track
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Bypass initial recruiter screening rounds
-                </p>
+                <h3 className="text-sm font-semibold text-white">Direct Interview Fast-Track</h3>
+                <p className="text-xs text-slate-400">Bypass initial recruiter screening rounds</p>
               </div>
             </div>
           </div>
@@ -171,7 +149,7 @@ export default function CandidateLandingPage() {
               How MicroIntern Works
             </h2>
             <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Three steps from trial submission to job offer
+              Three steps from assessment submission to job offer
             </p>
           </div>
 
@@ -180,12 +158,10 @@ export default function CandidateLandingPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400 font-bold">
                 01
               </div>
-              <h3 className="mt-6 text-xl font-bold text-white">
-                Browse Verified Trials
-              </h3>
+              <h3 className="mt-6 text-xl font-bold text-white">Browse Verified Assessments</h3>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                Explore paid micro-internships and real-world engineering tasks
-                published by verified hiring managers and tech leads.
+                Explore paid micro-internships and real-world engineering tasks published by
+                verified hiring managers and tech leads.
               </p>
               <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-blue-400">
                 <Terminal className="h-4 w-4" />
@@ -197,12 +173,10 @@ export default function CandidateLandingPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-400 font-bold">
                 02
               </div>
-              <h3 className="mt-6 text-xl font-bold text-white">
-                Submit Production Artifacts
-              </h3>
+              <h3 className="mt-6 text-xl font-bold text-white">Submit Production Artifacts</h3>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                Write clean architecture code, attach unit tests, and submit
-                your solution directly to our automated evaluation pipeline.
+                Write clean architecture code, attach unit tests, and submit your solution directly
+                to our automated evaluation pipeline.
               </p>
               <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-indigo-400">
                 <FileCode className="h-4 w-4" />
@@ -214,12 +188,10 @@ export default function CandidateLandingPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-400 font-bold">
                 03
               </div>
-              <h3 className="mt-6 text-xl font-bold text-white">
-                Get Hired Faster
-              </h3>
+              <h3 className="mt-6 text-xl font-bold text-white">Get Hired Faster</h3>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                Top-scoring candidates bypass HR screens and receive immediate
-                interview invitations with engineering decision-makers.
+                Top-scoring candidates bypass HR screens and receive immediate interview invitations
+                with engineering decision-makers.
               </p>
               <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-purple-400">
                 <Briefcase className="h-4 w-4" />
@@ -249,18 +221,14 @@ export default function CandidateLandingPage() {
                   SR
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-white">
-                    Sarah Jenkins
-                  </h4>
-                  <p className="text-xs text-slate-400">
-                    Senior Frontend Engineer
-                  </p>
+                  <h4 className="text-sm font-semibold text-white">Sarah Jenkins</h4>
+                  <p className="text-xs text-slate-400">Senior Frontend Engineer</p>
                 </div>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-slate-300">
-                &ldquo;Traditional resume screeners always filtered me out
-                because of my non-traditional background. MicroIntern allowed me
-                to demonstrate my React 19 and Next.js skills directly.&rdquo;
+                &ldquo;Traditional resume screeners always filtered me out because of my
+                non-traditional background. MicroIntern allowed me to demonstrate my React 19 and
+                Next.js skills directly.&rdquo;
               </p>
             </div>
 
@@ -270,16 +238,13 @@ export default function CandidateLandingPage() {
                   AK
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-white">
-                    Alex Kumar
-                  </h4>
+                  <h4 className="text-sm font-semibold text-white">Alex Kumar</h4>
                   <p className="text-xs text-slate-400">Full-Stack Engineer</p>
                 </div>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-slate-300">
-                &ldquo;The trial evaluation score gave me verified proof of my
-                backend architecture abilities. Within 10 days I had two formal
-                job offers.&rdquo;
+                &ldquo;The assessment evaluation score gave me verified proof of my backend
+                architecture abilities. Within 10 days I had two formal job offers.&rdquo;
               </p>
             </div>
 
@@ -289,18 +254,13 @@ export default function CandidateLandingPage() {
                   ML
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-white">
-                    Marcus Lee
-                  </h4>
-                  <p className="text-xs text-slate-400">
-                    TypeScript &amp; Node.js Engineer
-                  </p>
+                  <h4 className="text-sm font-semibold text-white">Marcus Lee</h4>
+                  <p className="text-xs text-slate-400">TypeScript &amp; Node.js Engineer</p>
                 </div>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-slate-300">
-                &ldquo;Clean architecture and strict TypeScript are what I love
-                building. MicroIntern connected me with a team that values high
-                engineering standards.&rdquo;
+                &ldquo;Clean architecture and strict TypeScript are what I love building.
+                MicroIntern connected me with a team that values high engineering standards.&rdquo;
               </p>
             </div>
           </div>
@@ -314,8 +274,8 @@ export default function CandidateLandingPage() {
             Ready to prove your engineering talent?
           </h2>
           <p className="mt-4 text-base text-slate-400">
-            Join thousands of candidates using MicroIntern to bypass recruiter
-            screens and land their next engineering role.
+            Join thousands of candidates using MicroIntern to bypass recruiter screens and land
+            their next engineering role.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Link
@@ -334,13 +294,11 @@ export default function CandidateLandingPage() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 sm:flex-row lg:px-12">
           <div className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-blue-500" />
-            <span className="font-bold text-white">
-              MicroIntern Candidate Portal
-            </span>
+            <span className="font-bold text-white">MicroIntern Candidate Portal</span>
           </div>
           <p className="text-xs">
-            &copy; {new Date().getFullYear()} MicroIntern Inc. All rights
-            reserved. Candidate-First Public Architecture.
+            &copy; {new Date().getFullYear()} MicroIntern Inc. All rights reserved. Candidate-First
+            Public Architecture.
           </p>
           <div className="flex gap-6 text-xs">
             <Link href="/terms" className="hover:text-white">

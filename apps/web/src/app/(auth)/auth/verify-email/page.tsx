@@ -1,34 +1,23 @@
-'use client';
+"use client";
 
-import { Suspense, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
-import {
-  Loader2,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  Mail
-} from 'lucide-react';
-import { authService } from '@/features/auth/services/auth.service';
+import { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, CheckCircle2, AlertCircle, ArrowRight, Mail } from "lucide-react";
+import { authService } from "@/features/auth/services/auth.service";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token') ?? '';
+  const token = searchParams.get("token") ?? "";
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const verifyMutation = useMutation({
-    mutationFn: (verificationToken: string) =>
-      authService.verifyEmail(verificationToken),
+    mutationFn: (verificationToken: string) => authService.verifyEmail(verificationToken),
     onError: (error: unknown) => {
       let message =
-        'Verification link is invalid or expired. Please request a new verification email.';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error
-      ) {
+        "Verification link is invalid or expired. Please request a new verification email.";
+      if (typeof error === "object" && error !== null && "response" in error) {
         const errObj = error as {
           response?: { data?: { message?: string } };
         };
@@ -37,7 +26,7 @@ function VerifyEmailContent() {
         }
       }
       setErrorMessage(message);
-    }
+    },
   });
 
   useEffect(() => {
@@ -52,12 +41,10 @@ function VerifyEmailContent() {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
           <Mail className="h-6 w-6" />
         </div>
-        <h3 className="mt-4 text-lg font-semibold text-white">
-          Verify your email address
-        </h3>
+        <h3 className="mt-4 text-lg font-semibold text-white">Verify your email address</h3>
         <p className="mt-2 text-sm text-slate-400">
-          We have sent an email with a verification link to your inbox. Please
-          click the link to activate your candidate portal access.
+          We have sent an email with a verification link to your inbox. Please click the link to
+          activate your candidate portal access.
         </p>
         <Link
           href="/auth/login"
@@ -73,9 +60,7 @@ function VerifyEmailContent() {
     return (
       <div className="flex flex-col items-center py-8 text-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        <p className="mt-4 text-sm font-medium text-slate-300">
-          Verifying your email address...
-        </p>
+        <p className="mt-4 text-sm font-medium text-slate-300">Verifying your email address...</p>
       </div>
     );
   }
@@ -86,11 +71,9 @@ function VerifyEmailContent() {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-400">
           <AlertCircle className="h-6 w-6" />
         </div>
-        <h3 className="mt-4 text-lg font-semibold text-white">
-          Verification Failed
-        </h3>
+        <h3 className="mt-4 text-lg font-semibold text-white">Verification Failed</h3>
         <p className="mt-2 text-sm text-slate-400">
-          {errorMessage ?? 'Unable to verify your email address.'}
+          {errorMessage ?? "Unable to verify your email address."}
         </p>
         <Link
           href="/auth/login"
@@ -107,12 +90,10 @@ function VerifyEmailContent() {
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
         <CheckCircle2 className="h-6 w-6" />
       </div>
-      <h3 className="mt-4 text-lg font-semibold text-white">
-        Email Verified Successfully
-      </h3>
+      <h3 className="mt-4 text-lg font-semibold text-white">Email Verified Successfully</h3>
       <p className="mt-2 text-sm text-slate-400">
-        Your candidate account is now fully verified. You can sign in and start
-        browsing trials.
+        Your candidate account is now fully verified. You can sign in and start browsing
+        assessments.
       </p>
       <Link
         href="/auth/login"

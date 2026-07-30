@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   User,
@@ -10,43 +10,43 @@ import {
   Bell,
   Settings,
   LogOut,
-  Sparkles
-} from 'lucide-react';
-import { useUIStore } from '@/stores/ui.store';
-import { useAuthStore } from '@/stores/auth.store';
-import { authService } from '@/features/auth/services/auth.service';
+  Sparkles,
+} from "lucide-react";
+import { useUIStore } from "@/stores/ui.store";
+import { useAuthStore } from "@/stores/auth.store";
+import { authService } from "@/features/auth/services/auth.service";
 
 const navItems = [
   {
-    name: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard
+    name: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
   },
   {
-    name: 'My Profile',
-    href: '/profile',
-    icon: User
+    name: "My Profile",
+    href: "/profile",
+    icon: User,
   },
   {
-    name: 'Resume & Skills',
-    href: '/resume',
-    icon: FileText
+    name: "Resume & Skills",
+    href: "/resume",
+    icon: FileText,
   },
   {
-    name: 'Applications',
-    href: '/applications',
-    icon: Briefcase
+    name: "Applications",
+    href: "/applications",
+    icon: Briefcase,
   },
   {
-    name: 'Notifications',
-    href: '/notifications',
-    icon: Bell
+    name: "Notifications",
+    href: "/notifications",
+    icon: Bell,
   },
   {
-    name: 'Settings',
-    href: '/settings',
-    icon: Settings
-  }
+    name: "Settings",
+    href: "/settings",
+    icon: Settings,
+  },
 ];
 
 export function Sidebar() {
@@ -61,7 +61,7 @@ export function Sidebar() {
       // ignore
     } finally {
       clearAuth();
-      window.location.href = '/auth/login';
+      window.location.href = "/auth/login";
     }
   };
 
@@ -78,15 +78,14 @@ export function Sidebar() {
             <span>Candidate Verified</span>
           </div>
           <p className="mt-1 text-xs text-slate-400">
-            Your profile is ready for Series A to Enterprise trials.
+            Your profile is ready for Series A to Enterprise assessments.
           </p>
         </div>
 
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
             return (
               <Link
@@ -94,14 +93,12 @@ export function Sidebar() {
                 href={item.href}
                 className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 text-white border border-blue-500/30 shadow-sm'
-                    : 'text-slate-400 hover:bg-slate-900/60 hover:text-slate-200'
+                    ? "bg-gradient-to-r from-blue-600/20 to-indigo-600/10 text-white border border-blue-500/30 shadow-sm"
+                    : "text-slate-400 hover:bg-slate-900/60 hover:text-slate-200"
                 }`}
               >
                 <Icon
-                  className={`h-4 w-4 shrink-0 ${
-                    isActive ? 'text-blue-400' : 'text-slate-500'
-                  }`}
+                  className={`h-4 w-4 shrink-0 ${isActive ? "text-blue-400" : "text-slate-500"}`}
                 />
                 <span>{item.name}</span>
               </Link>

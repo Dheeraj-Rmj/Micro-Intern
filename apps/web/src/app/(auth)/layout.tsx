@@ -1,13 +1,13 @@
-import { ReactNode } from 'react';
-import Link from 'next/link';
-import type { Metadata } from 'next';
-import { Zap, CheckCircle2, ShieldCheck, Award } from 'lucide-react';
-import { GuestRoute } from '@/components/auth/GuestRoute';
+import { ReactNode } from "react";
+import Link from "next/link";
+import type { Metadata } from "next";
+import { Zap, CheckCircle2, ShieldCheck, Award } from "lucide-react";
+import { GuestRoute } from "@/components/auth/GuestRoute";
 
 export const metadata: Metadata = {
-  title: 'Candidate Authentication | MicroIntern',
+  title: "Candidate Authentication | MicroIntern",
   description:
-    'Sign in or register for the MicroIntern Candidate Portal to browse micro-internships and trial evaluations.'
+    "Sign in or register for the MicroIntern Candidate Portal to browse micro-internships and assessment evaluations.",
 };
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -26,9 +26,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
                 <Zap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-white">
-                MicroIntern
-              </span>
+              <span className="text-xl font-bold tracking-tight text-white">MicroIntern</span>
             </Link>
             <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-400">
               Candidate Portal
@@ -41,16 +39,15 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                 Prove your skills with real-world micro-internships.
               </h1>
               <p className="text-base text-slate-400">
-                Skip traditional resume screening. Complete short paid trials,
-                showcase your engineering capabilities, and get hired by top
-                companies.
+                Skip traditional resume screening. Complete short paid assessments, showcase your
+                engineering capabilities, and get hired by top companies.
               </p>
             </div>
 
             <div className="space-y-4 pt-4">
               <div className="flex items-center gap-3 text-sm text-slate-300">
                 <CheckCircle2 className="h-5 w-5 text-blue-400" />
-                <span>100% verified employer trial evaluations</span>
+                <span>100% verified employer assessment evaluations</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-slate-300">
                 <ShieldCheck className="h-5 w-5 text-blue-400" />
@@ -64,9 +61,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
             <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-md">
               <p className="text-sm italic text-slate-300">
-                &ldquo;MicroIntern allowed me to demonstrate my React and
-                TypeScript skills directly. I received a senior role offer
-                within two weeks of completing my trial.&rdquo;
+                &ldquo;MicroIntern allowed me to demonstrate my React and TypeScript skills
+                directly. I received a senior role offer within two weeks of completing my
+                assessment.&rdquo;
               </p>
               <div className="mt-4 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">
@@ -74,9 +71,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-white">Sarah R.</p>
-                  <p className="text-xs text-slate-400">
-                    Senior Frontend Engineer
-                  </p>
+                  <p className="text-xs text-slate-400">Senior Frontend Engineer</p>
                 </div>
               </div>
             </div>
@@ -85,22 +80,13 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <div className="relative z-10 flex items-center justify-between text-xs text-slate-500">
             <p>&copy; 2026 MicroIntern Inc. All rights reserved.</p>
             <div className="flex gap-4">
-              <Link
-                href="/"
-                className="transition-colors hover:text-slate-300"
-              >
+              <Link href="/" className="transition-colors hover:text-slate-300">
                 Home
               </Link>
-              <Link
-                href="/terms"
-                className="transition-colors hover:text-slate-300"
-              >
+              <Link href="/terms" className="transition-colors hover:text-slate-300">
                 Terms
               </Link>
-              <Link
-                href="/privacy"
-                className="transition-colors hover:text-slate-300"
-              >
+              <Link href="/privacy" className="transition-colors hover:text-slate-300">
                 Privacy
               </Link>
             </div>

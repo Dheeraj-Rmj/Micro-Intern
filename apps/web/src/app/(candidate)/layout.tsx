@@ -1,12 +1,11 @@
-import { ReactNode } from 'react';
-import type { Metadata } from 'next';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Topbar, Sidebar } from '@/components/layout';
+import { ReactNode } from "react";
+import type { Metadata } from "next";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { Topbar, Sidebar } from "@/components/layout";
 
 export const metadata: Metadata = {
-  title: 'Candidate Dashboard | MicroIntern',
-  description:
-    'Manage your micro-internships, skills, resume, and trial applications.'
+  title: "Candidate Dashboard | MicroIntern",
+  description: "Manage your micro-internships, skills, resume, and assessment applications.",
 };
 
 export default function CandidateLayout({ children }: { children: ReactNode }) {

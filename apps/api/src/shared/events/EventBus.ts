@@ -2,8 +2,8 @@
  * In-process Domain Event Bus.
  *
  * Design: Modules communicate through domain events, not direct calls.
- * This preserves module isolation — the Trial module doesn't import from the
- * Notification module; it emits a TrialSubmitted event, and the Notification
+ * This preserves module isolation — the Assessment module doesn't import from the
+ * Notification module; it emits a AssessmentSubmitted event, and the Notification
  * module subscribes independently.
  *
  * This is NOT a message queue. Events are synchronous within the same process.
@@ -11,10 +11,10 @@
  *
  * Usage:
  *   // Publisher (in use case):
- *   eventBus.emit('trial.submitted', { submissionId, candidateId, trialId });
+ *   eventBus.emit('assessment.submitted', { submissionId, candidateId, assessmentId });
  *
  *   // Subscriber (in another module's bootstrap):
- *   eventBus.on('trial.submitted', async (payload) => {
+ *   eventBus.on('assessment.submitted', async (payload) => {
  *     await notificationService.notifyEvaluationPending(payload);
  *   });
  */
@@ -34,35 +34,44 @@ export type EventHandler<T = unknown> = (event: DomainEvent<T>) => Promise<void>
  */
 export const DOMAIN_EVENTS = {
   // Auth events
-  USER_REGISTERED: 'user.registered',
-  USER_LOGGED_IN: 'user.logged_in',
-  USER_EMAIL_VERIFIED: 'user.email_verified',
-  USER_PASSWORD_CHANGED: 'user.password_changed',
+  USER_REGISTERED: "user.registered",
+  USER_LOGGED_IN: "user.logged_in",
+  USER_EMAIL_VERIFIED: "user.email_verified",
+  USER_PASSWORD_CHANGED: "user.password_changed",
 
   // Company events
-  COMPANY_CREATED: 'company.created',
-  COMPANY_MEMBER_INVITED: 'company.member_invited',
-  COMPANY_MEMBER_JOINED: 'company.member_joined',
+  COMPANY_CREATED: "company.created",
+  COMPANY_MEMBER_INVITED: "company.member_invited",
+  COMPANY_MEMBER_JOINED: "company.member_joined",
 
-  // Trial events
-  TRIAL_CREATED: 'trial.created',
-  TRIAL_UPDATED: 'trial.updated',
-  TRIAL_PUBLISHED: 'trial.published',
-  TRIAL_INVITATION_SENT: 'trial.invitation_sent',
-  TRIAL_STARTED: 'trial.started',
-  TRIAL_SUBMITTED: 'trial.submitted',
+  // Assessment events
+  ASSESSMENT_CREATED: "assessment.created",
+  ASSESSMENT_UPDATED: "assessment.updated",
+  ASSESSMENT_PUBLISHED: "assessment.published",
+  ASSESSMENT_INVITATION_SENT: "assessment.invitation_sent",
+  ASSESSMENT_STARTED: "assessment.started",
+  ASSESSMENT_SUBMITTED: "assessment.submitted",
 
   // Evaluation events
-  EVALUATION_STARTED: 'evaluation.started',
-  EVALUATION_COMPLETED: 'evaluation.completed',
-  EVALUATION_REQUIRES_REVIEW: 'evaluation.requires_review',
+  EVALUATION_STARTED: "evaluation.started",
+  EVALUATION_COMPLETED: "evaluation.completed",
+  EVALUATION_REQUIRES_REVIEW: "evaluation.requires_review",
 
   // Pipeline events
-  PIPELINE_CANDIDATE_MOVED: 'pipeline.candidate_moved',
+  PIPELINE_CANDIDATE_MOVED: "pipeline.candidate_moved",
 
   // Admin events
-  COMPANY_VERIFIED: 'company.verified',
-  USER_SUSPENDED: 'user.suspended',
+  COMPANY_VERIFIED: "company.verified",
+  USER_SUSPENDED: "user.suspended",
+
+  // Phase 10 events
+  CANDIDATE_CREATED: "candidate.created",
+  CANDIDATE_REJECTED: "candidate.rejected",
+  CANDIDATE_HIRED: "candidate.hired",
+  CANDIDATE_JOURNEY_STATUS_CHANGED: "candidate.journey_status_changed",
+  INTERVIEW_COMPLETED: "interview.completed",
+  REFERRAL_CREATED: "referral.created",
+  AI_ANALYSIS_COMPLETED: "ai.analysis_completed",
 } as const;
 
 export type DomainEventName = (typeof DOMAIN_EVENTS)[keyof typeof DOMAIN_EVENTS];
@@ -113,11 +122,8 @@ class EventBus {
           await handler(event);
         } catch (error) {
           // Import logger lazily to avoid circular dependencies
-          const { logger } = await import('../../core/logger.js');
-          logger.error(
-            { err: error, event: eventName },
-            'Domain event handler threw an error',
-          );
+          const { logger } = await import("../../core/logger.js");
+          logger.error({ err: error, event: eventName }, "Domain event handler threw an error");
         }
       }),
     );

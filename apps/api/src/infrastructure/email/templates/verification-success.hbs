@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Verified — MicroIntern</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; overflow: hidden; }
+    .header { background: linear-gradient(135deg, #059669, #10b981); padding: 40px 32px; text-align: center; }
+    .logo { font-size: 20px; font-weight: 800; color: #fff; }
+    .logo span { color: #d1fae5; }
+    .body { padding: 40px 32px; text-align: center; }
+    h1 { font-size: 24px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; }
+    p { font-size: 15px; line-height: 1.7; color: #94a3b8; margin-bottom: 24px; }
+    .btn { display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff; text-decoration: none; border-radius: 10px; font-size: 15px; font-weight: 600; margin-bottom: 24px; }
+    .footer { padding: 24px 32px; border-top: 1px solid #1e293b; text-align: center; }
+    .footer p { font-size: 12px; color: #475569; margin-bottom: 4px; }
+    .footer a { color: #60a5fa; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <div class="logo">Micro<span>Intern</span></div>
+      </div>
+      <div class="body">
+        <h1>You're verified! ✅</h1>
+        <p>Hi <strong>{{firstName}}</strong>, your email address has been successfully verified. Your account is now fully active.</p>
+        <a href="{{loginUrl}}" class="btn">Go to Dashboard</a>
+        <p style="font-size:13px; color:#64748b;">Ready to show off your skills? Complete your candidate profile to get matched with trials.</p>
+      </div>
+      <div class="footer">
+        <p>© {{year}} MicroIntern Inc. · <a href="{{frontendUrl}}">microintern.io</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

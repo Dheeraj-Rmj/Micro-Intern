@@ -1,9 +1,10 @@
-import { prisma } from './database.js';
-import { getRedisClient } from './redis.js';
+import { prisma } from "./database.js";
+import { getRedisClient } from "./redis.js";
+import { AIFallbackEngine } from "../infrastructure/ai/AIFallbackEngine.js";
+import { createAIProviders } from "../infrastructure/ai/index.js";
 
-import type { PrismaClient } from '@microintern/database';
-import type { Redis } from 'ioredis';
-
+import type { PrismaClient } from "@microintern/database";
+import type { Redis } from "ioredis";
 
 /**
  * Application Service Container — Manual Factory Pattern.
@@ -20,7 +21,7 @@ import type { Redis } from 'ioredis';
  *
  * Pattern: Lazy singletons. Each service is created once on first access.
  * Infrastructure (prisma, redis) are injected at container creation time.
- * 
+ *
  * Feature modules register their own services into this container
  * via the registerModule() pattern. See each module's index.ts.
  */
@@ -28,6 +29,7 @@ import type { Redis } from 'ioredis';
 export type InfrastructureDependencies = {
   db: PrismaClient;
   redis: Redis;
+  aiEngine: AIFallbackEngine;
 };
 
 class ApplicationContainer {
@@ -43,10 +45,7 @@ class ApplicationContainer {
     this._factories.set(key, factory);
   }
 
-  private readonly _factories = new Map<
-    string,
-    (infra: InfrastructureDependencies) => unknown
-  >();
+  private readonly _factories = new Map<string, (infra: InfrastructureDependencies) => unknown>();
 
   /**
    * Retrieve a registered service by key.
@@ -58,7 +57,7 @@ class ApplicationContainer {
       if (factory === undefined) {
         throw new Error(
           `Service "${key}" not registered in ApplicationContainer. ` +
-          `Did you forget to call registerModule()?`,
+            `Did you forget to call registerModule()?`,
         );
       }
       this.services.set(key, factory(this.infra));
@@ -92,6 +91,7 @@ export function createContainer(): ApplicationContainer {
   containerInstance = new ApplicationContainer({
     db: prisma,
     redis: getRedisClient(),
+    aiEngine: new AIFallbackEngine(createAIProviders()),
   });
 
   return containerInstance;
@@ -99,7 +99,7 @@ export function createContainer(): ApplicationContainer {
 
 export function getContainer(): ApplicationContainer {
   if (containerInstance === null) {
-    throw new Error('Container not initialized. Call createContainer() first.');
+    throw new Error("Container not initialized. Call createContainer() first.");
   }
   return containerInstance;
 }

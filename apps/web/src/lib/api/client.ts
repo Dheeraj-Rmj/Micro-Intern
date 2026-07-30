@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } from "axios";
 
 /**
  * API Client — Axios instance with authentication interceptors.
@@ -16,8 +16,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } f
  * This dual approach prevents both XSS and CSRF attacks simultaneously.
  */
 
-const API_BASE_URL =
-  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001/api/v1';
+const API_BASE_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:3001";
 
 // In-memory access token store
 // This module is a singleton — token persists across component unmounts
@@ -44,7 +43,7 @@ function createApiClient(): AxiosInstance {
   const client = axios.create({
     baseURL: API_BASE_URL,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     withCredentials: true, // Send httpOnly cookie with every request (for refresh token)
     timeout: 30_000,
@@ -54,7 +53,7 @@ function createApiClient(): AxiosInstance {
   client.interceptors.request.use(
     (config) => {
       if (accessToken !== null) {
-        config.headers['Authorization'] = `Bearer ${accessToken}`;
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
       }
       return config;
     },
@@ -72,8 +71,8 @@ function createApiClient(): AxiosInstance {
         error.response?.status === 401 &&
         originalRequest._retried !== true &&
         // Don't retry refresh/login endpoints — prevents infinite loop
-        !(originalRequest.url?.includes('/auth/refresh') ?? false) &&
-        !(originalRequest.url?.includes('/auth/login') ?? false)
+        !(originalRequest.url?.includes("/auth/refresh") ?? false) &&
+        !(originalRequest.url?.includes("/auth/login") ?? false)
       ) {
         originalRequest._retried = true;
 
@@ -91,7 +90,7 @@ function createApiClient(): AxiosInstance {
             setAccessToken(newToken);
             // Retry original request with new token
             if (originalRequest.headers !== undefined) {
-              originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
             }
             return await client(originalRequest);
           }
@@ -99,8 +98,8 @@ function createApiClient(): AxiosInstance {
           refreshPromise = null;
           // Refresh failed — clear token and redirect to login
           clearAccessToken();
-          if (typeof window !== 'undefined') {
-            window.location.href = '/auth/login?reason=session_expired';
+          if (typeof window !== "undefined") {
+            window.location.href = "/auth/login?reason=session_expired";
           }
         }
       }
@@ -117,7 +116,7 @@ function createApiClient(): AxiosInstance {
  */
 async function silentRefresh(): Promise<string | null> {
   const response = await axios.post<{ data: { accessToken: string } }>(
-    `${API_BASE_URL}/auth/refresh`,
+    `${API_BASE_URL}/api/v1/auth/refresh`,
     {},
     { withCredentials: true },
   );
@@ -133,12 +132,20 @@ export class ApiError extends Error {
   public readonly code: string;
   public readonly details?: Array<{ field?: string; message: string }>;
 
-  constructor(axiosError: AxiosError<{ error: { code: string; message: string; details?: Array<{ field?: string; message: string }> } }>) {
+  constructor(
+    axiosError: AxiosError<{
+      error: {
+        code: string;
+        message: string;
+        details?: Array<{ field?: string; message: string }>;
+      };
+    }>,
+  ) {
     const apiError = axiosError.response?.data?.error;
-    super(apiError?.message ?? axiosError.message ?? 'Request failed');
-    this.name = 'ApiError';
+    super(apiError?.message ?? axiosError.message ?? "Request failed");
+    this.name = "ApiError";
     this.status = axiosError.response?.status ?? 500;
-    this.code = apiError?.code ?? 'NETWORK_ERROR';
+    this.code = apiError?.code ?? "NETWORK_ERROR";
     if (apiError?.details) {
       this.details = apiError.details;
     }
@@ -175,9 +182,20 @@ export function isAxiosError(error: unknown): error is AxiosError {
 
 export function toApiError(error: unknown): ApiError {
   if (isAxiosError(error)) {
-    return new ApiError(error as AxiosError<{ error: { code: string; message: string; details?: Array<{ field?: string; message: string }> } }>);
+    return new ApiError(
+      error as AxiosError<{
+        error: {
+          code: string;
+          message: string;
+          details?: Array<{ field?: string; message: string }>;
+        };
+      }>,
+    );
   }
-  const generic = new ApiError({ message: String(error), response: undefined } as unknown as AxiosError<{ error: { code: string; message: string } }>);
+  const generic = new ApiError({
+    message: String(error),
+    response: undefined,
+  } as unknown as AxiosError<{ error: { code: string; message: string } }>);
   return generic;
 }
 

@@ -1,9 +1,9 @@
-import { hasRoleOrHigher } from '@microintern/shared';
+import { hasRoleOrHigher } from "@microintern/shared";
 
-import { ForbiddenError, UnauthorizedError } from '@/shared/errors/index.js';
+import { ForbiddenError, UnauthorizedError } from "@/shared/errors/index.js";
 
-import type { Role } from '@microintern/shared';
-import type { Request, Response, NextFunction } from 'express';
+import type { Role } from "@microintern/shared";
+import type { Request, Response, NextFunction } from "express";
 
 /**
  * RBAC — Role-Based Access Control middleware.
@@ -39,7 +39,7 @@ export function requireRole(minimumRole: Role) {
       next(
         new ForbiddenError(
           `This action requires ${minimumRole} role or higher`,
-          'AUTH_INSUFFICIENT_PERMISSIONS',
+          "AUTH_INSUFFICIENT_PERMISSIONS",
         ),
       );
       return;
@@ -53,7 +53,7 @@ export function requireRole(minimumRole: Role) {
  * Require that the user has one of the allowed roles.
  *
  * @example
- * router.get('/trials', authMiddleware, requireAnyRole(['RECRUITER', 'COMPANY_OWNER']), ...);
+ * router.get('/assessments', authMiddleware, requireAnyRole(['RECRUITER', 'COMPANY_OWNER']), ...);
  */
 export function requireAnyRole(allowedRoles: Role[]) {
   return (req: Request, _res: Response, next: NextFunction): void => {
@@ -65,7 +65,7 @@ export function requireAnyRole(allowedRoles: Role[]) {
     const userRole = req.user.role as Role;
 
     // SUPER_ADMIN always passes
-    if (userRole === 'SUPER_ADMIN') {
+    if (userRole === "SUPER_ADMIN") {
       next();
       return;
     }
@@ -73,8 +73,8 @@ export function requireAnyRole(allowedRoles: Role[]) {
     if (!allowedRoles.includes(userRole)) {
       next(
         new ForbiddenError(
-          `This action is restricted to: ${allowedRoles.join(', ')}`,
-          'AUTH_ROLE_MISMATCH',
+          `This action is restricted to: ${allowedRoles.join(", ")}`,
+          "AUTH_ROLE_MISMATCH",
         ),
       );
       return;
@@ -100,19 +100,24 @@ export function requireCompanyMember() {
     const userRole = req.user.role as Role;
 
     // Platform staff bypass company scoping
-    if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+    if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
       next();
       return;
     }
 
-    const companyId = req.params['companyId'];
+    const companyId = req.params["companyId"];
     if (companyId === undefined) {
-      next(new ForbiddenError('Company context required'));
+      next(new ForbiddenError("Company context required"));
       return;
     }
 
     if (req.user.companyId !== companyId) {
-      next(new ForbiddenError('You do not have access to this company', 'AUTH_INSUFFICIENT_PERMISSIONS'));
+      next(
+        new ForbiddenError(
+          "You do not have access to this company",
+          "AUTH_INSUFFICIENT_PERMISSIONS",
+        ),
+      );
       return;
     }
 
@@ -135,14 +140,19 @@ export function requireSelf() {
 
     const userRole = req.user.role as Role;
 
-    if (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') {
+    if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
       next();
       return;
     }
 
-    const resourceUserId = req.params['userId'];
+    const resourceUserId = req.params["userId"];
     if (req.user.id !== resourceUserId) {
-      next(new ForbiddenError('You can only access your own resources', 'AUTH_INSUFFICIENT_PERMISSIONS'));
+      next(
+        new ForbiddenError(
+          "You can only access your own resources",
+          "AUTH_INSUFFICIENT_PERMISSIONS",
+        ),
+      );
       return;
     }
 

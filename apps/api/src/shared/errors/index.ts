@@ -11,13 +11,13 @@ export {
   ServiceUnavailableError,
   isAppError,
   isOperationalError,
-} from './AppError.js';
+} from "./AppError.js";
 
 export {
   DomainError,
-  TrialDomainError,
+  AssessmentDomainError,
   EvaluationDomainError,
   AuthDomainError,
   CandidateDomainError,
   CompanyDomainError,
-} from './DomainError.js';
+} from "./DomainError.js";

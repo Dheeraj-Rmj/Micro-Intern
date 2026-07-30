@@ -1,35 +1,29 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import {
-  Sparkles,
-  CheckCircle2,
-  Circle,
-  ArrowRight,
-  ShieldCheck
-} from 'lucide-react';
+import Link from "next/link";
+import { Sparkles, CheckCircle2, Circle, ArrowRight, ShieldCheck } from "lucide-react";
 
 const completionSteps = [
   {
-    title: 'Candidate Account & Email Verification',
+    title: "Candidate Account & Email Verification",
     completed: true,
-    description: 'Basic account security verified.'
+    description: "Basic account security verified.",
   },
   {
-    title: 'Resume Parse & Skill Taxonomy Mapping',
+    title: "Resume Parse & Skill Taxonomy Mapping",
     completed: true,
-    description: '14 engineering competencies identified.'
+    description: "14 engineering competencies identified.",
   },
   {
-    title: 'First Verified Trial Submission',
+    title: "First Verified Assessment Submission",
     completed: true,
-    description: 'Clean Architecture React 19 challenge scored.'
+    description: "Clean Architecture React 19 challenge scored.",
   },
   {
-    title: 'GitHub & Portfolio URL Linking',
+    title: "GitHub & Portfolio URL Linking",
     completed: false,
-    description: 'Connect repository profile for automatic evaluation.'
-  }
+    description: "Connect repository profile for automatic evaluation.",
+  },
 ];
 
 export function ProfileCompletionCard() {
@@ -43,17 +37,13 @@ export function ProfileCompletionCard() {
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">
-              Candidate Readiness Score
-            </h3>
+            <h3 className="text-base font-bold text-white">Candidate Readiness Score</h3>
             <p className="text-xs text-slate-400">
               Boost your score to unlock Senior &amp; Staff fast-track pipelines
             </p>
           </div>
         </div>
-        <span className="text-2xl font-extrabold text-white">
-          {percentage}%
-        </span>
+        <span className="text-2xl font-extrabold text-white">{percentage}%</span>
       </div>
 
       {/* Progress bar */}
@@ -67,10 +57,7 @@ export function ProfileCompletionCard() {
       {/* Checklist */}
       <div className="mt-6 space-y-3">
         {completionSteps.map((step) => (
-          <div
-            key={step.title}
-            className="flex items-start gap-3 rounded-xl bg-slate-950/40 p-3"
-          >
+          <div key={step.title} className="flex items-start gap-3 rounded-xl bg-slate-950/40 p-3">
             {step.completed ? (
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
             ) : (
@@ -79,7 +66,7 @@ export function ProfileCompletionCard() {
             <div className="flex-1">
               <p
                 className={`text-xs font-semibold ${
-                  step.completed ? 'text-slate-200' : 'text-slate-400'
+                  step.completed ? "text-slate-200" : "text-slate-400"
                 }`}
               >
                 {step.title}
@@ -91,10 +78,7 @@ export function ProfileCompletionCard() {
                 Done
               </span>
             ) : (
-              <Link
-                href="/profile"
-                className="text-xs font-semibold text-blue-400 hover:underline"
-              >
+              <Link href="/profile" className="text-xs font-semibold text-blue-400 hover:underline">
                 Complete
               </Link>
             )}

@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { CandidateUser } from '@/features/auth/types';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { CandidateUser } from "@/features/auth/types";
 
 interface AuthState {
   user: CandidateUser | null;
@@ -22,20 +22,20 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       accessToken: null,
       isAuthenticated: false,
-      isLoading: true,
+      isLoading: false,
 
       setAuth: (user: CandidateUser, accessToken: string) => {
         set({
           user,
           accessToken,
           isAuthenticated: true,
-          isLoading: false
+          isLoading: false,
         });
       },
 
       updateUser: (partialUser: Partial<CandidateUser>) => {
         set((state) => ({
-          user: state.user ? { ...state.user, ...partialUser } : null
+          user: state.user ? { ...state.user, ...partialUser } : null,
         }));
       },
 
@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           accessToken: null,
           isAuthenticated: false,
-          isLoading: false
+          isLoading: false,
         });
       },
 
@@ -65,18 +65,18 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           accessToken: null,
           isAuthenticated: false,
-          isLoading: false
+          isLoading: false,
         });
-      }
+      },
     }),
     {
-      name: 'microintern-candidate-auth',
+      name: "microintern-candidate-auth",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,
-        isAuthenticated: state.isAuthenticated
-      })
-    }
-  )
+        isAuthenticated: state.isAuthenticated,
+      }),
+    },
+  ),
 );

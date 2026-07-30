@@ -1,10 +1,10 @@
-import { createModuleLogger } from '@/core/logger.js';
+import { createModuleLogger } from "@/core/logger.js";
 
-import { AIProviderError } from './interfaces/IAIProvider.js';
+import { AIProviderError } from "./interfaces/IAIProvider.js";
 
-import type { AICompletionResponse } from './interfaces/IAIProvider.js';
+import type { AICompletionResponse } from "./interfaces/IAIProvider.js";
 
-const log = createModuleLogger('AISafetyLayer');
+const log = createModuleLogger("AISafetyLayer");
 
 /**
  * AI Safety Layer — content safety filter applied to all AI responses.
@@ -47,7 +47,7 @@ const SAFETY_PATTERNS = {
 
 export class AISafetyLayer {
   /**
-   * Check user input (such as candidate trial answers) for prompt injection attempts.
+   * Check user input (such as candidate assessment answers) for prompt injection attempts.
    */
   checkInput(text: string): SafetyCheckResult {
     const flags: string[] = [];
@@ -55,7 +55,7 @@ export class AISafetyLayer {
     if (text) {
       for (const pattern of SAFETY_PATTERNS.promptInjection) {
         if (pattern.test(text)) {
-          flags.push('PROMPT_INJECTION_DETECTED');
+          flags.push("PROMPT_INJECTION_DETECTED");
           break;
         }
       }
@@ -64,7 +64,7 @@ export class AISafetyLayer {
     const requiresHumanReview = flags.length > 0;
 
     if (requiresHumanReview) {
-      log.warn({ flags }, 'AI safety layer flagged input for prompt injection');
+      log.warn({ flags }, "AI safety layer flagged input for prompt injection");
     }
 
     return {
@@ -82,18 +82,18 @@ export class AISafetyLayer {
 
     // Check for empty or very short responses
     if (response.content.trim().length < 10) {
-      flags.push('RESPONSE_TOO_SHORT');
+      flags.push("RESPONSE_TOO_SHORT");
     }
 
     // Check finish reason
-    if (response.finishReason === 'content_filter') {
-      flags.push('CONTENT_FILTER_TRIGGERED');
+    if (response.finishReason === "content_filter") {
+      flags.push("CONTENT_FILTER_TRIGGERED");
     }
 
     // Check for prompt injection in response
     for (const pattern of SAFETY_PATTERNS.promptInjection) {
       if (pattern.test(response.content)) {
-        flags.push('PROMPT_INJECTION_DETECTED');
+        flags.push("PROMPT_INJECTION_DETECTED");
         break;
       }
     }
@@ -103,7 +103,7 @@ export class AISafetyLayer {
     if (requiresHumanReview) {
       log.warn(
         { flags, provider: response.provider, model: response.model },
-        'AI safety check flagged response',
+        "AI safety check flagged response",
       );
     }
 
@@ -122,7 +122,7 @@ export class AISafetyLayer {
     try {
       parsed = JSON.parse(content);
     } catch {
-      throw new AIProviderError('groq' as never, 'AI returned invalid JSON', false);
+      throw new AIProviderError("groq" as never, "AI returned invalid JSON", false);
     }
 
     return schema.parse(parsed);

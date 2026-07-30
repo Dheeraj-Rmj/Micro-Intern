@@ -72,9 +72,10 @@ jobs:
         run: pnpm test:unit
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: always()
         with:
+          fail_ci_if_error: false
           flags: unit
           token: ${{ secrets.CODECOV_TOKEN }}
 

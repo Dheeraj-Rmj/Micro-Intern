@@ -26,24 +26,24 @@ datasource db {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  role      Role
-  status    EntityStatus @default(PENDING_VERIFICATION)
+  id     String       @id @default(uuid()) @db.Uuid
+  email  String       @unique
+  role   Role
+  status EntityStatus @default(PENDING_VERIFICATION)
 
   // Profile
-  firstName String   @map("first_name")
-  lastName  String   @map("last_name")
-  avatarUrl String?  @map("avatar_url")
+  firstName String  @map("first_name")
+  lastName  String  @map("last_name")
+  avatarUrl String? @map("avatar_url")
   phone     String?
 
   // Security
-  passwordHash      String?   @map("password_hash")
-  emailVerifiedAt   DateTime? @map("email_verified_at")
-  lastLoginAt       DateTime? @map("last_login_at")
-  lastLoginIp       String?   @map("last_login_ip")
-  loginAttempts     Int       @default(0) @map("login_attempts")
-  lockedUntil       DateTime? @map("locked_until")
+  passwordHash    String?   @map("password_hash")
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  lastLoginAt     DateTime? @map("last_login_at")
+  lastLoginIp     String?   @map("last_login_ip")
+  loginAttempts   Int       @default(0) @map("login_attempts")
+  lockedUntil     DateTime? @map("locked_until")
 
   // Audit
   createdAt DateTime  @default(now()) @map("created_at")
@@ -54,12 +54,14 @@ model User {
   deletedBy String?   @map("deleted_by") @db.Uuid
 
   // Relations
-  oauthAccounts     OAuthAccount[]
-  sessions          Session[]
-  candidateProfile  CandidateProfile?
-  companyMembership CompanyMember[]
-  auditLogsCreated  AuditLog[] @relation("AuditLogCreatedBy")
-  notifications     Notification[]
+  oauthAccounts      OAuthAccount[]
+  sessions           Session[]
+  candidateProfile   CandidateProfile?
+  companyMembership  CompanyMember[]
+  auditLogsCreated   AuditLog[]          @relation("AuditLogCreatedBy")
+  notifications      Notification[]
+  verificationTokens VerificationToken[]
+  sentInvitations    Invitation[]        @relation("InvitationSentBy")
 
   @@index([email])
   @@index([role])
@@ -68,18 +70,59 @@ model User {
   @@map("users")
 }
 
+/// Email verification and password-reset tokens.
+/// Tokens are stored HASHED — plain token is emailed to the user.
+/// Tokens are single-use and time-limited.
+model VerificationToken {
+  id        String                @id @default(uuid()) @db.Uuid
+  userId    String                @map("user_id") @db.Uuid
+  type      VerificationTokenType
+  tokenHash String                @map("token_hash") @db.Text
+  expiresAt DateTime              @map("expires_at")
+  usedAt    DateTime?             @map("used_at")
+  createdAt DateTime              @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("verification_tokens")
+}
+
+/// Invitation records for recruiter and admin onboarding.
+/// No public registration — accounts are created through invitations only.
+model Invitation {
+  id          String    @id @default(uuid()) @db.Uuid
+  email       String
+  role        Role
+  companyId   String?   @map("company_id") @db.Uuid
+  invitedById String    @map("invited_by_id") @db.Uuid
+  tokenHash   String    @map("token_hash") @db.Text
+  expiresAt   DateTime  @map("expires_at")
+  acceptedAt  DateTime? @map("accepted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  invitedBy User @relation("InvitationSentBy", fields: [invitedById], references: [id])
+
+  @@index([email])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("invitations")
+}
+
 model OAuthAccount {
-  id           String      @id @default(uuid()) @db.Uuid
-  userId       String      @map("user_id") @db.Uuid
-  provider     OAuthProvider
-  providerAccountId String @map("provider_account_id")
-  accessToken  String?     @map("access_token") @db.Text
-  refreshToken String?     @map("refresh_token") @db.Text
-  expiresAt    DateTime?   @map("expires_at")
-  tokenType    String?     @map("token_type")
-  scope        String?
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  provider          OAuthProvider
+  providerAccountId String        @map("provider_account_id")
+  accessToken       String?       @map("access_token") @db.Text
+  refreshToken      String?       @map("refresh_token") @db.Text
+  expiresAt         DateTime?     @map("expires_at")
+  tokenType         String?       @map("token_type")
+  scope             String?
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -89,15 +132,15 @@ model OAuthAccount {
 }
 
 model Session {
-  id           String    @id @default(uuid()) @db.Uuid
-  userId       String    @map("user_id") @db.Uuid
-  refreshTokenHash String @map("refresh_token_hash") @db.Text
-  ipAddress    String?   @map("ip_address")
-  userAgent    String?   @map("user_agent") @db.Text
-  expiresAt    DateTime  @map("expires_at")
-  revokedAt    DateTime? @map("revoked_at")
-  lastUsedAt   DateTime  @default(now()) @map("last_used_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @map("user_id") @db.Uuid
+  refreshTokenHash String    @map("refresh_token_hash") @db.Text
+  ipAddress        String?   @map("ip_address")
+  userAgent        String?   @map("user_agent") @db.Text
+  expiresAt        DateTime  @map("expires_at")
+  revokedAt        DateTime? @map("revoked_at")
+  lastUsedAt       DateTime  @default(now()) @map("last_used_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -111,25 +154,28 @@ model Session {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 model CandidateProfile {
-  id       String @id @default(uuid()) @db.Uuid
-  userId   String @unique @map("user_id") @db.Uuid
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @map("user_id") @db.Uuid
 
   // Profile content
-  headline      String?  @db.VarChar(255)
-  bio           String?  @db.Text
-  location      String?  @db.VarChar(255)
-  
+  headline String? @db.VarChar(255)
+  bio      String? @db.Text
+  location String? @db.VarChar(255)
+
   // Storage
-  resumeUrl     String?  @map("resume_url")
-  resumeStatus  ResumeStatus @default(UPLOADED) @map("resume_status")
-  
+  resumeUrl    String?      @map("resume_url")
+  resumeStatus ResumeStatus @default(UPLOADED) @map("resume_status")
+
   // Scoring / Computed
   completionPercentage Int @default(0) @map("completion_percentage")
-  
+
   // Job Hunting
-  yearsOfExperience Int? @map("years_of_experience")
-  isOpenToWork  Boolean  @default(true) @map("is_open_to_work")
-  isPublic      Boolean  @default(false) @map("is_public")
+  yearsOfExperience Int?    @map("years_of_experience")
+  isOpenToWork      Boolean @default(true) @map("is_open_to_work")
+  isPublic          Boolean @default(false) @map("is_public")
+
+  // Phase 3 OS
+  globalRank Int? @map("global_rank")
 
   // Audit
   createdAt DateTime  @default(now()) @map("created_at")
@@ -137,17 +183,18 @@ model CandidateProfile {
   deletedAt DateTime? @map("deleted_at")
 
   // Relations
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  submissions  Submission[]
-  
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
   // Candidate Graph Relations
-  aiAnalyses   CandidateAIAnalysis[]
-  skills       CandidateSkill[]
-  experiences  CandidateExperience[]
-  educations   CandidateEducation[]
-  certificates CandidateCertificate[]
-  socials      CandidateSocial[]
-  preferences  CandidatePreference?
+  aiAnalyses          CandidateAIAnalysis[]
+  skills              CandidateSkill[]
+  experiences         CandidateExperience[]
+  educations          CandidateEducation[]
+  certificates        CandidateCertificate[]
+  socials             CandidateSocial[]
+  preferences         CandidatePreference?
+  TalentPoolCandidate TalentPoolCandidate[]
 
   @@index([userId])
   @@index([isOpenToWork])
@@ -156,135 +203,136 @@ model CandidateProfile {
 }
 
 model CandidateAIAnalysis {
-  id               String @id @default(uuid()) @db.Uuid
-  candidateId      String @map("candidate_id") @db.Uuid
-  
-  provider         String
-  model            String
-  
-  resumeScore      Float? @map("resume_score")
-  atsScore         Float? @map("ats_score")
-  profileScore     Float? @map("profile_score")
-  summary          String? @db.Text
-  recommendations  String[]
-  
-  createdAt        DateTime @default(now()) @map("created_at")
+  id          String @id @default(uuid()) @db.Uuid
+  candidateId String @map("candidate_id") @db.Uuid
 
-  candidate        CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  provider String
+  model    String
+
+  resumeScore     Float?   @map("resume_score")
+  atsScore        Float?   @map("ats_score")
+  profileScore    Float?   @map("profile_score")
+  summary         String?  @db.Text
+  recommendations String[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@index([candidateId])
   @@map("candidate_ai_analyses")
 }
 
 model CandidateSkill {
-  id          String   @id @default(uuid()) @db.Uuid
-  candidateId String   @map("candidate_id") @db.Uuid
-  
-  skill       String   @db.VarChar(100)
-  level       Int      @default(1) // 1-5
-  verified    Boolean  @default(false)
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id          String @id @default(uuid()) @db.Uuid
+  candidateId String @map("candidate_id") @db.Uuid
 
-  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  skill            String           @db.VarChar(100)
+  level            Int              @default(1) // 1-5
+  verified         Boolean          @default(false)
+  proficiencyLevel SkillProficiency @default(BEGINNER) @map("proficiency_level")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@index([candidateId])
   @@map("candidate_skills")
 }
 
 model CandidateExperience {
-  id          String   @id @default(uuid()) @db.Uuid
-  candidateId String   @map("candidate_id") @db.Uuid
-  
-  company     String   @db.VarChar(255)
-  role        String   @db.VarChar(255)
-  startDate   DateTime @map("start_date")
-  endDate     DateTime? @map("end_date")
-  isCurrent   Boolean  @default(false) @map("is_current")
-  description String?  @db.Text
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id          String @id @default(uuid()) @db.Uuid
+  candidateId String @map("candidate_id") @db.Uuid
 
-  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  company     String    @db.VarChar(255)
+  role        String    @db.VarChar(255)
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  isCurrent   Boolean   @default(false) @map("is_current")
+  description String?   @db.Text
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@index([candidateId])
   @@map("candidate_experiences")
 }
 
 model CandidateEducation {
-  id           String   @id @default(uuid()) @db.Uuid
-  candidateId  String   @map("candidate_id") @db.Uuid
-  
-  institution  String   @db.VarChar(255)
-  degree       String   @db.VarChar(255)
-  fieldOfStudy String?  @map("field_of_study") @db.VarChar(255)
-  startDate    DateTime @map("start_date")
-  endDate      DateTime? @map("end_date")
-  
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  id          String @id @default(uuid()) @db.Uuid
+  candidateId String @map("candidate_id") @db.Uuid
 
-  candidate    CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  institution  String    @db.VarChar(255)
+  degree       String    @db.VarChar(255)
+  fieldOfStudy String?   @map("field_of_study") @db.VarChar(255)
+  startDate    DateTime  @map("start_date")
+  endDate      DateTime? @map("end_date")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@index([candidateId])
   @@map("candidate_educations")
 }
 
 model CandidateCertificate {
-  id           String   @id @default(uuid()) @db.Uuid
-  candidateId  String   @map("candidate_id") @db.Uuid
-  
-  name         String   @db.VarChar(255)
-  issuer       String   @db.VarChar(255)
-  issueDate    DateTime @map("issue_date")
-  expirationDate DateTime? @map("expiration_date")
-  url          String?
-  
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  id          String @id @default(uuid()) @db.Uuid
+  candidateId String @map("candidate_id") @db.Uuid
 
-  candidate    CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  name           String    @db.VarChar(255)
+  issuer         String    @db.VarChar(255)
+  issueDate      DateTime  @map("issue_date")
+  expirationDate DateTime? @map("expiration_date")
+  url            String?
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@index([candidateId])
   @@map("candidate_certificates")
 }
 
 model CandidateSocial {
-  id          String   @id @default(uuid()) @db.Uuid
-  candidateId String   @map("candidate_id") @db.Uuid
-  
-  platform    String   @db.VarChar(50) // 'github', 'linkedin', etc.
-  url         String   @db.Text
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id          String @id @default(uuid()) @db.Uuid
+  candidateId String @map("candidate_id") @db.Uuid
 
-  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  platform String @db.VarChar(50) // 'github', 'linkedin', etc.
+  url      String @db.Text
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@unique([candidateId, platform])
   @@map("candidate_socials")
 }
 
 model CandidatePreference {
-  id             String   @id @default(uuid()) @db.Uuid
-  candidateId    String   @unique @map("candidate_id") @db.Uuid
-  
+  id          String @id @default(uuid()) @db.Uuid
+  candidateId String @unique @map("candidate_id") @db.Uuid
+
   employmentType EmploymentType[] @map("employment_type")
   workMode       WorkMode[]       @map("work_mode")
   noticePeriod   NoticePeriod?    @map("notice_period")
   expectedSalary String?          @map("expected_salary")
-  
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
 
-  candidate      CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@map("candidate_preferences")
 }
@@ -294,22 +342,22 @@ model CandidatePreference {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 model Company {
-  id          String       @id @default(uuid()) @db.Uuid
-  name        String       @db.VarChar(255)
-  slug        String       @unique @db.VarChar(100)
-  status      EntityStatus @default(PENDING_VERIFICATION)
+  id     String       @id @default(uuid()) @db.Uuid
+  name   String       @db.VarChar(255)
+  slug   String       @unique @db.VarChar(100)
+  status EntityStatus @default(PENDING_VERIFICATION)
 
   // Identity
-  logoUrl     String?  @map("logo_url")
-  websiteUrl  String?  @map("website_url")
-  description String?  @db.Text
-  industry    String?  @db.VarChar(100)
+  logoUrl     String?      @map("logo_url")
+  websiteUrl  String?      @map("website_url")
+  description String?      @db.Text
+  industry    String?      @db.VarChar(100)
   size        CompanySize?
-  location    String?  @db.VarChar(255)
-  linkedinUrl String?  @map("linkedin_url")
+  location    String?      @db.VarChar(255)
+  linkedinUrl String?      @map("linkedin_url")
 
   // Billing
-  planTier    PlanTier @default(FREE) @map("plan_tier")
+  planTier PlanTier @default(FREE) @map("plan_tier")
 
   // Audit
   createdAt DateTime  @default(now()) @map("created_at")
@@ -319,8 +367,9 @@ model Company {
   deletedAt DateTime? @map("deleted_at")
   deletedBy String?   @map("deleted_by") @db.Uuid
 
-  members CompanyMember[]
-  trials  Trial[]
+  members     CompanyMember[]
+  assessments Assessment[]
+  TalentPool  TalentPool[]
 
   @@index([slug])
   @@index([status])
@@ -329,15 +378,15 @@ model Company {
 }
 
 model CompanyMember {
-  id        String      @id @default(uuid()) @db.Uuid
-  companyId String      @map("company_id") @db.Uuid
-  userId    String      @map("user_id") @db.Uuid
-  role      Role        // COMPANY_OWNER or RECRUITER
-  invitedBy String?     @map("invited_by") @db.Uuid
-  joinedAt  DateTime?   @map("joined_at")
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @updatedAt @map("updated_at")
-  deletedAt DateTime?   @map("deleted_at")
+  id        String    @id @default(uuid()) @db.Uuid
+  companyId String    @map("company_id") @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  role      Role // COMPANY_OWNER or RECRUITER
+  invitedBy String?   @map("invited_by") @db.Uuid
+  joinedAt  DateTime? @map("joined_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -350,80 +399,109 @@ model CompanyMember {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// TRIAL DOMAIN
+// ASSESSMENT DOMAIN
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-model Trial {
-  id          String      @id @default(uuid()) @db.Uuid
-  companyId   String      @map("company_id") @db.Uuid
-  createdById String      @map("created_by_id") @db.Uuid
-  status      TrialStatus @default(DRAFT)
+model Assessment {
+  id          String           @id @default(uuid()) @db.Uuid
+  companyId   String           @map("company_id") @db.Uuid
+  createdById String           @map("created_by_id") @db.Uuid
+  status      AssessmentStatus @default(DRAFT)
 
   // Content
-  title           String   @db.VarChar(255)
-  slug            String   @db.VarChar(100)
-  description     String   @db.Text
-  instructions    String   @db.Text
-  skillsRequired  String[] @map("skills_required")
-  roleTitle       String?  @map("role_title") @db.VarChar(255)
-  level           ExperienceLevel?
+  title          String           @db.VarChar(255)
+  slug           String           @db.VarChar(100)
+  description    String           @db.Text
+  instructions   String           @db.Text
+  skillsRequired String[]         @map("skills_required")
+  roleTitle      String?          @map("role_title") @db.VarChar(255)
+  level          ExperienceLevel?
 
   // Configuration
-  durationMinutes   Int     @map("duration_minutes")
-  passingScore      Int     @default(70) @map("passing_score")
-  maxAttempts       Int     @default(1) @map("max_attempts")
-  isPublic          Boolean @default(false) @map("is_public")
+  durationMinutes Int     @map("duration_minutes")
+  passingScore    Int     @default(70) @map("passing_score")
+  maxAttempts     Int     @default(1) @map("max_attempts")
+  isPublic        Boolean @default(false) @map("is_public")
+
+  // CTO Architectural Extensions
+  complexityScore            Int? @map("complexity_score")
+  aiDifficultyScore          Int? @map("ai_difficulty_score")
+  estimatedExperienceYears   Int? @map("estimated_experience_years")
+  estimatedCompletionMinutes Int? @map("estimated_completion_minutes")
 
   // Publishing window
   publishedAt DateTime? @map("published_at")
   expiresAt   DateTime? @map("expires_at")
 
   // Audit
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  createdBy String?   @map("created_by") @db.Uuid
-  updatedBy String?   @map("updated_by") @db.Uuid
-  deletedAt DateTime? @map("deleted_at")
-  deletedBy String?   @map("deleted_by") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  createdBy    String?   @map("created_by") @db.Uuid
+  updatedBy    String?   @map("updated_by") @db.Uuid
+  deletedAt    DateTime? @map("deleted_at")
+  deletedBy    String?   @map("deleted_by") @db.Uuid
+  deleteReason String?   @map("delete_reason") @db.Text
+  restoredAt   DateTime? @map("restored_at")
+  restoredBy   String?   @map("restored_by") @db.Uuid
 
-  company     Company       @relation(fields: [companyId], references: [id])
-  tasks       TrialTask[]
-  submissions Submission[]
-  pipeline    Pipeline?
+  company            Company                 @relation(fields: [companyId], references: [id])
+  tasks              AssessmentTask[]
+  submissions        Submission[]
+  pipeline           Pipeline?
+  sections           AssessmentSection[]
+  deliverables       AssessmentDeliverable[]
+  attachments        AssessmentAttachment[]
+  resources          AssessmentResource[]
+  versions           AssessmentVersion[]
+  aiMetadata         AssessmentAIMetadata[]
+  competencyMappings CompetencyMapping[]
+  skillTrails        SkillTrailAssessment[]
+  learningOutcomes   LearningOutcome[]
+  activityTimeline   ActivityTimelineEntry[]
+  promptVersions     PromptVersion[]
 
   @@unique([companyId, slug])
   @@index([companyId])
   @@index([status])
   @@index([publishedAt])
   @@index([deletedAt])
-  @@map("trials")
+  @@map("assessments")
 }
 
-model TrialTask {
-  id          String @id @default(uuid()) @db.Uuid
-  trialId     String @map("trial_id") @db.Uuid
-  sortOrder   Int    @map("sort_order")
+model AssessmentTask {
+  id           String  @id @default(uuid()) @db.Uuid
+  assessmentId String  @map("assessment_id") @db.Uuid
+  sectionId    String? @map("section_id") @db.Uuid
+  sortOrder    Int     @map("sort_order")
 
   // Content
-  title       String @db.VarChar(255)
-  description String @db.Text
+  title       String   @db.VarChar(255)
+  description String   @db.Text
   taskType    TaskType @map("task_type")
   isRequired  Boolean  @default(true) @map("is_required")
 
-  // Scoring
-  maxPoints   Int      @default(100) @map("max_points")
+  // Scoring & CTO Extensions
+  maxPoints       Int      @default(100) @map("max_points")
+  weight          Float?   @default(0)
+  expectedOutput  String?  @map("expected_output") @db.Text
+  evaluationNotes String?  @map("evaluation_notes") @db.Text
+  examples        String[] @default([])
 
   // Metadata (flexible for different task types)
-  config      Json     @default("{}")
+  config Json @default("{}")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  trial             Trial              @relation(fields: [trialId], references: [id], onDelete: Cascade)
-  submissionAnswers SubmissionAnswer[]
+  assessment         Assessment          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  section            AssessmentSection?  @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  submissionAnswers  SubmissionAnswer[]
+  criteria           RubricCriteria[]
+  competencyMappings CompetencyMapping[]
 
-  @@index([trialId, sortOrder])
-  @@map("trial_tasks")
+  @@index([assessmentId, sortOrder])
+  @@index([sectionId])
+  @@map("assessment_tasks")
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -431,37 +509,50 @@ model TrialTask {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 model Submission {
-  id               String           @id @default(uuid()) @db.Uuid
-  trialId          String           @map("trial_id") @db.Uuid
-  candidateId      String           @map("candidate_id") @db.Uuid
-  status           SubmissionStatus @default(INVITED)
-  attemptNumber    Int              @default(1) @map("attempt_number")
+  id            String           @id @default(uuid()) @db.Uuid
+  assessmentId  String           @map("assessment_id") @db.Uuid
+  candidateId   String           @map("candidate_id") @db.Uuid
+  status        SubmissionStatus @default(INVITED)
+  attemptNumber Int              @default(1) @map("attempt_number")
 
   // Timing
-  invitedAt    DateTime  @default(now()) @map("invited_at")
-  startedAt    DateTime? @map("started_at")
-  submittedAt  DateTime? @map("submitted_at")
-  expiresAt    DateTime? @map("expires_at")
+  invitedAt   DateTime  @default(now()) @map("invited_at")
+  startedAt   DateTime? @map("started_at")
+  submittedAt DateTime? @map("submitted_at")
+  expiresAt   DateTime? @map("expires_at")
 
   // Scoring
-  totalScore   Float?   @map("total_score")
-  isPassed     Boolean? @map("is_passed")
+  totalScore Float?   @map("total_score")
+  isPassed   Boolean? @map("is_passed")
 
   // Workspace
-  workspaceId  String?  @map("workspace_id") @db.Uuid
+  workspaceId String? @map("workspace_id") @db.Uuid
 
-  // Audit
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  // Phase 7: AI Integrity Engine
+  integrityScore Float?  @map("integrity_score")
+  integrityFlags Json?   @map("integrity_flags")
+  isSuspicious   Boolean @default(false) @map("is_suspicious")
 
-  trial       Trial             @relation(fields: [trialId], references: [id])
-  candidate   CandidateProfile  @relation(fields: [candidateId], references: [id])
-  answers     SubmissionAnswer[]
-  evaluation  Evaluation?
+  // Audit & soft delete
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+  deletedBy    String?   @map("deleted_by") @db.Uuid
+  deleteReason String?   @map("delete_reason") @db.Text
+  restoredAt   DateTime? @map("restored_at")
+  restoredBy   String?   @map("restored_by") @db.Uuid
 
-  @@unique([trialId, candidateId, attemptNumber])
-  @@index([trialId])
+  assessment       Assessment                  @relation(fields: [assessmentId], references: [id])
+  candidate        CandidateProfile            @relation(fields: [candidateId], references: [id])
+  answers          SubmissionAnswer[]
+  evaluation       Evaluation?
+  sections         SubmissionSection[]
+  deliverableItems SubmissionDeliverableItem[]
+  files            SubmissionFile[]
+  links            SubmissionLink[]
+
+  @@unique([assessmentId, candidateId, attemptNumber])
+  @@index([assessmentId])
   @@index([candidateId])
   @@index([status])
   @@index([deletedAt])
@@ -474,9 +565,9 @@ model SubmissionAnswer {
   taskId       String @map("task_id") @db.Uuid
 
   // Answer content (flexible for different task types)
-  answerText   String?  @map("answer_text") @db.Text
+  answerText    String? @map("answer_text") @db.Text
   answerFileUrl String? @map("answer_file_url")
-  answerData   Json?    @map("answer_data")
+  answerData    Json?   @map("answer_data")
 
   // Scoring (set by evaluation)
   earnedPoints Float?  @map("earned_points")
@@ -485,8 +576,8 @@ model SubmissionAnswer {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  task       TrialTask  @relation(fields: [taskId], references: [id])
+  submission Submission     @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  task       AssessmentTask @relation(fields: [taskId], references: [id])
 
   @@unique([submissionId, taskId])
   @@index([submissionId])
@@ -504,37 +595,46 @@ model Evaluation {
   status       EvaluationStatus @default(PENDING)
 
   // AI provider that performed the evaluation
-  aiProvider   String? @map("ai_provider")
-  aiModel      String? @map("ai_model")
+  aiProvider    String? @map("ai_provider")
+  aiModel       String? @map("ai_model")
   promptVersion String? @map("prompt_version")
 
   // Results
-  totalScore        Float?  @map("total_score")
-  maxPossibleScore  Float?  @map("max_possible_score")
-  percentageScore   Float?  @map("percentage_score")
-  isPassed          Boolean? @map("is_passed")
-  summary           String?  @db.Text
-  strengths         String[] 
-  improvements      String[]
-  
+  totalScore       Float?   @map("total_score")
+  maxPossibleScore Float?   @map("max_possible_score")
+  percentageScore  Float?   @map("percentage_score")
+  isPassed         Boolean? @map("is_passed")
+  summary          String?  @db.Text
+  strengths        String[]
+  improvements     String[]
+
   // Raw AI response (for audit and debugging)
-  rawResponse  Json? @map("raw_response")
+  rawResponse Json? @map("raw_response")
 
   // Human review
-  reviewedBy   String?   @map("reviewed_by") @db.Uuid
-  reviewedAt   DateTime? @map("reviewed_at")
-  reviewNotes  String?   @map("review_notes") @db.Text
+  reviewedBy  String?   @map("reviewed_by") @db.Uuid
+  reviewedAt  DateTime? @map("reviewed_at")
+  reviewNotes String?   @map("review_notes") @db.Text
 
   // Timing
-  startedAt    DateTime? @map("started_at")
-  completedAt  DateTime? @map("completed_at")
+  startedAt   DateTime? @map("started_at")
+  completedAt DateTime? @map("completed_at")
 
-  // Audit
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  // Decision recommendation
+  decision String? @db.VarChar(50) // STRONGLY_HIRE, HIRE, NO_HIRE, PENDING_REVIEW
 
-  submission Submission @relation(fields: [submissionId], references: [id])
+  // Audit & soft delete
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+  deletedBy    String?   @map("deleted_by") @db.Uuid
+  deleteReason String?   @map("delete_reason") @db.Text
+  restoredAt   DateTime? @map("restored_at")
+  restoredBy   String?   @map("restored_by") @db.Uuid
+
+  submission       Submission        @relation(fields: [submissionId], references: [id])
+  reviewerScores   ReviewerScore[]
+  competencyScores CompetencyScore[]
 
   @@index([submissionId])
   @@index([status])
@@ -547,12 +647,12 @@ model Evaluation {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 model Pipeline {
-  id        String @id @default(uuid()) @db.Uuid
-  companyId String @map("company_id") @db.Uuid
-  trialId   String @unique @map("trial_id") @db.Uuid
-  name      String @db.VarChar(255)
-  jobTitle  String @map("job_title") @db.VarChar(255)
-  isActive  Boolean @default(true) @map("is_active")
+  id           String  @id @default(uuid()) @db.Uuid
+  companyId    String  @map("company_id") @db.Uuid
+  assessmentId String  @unique @map("assessment_id") @db.Uuid
+  name         String  @db.VarChar(255)
+  jobTitle     String  @map("job_title") @db.VarChar(255)
+  isActive     Boolean @default(true) @map("is_active")
 
   // Audit
   createdAt DateTime  @default(now()) @map("created_at")
@@ -561,12 +661,12 @@ model Pipeline {
   updatedBy String?   @map("updated_by") @db.Uuid
   deletedAt DateTime? @map("deleted_at")
 
-  trial      Trial               @relation(fields: [trialId], references: [id], onDelete: Cascade)
+  assessment Assessment          @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   stages     PipelineStage[]
   candidates PipelineCandidate[]
 
   @@index([companyId])
-  @@index([trialId])
+  @@index([assessmentId])
   @@index([deletedAt])
   @@map("pipelines")
 }
@@ -579,7 +679,7 @@ model PipelineStage {
   sortOrder  Int               @map("sort_order")
   config     Json              @default("{}")
 
-  pipeline   Pipeline           @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  pipeline   Pipeline            @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   candidates PipelineCandidate[]
 
   @@index([pipelineId])
@@ -587,10 +687,10 @@ model PipelineStage {
 }
 
 model PipelineCandidate {
-  id         String @id @default(uuid()) @db.Uuid
-  pipelineId String @map("pipeline_id") @db.Uuid
-  stageId    String @map("stage_id") @db.Uuid
-  userId     String @map("user_id") @db.Uuid // Candidate user ID
+  id         String   @id @default(uuid()) @db.Uuid
+  pipelineId String   @map("pipeline_id") @db.Uuid
+  stageId    String   @map("stage_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid // Candidate user ID
   movedAt    DateTime @default(now()) @map("moved_at")
   movedBy    String?  @map("moved_by") @db.Uuid
   notes      String?  @db.Text
@@ -613,17 +713,17 @@ model PipelineCandidate {
 /// Immutable audit log — never updated, never soft-deleted.
 /// Provides tamper-evident record for compliance.
 model AuditLog {
-  id          String  @id @default(uuid()) @db.Uuid
-  actorId     String? @map("actor_id") @db.Uuid
-  actorRole   String? @map("actor_role")
-  action      String  // AuditAction enum value
-  entityType  String  @map("entity_type")
-  entityId    String? @map("entity_id") @db.Uuid
-  ipAddress   String? @map("ip_address")
-  userAgent   String? @map("user_agent") @db.Text
-  requestId   String? @map("request_id")
-  metadata    Json    @default("{}")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  actorRole  String?  @map("actor_role")
+  action     String // AuditAction enum value
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id") @db.Uuid
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent") @db.Text
+  requestId  String?  @map("request_id")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   actor User? @relation("AuditLogCreatedBy", fields: [actorId], references: [id])
 
@@ -674,11 +774,14 @@ enum EntityStatus {
   ARCHIVED
 }
 
-enum TrialStatus {
+enum AssessmentStatus {
   DRAFT
+  READY_FOR_REVIEW
   PUBLISHED
+  PAUSED
   CLOSED
   ARCHIVED
+  DELETED
 }
 
 enum SubmissionStatus {
@@ -703,7 +806,7 @@ enum EvaluationStatus {
 
 enum PipelineStageType {
   SCREENING
-  SKILL_TRIAL
+  SKILL_ASSESSMENT
   TECHNICAL_INTERVIEW
   CULTURE_FIT
   OFFER
@@ -744,9 +847,9 @@ enum ExperienceLevel {
 
 enum CompanySize {
   SOLO
-  SMALL      // 1-10
-  MEDIUM     // 11-50
-  LARGE      // 51-200
+  SMALL // 1-10
+  MEDIUM // 11-50
+  LARGE // 51-200
   ENTERPRISE // 200+
 }
 
@@ -784,3 +887,1359 @@ enum NoticePeriod {
   DAYS_60
   DAYS_90
 }
+
+enum VerificationTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+enum AssessmentSectionType {
+  OVERVIEW
+  TECHNICAL_TASKS
+  COMMUNICATION_TASKS
+  RESEARCH_TASKS
+  OPTIONAL_BONUS
+  SUBMISSION
+}
+
+enum DeliverableType {
+  GITHUB_REPO
+  FILE_UPLOAD
+  LIVE_URL
+  VIDEO_RECORDING
+  MARKDOWN_TEXT
+  FIGMA_LINK
+  LOOM_VIDEO
+}
+
+enum TemplateCategory {
+  BACKEND
+  FRONTEND
+  AI
+  DEVOPS
+  UI_UX
+  MARKETING
+  SALES
+  FINANCE
+  OPERATIONS
+}
+
+enum DifficultyLevel {
+  JUNIOR
+  MID
+  SENIOR
+  LEAD
+  PRINCIPAL
+}
+
+enum ResourceType {
+  PDF
+  MARKDOWN
+  GITHUB
+  NOTION
+  FIGMA
+  LOOM
+  DOCUMENTATION
+  VIDEO
+  API_REFERENCE
+  DATASET
+  EXTERNAL_LINK
+}
+
+model AssessmentSection {
+  id           String                @id @default(uuid()) @db.Uuid
+  assessmentId String                @map("assessment_id") @db.Uuid
+  title        String                @db.VarChar(255)
+  description  String?               @db.Text
+  sectionType  AssessmentSectionType @default(TECHNICAL_TASKS) @map("section_type")
+  sortOrder    Int                   @map("sort_order")
+  createdAt    DateTime              @default(now()) @map("created_at")
+  updatedAt    DateTime              @updatedAt @map("updated_at")
+
+  assessment Assessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  tasks      AssessmentTask[]
+
+  @@index([assessmentId, sortOrder])
+  @@map("assessment_sections")
+}
+
+model RubricCriteria {
+  id             String  @id @default(uuid()) @db.Uuid
+  taskId         String  @map("task_id") @db.Uuid
+  title          String  @db.VarChar(255)
+  description    String  @db.Text
+  weight         Float   @default(1.0)
+  maxPoints      Int     @default(10) @map("max_points")
+  expectedOutput String? @map("expected_output") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  task               AssessmentTask      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  competencyMappings CompetencyMapping[]
+  reviewerScores     ReviewerScore[]
+
+  @@index([taskId])
+  @@map("rubric_criteria")
+}
+
+model AssessmentDeliverable {
+  id              String          @id @default(uuid()) @db.Uuid
+  assessmentId    String          @map("assessment_id") @db.Uuid
+  title           String          @db.VarChar(255)
+  deliverableType DeliverableType @map("deliverable_type")
+  isRequired      Boolean         @default(true) @map("is_required")
+  description     String?         @db.Text
+  config          Json            @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@map("assessment_deliverables")
+}
+
+model AssessmentAttachment {
+  id           String   @id @default(uuid()) @db.Uuid
+  assessmentId String   @map("assessment_id") @db.Uuid
+  title        String   @db.VarChar(255)
+  url          String
+  fileType     String   @map("file_type") @db.VarChar(50)
+  fileSize     Int?     @map("file_size")
+  metadata     Json     @default("{}")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@map("assessment_attachments")
+}
+
+model AssessmentResource {
+  id           String       @id @default(uuid()) @db.Uuid
+  assessmentId String       @map("assessment_id") @db.Uuid
+  title        String       @db.VarChar(255)
+  url          String
+  resourceType ResourceType @map("resource_type")
+  description  String?      @db.Text
+  metadata     Json         @default("{}")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@map("assessment_resources")
+}
+
+model AssessmentVersion {
+  id            String   @id @default(uuid()) @db.Uuid
+  assessmentId  String   @map("assessment_id") @db.Uuid
+  versionNumber Int      @map("version_number")
+  snapshot      Json
+  changeSummary String?  @map("change_summary") @db.Text
+  createdBy     String?  @map("created_by") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, versionNumber])
+  @@index([assessmentId, createdAt])
+  @@map("assessment_versions")
+}
+
+model AssessmentAIMetadata {
+  id               String   @id @default(uuid()) @db.Uuid
+  assessmentId     String   @map("assessment_id") @db.Uuid
+  provider         String   @db.VarChar(50)
+  model            String   @db.VarChar(100)
+  promptVersion    String   @map("prompt_version") @db.VarChar(50)
+  generatedAt      DateTime @default(now()) @map("generated_at")
+  temperature      Float    @default(0.7)
+  inputTokens      Int      @default(0) @map("input_tokens")
+  outputTokens     Int      @default(0) @map("output_tokens")
+  generationTimeMs Int      @default(0) @map("generation_time_ms")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@map("assessment_ai_metadata")
+}
+
+model SkillTaxonomy {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique @db.VarChar(100)
+  category    String   @db.VarChar(100)
+  subcategory String?  @db.VarChar(100)
+  aliases     String[] @default([])
+  popularity  Int      @default(0)
+  difficulty  Int      @default(1)
+  embedding   Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([popularity])
+  @@map("skill_taxonomy")
+}
+
+model AssessmentTemplate {
+  id          String           @id @default(uuid()) @db.Uuid
+  title       String           @db.VarChar(255)
+  description String           @db.Text
+  category    TemplateCategory
+  isGlobal    Boolean          @default(false) @map("is_global")
+  companyId   String?          @map("company_id") @db.Uuid
+  snapshot    Json
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([isGlobal])
+  @@index([companyId])
+  @@map("assessment_templates")
+}
+
+// ============================================================
+// ENTERPRISE ARCHITECTURAL ADDITIONS (CTO V1.0)
+// ============================================================
+
+enum CompetencyImportance {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum LibraryResourceType {
+  PDF
+  GITHUB
+  NOTION
+  LOOM
+  YOUTUBE
+  FIGMA
+  DOCUMENTATION
+  DATASET
+  VIDEO
+  OTHER
+}
+
+enum WorkflowStateStatus {
+  DRAFT
+  REVIEW_PENDING
+  APPROVED
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+model Competency {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique @db.VarChar(100)
+  description String   @db.Text
+  category    String   @default("Core") @db.VarChar(100)
+  embedding   Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  mappings           CompetencyMapping[]
+  competencyScores   CompetencyScore[]
+  requiredInProfiles RequiredCompetency[]
+  evidenceMappings   EvidenceCompetencyMapping[]
+
+  @@index([category])
+  @@map("competencies")
+}
+
+model CompetencyMapping {
+  id           String               @id @default(uuid()) @db.Uuid
+  competencyId String               @map("competency_id") @db.Uuid
+  assessmentId String?              @map("assessment_id") @db.Uuid
+  taskId       String?              @map("task_id") @db.Uuid
+  criteriaId   String?              @map("criteria_id") @db.Uuid
+  weight       Float                @default(10.0) // percentage weight in matrix
+  importance   CompetencyImportance @default(MEDIUM)
+  minLevel     ExperienceLevel      @default(SENIOR) @map("min_level")
+  notes        String?              @db.Text
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  competency Competency      @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  assessment Assessment?     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  task       AssessmentTask? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  criteria   RubricCriteria? @relation(fields: [criteriaId], references: [id], onDelete: Cascade)
+
+  @@index([competencyId])
+  @@index([assessmentId])
+  @@index([taskId])
+  @@index([criteriaId])
+  @@map("competency_mappings")
+}
+
+model LearningOutcome {
+  id            String   @id @default(uuid()) @db.Uuid
+  assessmentId  String   @map("assessment_id") @db.Uuid
+  description   String   @db.Text
+  sortOrder     Int      @default(1) @map("sort_order")
+  isAiGenerated Boolean  @default(false) @map("is_ai_generated")
+  version       Int      @default(1)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId, sortOrder])
+  @@map("learning_outcomes")
+}
+
+model SubmissionSection {
+  id           String   @id @default(uuid()) @db.Uuid
+  submissionId String   @map("submission_id") @db.Uuid
+  title        String   @db.VarChar(255)
+  sortOrder    Int      @default(1) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId, sortOrder])
+  @@map("submission_sections")
+}
+
+model SubmissionDeliverableItem {
+  id              String          @id @default(uuid()) @db.Uuid
+  submissionId    String          @map("submission_id") @db.Uuid
+  sectionId       String?         @map("section_id") @db.Uuid
+  title           String          @db.VarChar(255)
+  deliverableType DeliverableType @map("deliverable_type")
+  content         String?         @db.Text
+  fileUrl         String?         @map("file_url")
+  linkUrl         String?         @map("link_url")
+  aiSummary       String?         @map("ai_summary") @db.Text
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@map("submission_deliverable_items")
+}
+
+model SubmissionFile {
+  id           String   @id @default(uuid()) @db.Uuid
+  submissionId String   @map("submission_id") @db.Uuid
+  fileName     String   @map("file_name") @db.VarChar(255)
+  fileUrl      String   @map("file_url")
+  fileSize     Int?     @map("file_size")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@map("submission_files")
+}
+
+model SubmissionLink {
+  id           String   @id @default(uuid()) @db.Uuid
+  submissionId String   @map("submission_id") @db.Uuid
+  title        String   @db.VarChar(255)
+  url          String
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@map("submission_links")
+}
+
+model ReviewerScore {
+  id           String   @id @default(uuid()) @db.Uuid
+  evaluationId String   @map("evaluation_id") @db.Uuid
+  reviewerId   String   @map("reviewer_id") @db.Uuid
+  taskId       String   @map("task_id") @db.Uuid
+  criteriaId   String?  @map("criteria_id") @db.Uuid
+  score        Float    @default(0)
+  maxScore     Float    @default(100) @map("max_score")
+  weight       Float    @default(1.0)
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  evaluation Evaluation      @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+  criteria   RubricCriteria? @relation(fields: [criteriaId], references: [id], onDelete: SetNull)
+
+  @@index([evaluationId, reviewerId])
+  @@map("reviewer_scores")
+}
+
+model CompetencyScore {
+  id           String   @id @default(uuid()) @db.Uuid
+  evaluationId String   @map("evaluation_id") @db.Uuid
+  competencyId String   @map("competency_id") @db.Uuid
+  score        Float    @default(0)
+  maxScore     Float    @default(100) @map("max_score")
+  percentage   Float    @default(0)
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  evaluation Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+  competency Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+
+  @@index([evaluationId, competencyId])
+  @@map("competency_scores")
+}
+
+model DomainEventLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  eventType  String   @map("event_type") @db.VarChar(100)
+  entityType String   @map("entity_type") @db.VarChar(100)
+  entityId   String   @map("entity_id") @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([eventType])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("domain_event_logs")
+}
+
+model ActivityTimelineEntry {
+  id           String   @id @default(uuid()) @db.Uuid
+  assessmentId String?  @map("assessment_id") @db.Uuid
+  companyId    String?  @map("company_id") @db.Uuid
+  userId       String?  @map("user_id") @db.Uuid
+  entityType   String   @map("entity_type") @db.VarChar(100)
+  entityId     String   @map("entity_id") @db.Uuid
+  action       String   @db.VarChar(100)
+  metadata     Json     @default("{}")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  assessment Assessment? @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId, createdAt])
+  @@index([companyId, createdAt])
+  @@index([userId])
+  @@map("activity_timeline_entries")
+}
+
+model PromptVersion {
+  id            String   @id @default(uuid()) @db.Uuid
+  assessmentId  String?  @map("assessment_id") @db.Uuid
+  action        String   @db.VarChar(100)
+  promptVersion String   @map("prompt_version") @db.VarChar(50)
+  input         Json     @default("{}")
+  output        Json     @default("{}")
+  provider      String   @db.VarChar(50)
+  model         String   @db.VarChar(100)
+  temperature   Float    @default(0.7)
+  inputTokens   Int      @default(0) @map("input_tokens")
+  outputTokens  Int      @default(0) @map("output_tokens")
+  latencyMs     Int      @default(0) @map("latency_ms")
+  costCents     Float    @default(0) @map("cost_cents")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  assessment Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+
+  @@index([assessmentId])
+  @@index([action, promptVersion])
+  @@map("prompt_versions")
+}
+
+model AIUsageMetric {
+  id           String   @id @default(uuid()) @db.Uuid
+  companyId    String?  @map("company_id") @db.Uuid
+  recruiterId  String?  @map("recruiter_id") @db.Uuid
+  assessmentId String?  @map("assessment_id") @db.Uuid
+  provider     String   @db.VarChar(50)
+  model        String   @db.VarChar(100)
+  inputTokens  Int      @default(0) @map("input_tokens")
+  outputTokens Int      @default(0) @map("output_tokens")
+  latencyMs    Int      @default(0) @map("latency_ms")
+  costCents    Float    @default(0) @map("cost_cents")
+  success      Boolean  @default(true)
+  errorMessage String?  @map("error_message") @db.Text
+  retryCount   Int      @default(0) @map("retry_count")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([companyId, createdAt])
+  @@index([recruiterId])
+  @@index([assessmentId])
+  @@map("ai_usage_metrics")
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(100)
+  description String   @db.Text
+  isEnabled   Boolean  @default(true) @map("is_enabled")
+  companyIds  String[] @default([]) @map("company_ids")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([key, isEnabled])
+  @@map("feature_flags")
+}
+
+model WorkflowDefinition {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique @db.VarChar(100)
+  description String   @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  states      WorkflowState[]
+  transitions WorkflowTransition[]
+  rules       WorkflowRule[]
+
+  @@map("workflow_definitions")
+}
+
+model WorkflowState {
+  id         String              @id @default(uuid()) @db.Uuid
+  workflowId String              @map("workflow_id") @db.Uuid
+  stateName  WorkflowStateStatus @map("state_name")
+  label      String              @db.VarChar(100)
+  isInitial  Boolean             @default(false) @map("is_initial")
+  isTerminal Boolean             @default(false) @map("is_terminal")
+
+  workflow WorkflowDefinition @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+  @@map("workflow_states")
+}
+
+model WorkflowTransition {
+  id           String              @id @default(uuid()) @db.Uuid
+  workflowId   String              @map("workflow_id") @db.Uuid
+  fromState    WorkflowStateStatus @map("from_state")
+  toState      WorkflowStateStatus @map("to_state")
+  requiredRole Role                @default(RECRUITER) @map("required_role")
+
+  workflow WorkflowDefinition @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId, fromState])
+  @@map("workflow_transitions")
+}
+
+model WorkflowRule {
+  id          String @id @default(uuid()) @db.Uuid
+  workflowId  String @map("workflow_id") @db.Uuid
+  ruleName    String @map("rule_name") @db.VarChar(100)
+  description String @db.Text
+  config      Json   @default("{}")
+
+  workflow WorkflowDefinition @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+  @@map("workflow_rules")
+}
+
+model ResourceLibraryItem {
+  id           String              @id @default(uuid()) @db.Uuid
+  companyId    String?             @map("company_id") @db.Uuid
+  title        String              @db.VarChar(255)
+  resourceType LibraryResourceType @map("resource_type")
+  url          String
+  description  String?             @db.Text
+  isGlobal     Boolean             @default(false) @map("is_global")
+  metadata     Json                @default("{}")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+
+  @@index([companyId, resourceType])
+  @@index([isGlobal])
+  @@map("resource_library_items")
+}
+
+// ============================================================
+// SKILL-BASED HIRING PLATFORM — CORE DOMAIN AGGREGATES
+// ============================================================
+
+enum SkillVerificationStatus {
+  CLAIMED
+  OBSERVED
+  DEMONSTRATED
+  AI_VERIFIED
+  HUMAN_VERIFIED
+  CERTIFIED
+}
+
+enum EvidenceType {
+  GITHUB_REPO
+  LIVE_DEPLOYMENT
+  VIDEO_PRESENTATION
+  ARCHITECTURE_DOC
+  MARKDOWN
+  PDF
+  CODE_REVIEW
+  PEER_REVIEW
+  AI_ANALYSIS
+}
+
+enum EvidenceVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  NEEDS_REVIEW
+}
+
+enum CandidateJourneyStatus {
+  INVITED
+  ACCEPTED
+  ASSESSMENT_STARTED
+  ASSESSMENT_SUBMITTED
+  AI_EVALUATED
+  HUMAN_REVIEW
+  SKILL_VERIFIED
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+}
+
+enum SkillProficiency {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+  CERTIFIED
+}
+
+enum SkillRelationshipType {
+  PREREQUISITE
+  RELATED
+  CO_OCCURS
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SKILL FRAMEWORK & TAXONOMY
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model SkillCategory {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  skills Skill[]
+
+  @@map("skill_categories")
+}
+
+model Skill {
+  id          String   @id @default(uuid()) @db.Uuid
+  categoryId  String?  @map("category_id") @db.Uuid
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text
+  difficulty  Int      @default(3)
+  weight      Float    @default(1.0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  category           SkillCategory?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  subSkills          SubSkill[]
+  requiredInProfiles RequiredSkill[]
+  evidenceMappings   EvidenceSkillMapping[]
+  verifications      SkillVerificationRecord[]
+  sourceRelations    SkillRelationship[]       @relation("SkillSourceRelation")
+  targetRelations    SkillRelationship[]       @relation("SkillTargetRelation")
+
+  @@index([categoryId])
+  @@index([difficulty])
+  @@map("skills")
+}
+
+model SubSkill {
+  id          String   @id @default(uuid()) @db.Uuid
+  skillId     String   @map("skill_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  difficulty  Int      @default(2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([skillId, name])
+  @@index([skillId])
+  @@map("sub_skills")
+}
+
+model SkillRelationship {
+  id               String                @id @default(uuid()) @db.Uuid
+  sourceSkillId    String                @map("source_skill_id") @db.Uuid
+  targetSkillId    String                @map("target_skill_id") @db.Uuid
+  relationshipType SkillRelationshipType @map("relationship_type")
+  strength         Float                 @default(1.0)
+
+  sourceSkill Skill @relation("SkillSourceRelation", fields: [sourceSkillId], references: [id], onDelete: Cascade)
+  targetSkill Skill @relation("SkillTargetRelation", fields: [targetSkillId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceSkillId, targetSkillId, relationshipType])
+  @@index([sourceSkillId])
+  @@index([targetSkillId])
+  @@map("skill_relationships")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ROLE PROFILE ENGINE (COMPANY HIRING EXPECTATIONS)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model SkillTrail {
+  id            String   @id @default(uuid()) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  roleProfileId String?  @unique @map("role_profile_id") @db.Uuid
+  title         String   @db.VarChar(255)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  roleProfile   RoleProfile?             @relation(fields: [roleProfileId], references: [id], onDelete: SetNull)
+  configuration SkillTrailConfiguration?
+  assessments   SkillTrailAssessment[]
+
+  @@index([companyId, isActive])
+  @@map("skill_trails")
+}
+
+model SkillTrailConfiguration {
+  id           String @id @default(uuid()) @db.Uuid
+  skillTrailId String @unique @map("skill_trail_id") @db.Uuid
+
+  // JSON stores the deep configuration: Question Distribution, Progression Rules, Feedback Rules
+  rulesJson Json @map("rules_json")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  skillTrail SkillTrail @relation(fields: [skillTrailId], references: [id], onDelete: Cascade)
+
+  @@map("skill_trail_configurations")
+}
+
+model SkillTrailAssessment {
+  id           String @id @default(uuid()) @db.Uuid
+  skillTrailId String @map("skill_trail_id") @db.Uuid
+  assessmentId String @map("assessment_id") @db.Uuid
+  sortOrder    Int    @map("sort_order")
+
+  skillTrail SkillTrail @relation(fields: [skillTrailId], references: [id], onDelete: Cascade)
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([skillTrailId, assessmentId])
+  @@index([skillTrailId, sortOrder])
+  @@map("skill_trail_assessments")
+}
+
+model RoleProfile {
+  id                  String   @id @default(uuid()) @db.Uuid
+  companyId           String   @map("company_id") @db.Uuid
+  title               String   @db.VarChar(255)
+  level               String   @default("MID") @db.VarChar(50)
+  description         String?  @db.Text
+  minimumOverallScore Float    @default(70.0) @map("minimum_overall_score")
+  isActive            Boolean  @default(true) @map("is_active")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  requiredSkills       RequiredSkill[]
+  requiredCompetencies RequiredCompetency[]
+  benchmarks           HiringBenchmark[]
+  journeys             CandidateJourney[]
+  skillTrail           SkillTrail?
+
+  @@index([companyId, isActive])
+  @@map("role_profiles")
+}
+
+model RequiredSkill {
+  id            String  @id @default(uuid()) @db.Uuid
+  roleProfileId String  @map("role_profile_id") @db.Uuid
+  skillId       String  @map("skill_id") @db.Uuid
+  minimumScore  Float   @default(70.0) @map("minimum_score")
+  weight        Float   @default(1.0)
+  isCritical    Boolean @default(false) @map("is_critical")
+
+  roleProfile RoleProfile @relation(fields: [roleProfileId], references: [id], onDelete: Cascade)
+  skill       Skill       @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([roleProfileId, skillId])
+  @@index([roleProfileId])
+  @@index([skillId])
+  @@map("required_skills")
+}
+
+model RequiredCompetency {
+  id            String @id @default(uuid()) @db.Uuid
+  roleProfileId String @map("role_profile_id") @db.Uuid
+  competencyId  String @map("competency_id") @db.Uuid
+  minimumScore  Float  @default(75.0) @map("minimum_score")
+  weight        Float  @default(1.0)
+
+  roleProfile RoleProfile @relation(fields: [roleProfileId], references: [id], onDelete: Cascade)
+  competency  Competency  @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+
+  @@unique([roleProfileId, competencyId])
+  @@index([roleProfileId])
+  @@map("required_competencies")
+}
+
+model HiringBenchmark {
+  id            String  @id @default(uuid()) @db.Uuid
+  roleProfileId String  @map("role_profile_id") @db.Uuid
+  metricName    String  @map("metric_name") @db.VarChar(100)
+  targetValue   Float   @map("target_value")
+  description   String? @db.Text
+
+  roleProfile RoleProfile @relation(fields: [roleProfileId], references: [id], onDelete: Cascade)
+
+  @@index([roleProfileId])
+  @@map("hiring_benchmarks")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FIRST-CLASS EVIDENCE ENGINE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model Evidence {
+  id                 String                     @id @default(uuid()) @db.Uuid
+  candidateId        String                     @map("candidate_id") @db.Uuid
+  submissionId       String?                    @map("submission_id") @db.Uuid
+  title              String                     @db.VarChar(255)
+  type               EvidenceType
+  url                String
+  description        String?                    @db.Text
+  confidenceScore    Float                      @default(80.0) @map("confidence_score")
+  qualityScore       Float                      @default(80.0) @map("quality_score")
+  verificationStatus EvidenceVerificationStatus @default(PENDING) @map("verification_status")
+  reviewNotes        String?                    @map("review_notes") @db.Text
+  metadata           Json                       @default("{}")
+  createdAt          DateTime                   @default(now()) @map("created_at")
+  updatedAt          DateTime                   @updatedAt @map("updated_at")
+  deletedAt          DateTime?                  @map("deleted_at")
+
+  linkedSkills       EvidenceSkillMapping[]
+  linkedCompetencies EvidenceCompetencyMapping[]
+
+  @@index([candidateId, verificationStatus])
+  @@index([submissionId])
+  @@index([deletedAt])
+  @@map("evidence")
+}
+
+model EvidenceSkillMapping {
+  id         String  @id @default(uuid()) @db.Uuid
+  evidenceId String  @map("evidence_id") @db.Uuid
+  skillId    String  @map("skill_id") @db.Uuid
+  confidence Float   @default(80.0)
+  notes      String? @db.Text
+
+  evidence Evidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  skill    Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([evidenceId, skillId])
+  @@index([evidenceId])
+  @@index([skillId])
+  @@map("evidence_skill_mappings")
+}
+
+model EvidenceCompetencyMapping {
+  id           String  @id @default(uuid()) @db.Uuid
+  evidenceId   String  @map("evidence_id") @db.Uuid
+  competencyId String  @map("competency_id") @db.Uuid
+  confidence   Float   @default(80.0)
+  notes        String? @db.Text
+
+  evidence   Evidence   @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  competency Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+
+  @@unique([evidenceId, competencyId])
+  @@index([evidenceId])
+  @@index([competencyId])
+  @@map("evidence_competency_mappings")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SKILL VERIFICATION ENGINE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model SkillVerificationRecord {
+  id               String                  @id @default(uuid()) @db.Uuid
+  candidateId      String                  @map("candidate_id") @db.Uuid
+  skillId          String                  @map("skill_id") @db.Uuid
+  status           SkillVerificationStatus @default(CLAIMED)
+  confidenceScore  Float                   @default(50.0) @map("confidence_score")
+  verifiedById     String?                 @map("verified_by_id") @db.Uuid
+  verificationNote String?                 @map("verification_note") @db.Text
+  verifiedAt       DateTime?               @map("verified_at")
+  createdAt        DateTime                @default(now()) @map("created_at")
+  updatedAt        DateTime                @updatedAt @map("updated_at")
+
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([candidateId, skillId])
+  @@index([candidateId, status])
+  @@index([skillId])
+  @@map("skill_verification_records")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// LIVING CANDIDATE PORTFOLIO ENGINE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model CandidatePortfolio {
+  id                String   @id @default(uuid()) @db.Uuid
+  candidateId       String   @unique @map("candidate_id") @db.Uuid
+  publicSlug        String?  @unique @map("public_slug") @db.VarChar(100)
+  bio               String?  @db.Text
+  aiSummary         String?  @map("ai_summary") @db.Text
+  isPublic          Boolean  @default(true) @map("is_public")
+  githubUsername    String?  @map("github_username") @db.VarChar(100)
+  linkedinUrl       String?  @map("linkedin_url")
+  overallSkillScore Float    @default(0.0) @map("overall_skill_score")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  projects     PortfolioProject[]
+  achievements PortfolioAchievement[]
+  timeline     SkillTimelineEntry[]
+
+  @@index([publicSlug, isPublic])
+  @@map("candidate_portfolios")
+}
+
+model PortfolioProject {
+  id          String   @id @default(uuid()) @db.Uuid
+  portfolioId String   @map("portfolio_id") @db.Uuid
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  projectUrl  String?  @map("project_url")
+  repoUrl     String?  @map("repo_url")
+  skillsUsed  String[] @default([]) @map("skills_used")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  portfolio CandidatePortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId, sortOrder])
+  @@map("portfolio_projects")
+}
+
+model PortfolioAchievement {
+  id          String   @id @default(uuid()) @db.Uuid
+  portfolioId String   @map("portfolio_id") @db.Uuid
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  badgeUrl    String?  @map("badge_url")
+  issuedAt    DateTime @default(now()) @map("issued_at")
+
+  portfolio CandidatePortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_achievements")
+}
+
+model SkillTimelineEntry {
+  id          String   @id @default(uuid()) @db.Uuid
+  portfolioId String   @map("portfolio_id") @db.Uuid
+  eventType   String   @map("event_type") @db.VarChar(100)
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  timestamp   DateTime @default(now())
+  metadata    Json     @default("{}")
+
+  portfolio CandidatePortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId, timestamp])
+  @@map("skill_timeline_entries")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CANDIDATE SKILL JOURNEY (REPLACING ATS APPLICATIONS)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model CandidateJourney {
+  id                   String                 @id @default(uuid()) @db.Uuid
+  candidateId          String                 @map("candidate_id") @db.Uuid
+  companyId            String                 @map("company_id") @db.Uuid
+  roleProfileId        String?                @map("role_profile_id") @db.Uuid
+  assessmentId         String?                @map("assessment_id") @db.Uuid
+  submissionId         String?                @map("submission_id") @db.Uuid
+  status               CandidateJourneyStatus @default(INVITED)
+  overallScore         Float?                 @map("overall_score")
+  skillMatchPercentage Float?                 @map("skill_match_percentage")
+  notes                String?                @db.Text
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+
+  roleProfile RoleProfile?              @relation(fields: [roleProfileId], references: [id], onDelete: SetNull)
+  history     CandidateJourneyHistory[]
+
+  @@index([candidateId, companyId])
+  @@index([status])
+  @@map("candidate_journeys")
+}
+
+model CandidateJourneyHistory {
+  id          String                 @id @default(uuid()) @db.Uuid
+  journeyId   String                 @map("journey_id") @db.Uuid
+  fromStatus  CandidateJourneyStatus @map("from_status")
+  toStatus    CandidateJourneyStatus @map("to_status")
+  changedById String?                @map("changed_by_id") @db.Uuid
+  reason      String?                @db.Text
+  timestamp   DateTime               @default(now())
+
+  journey CandidateJourney @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId, timestamp])
+  @@map("candidate_journey_history")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// INFRASTRUCTURE & SUPPORTING MODELS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model StorageObjectMetadata {
+  id              String   @id @default(uuid()) @db.Uuid
+  storageProvider String   @map("storage_provider") @db.VarChar(50)
+  bucket          String   @db.VarChar(100)
+  objectKey       String   @unique @map("object_key") @db.VarChar(500)
+  filename        String   @db.VarChar(255)
+  mimeType        String   @map("mime_type") @db.VarChar(100)
+  sizeBytes       Int      @map("size_bytes")
+  checksum        String?  @db.VarChar(100)
+  ownerId         String?  @map("owner_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([ownerId])
+  @@map("storage_object_metadata")
+}
+
+model NotificationTemplate {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique @db.VarChar(100)
+  channel   String   @db.VarChar(50)
+  subject   String   @db.VarChar(255)
+  bodyHtml  String   @map("body_html") @db.Text
+  bodyText  String   @map("body_text") @db.Text
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([code, isActive])
+  @@map("notification_templates")
+}
+
+model NotificationPreference {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  emailEnabled Boolean  @default(true) @map("email_enabled")
+  inAppEnabled Boolean  @default(true) @map("in_app_enabled")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId])
+  @@map("notification_preferences")
+}
+
+model ScheduledJobLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  jobName        String   @map("job_name") @db.VarChar(100)
+  status         String   @db.VarChar(50)
+  durationMs     Int      @default(0) @map("duration_ms")
+  itemsProcessed Int      @default(0) @map("items_processed")
+  errorMessage   String?  @map("error_message") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([jobName, createdAt])
+  @@map("scheduled_job_logs")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PHASE 8: ADVANCED ADMIN & RECRUITER ECOSYSTEM
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+model TalentPool {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  candidates TalentPoolCandidate[]
+  company    Company               @relation(fields: [companyId], references: [id])
+
+  @@map("talent_pools")
+}
+
+model TalentPoolCandidate {
+  id          String   @id @default(uuid()) @db.Uuid
+  poolId      String   @map("pool_id") @db.Uuid
+  candidateId String   @map("candidate_id") @db.Uuid
+  addedAt     DateTime @default(now())
+  matchScore  Float?   @map("match_score")
+  notes       String?
+
+  pool      TalentPool       @relation(fields: [poolId], references: [id])
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id])
+
+  @@unique([poolId, candidateId])
+  @@map("talent_pool_candidates")
+}
+
+model AILog {
+  id         String   @id @default(uuid()) @db.Uuid
+  companyId  String?  @map("company_id") @db.Uuid
+  promptType String
+  tokensUsed Int      @map("tokens_used")
+  cost       Float
+  createdAt  DateTime @default(now())
+
+  @@map("ai_logs")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PHASE 10 — HIGH & MEDIUM VALUE FEATURE LAYER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ── Feature 1: AI Interview Module ───────────────────────────
+
+model Interview {
+  id            String              @id @default(uuid()) @db.Uuid
+  companyId     String              @map("company_id") @db.Uuid
+  roleProfileId String?             @map("role_profile_id") @db.Uuid
+  title         String              @db.VarChar(255)
+  description   String?             @db.Text
+  status        InterviewStatus     @default(DRAFT)
+  type          InterviewType       @default(ASYNC_TEXT)
+  timeLimitMins Int?                @map("time_limit_mins")
+  passingScore  Float               @default(70) @map("passing_score")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+
+  questions InterviewQuestion[]
+  sessions  InterviewSession[]
+
+  @@index([companyId])
+  @@index([status])
+  @@map("interviews")
+}
+
+model InterviewQuestion {
+  id          String   @id @default(uuid()) @db.Uuid
+  interviewId String   @map("interview_id") @db.Uuid
+  text        String   @db.Text
+  category    String?  @db.VarChar(100)
+  difficulty  String?  @db.VarChar(50)
+  sortOrder   Int      @map("sort_order")
+  maxPoints   Int      @default(10) @map("max_points")
+  rubric      String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  interview Interview        @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  answers   InterviewAnswer[]
+
+  @@index([interviewId])
+  @@map("interview_questions")
+}
+
+model InterviewSession {
+  id          String        @id @default(uuid()) @db.Uuid
+  interviewId String        @map("interview_id") @db.Uuid
+  candidateId String        @map("candidate_id") @db.Uuid
+  journeyId   String?       @map("journey_id") @db.Uuid
+  status      SessionStatus @default(INVITED)
+  startedAt   DateTime?     @map("started_at")
+  submittedAt DateTime?     @map("submitted_at")
+  expiresAt   DateTime?     @map("expires_at")
+  totalScore  Float?        @map("total_score")
+  isPassed    Boolean?      @map("is_passed")
+  aiReport    Json?         @map("ai_report")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  interview Interview       @relation(fields: [interviewId], references: [id])
+  answers   InterviewAnswer[]
+
+  @@index([interviewId])
+  @@index([candidateId])
+  @@map("interview_sessions")
+}
+
+model InterviewAnswer {
+  id         String   @id @default(uuid()) @db.Uuid
+  sessionId  String   @map("session_id") @db.Uuid
+  questionId String   @map("question_id") @db.Uuid
+  answerText String   @db.Text
+  score      Float?
+  aiFeedback String?  @db.Text @map("ai_feedback")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  session  InterviewSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question InterviewQuestion @relation(fields: [questionId], references: [id])
+
+  @@unique([sessionId, questionId])
+  @@map("interview_answers")
+}
+
+enum InterviewStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum InterviewType {
+  ASYNC_TEXT
+}
+
+enum SessionStatus {
+  INVITED
+  STARTED
+  SUBMITTED
+  EVALUATED
+}
+
+// ── Feature 3: Webhook / ATS Integration ─────────────────────
+
+model Webhook {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  url       String   @db.Text
+  secret    String   @db.Text
+  events    String[]
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  deliveries WebhookDelivery[]
+
+  @@index([companyId])
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id           String    @id @default(uuid()) @db.Uuid
+  webhookId    String    @map("webhook_id") @db.Uuid
+  event        String
+  payload      Json
+  responseCode Int?      @map("response_code")
+  responseBody String?   @db.Text @map("response_body")
+  success      Boolean   @default(false)
+  attempts     Int       @default(1)
+  deliveredAt  DateTime? @map("delivered_at")
+  failedAt     DateTime? @map("failed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  webhook Webhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@map("webhook_deliveries")
+}
+
+// ── Feature 6: 2-Way In-Platform Messaging ───────────────────
+
+model MessageThread {
+  id        String   @id @default(uuid()) @db.Uuid
+  journeyId String   @unique @map("journey_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  messages Message[]
+
+  @@map("message_threads")
+}
+
+model Message {
+  id         String    @id @default(uuid()) @db.Uuid
+  threadId   String    @map("thread_id") @db.Uuid
+  senderId   String    @map("sender_id") @db.Uuid
+  senderRole String    @map("sender_role") @db.VarChar(50)
+  body       String    @db.Text
+  readAt     DateTime? @map("read_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  thread MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@index([senderId])
+  @@map("messages")
+}
+
+// ── Feature 8: AI Question Bank ──────────────────────────────
+
+model QuestionBank {
+  id           String   @id @default(uuid()) @db.Uuid
+  companyId    String   @map("company_id") @db.Uuid
+  question     String   @db.Text
+  type         String   @db.VarChar(50)
+  difficulty   String   @db.VarChar(50)
+  skills       String[]
+  competencies String[]
+  options      Json?
+  explanation  String?  @db.Text
+  timesUsed    Int      @default(0) @map("times_used")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([difficulty])
+  @@map("question_bank")
+}
+
+// ── Feature 9: Referral & Affiliate System ───────────────────
+
+model Referral {
+  id           String    @id @default(uuid()) @db.Uuid
+  referrerId   String    @map("referrer_id") @db.Uuid
+  refereeId    String?   @map("referee_id") @db.Uuid
+  referralCode String    @unique @map("referral_code") @db.VarChar(32)
+  status       String    @default("PENDING") @db.VarChar(50)
+  rewardType   String?   @map("reward_type") @db.VarChar(50)
+  rewardValue  Float?    @map("reward_value")
+  convertedAt  DateTime? @map("converted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@index([referrerId])
+  @@index([referralCode])
+  @@map("referrals")
+}
+
+// ── Feature 12: Diversity & Inclusion Analytics ──────────────
+
+model DiversityDatapoint {
+  id            String   @id @default(uuid()) @db.Uuid
+  candidateId   String   @unique @map("candidate_id") @db.Uuid
+  gender        String?  @db.VarChar(50)
+  ageRange      String?  @map("age_range") @db.VarChar(50)
+  ethnicity     String?  @db.VarChar(100)
+  disability    Boolean?
+  veteranStatus Boolean? @map("veteran_status")
+  providedAt    DateTime @default(now()) @map("provided_at")
+
+  @@map("diversity_datapoints")
+}
+
+// ── Feature 5: Slack Integration ─────────────────────────────
+
+model SlackIntegration {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @unique @map("company_id") @db.Uuid
+  webhookUrl  String   @map("webhook_url") @db.Text
+  channelName String?  @map("channel_name") @db.VarChar(100)
+  isActive    Boolean  @default(true) @map("is_active")
+  events      String[]
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("slack_integrations")
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// WEBHOOKS & NOTIFICATIONS DOMAIN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+

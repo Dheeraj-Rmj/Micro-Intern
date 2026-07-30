@@ -1,51 +1,44 @@
-'use client';
+"use client";
 
-import {
-  Briefcase,
-  CheckCircle2,
-  Code2,
-  Calendar,
-  TrendingUp,
-  ArrowUpRight
-} from 'lucide-react';
+import { Briefcase, CheckCircle2, Code2, Calendar, TrendingUp, ArrowUpRight } from "lucide-react";
 
 const stats = [
   {
-    name: 'Active Trials',
-    value: '2',
-    change: '+1 this week',
+    name: "Active Assessments",
+    value: "2",
+    change: "+1 this week",
     icon: Briefcase,
-    color: 'from-blue-500 to-indigo-600',
-    bgColor: 'bg-blue-500/10',
-    textColor: 'text-blue-400'
+    color: "from-blue-500 to-indigo-600",
+    bgColor: "bg-blue-500/10",
+    textColor: "text-blue-400",
   },
   {
-    name: 'Profile Completion',
-    value: '85%',
-    change: 'Ready for Senior fast-track',
+    name: "Profile Completion",
+    value: "85%",
+    change: "Ready for Senior fast-track",
     icon: CheckCircle2,
-    color: 'from-emerald-500 to-teal-600',
-    bgColor: 'bg-emerald-500/10',
-    textColor: 'text-emerald-400'
+    color: "from-emerald-500 to-teal-600",
+    bgColor: "bg-emerald-500/10",
+    textColor: "text-emerald-400",
   },
   {
-    name: 'Verified Skill Tags',
-    value: '14',
-    change: 'React 19, TS, Clean Arch',
+    name: "Verified Skill Tags",
+    value: "14",
+    change: "React 19, TS, Clean Arch",
     icon: Code2,
-    color: 'from-purple-500 to-indigo-600',
-    bgColor: 'bg-purple-500/10',
-    textColor: 'text-purple-400'
+    color: "from-purple-500 to-indigo-600",
+    bgColor: "bg-purple-500/10",
+    textColor: "text-purple-400",
   },
   {
-    name: 'Interview Invites',
-    value: '1',
-    change: 'Series B FinTech Lead',
+    name: "Interview Invites",
+    value: "1",
+    change: "Series B FinTech Lead",
     icon: Calendar,
-    color: 'from-amber-500 to-orange-600',
-    bgColor: 'bg-amber-500/10',
-    textColor: 'text-amber-400'
-  }
+    color: "from-amber-500 to-orange-600",
+    bgColor: "bg-amber-500/10",
+    textColor: "text-amber-400",
+  },
 ];
 
 export function StatCards() {

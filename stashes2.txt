@@ -1,0 +1,3 @@
+﻿stash@{0}: lint-staged automatic backup (3bf7079)
+stash@{1}: WIP on main: bf2aad0 feat(web): implement candidate portal frontend architecture, auth, and dashboard
+stash@{2}: On feature/candidate-profile: Local work before pulling friends git code

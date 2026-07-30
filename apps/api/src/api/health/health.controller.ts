@@ -1,9 +1,8 @@
+import { config } from "@/core/config.js";
+import { checkDatabaseHealth, checkRedisHealth } from "@/core/database.js";
+import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
 
-import { config } from '@/core/config.js';
-import { checkDatabaseHealth, checkRedisHealth } from '@/core/database.js';
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
-
-import type { Request, Response } from 'express';
+import type { Request, Response } from "express";
 
 /**
  * Health check controller.
@@ -29,7 +28,7 @@ export const healthController = {
    */
   liveness: (_req: Request, res: Response): void => {
     ResponseFormatter.success(res, {
-      status: 'ok',
+      status: "ok",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       version: config.APP_VERSION,
@@ -40,19 +39,16 @@ export const healthController = {
    * GET /health/ready — Readiness probe.
    */
   readiness: async (_req: Request, res: Response): Promise<void> => {
-    const [dbHealth, redisHealth] = await Promise.all([
-      checkDatabaseHealth(),
-      checkRedisHealth(),
-    ]);
+    const [dbHealth, redisHealth] = await Promise.all([checkDatabaseHealth(), checkRedisHealth()]);
 
-    const isReady = dbHealth.status === 'healthy' && redisHealth.status === 'healthy';
+    const isReady = dbHealth.status === "healthy" && redisHealth.status === "healthy";
 
     const statusCode = isReady ? 200 : 503;
 
     res.status(statusCode).json({
       success: isReady,
       data: {
-        status: isReady ? 'ready' : 'not_ready',
+        status: isReady ? "ready" : "not_ready",
         timestamp: new Date().toISOString(),
         dependencies: {
           database: dbHealth,
@@ -67,15 +63,12 @@ export const healthController = {
    * Requires ADMIN or SUPER_ADMIN — not exposed publicly.
    */
   detailed: async (req: Request, res: Response): Promise<void> => {
-    const [dbHealth, redisHealth] = await Promise.all([
-      checkDatabaseHealth(),
-      checkRedisHealth(),
-    ]);
+    const [dbHealth, redisHealth] = await Promise.all([checkDatabaseHealth(), checkRedisHealth()]);
 
-    const allHealthy = [dbHealth, redisHealth].every((h) => h.status === 'healthy');
+    const allHealthy = [dbHealth, redisHealth].every((h) => h.status === "healthy");
 
     ResponseFormatter.success(res, {
-      status: allHealthy ? 'healthy' : 'degraded',
+      status: allHealthy ? "healthy" : "degraded",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       version: config.APP_VERSION,
@@ -90,5 +83,26 @@ export const healthController = {
         redis: redisHealth,
       },
     });
+  },
+
+  /**
+   * GET /health/metrics — Prometheus observability metrics probe.
+   */
+  metrics: (_req: Request, res: Response): void => {
+    const mem = process.memoryUsage();
+    const metricsPlain = [
+      `# HELP process_uptime_seconds The uptime of the Node.js process`,
+      `# TYPE process_uptime_seconds gauge`,
+      `process_uptime_seconds ${process.uptime()}`,
+      `# HELP process_heap_bytes_used Node.js heap memory used in bytes`,
+      `# TYPE process_heap_bytes_used gauge`,
+      `process_heap_bytes_used ${mem.heapUsed}`,
+      `# HELP process_heap_bytes_total Node.js total heap memory in bytes`,
+      `# TYPE process_heap_bytes_total gauge`,
+      `process_heap_bytes_total ${mem.heapTotal}`,
+    ].join("\n");
+
+    res.set("Content-Type", "text/plain");
+    res.status(200).send(metricsPlain);
   },
 };

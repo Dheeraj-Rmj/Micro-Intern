@@ -1,6 +1,6 @@
-import type { IAdminRepository, UserSummary, CompanySummary } from '../../application/index.js';
-import type { PlatformStatsProps } from '../../domain/index.js';
-import type { PrismaClient } from '@microintern/database';
+import type { IAdminRepository, UserSummary, CompanySummary } from "../../application/index.js";
+import type { PlatformStatsProps } from "../../domain/index.js";
+import type { PrismaClient } from "@microintern/database";
 
 export class PrismaAdminRepository implements IAdminRepository {
   constructor(private readonly db: PrismaClient) {}
@@ -13,18 +13,18 @@ export class PrismaAdminRepository implements IAdminRepository {
       totalCompanies,
       activeCompanies,
       pendingCompanies,
-      totalTrials,
-      activeTrials,
+      totalAssessments,
+      activeAssessments,
       evalStats,
     ] = await Promise.all([
       this.db.user.count({ where: { deletedAt: null } }),
-      this.db.user.count({ where: { status: 'ACTIVE' as any, deletedAt: null } }),
-      this.db.user.count({ where: { status: 'SUSPENDED' as any, deletedAt: null } }),
+      this.db.user.count({ where: { status: "ACTIVE" as any, deletedAt: null } }),
+      this.db.user.count({ where: { status: "SUSPENDED" as any, deletedAt: null } }),
       this.db.company.count({ where: { deletedAt: null } }),
-      this.db.company.count({ where: { status: 'ACTIVE' as any, deletedAt: null } }),
-      this.db.company.count({ where: { status: 'PENDING_VERIFICATION' as any, deletedAt: null } }),
-      this.db.trial.count({ where: { deletedAt: null } }),
-      this.db.trial.count({ where: { status: 'PUBLISHED' as any, deletedAt: null } }),
+      this.db.company.count({ where: { status: "ACTIVE" as any, deletedAt: null } }),
+      this.db.company.count({ where: { status: "PENDING_VERIFICATION" as any, deletedAt: null } }),
+      this.db.assessment.count({ where: { deletedAt: null } }),
+      this.db.assessment.count({ where: { status: "PUBLISHED" as any, deletedAt: null } }),
       this.db.evaluation.aggregate({
         _count: { id: true },
         _avg: { percentageScore: true },
@@ -43,8 +43,8 @@ export class PrismaAdminRepository implements IAdminRepository {
       totalCompanies,
       activeCompanies,
       pendingCompanies,
-      totalTrials,
-      activeTrials,
+      totalAssessments,
+      activeAssessments,
       aiMetrics: {
         totalEvaluations: evalStats._count.id,
         passedEvaluations,
@@ -84,8 +84,8 @@ export class PrismaAdminRepository implements IAdminRepository {
 
   async listPendingCompanies(): Promise<CompanySummary[]> {
     const companies = await this.db.company.findMany({
-      where: { status: 'PENDING_VERIFICATION' as any, deletedAt: null },
-      orderBy: { createdAt: 'desc' },
+      where: { status: "PENDING_VERIFICATION" as any, deletedAt: null },
+      orderBy: { createdAt: "desc" },
     });
     return companies.map((c) => ({
       id: c.id,

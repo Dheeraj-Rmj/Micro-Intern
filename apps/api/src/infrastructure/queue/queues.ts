@@ -1,10 +1,10 @@
-import { QUEUE_NAMES } from '@microintern/shared';
-import { Queue, Worker, type Job, type WorkerOptions } from 'bullmq';
+import { QUEUE_NAMES } from "@microintern/shared";
+import { Queue, Worker, type Job, type WorkerOptions } from "bullmq";
 
-import { createModuleLogger } from '@/core/logger.js';
-import { createRedisClient } from '@/core/redis.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { createRedisClient } from "@/core/redis.js";
 
-const log = createModuleLogger('QueueRegistry');
+const log = createModuleLogger("QueueRegistry");
 
 /**
  * BullMQ connection options.
@@ -18,12 +18,12 @@ const bullMQConnection = () => createRedisClient({ maxRetriesPerRequest: null })
 const defaultJobOptions = {
   attempts: 3,
   backoff: {
-    type: 'exponential' as const,
+    type: "exponential" as const,
     delay: 5000, // 5s initial, then 10s, 20s
   },
   removeOnComplete: {
     age: 24 * 3600, // Keep completed jobs for 24h
-    count: 1000,    // Keep last 1000 completed jobs
+    count: 1000, // Keep last 1000 completed jobs
   },
   removeOnFail: {
     age: 7 * 24 * 3600, // Keep failed jobs for 7 days (for debugging)
@@ -69,6 +69,27 @@ export const queues = {
       attempts: 5, // Audit logs are critical — more retries
     },
   }),
+
+  assessmentAi: new Queue(QUEUE_NAMES.ASSESSMENT_AI, {
+    connection: bullMQConnection(),
+    defaultJobOptions: {
+      ...defaultJobOptions,
+      attempts: 2,
+    },
+  }),
+
+  resumeParser: new Queue(QUEUE_NAMES.RESUME_PARSER, {
+    connection: bullMQConnection(),
+    defaultJobOptions,
+  }),
+
+  webhookDelivery: new Queue(QUEUE_NAMES.WEBHOOK_DELIVERY, {
+    connection: bullMQConnection(),
+    defaultJobOptions: {
+      ...defaultJobOptions,
+      attempts: 5, // Exponential retry is important for webhooks
+    },
+  }),
 };
 
 /**
@@ -87,32 +108,28 @@ export function createWorker<T>(
   processor: (job: Job<T>) => Promise<void>,
   options?: Partial<WorkerOptions>,
 ): Worker<T> {
-  const worker = new Worker<T>(
-    queueName,
-    processor,
-    {
-      connection: bullMQConnection(),
-      concurrency: 5,
-      ...options,
-    },
-  );
-
-  worker.on('completed', (job) => {
-    log.info({ queue: queueName, jobId: job.id }, 'Job completed');
+  const worker = new Worker<T>(queueName, processor, {
+    connection: bullMQConnection(),
+    concurrency: 5,
+    ...options,
   });
 
-  worker.on('failed', (job, error) => {
+  worker.on("completed", (job) => {
+    log.info({ queue: queueName, jobId: job.id }, "Job completed");
+  });
+
+  worker.on("failed", (job, error) => {
     log.error(
       { queue: queueName, jobId: job?.id, err: error, attempts: job?.attemptsMade },
-      'Job failed',
+      "Job failed",
     );
   });
 
-  worker.on('stalled', (jobId) => {
-    log.warn({ queue: queueName, jobId }, 'Job stalled');
+  worker.on("stalled", (jobId) => {
+    log.warn({ queue: queueName, jobId }, "Job stalled");
   });
 
-  log.info({ queue: queueName }, 'Worker started');
+  log.info({ queue: queueName }, "Worker started");
   return worker;
 }
 
@@ -130,7 +147,7 @@ export type EmailJobData = {
 
 export type AIEvaluationJobData = {
   submissionId: string;
-  trialId: string;
+  assessmentId: string;
   candidateId: string;
 };
 
@@ -145,7 +162,7 @@ export type NotificationJobData = {
 export type StorageProcessingJobData = {
   fileKey: string;
   bucket: string;
-  operation: 'thumbnail' | 'virus-scan' | 'compress';
+  operation: "thumbnail" | "virus-scan" | "compress";
 };
 
 export type AuditJobData = {
@@ -154,4 +171,34 @@ export type AuditJobData = {
   entityType: string;
   entityId: string | null;
   metadata: Record<string, unknown>;
+};
+
+export type AssessmentAIJobData = {
+  assessmentId: string;
+  recruiterId: string;
+  action:
+    | "GENERATE_ASSESSMENT"
+    | "IMPROVE_ASSESSMENT"
+    | "REWRITE_INSTRUCTIONS"
+    | "GENERATE_RUBRIC"
+    | "SUGGEST_SKILLS"
+    | "SUGGEST_DELIVERABLES"
+    | "ESTIMATE_DIFFICULTY"
+    | "ESTIMATE_DURATION"
+    | "SUGGEST_LEARNING_OUTCOMES"
+    | "GENERATE_INTERVIEW_QUESTIONS"
+    | "GENERATE_EVALUATION_NOTES";
+  input: Record<string, unknown>;
+};
+
+export type WebhookDeliveryJobData = {
+  webhookId: string;
+  event: string;
+  payload: Record<string, unknown>;
+};
+
+export type ResumeParserJobData = {
+  candidateId: string;
+  fileUrl: string;
+  fileText?: string;
 };
