@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '../client.js';
 
 export async function seedSkills(prisma: PrismaClient): Promise<void> {
   console.warn('⚡ Seeding Skill Categories and Taxonomy...');
@@ -9,7 +9,6 @@ export async function seedSkills(prisma: PrismaClient): Promise<void> {
     update: {},
     create: {
       name: 'Backend Engineering',
-      slug: 'backend-engineering',
       description: 'Server-side development, databases, APIs, and microservices.',
     },
   });
@@ -19,7 +18,6 @@ export async function seedSkills(prisma: PrismaClient): Promise<void> {
     update: {},
     create: {
       name: 'Frontend Engineering',
-      slug: 'frontend-engineering',
       description: 'Web interfaces, modern JavaScript/TypeScript, CSS, and user experience.',
     },
   });
@@ -29,69 +27,58 @@ export async function seedSkills(prisma: PrismaClient): Promise<void> {
     update: {},
     create: {
       name: 'AI & Machine Learning',
-      slug: 'ai-machine-learning',
       description: 'LLM integration, prompt engineering, agentic workflows, and embeddings.',
     },
   });
 
   // 2. Skills
   const skillTs = await prisma.skill.upsert({
-    where: { slug: 'typescript' },
+    where: { name: 'TypeScript' },
     update: {},
     create: {
       name: 'TypeScript',
-      slug: 'typescript',
       categoryId: catBackend.id,
       difficulty: 3,
-      metadata: { language: 'TypeScript', domain: 'universal' },
     },
   });
 
   const skillNode = await prisma.skill.upsert({
-    where: { slug: 'nodejs' },
+    where: { name: 'Node.js' },
     update: {},
     create: {
       name: 'Node.js',
-      slug: 'nodejs',
       categoryId: catBackend.id,
       difficulty: 3,
-      metadata: { runtime: 'Node.js', domain: 'backend' },
     },
   });
 
   const skillPostgres = await prisma.skill.upsert({
-    where: { slug: 'postgresql' },
+    where: { name: 'PostgreSQL' },
     update: {},
     create: {
       name: 'PostgreSQL',
-      slug: 'postgresql',
       categoryId: catBackend.id,
       difficulty: 4,
-      metadata: { db: 'relational' },
     },
   });
 
   const skillReact = await prisma.skill.upsert({
-    where: { slug: 'react' },
+    where: { name: 'React' },
     update: {},
     create: {
       name: 'React',
-      slug: 'react',
       categoryId: catFrontend.id,
       difficulty: 3,
-      metadata: { library: 'React' },
     },
   });
 
   const skillPrompt = await prisma.skill.upsert({
-    where: { slug: 'prompt-engineering' },
+    where: { name: 'Prompt Engineering' },
     update: {},
     create: {
       name: 'Prompt Engineering',
-      slug: 'prompt-engineering',
       categoryId: catAI.id,
       difficulty: 4,
-      metadata: { ai: 'LLM' },
     },
   });
 
