@@ -112,7 +112,7 @@ function VerifyEmailContent() {
       </h3>
       <p className="mt-2 text-sm text-slate-400">
         Your candidate account is now fully verified. You can sign in and start
-        browsing trials.
+        browsing assessments.
       </p>
       <Link
         href="/auth/login"

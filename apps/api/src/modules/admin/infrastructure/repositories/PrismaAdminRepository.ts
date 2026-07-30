@@ -13,8 +13,8 @@ export class PrismaAdminRepository implements IAdminRepository {
       totalCompanies,
       activeCompanies,
       pendingCompanies,
-      totalTrials,
-      activeTrials,
+      totalAssessments,
+      activeAssessments,
       evalStats,
     ] = await Promise.all([
       this.db.user.count({ where: { deletedAt: null } }),
@@ -23,8 +23,8 @@ export class PrismaAdminRepository implements IAdminRepository {
       this.db.company.count({ where: { deletedAt: null } }),
       this.db.company.count({ where: { status: 'ACTIVE' as any, deletedAt: null } }),
       this.db.company.count({ where: { status: 'PENDING_VERIFICATION' as any, deletedAt: null } }),
-      this.db.trial.count({ where: { deletedAt: null } }),
-      this.db.trial.count({ where: { status: 'PUBLISHED' as any, deletedAt: null } }),
+      this.db.assessment.count({ where: { deletedAt: null } }),
+      this.db.assessment.count({ where: { status: 'PUBLISHED' as any, deletedAt: null } }),
       this.db.evaluation.aggregate({
         _count: { id: true },
         _avg: { percentageScore: true },
@@ -43,8 +43,8 @@ export class PrismaAdminRepository implements IAdminRepository {
       totalCompanies,
       activeCompanies,
       pendingCompanies,
-      totalTrials,
-      activeTrials,
+      totalAssessments,
+      activeAssessments,
       aiMetrics: {
         totalEvaluations: evalStats._count.id,
         passedEvaluations,

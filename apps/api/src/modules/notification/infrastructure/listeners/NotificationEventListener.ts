@@ -38,7 +38,7 @@ export function initNotificationListeners(): void {
               member.userId,
               'COMPANY_VERIFIED',
               'Company Verified!',
-              `Your organization "${company.name}" has been verified by administrators. You can now publish public assessment trials.`,
+              `Your organization "${company.name}" has been verified by administrators. You can now publish public assessment assessments.`,
               { companyId }
             );
           }

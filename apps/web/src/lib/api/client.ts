@@ -17,7 +17,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } f
  */
 
 const API_BASE_URL =
-  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001/api/v1';
+  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001';
 
 // In-memory access token store
 // This module is a singleton — token persists across component unmounts
@@ -117,7 +117,7 @@ function createApiClient(): AxiosInstance {
  */
 async function silentRefresh(): Promise<string | null> {
   const response = await axios.post<{ data: { accessToken: string } }>(
-    `${API_BASE_URL}/auth/refresh`,
+    `${API_BASE_URL}/api/v1/auth/refresh`,
     {},
     { withCredentials: true },
   );

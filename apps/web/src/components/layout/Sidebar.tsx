@@ -78,7 +78,7 @@ export function Sidebar() {
             <span>Candidate Verified</span>
           </div>
           <p className="mt-1 text-xs text-slate-400">
-            Your profile is ready for Series A to Enterprise trials.
+            Your profile is ready for Series A to Enterprise assessments.
           </p>
         </div>
 

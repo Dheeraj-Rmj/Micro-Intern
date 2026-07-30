@@ -33,7 +33,7 @@ export default function CandidateDashboardPage() {
             Welcome back, {user?.firstName ?? 'Candidate'}!
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            Here is your verified micro-internship evaluation summary and trial
+            Here is your verified micro-internship evaluation summary and assessment
             activity.
           </p>
         </div>
@@ -60,7 +60,7 @@ export default function CandidateDashboardPage() {
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-indigo-500 active:scale-[0.99]"
           >
             <PlusCircle className="h-3.5 w-3.5" />
-            <span>Browse Trials</span>
+            <span>Browse Assessments</span>
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
@@ -80,7 +80,7 @@ export default function CandidateDashboardPage() {
         </div>
       </div>
 
-      {/* Recent trial applications table */}
+      {/* Recent assessment applications table */}
       <RecentApplicationsTable />
     </div>
   );

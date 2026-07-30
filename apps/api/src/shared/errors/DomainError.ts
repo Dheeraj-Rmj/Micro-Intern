@@ -10,9 +10,9 @@ import type { ErrorCode } from '@microintern/shared';
  * because the request was syntactically valid but violated domain invariants.
  *
  * Examples:
- * - "Trial duration must be at least 30 minutes"
- * - "Candidate cannot submit a trial they are not invited to"
- * - "Company cannot have more than 5 active trials on the FREE plan"
+ * - "Assessment duration must be at least 30 minutes"
+ * - "Candidate cannot submit a assessment they are not invited to"
+ * - "Company cannot have more than 5 active assessments on the FREE plan"
  */
 export class DomainError extends AppError {
   public readonly domain: string;
@@ -41,9 +41,9 @@ export class DomainError extends AppError {
 
 // ── Pre-built domain errors per bounded context ───────────────────────────
 
-export class TrialDomainError extends DomainError {
+export class AssessmentDomainError extends DomainError {
   constructor(code: ErrorCode, message: string) {
-    super({ code, message, domain: 'Trial' });
+    super({ code, message, domain: 'Assessment' });
   }
 }
 

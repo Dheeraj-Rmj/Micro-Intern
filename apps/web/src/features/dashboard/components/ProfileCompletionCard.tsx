@@ -21,7 +21,7 @@ const completionSteps = [
     description: '14 engineering competencies identified.'
   },
   {
-    title: 'First Verified Trial Submission',
+    title: 'First Verified Assessment Submission',
     completed: true,
     description: 'Clean Architecture React 19 challenge scored.'
   },

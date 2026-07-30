@@ -1,4 +1,4 @@
-import { apiClient } from '@/services/api/axios';
+import { apiClient } from '@/lib/api/client';
 import type {
   AuthResponse,
   LoginCredentials,

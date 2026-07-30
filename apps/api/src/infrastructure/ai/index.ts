@@ -29,6 +29,22 @@ const providerMap: Record<string, () => IAIProvider> = {
   ollama: () => new OllamaProvider(),
 };
 
+/**
+ * Creates a list of AI providers based on config — used for container injection.
+ */
+export function createAIProviders(): IAIProvider[] {
+  const providerOrder = [config.AI_PRIMARY_PROVIDER, ...aiFallbackProviders];
+  const seen = new Set<string>();
+  const providers: IAIProvider[] = [];
+  for (const name of providerOrder) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    const factory = providerMap[name];
+    if (factory !== undefined) providers.push(factory());
+  }
+  return providers;
+}
+
 export function createAIGateway(): AIFallbackEngine {
   if (gatewayInstance !== null) return gatewayInstance;
 

@@ -16,10 +16,10 @@ const log = createModuleLogger('AuditMiddleware');
  * For compliance-critical writes, use the synchronous AuditService directly.
  *
  * @example
- * router.post('/trials',
+ * router.post('/assessments',
  *   authMiddleware,
- *   audit('CREATE', 'Trial'),
- *   controller.createTrial,
+ *   audit('CREATE', 'Assessment'),
+ *   controller.createAssessment,
  * );
  */
 export function audit(action: AuditAction, entityType: string) {

@@ -5,8 +5,6 @@ import { User } from '../../domain/entities/User.entity.js';
 import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
 import type { PrismaClient, OAuthProvider } from '@microintern/database';
 
-
-
 /**
  * Prisma User Repository — infrastructure implementation.
  *
@@ -16,6 +14,8 @@ import type { PrismaClient, OAuthProvider } from '@microintern/database';
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly db: PrismaClient) {}
 
+  // ── Lookup ────────────────────────────────────────────────────────────────
+
   async findById(id: string): Promise<User | null> {
     const user = await this.db.user.findFirst({
       where: { id, deletedAt: null },
@@ -24,7 +24,7 @@ export class PrismaUserRepository implements IUserRepository {
     return user !== null ? User.fromPrisma(user) : null;
   }
 
-    async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User | null> {
     const user = await this.db.user.findFirst({
       where: { email: email.toLowerCase(), deletedAt: null },
       include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
@@ -44,6 +44,8 @@ export class PrismaUserRepository implements IUserRepository {
     if (!account?.user || account.user.deletedAt) return null;
     return User.fromPrisma(account.user);
   }
+
+  // ── Candidate Creation ────────────────────────────────────────────────────
 
   async createOAuthCandidate(data: {
     email: string;
@@ -103,14 +105,12 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-
   async createCandidate(data: {
     email: string;
     passwordHash: string;
     firstName: string;
     lastName: string;
   }): Promise<User> {
-    // Transaction: create user + candidate profile atomically
     const user = await this.db.$transaction(async (tx) => {
       const created = await tx.user.create({
         data: {
@@ -135,6 +135,8 @@ export class PrismaUserRepository implements IUserRepository {
     return User.fromPrisma({ ...user, companyMembership: [] });
   }
 
+  // ── Management User Creation ──────────────────────────────────────────────
+
   async createCompanyOwner(data: {
     email: string;
     passwordHash: string;
@@ -144,7 +146,6 @@ export class PrismaUserRepository implements IUserRepository {
     companyWebsite?: string;
   }): Promise<User> {
     const user = await this.db.$transaction(async (tx) => {
-      // Create company
       const slug = data.companyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       const company = await tx.company.create({
         data: {
@@ -155,7 +156,6 @@ export class PrismaUserRepository implements IUserRepository {
         },
       });
 
-      // Create user
       const created = await tx.user.create({
         data: {
           email: data.email.toLowerCase(),
@@ -180,6 +180,46 @@ export class PrismaUserRepository implements IUserRepository {
 
     return User.fromPrisma(user);
   }
+
+  async createUserFromInvitation(data: {
+    email: string;
+    passwordHash: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    companyId?: string;
+    invitedById: string;
+  }): Promise<User> {
+    const user = await this.db.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email: data.email.toLowerCase(),
+          passwordHash: data.passwordHash,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          role: data.role as any,
+          status: 'ACTIVE',
+          emailVerifiedAt: new Date(), // Invitation implies email is valid
+          ...(data.companyId !== undefined && {
+            companyMembership: {
+              create: {
+                companyId: data.companyId,
+                role: data.role as any,
+                invitedBy: data.invitedById,
+                joinedAt: new Date(),
+              },
+            },
+          }),
+        },
+        include: { companyMembership: { take: 1 } },
+      });
+      return created;
+    });
+
+    return User.fromPrisma(user);
+  }
+
+  // ── Login Security ────────────────────────────────────────────────────────
 
   async incrementLoginAttempts(userId: string): Promise<void> {
     const user = await this.db.user.findUnique({ where: { id: userId } });
@@ -220,6 +260,15 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
+  async updateStatus(userId: string, status: string): Promise<void> {
+    await this.db.user.update({
+      where: { id: userId },
+      data: { status: status as any },
+    });
+  }
+
+  // ── Profile Updates ───────────────────────────────────────────────────────
+
   async setEmailVerified(userId: string): Promise<void> {
     await this.db.user.update({
       where: { id: userId },
@@ -238,6 +287,119 @@ export class PrismaUserRepository implements IUserRepository {
     await this.db.user.update({
       where: { id: userId },
       data: { avatarUrl },
+    });
+  }
+
+  // ── Verification Tokens ───────────────────────────────────────────────────
+
+  async createVerificationToken(data: {
+    userId: string;
+    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+    tokenHash: string;
+    expiresAt: Date;
+  }): Promise<void> {
+    // Invalidate any previous tokens of the same type before creating a new one
+    await this.db.verificationToken.updateMany({
+      where: { userId: data.userId, type: data.type, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+
+    await this.db.verificationToken.create({
+      data: {
+        userId: data.userId,
+        type: data.type,
+        tokenHash: data.tokenHash,
+        expiresAt: data.expiresAt,
+      },
+    });
+  }
+
+  async findVerificationToken(data: {
+    tokenHash: string;
+    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+  }): Promise<{ id: string; userId: string; expiresAt: Date; usedAt: Date | null } | null> {
+    return await this.db.verificationToken.findFirst({
+      where: {
+        tokenHash: data.tokenHash,
+        type: data.type,
+        usedAt: null,
+      },
+      select: {
+        id: true,
+        userId: true,
+        expiresAt: true,
+        usedAt: true,
+      },
+    });
+  }
+
+  async markVerificationTokenUsed(tokenId: string): Promise<void> {
+    await this.db.verificationToken.update({
+      where: { id: tokenId },
+      data: { usedAt: new Date() },
+    });
+  }
+
+  async invalidateVerificationTokens(data: {
+    userId: string;
+    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+  }): Promise<void> {
+    await this.db.verificationToken.updateMany({
+      where: { userId: data.userId, type: data.type, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+  }
+
+  // ── Invitations ───────────────────────────────────────────────────────────
+
+  async createInvitation(data: {
+    email: string;
+    role: string;
+    companyId?: string;
+    invitedById: string;
+    tokenHash: string;
+    expiresAt: Date;
+  }): Promise<{ id: string }> {
+    return await this.db.invitation.create({
+      data: {
+        email: data.email.toLowerCase(),
+        role: data.role as any,
+        companyId: data.companyId,
+        invitedById: data.invitedById,
+        tokenHash: data.tokenHash,
+        expiresAt: data.expiresAt,
+      },
+      select: { id: true },
+    });
+  }
+
+  async findInvitationByTokenHash(tokenHash: string): Promise<{
+    id: string;
+    email: string;
+    role: string;
+    companyId: string | null;
+    invitedById: string;
+    expiresAt: Date;
+    acceptedAt: Date | null;
+  } | null> {
+    return await this.db.invitation.findFirst({
+      where: { tokenHash, acceptedAt: null },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        companyId: true,
+        invitedById: true,
+        expiresAt: true,
+        acceptedAt: true,
+      },
+    });
+  }
+
+  async markInvitationAccepted(invitationId: string): Promise<void> {
+    await this.db.invitation.update({
+      where: { id: invitationId },
+      data: { acceptedAt: new Date() },
     });
   }
 }

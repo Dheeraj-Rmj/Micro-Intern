@@ -1,5 +1,7 @@
 import { prisma } from './database.js';
 import { getRedisClient } from './redis.js';
+import { AIFallbackEngine } from '../infrastructure/ai/AIFallbackEngine.js';
+import { createAIProviders } from '../infrastructure/ai/index.js';
 
 import type { PrismaClient } from '@microintern/database';
 import type { Redis } from 'ioredis';
@@ -28,6 +30,7 @@ import type { Redis } from 'ioredis';
 export type InfrastructureDependencies = {
   db: PrismaClient;
   redis: Redis;
+  aiEngine: AIFallbackEngine;
 };
 
 class ApplicationContainer {
@@ -92,6 +95,7 @@ export function createContainer(): ApplicationContainer {
   containerInstance = new ApplicationContainer({
     db: prisma,
     redis: getRedisClient(),
+    aiEngine: new AIFallbackEngine(createAIProviders()),
   });
 
   return containerInstance;

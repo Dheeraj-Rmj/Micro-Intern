@@ -1,11 +1,11 @@
 import { createModuleLogger } from '@/core/logger.js';
 import { UnauthorizedError } from '@/shared/errors/index.js';
 
-import { SubmissionNotFoundError, EvaluationNotFoundError } from '../../domain/errors/submission.errors.js';
-
+import { UnauthorizedEvaluationAccessError, EvaluationNotFoundError } from '../../domain/errors/evaluation.errors.js';
+import { SubmissionNotFoundError } from '../../../submission/domain/errors/submission.errors.js';
 import type { Evaluation } from '../../domain/entities/Evaluation.entity.js';
 import type { IEvaluationRepository } from '../ports/IEvaluationRepository.js';
-import type { ISubmissionRepository } from '../ports/ISubmissionRepository.js';
+import type { ISubmissionRepository } from '../../../submission/application/ports/ISubmissionRepository.js';
 import type { GetProfileUseCase } from '@/modules/candidate/application/use-cases/get-profile.usecase.js';
 
 const log = createModuleLogger('GetSubmissionEvaluationUseCase');

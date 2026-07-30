@@ -8,14 +8,14 @@ describe('ProcessEvaluationUseCase', () => {
   let useCase: ProcessEvaluationUseCase;
   let mockSubRepo: any;
   let mockEvalRepo: any;
-  let mockTrialRepo: any;
+  let mockAssessmentRepo: any;
   let mockAiEngine: any;
 
   beforeEach(() => {
     mockSubRepo = {
       findById: vi.fn().mockResolvedValue({
         id: 'sub-1',
-        trialId: 'trial-1',
+        assessmentId: 'assessment-1',
         candidateId: 'cand-1',
         status: SubmissionStatus.SUBMITTED,
         answers: [
@@ -33,9 +33,9 @@ describe('ProcessEvaluationUseCase', () => {
       })),
     };
 
-    mockTrialRepo = {
+    mockAssessmentRepo = {
       findById: vi.fn().mockResolvedValue({
-        id: 'trial-1',
+        id: 'assessment-1',
         title: 'Full Stack AI Engineering Test',
         instructions: 'Design a highly scalable AI gateway.',
         passingScore: 70, // 70% required to pass
@@ -61,11 +61,11 @@ describe('ProcessEvaluationUseCase', () => {
       }),
     };
 
-    useCase = new ProcessEvaluationUseCase(mockSubRepo, mockEvalRepo, mockTrialRepo, mockAiEngine);
+    useCase = new ProcessEvaluationUseCase(mockSubRepo, mockEvalRepo, mockAssessmentRepo, mockAiEngine);
     vi.spyOn(eventBus, 'emit').mockResolvedValue(undefined);
   });
 
-  it('should compile trial evaluation prompt, trigger AIFallbackEngine, grade answers, record PASSED status, and emit EVALUATION_COMPLETED', async () => {
+  it('should compile assessment evaluation prompt, trigger AIFallbackEngine, grade answers, record PASSED status, and emit EVALUATION_COMPLETED', async () => {
     const evaluation = await useCase.execute('sub-1');
 
     expect(mockSubRepo.updateStatus).toHaveBeenCalledWith('sub-1', SubmissionStatus.UNDER_EVALUATION);
@@ -87,7 +87,7 @@ describe('ProcessEvaluationUseCase', () => {
     }));
   });
 
-  it('should mark submission as FAILED if computed percentage is below trial passingScore', async () => {
+  it('should mark submission as FAILED if computed percentage is below assessment passingScore', async () => {
     mockAiEngine.complete.mockResolvedValue({
       content: JSON.stringify({
         earnedPoints: 20, // 20 + 20 = 40 out of 100 => 40% (below 70%)
@@ -108,7 +108,7 @@ describe('ProcessEvaluationUseCase', () => {
   it('should catch AI prompt injection attempts via AISafetyLayer and forfeit task score', async () => {
     mockSubRepo.findById.mockResolvedValue({
       id: 'sub-1',
-      trialId: 'trial-1',
+      assessmentId: 'assessment-1',
       candidateId: 'cand-1',
       status: SubmissionStatus.SUBMITTED,
       answers: [

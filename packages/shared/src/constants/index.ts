@@ -110,4 +110,6 @@ export const QUEUE_NAMES = {
   STORAGE_PROCESSING: 'storage-processing',
   AUDIT: 'audit',
   RESUME_PARSER: 'resume-parser',
+  TRIAL_AI: 'trial-ai',
+  ASSESSMENT_AI: 'assessment-ai',
 } as const;

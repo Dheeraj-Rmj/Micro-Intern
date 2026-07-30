@@ -6,7 +6,7 @@ import { Topbar, Sidebar } from '@/components/layout';
 export const metadata: Metadata = {
   title: 'Candidate Dashboard | MicroIntern',
   description:
-    'Manage your micro-internships, skills, resume, and trial applications.'
+    'Manage your micro-internships, skills, resume, and assessment applications.'
 };
 
 export default function CandidateLayout({ children }: { children: ReactNode }) {

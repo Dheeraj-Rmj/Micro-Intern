@@ -47,7 +47,7 @@ const SAFETY_PATTERNS = {
 
 export class AISafetyLayer {
   /**
-   * Check user input (such as candidate trial answers) for prompt injection attempts.
+   * Check user input (such as candidate assessment answers) for prompt injection attempts.
    */
   checkInput(text: string): SafetyCheckResult {
     const flags: string[] = [];

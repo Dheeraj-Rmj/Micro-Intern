@@ -67,7 +67,7 @@ export function UpcomingInterviewsCard() {
 
       <div className="mt-6 flex items-center justify-between border-t border-slate-800/80 pt-4">
         <span className="text-xs text-slate-400">
-          Prepare your trial code demo for discussion
+          Prepare your assessment code demo for discussion
         </span>
         <Link
           href="/applications"

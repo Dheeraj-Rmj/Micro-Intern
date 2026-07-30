@@ -2,8 +2,8 @@
  * In-process Domain Event Bus.
  *
  * Design: Modules communicate through domain events, not direct calls.
- * This preserves module isolation — the Trial module doesn't import from the
- * Notification module; it emits a TrialSubmitted event, and the Notification
+ * This preserves module isolation — the Assessment module doesn't import from the
+ * Notification module; it emits a AssessmentSubmitted event, and the Notification
  * module subscribes independently.
  *
  * This is NOT a message queue. Events are synchronous within the same process.
@@ -11,10 +11,10 @@
  *
  * Usage:
  *   // Publisher (in use case):
- *   eventBus.emit('trial.submitted', { submissionId, candidateId, trialId });
+ *   eventBus.emit('assessment.submitted', { submissionId, candidateId, assessmentId });
  *
  *   // Subscriber (in another module's bootstrap):
- *   eventBus.on('trial.submitted', async (payload) => {
+ *   eventBus.on('assessment.submitted', async (payload) => {
  *     await notificationService.notifyEvaluationPending(payload);
  *   });
  */
@@ -44,13 +44,13 @@ export const DOMAIN_EVENTS = {
   COMPANY_MEMBER_INVITED: 'company.member_invited',
   COMPANY_MEMBER_JOINED: 'company.member_joined',
 
-  // Trial events
-  TRIAL_CREATED: 'trial.created',
-  TRIAL_UPDATED: 'trial.updated',
-  TRIAL_PUBLISHED: 'trial.published',
-  TRIAL_INVITATION_SENT: 'trial.invitation_sent',
-  TRIAL_STARTED: 'trial.started',
-  TRIAL_SUBMITTED: 'trial.submitted',
+  // Assessment events
+  ASSESSMENT_CREATED: 'assessment.created',
+  ASSESSMENT_UPDATED: 'assessment.updated',
+  ASSESSMENT_PUBLISHED: 'assessment.published',
+  ASSESSMENT_INVITATION_SENT: 'assessment.invitation_sent',
+  ASSESSMENT_STARTED: 'assessment.started',
+  ASSESSMENT_SUBMITTED: 'assessment.submitted',
 
   // Evaluation events
   EVALUATION_STARTED: 'evaluation.started',

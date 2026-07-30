@@ -24,4 +24,11 @@ healthRouter.get(
   (_req, res) => { void healthController.detailed(_req, res); },
 );
 
+// K8s & Prometheus observability aliases
+healthRouter.get('/liveness', (_req, res) => { void healthController.liveness(_req, res); });
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+healthRouter.get('/readiness', (_req, res) => { void healthController.readiness(_req, res); });
+healthRouter.get('/metrics', (_req, res) => { void healthController.metrics(_req, res); });
+
 export { healthRouter };
+

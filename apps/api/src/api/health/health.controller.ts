@@ -91,4 +91,26 @@ export const healthController = {
       },
     });
   },
+
+  /**
+   * GET /health/metrics — Prometheus observability metrics probe.
+   */
+  metrics: (_req: Request, res: Response): void => {
+    const mem = process.memoryUsage();
+    const metricsPlain = [
+      `# HELP process_uptime_seconds The uptime of the Node.js process`,
+      `# TYPE process_uptime_seconds gauge`,
+      `process_uptime_seconds ${process.uptime()}`,
+      `# HELP process_heap_bytes_used Node.js heap memory used in bytes`,
+      `# TYPE process_heap_bytes_used gauge`,
+      `process_heap_bytes_used ${mem.heapUsed}`,
+      `# HELP process_heap_bytes_total Node.js total heap memory in bytes`,
+      `# TYPE process_heap_bytes_total gauge`,
+      `process_heap_bytes_total ${mem.heapTotal}`,
+    ].join('\n');
+
+    res.set('Content-Type', 'text/plain');
+    res.status(200).send(metricsPlain);
+  },
 };
+

@@ -29,8 +29,8 @@ describe('GetPlatformStatsUseCase', () => {
       totalCompanies: 20,
       activeCompanies: 15,
       pendingCompanies: 5,
-      totalTrials: 40,
-      activeTrials: 25,
+      totalAssessments: 40,
+      activeAssessments: 25,
       aiMetrics: {
         totalEvaluations: 50,
         passedEvaluations: 40,
@@ -45,7 +45,7 @@ describe('GetPlatformStatsUseCase', () => {
     expect(result).toEqual({
       users: { total: 100, active: 95, suspended: 5 },
       companies: { total: 20, active: 15, pendingVerification: 5 },
-      trials: { total: 40, active: 25 },
+      assessments: { total: 40, active: 25 },
       aiUsage: {
         totalEvaluations: 50,
         passedEvaluations: 40,

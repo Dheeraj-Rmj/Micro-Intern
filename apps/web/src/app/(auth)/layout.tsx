@@ -7,7 +7,7 @@ import { GuestRoute } from '@/components/auth/GuestRoute';
 export const metadata: Metadata = {
   title: 'Candidate Authentication | MicroIntern',
   description:
-    'Sign in or register for the MicroIntern Candidate Portal to browse micro-internships and trial evaluations.'
+    'Sign in or register for the MicroIntern Candidate Portal to browse micro-internships and assessment evaluations.'
 };
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -41,7 +41,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                 Prove your skills with real-world micro-internships.
               </h1>
               <p className="text-base text-slate-400">
-                Skip traditional resume screening. Complete short paid trials,
+                Skip traditional resume screening. Complete short paid assessments,
                 showcase your engineering capabilities, and get hired by top
                 companies.
               </p>
@@ -50,7 +50,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             <div className="space-y-4 pt-4">
               <div className="flex items-center gap-3 text-sm text-slate-300">
                 <CheckCircle2 className="h-5 w-5 text-blue-400" />
-                <span>100% verified employer trial evaluations</span>
+                <span>100% verified employer assessment evaluations</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-slate-300">
                 <ShieldCheck className="h-5 w-5 text-blue-400" />
@@ -66,7 +66,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <p className="text-sm italic text-slate-300">
                 &ldquo;MicroIntern allowed me to demonstrate my React and
                 TypeScript skills directly. I received a senior role offer
-                within two weeks of completing my trial.&rdquo;
+                within two weeks of completing my assessment.&rdquo;
               </p>
               <div className="mt-4 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">

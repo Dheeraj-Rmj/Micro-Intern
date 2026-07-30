@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to MicroIntern</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; overflow: hidden; }
+    .header { background: linear-gradient(135deg, #1d4ed8, #4f46e5); padding: 40px 32px; text-align: center; }
+    .logo { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .logo span { color: #93c5fd; }
+    .badge { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.15); font-size: 12px; color: #bfdbfe; }
+    .body { padding: 40px 32px; }
+    h1 { font-size: 26px; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; }
+    p { font-size: 15px; line-height: 1.7; color: #94a3b8; margin-bottom: 20px; }
+    .highlight { color: #60a5fa; font-weight: 600; }
+    .btn { display: block; width: fit-content; margin: 0 auto 32px; padding: 14px 32px; background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff; text-decoration: none; border-radius: 10px; font-size: 15px; font-weight: 600; text-align: center; }
+    .steps { background: #0f172a; border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+    .steps h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 16px; }
+    .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+    .step-num { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: #1e40af; color: #93c5fd; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .step-text { font-size: 14px; color: #cbd5e1; line-height: 1.5; }
+    .footer { padding: 24px 32px; border-top: 1px solid #1e293b; text-align: center; }
+    .footer p { font-size: 12px; color: #475569; margin-bottom: 4px; }
+    .footer a { color: #60a5fa; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="header">
+        <div class="logo">Micro<span>Intern</span></div>
+        <div class="badge">Candidate Portal</div>
+      </div>
+      <div class="body">
+        <h1>Welcome, {{firstName}}! 🎉</h1>
+        <p>You've just joined <span class="highlight">MicroIntern</span> — the platform where skills beat resumes. You're one step away from getting your profile live.</p>
+        <p>Please verify your email address to activate your account and start discovering micro-internship opportunities.</p>
+        <a href="{{verificationUrl}}" class="btn">Verify My Email Address</a>
+        <div class="steps">
+          <h3>What's next</h3>
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">Verify your email (link above, expires in 24 hours)</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text">Complete your candidate profile — skills, experience, resume</div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">Browse trials and apply to companies that match your skills</div>
+          </div>
+        </div>
+        <p style="font-size:13px; color:#475569;">If you didn't create this account, you can safely ignore this email.</p>
+      </div>
+      <div class="footer">
+        <p>© {{year}} MicroIntern Inc. · <a href="{{frontendUrl}}">microintern.io</a></p>
+        <p>This link expires in 24 hours.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

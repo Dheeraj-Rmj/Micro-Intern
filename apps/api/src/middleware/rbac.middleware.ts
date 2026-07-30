@@ -53,7 +53,7 @@ export function requireRole(minimumRole: Role) {
  * Require that the user has one of the allowed roles.
  *
  * @example
- * router.get('/trials', authMiddleware, requireAnyRole(['RECRUITER', 'COMPANY_OWNER']), ...);
+ * router.get('/assessments', authMiddleware, requireAnyRole(['RECRUITER', 'COMPANY_OWNER']), ...);
  */
 export function requireAnyRole(allowedRoles: Role[]) {
   return (req: Request, _res: Response, next: NextFunction): void => {

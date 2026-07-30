@@ -70,7 +70,7 @@ export function Topbar() {
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Search trials, skills, or applications..."
+            placeholder="Search assessments, skills, or applications..."
             className="w-full rounded-xl border border-slate-800 bg-slate-900/60 py-2 pr-4 pl-10 text-xs text-white placeholder-slate-500 outline-none transition-all focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>

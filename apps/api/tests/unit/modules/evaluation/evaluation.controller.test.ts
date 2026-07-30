@@ -7,8 +7,8 @@ import type { Request, Response, NextFunction } from 'express';
 
 describe('EvaluationController', () => {
   let controller: EvaluationController;
-  let mockStartTrialUseCase: any;
-  let mockSubmitTrialUseCase: any;
+  let mockStartAssessmentUseCase: any;
+  let mockSubmitAssessmentUseCase: any;
   let mockListCandidateSubmissionsUseCase: any;
   let mockGetSubmissionEvaluationUseCase: any;
 
@@ -17,11 +17,11 @@ describe('EvaluationController', () => {
   let next: NextFunction;
 
   beforeEach(() => {
-    mockStartTrialUseCase = {
-      execute: vi.fn().mockResolvedValue({ id: 'sub-1', trialId: 'trial-1', status: 'IN_PROGRESS' }),
+    mockStartAssessmentUseCase = {
+      execute: vi.fn().mockResolvedValue({ id: 'sub-1', assessmentId: 'assessment-1', status: 'IN_PROGRESS' }),
     };
-    mockSubmitTrialUseCase = {
-      execute: vi.fn().mockResolvedValue({ id: 'sub-1', trialId: 'trial-1', status: 'SUBMITTED' }),
+    mockSubmitAssessmentUseCase = {
+      execute: vi.fn().mockResolvedValue({ id: 'sub-1', assessmentId: 'assessment-1', status: 'SUBMITTED' }),
     };
     mockListCandidateSubmissionsUseCase = {
       execute: vi.fn().mockResolvedValue({
@@ -34,15 +34,15 @@ describe('EvaluationController', () => {
     };
 
     controller = new EvaluationController(
-      mockStartTrialUseCase,
-      mockSubmitTrialUseCase,
+      mockStartAssessmentUseCase,
+      mockSubmitAssessmentUseCase,
       mockListCandidateSubmissionsUseCase,
       mockGetSubmissionEvaluationUseCase
     );
 
     req = {
       user: { id: 'cand-user-id' } as any,
-      params: { id: 'trial-or-sub-id' },
+      params: { id: 'assessment-or-sub-id' },
       query: { page: '1', limit: '10' },
       body: {
         answers: [{ taskId: 'task-1', answerText: 'Solution explanation' }],
@@ -65,18 +65,18 @@ describe('EvaluationController', () => {
     vi.spyOn(ResponseFormatter, 'paginated');
   });
 
-  describe('startTrial', () => {
-    it('should start a trial submission session and return 201 Created', async () => {
-      await controller.startTrial(req as Request, res as Response, next);
+  describe('startAssessment', () => {
+    it('should start a assessment submission session and return 201 Created', async () => {
+      await controller.startAssessment(req as Request, res as Response, next);
 
-      expect(mockStartTrialUseCase.execute).toHaveBeenCalledWith('cand-user-id', 'trial-or-sub-id');
+      expect(mockStartAssessmentUseCase.execute).toHaveBeenCalledWith('cand-user-id', 'assessment-or-sub-id');
       expect(ResponseFormatter.created).toHaveBeenCalledWith(res, expect.objectContaining({ id: 'sub-1' }));
       expect(res.status).toHaveBeenCalledWith(201);
     });
   });
 
-  describe('submitTrial', () => {
-    it('should process candidate answers and solution files, invoking submitTrialUseCase and returning 200 OK', async () => {
+  describe('submitAssessment', () => {
+    it('should process candidate answers and solution files, invoking submitAssessmentUseCase and returning 200 OK', async () => {
       req.files = [
         { buffer: Buffer.from('test diagram'), originalname: 'arch.png', mimetype: 'image/png' } as Express.Multer.File,
       ];
@@ -86,11 +86,11 @@ describe('EvaluationController', () => {
         ],
       };
 
-      await controller.submitTrial(req as Request, res as Response, next);
+      await controller.submitAssessment(req as Request, res as Response, next);
 
-      expect(mockSubmitTrialUseCase.execute).toHaveBeenCalledWith(
+      expect(mockSubmitAssessmentUseCase.execute).toHaveBeenCalledWith(
         'cand-user-id',
-        'trial-or-sub-id',
+        'assessment-or-sub-id',
         expect.arrayContaining([
           expect.objectContaining({
             taskId: 'task-1',
@@ -126,7 +126,7 @@ describe('EvaluationController', () => {
     it('should retrieve AI evaluation results for a submission and return 200 OK', async () => {
       await controller.getSubmissionEvaluation(req as Request, res as Response, next);
 
-      expect(mockGetSubmissionEvaluationUseCase.execute).toHaveBeenCalledWith('trial-or-sub-id', 'cand-user-id');
+      expect(mockGetSubmissionEvaluationUseCase.execute).toHaveBeenCalledWith('assessment-or-sub-id', 'cand-user-id');
       expect(ResponseFormatter.success).toHaveBeenCalledWith(res, expect.objectContaining({ percentageScore: 85, isPassed: true }));
       expect(res.status).toHaveBeenCalledWith(200);
     });

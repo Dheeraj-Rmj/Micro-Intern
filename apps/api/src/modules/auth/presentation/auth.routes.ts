@@ -1,7 +1,6 @@
 import { AuditAction } from '@microintern/shared';
 import { Router } from 'express';
-
-
+import { z } from 'zod';
 
 import { getContainer, type InfrastructureDependencies } from '@/core/container.js';
 import { passport } from '@/core/passport.js';
@@ -14,15 +13,25 @@ import {
   LoginSchema,
   RegisterCandidateSchema,
   RefreshTokenSchema,
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
+  VerifyEmailSchema,
 } from '../application/dtos/auth.dto.js';
 import { LoginUseCase , RefreshTokenUseCase, LogoutUseCase , RegisterCandidateUseCase } from '../application/use-cases/auth.usecase.js';
+import { VerifyEmailUseCase, ResendVerificationEmailUseCase } from '../application/use-cases/email-verification.usecase.js';
+import { ForgotPasswordUseCase, ResetPasswordUseCase } from '../application/use-cases/password-reset.usecase.js';
 import { OAuthLoginUseCase } from '../application/use-cases/oauth.usecase.js';
 import { PrismaUserRepository } from '../infrastructure/repositories/PrismaUserRepository.js';
 import { BcryptPasswordService, RedisSessionService } from '../infrastructure/services/AuthServices.js';
 import { JwtService } from '../infrastructure/services/JwtService.js';
+import { TokenService } from '../infrastructure/services/TokenService.js';
+import { QueueEmailAuthService } from '../infrastructure/services/QueueEmailAuthService.js';
 
 import { AuthController } from './auth.controller.js';
 
+const ResendVerificationSchema = z.object({
+  email: z.string().email(),
+});
 
 /**
  * Auth router factory.
@@ -37,6 +46,9 @@ export function createAuthRouter(): Router {
     container.register('IJwtService', () => new JwtService());
     container.register('IPasswordService', () => new BcryptPasswordService());
     container.register('ISessionService', (_infra: InfrastructureDependencies) => new RedisSessionService());
+    container.register('TokenService', () => new TokenService());
+    container.register('IEmailAuthService', () => new QueueEmailAuthService());
+
     container.register('LoginUseCase', (_infra: InfrastructureDependencies) => new LoginUseCase(
       container.get('IUserRepository'),
       container.get('IPasswordService'),
@@ -47,7 +59,9 @@ export function createAuthRouter(): Router {
       container.get('IUserRepository'),
       container.get('IPasswordService'),
       container.get('IJwtService'),
-      container.get('ISessionService')
+      container.get('ISessionService'),
+      container.get('IEmailAuthService'),
+      container.get('TokenService')
     ));
     container.register('OAuthLoginUseCase', (_infra: InfrastructureDependencies) => new OAuthLoginUseCase(
       container.get('IUserRepository'),
@@ -62,11 +76,37 @@ export function createAuthRouter(): Router {
     container.register('LogoutUseCase', (_infra: InfrastructureDependencies) => new LogoutUseCase(
       container.get('ISessionService')
     ));
+    container.register('VerifyEmailUseCase', () => new VerifyEmailUseCase(
+      container.get('IUserRepository'),
+      container.get('TokenService')
+    ));
+    container.register('ResendVerificationEmailUseCase', () => new ResendVerificationEmailUseCase(
+      container.get('IUserRepository'),
+      container.get('IEmailAuthService'),
+      container.get('TokenService')
+    ));
+    container.register('ForgotPasswordUseCase', () => new ForgotPasswordUseCase(
+      container.get('IUserRepository'),
+      container.get('IEmailAuthService'),
+      container.get('TokenService')
+    ));
+    container.register('ResetPasswordUseCase', () => new ResetPasswordUseCase(
+      container.get('IUserRepository'),
+      container.get('IPasswordService'),
+      container.get('ISessionService'),
+      container.get('IEmailAuthService'),
+      container.get('TokenService')
+    ));
+
     container.register('AuthController', (_infra: InfrastructureDependencies) => new AuthController(
       container.get('LoginUseCase'),
       container.get('RegisterCandidateUseCase'),
       container.get('RefreshTokenUseCase'),
-      container.get('LogoutUseCase')
+      container.get('LogoutUseCase'),
+      container.get('VerifyEmailUseCase'),
+      container.get('ResendVerificationEmailUseCase'),
+      container.get('ForgotPasswordUseCase'),
+      container.get('ResetPasswordUseCase')
     ));
   }
   
@@ -74,7 +114,15 @@ export function createAuthRouter(): Router {
 
   const router = Router();
 
-  // POST /auth/register/candidate
+  // POST /auth/register and /auth/register/candidate
+  router.post(
+    '/register',
+    authRateLimiter,
+    validate('body', RegisterCandidateSchema),
+    audit(AuditAction.REGISTER, 'User'),
+    (req, res, next) => { controller.registerCandidate(req, res, next).catch(next); },
+  );
+
   router.post(
     '/register/candidate',
     authRateLimiter,
@@ -90,6 +138,38 @@ export function createAuthRouter(): Router {
     validate('body', LoginSchema),
     audit(AuditAction.LOGIN, 'User'),
     (req, res, next) => { controller.login(req, res, next).catch(next); },
+  );
+
+  // GET /auth/verify-email?token=xxx
+  router.get(
+    '/verify-email',
+    validate('query', VerifyEmailSchema),
+    (req, res, next) => { controller.verifyEmail(req, res, next).catch(next); },
+  );
+
+  // POST /auth/resend-verification
+  router.post(
+    '/resend-verification',
+    authRateLimiter,
+    validate('body', ResendVerificationSchema),
+    (req, res, next) => { controller.resendVerification(req, res, next).catch(next); },
+  );
+
+  // POST /auth/forgot-password
+  router.post(
+    '/forgot-password',
+    authRateLimiter,
+    validate('body', ForgotPasswordSchema),
+    (req, res, next) => { controller.forgotPassword(req, res, next).catch(next); },
+  );
+
+  // POST /auth/reset-password
+  router.post(
+    '/reset-password',
+    authRateLimiter,
+    validate('body', ResetPasswordSchema),
+    audit(AuditAction.UPDATE, 'User'),
+    (req, res, next) => { controller.resetPassword(req, res, next).catch(next); },
   );
 
   // POST /auth/refresh

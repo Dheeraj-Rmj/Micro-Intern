@@ -8,7 +8,7 @@ import { audit } from '@/middleware/audit.middleware.js';
 import { authMiddleware } from '@/middleware/auth.middleware.js';
 import { requireRole, requireAnyRole } from '@/middleware/rbac.middleware.js';
 import { validate } from '@/middleware/validate.middleware.js';
-import { registerTrialModuleDependencies } from '@/modules/trial/presentation/trial.routes.js';
+import { registerAssessmentModuleDependencies } from '@/modules/assessment/presentation/assessment.routes.js';
 import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
 
 import {
@@ -59,7 +59,7 @@ export function createCompanyRouter(): Router {
     ));
 
     registerCompanyEventListeners();
-    registerTrialModuleDependencies();
+    registerAssessmentModuleDependencies();
   }
 
   const controller = container.get<CompanyController>('CompanyController');
@@ -108,17 +108,17 @@ export function createCompanyRouter(): Router {
     (req, res, next) => { controller.uploadLogo(req, res, next).catch(next); },
   );
 
-  // GET /api/v1/companies/me/trials - List company assessment trials
+  // GET /api/v1/companies/me/assessments - List company assessment assessments
   router.get(
-    '/me/trials',
+    '/me/assessments',
     authMiddleware as RequestHandler,
     requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
     (req, res, next) => {
-      const useCase = container.get<any>('ListCompanyTrialsUseCase');
+      const useCase = container.get<any>('ListCompanyAssessmentsUseCase');
       useCase
         .execute(req.user!.id, req.query)
-        .then(({ trials, pagination }: any) => {
-          ResponseFormatter.paginated(res, trials, pagination);
+        .then(({ assessments, pagination }: any) => {
+          ResponseFormatter.paginated(res, assessments, pagination);
         })
         .catch(next);
     },

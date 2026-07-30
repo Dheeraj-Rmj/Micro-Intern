@@ -141,7 +141,7 @@ export default function CandidateLandingPage() {
                   Verified Skill Tags
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Backed by completed trial submissions
+                  Backed by completed assessment submissions
                 </p>
               </div>
             </div>
@@ -171,7 +171,7 @@ export default function CandidateLandingPage() {
               How MicroIntern Works
             </h2>
             <p className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Three steps from trial submission to job offer
+              Three steps from assessment submission to job offer
             </p>
           </div>
 
@@ -181,7 +181,7 @@ export default function CandidateLandingPage() {
                 01
               </div>
               <h3 className="mt-6 text-xl font-bold text-white">
-                Browse Verified Trials
+                Browse Verified Assessments
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
                 Explore paid micro-internships and real-world engineering tasks
@@ -277,7 +277,7 @@ export default function CandidateLandingPage() {
                 </div>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-slate-300">
-                &ldquo;The trial evaluation score gave me verified proof of my
+                &ldquo;The assessment evaluation score gave me verified proof of my
                 backend architecture abilities. Within 10 days I had two formal
                 job offers.&rdquo;
               </p>

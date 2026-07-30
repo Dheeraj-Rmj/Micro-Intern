@@ -19,8 +19,8 @@ describe('Admin Module Domain', () => {
         totalCompanies: 25,
         activeCompanies: 20,
         pendingCompanies: 5,
-        totalTrials: 50,
-        activeTrials: 30,
+        totalAssessments: 50,
+        activeAssessments: 30,
         aiMetrics: {
           totalEvaluations: 3,
           passedEvaluations: 2,
@@ -36,7 +36,7 @@ describe('Admin Module Domain', () => {
       expect(json).toEqual({
         users: { total: 150, active: 140, suspended: 10 },
         companies: { total: 25, active: 20, pendingVerification: 5 },
-        trials: { total: 50, active: 30 },
+        assessments: { total: 50, active: 30 },
         aiUsage: {
           totalEvaluations: 3,
           passedEvaluations: 2,
@@ -55,8 +55,8 @@ describe('Admin Module Domain', () => {
         totalCompanies: 2,
         activeCompanies: 2,
         pendingCompanies: 0,
-        totalTrials: 5,
-        activeTrials: 5,
+        totalAssessments: 5,
+        activeAssessments: 5,
         aiMetrics: {
           totalEvaluations: 0,
           passedEvaluations: 0,

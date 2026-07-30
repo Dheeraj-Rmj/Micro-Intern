@@ -5,8 +5,8 @@ export interface PlatformStatsProps {
   totalCompanies: number;
   activeCompanies: number;
   pendingCompanies: number;
-  totalTrials: number;
-  activeTrials: number;
+  totalAssessments: number;
+  activeAssessments: number;
   aiMetrics: {
     totalEvaluations: number;
     passedEvaluations: number;
@@ -22,8 +22,8 @@ export class PlatformStats {
   readonly totalCompanies: number;
   readonly activeCompanies: number;
   readonly pendingCompanies: number;
-  readonly totalTrials: number;
-  readonly activeTrials: number;
+  readonly totalAssessments: number;
+  readonly activeAssessments: number;
   readonly aiMetrics: {
     readonly totalEvaluations: number;
     readonly passedEvaluations: number;
@@ -38,8 +38,8 @@ export class PlatformStats {
     this.totalCompanies = props.totalCompanies;
     this.activeCompanies = props.activeCompanies;
     this.pendingCompanies = props.pendingCompanies;
-    this.totalTrials = props.totalTrials;
-    this.activeTrials = props.activeTrials;
+    this.totalAssessments = props.totalAssessments;
+    this.activeAssessments = props.activeAssessments;
     this.aiMetrics = {
       totalEvaluations: props.aiMetrics.totalEvaluations,
       passedEvaluations: props.aiMetrics.passedEvaluations,
@@ -68,9 +68,9 @@ export class PlatformStats {
         active: this.activeCompanies,
         pendingVerification: this.pendingCompanies,
       },
-      trials: {
-        total: this.totalTrials,
-        active: this.activeTrials,
+      assessments: {
+        total: this.totalAssessments,
+        active: this.activeAssessments,
       },
       aiUsage: {
         totalEvaluations: this.aiMetrics.totalEvaluations,

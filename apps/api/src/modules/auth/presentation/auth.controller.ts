@@ -1,23 +1,34 @@
 import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
 
 import {
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-  RegisterCompanyOwnerSchema
-} from '../application/dtos/auth.dto.js';
-
-import type {
   LoginSchema,
   RegisterCandidateSchema,
-  RefreshTokenSchema} from '../application/dtos/auth.dto.js';
+  RefreshTokenSchema,
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
+  VerifyEmailSchema,
+} from '../application/dtos/auth.dto.js';
+import { z } from 'zod';
+
 import type {
   LoginUseCase,
   RegisterCandidateUseCase,
   RefreshTokenUseCase,
   LogoutUseCase,
 } from '../application/use-cases/auth.usecase.js';
+import type {
+  VerifyEmailUseCase,
+  ResendVerificationEmailUseCase,
+} from '../application/use-cases/email-verification.usecase.js';
+import type {
+  ForgotPasswordUseCase,
+  ResetPasswordUseCase,
+} from '../application/use-cases/password-reset.usecase.js';
 import type { Request, Response, NextFunction } from 'express';
 
-
+const ResendVerificationSchema = z.object({
+  email: z.string().email(),
+});
 
 /**
  * Auth Controller — presentation layer.
@@ -43,8 +54,6 @@ export class AuthController {
       }
       
       // Redirect back to frontend with tokens
-      // For simplicity in this demo, we'll return JSON. In a real app we'd redirect to a frontend deep link
-      // e.g. res.redirect(`http://localhost:3000/auth/callback?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`);
       res.status(200).json({
         success: true,
         data: result,
@@ -59,6 +68,10 @@ export class AuthController {
     private readonly registerCandidateUseCase: RegisterCandidateUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly logoutUseCase: LogoutUseCase,
+    private readonly verifyEmailUseCase: VerifyEmailUseCase,
+    private readonly resendVerificationEmailUseCase: ResendVerificationEmailUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
   ) {}
 
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -106,5 +119,45 @@ export class AuthController {
 
   me = (req: Request, res: Response): void => {
     ResponseFormatter.success(res, req.user);
+  };
+
+  verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { token } = VerifyEmailSchema.parse(req.query);
+      await this.verifyEmailUseCase.execute(token);
+      ResponseFormatter.success(res, { message: 'Email successfully verified' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resendVerification = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { email } = ResendVerificationSchema.parse(req.body);
+      await this.resendVerificationEmailUseCase.execute(email);
+      ResponseFormatter.success(res, { message: 'If an account exists, a verification email has been sent' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { email } = ForgotPasswordSchema.parse(req.body);
+      await this.forgotPasswordUseCase.execute(email);
+      ResponseFormatter.success(res, { message: 'If an account exists, a password reset email has been sent' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { token, newPassword } = ResetPasswordSchema.parse(req.body);
+      await this.resetPasswordUseCase.execute(token, newPassword);
+      ResponseFormatter.success(res, { message: 'Password has been reset successfully' });
+    } catch (error) {
+      next(error);
+    }
   };
 }

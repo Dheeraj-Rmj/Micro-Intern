@@ -15,7 +15,7 @@ export {
 
 export {
   DomainError,
-  TrialDomainError,
+  AssessmentDomainError,
   EvaluationDomainError,
   AuthDomainError,
   CandidateDomainError,

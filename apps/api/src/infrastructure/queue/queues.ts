@@ -69,6 +69,14 @@ export const queues = {
       attempts: 5, // Audit logs are critical — more retries
     },
   }),
+
+  assessmentAi: new Queue(QUEUE_NAMES.ASSESSMENT_AI, {
+    connection: bullMQConnection(),
+    defaultJobOptions: {
+      ...defaultJobOptions,
+      attempts: 2,
+    },
+  }),
 };
 
 /**
@@ -130,7 +138,7 @@ export type EmailJobData = {
 
 export type AIEvaluationJobData = {
   submissionId: string;
-  trialId: string;
+  assessmentId: string;
   candidateId: string;
 };
 
@@ -154,4 +162,22 @@ export type AuditJobData = {
   entityType: string;
   entityId: string | null;
   metadata: Record<string, unknown>;
+};
+
+export type AssessmentAIJobData = {
+  assessmentId: string;
+  recruiterId: string;
+  action:
+    | 'GENERATE_ASSESSMENT'
+    | 'IMPROVE_ASSESSMENT'
+    | 'REWRITE_INSTRUCTIONS'
+    | 'GENERATE_RUBRIC'
+    | 'SUGGEST_SKILLS'
+    | 'SUGGEST_DELIVERABLES'
+    | 'ESTIMATE_DIFFICULTY'
+    | 'ESTIMATE_DURATION'
+    | 'SUGGEST_LEARNING_OUTCOMES'
+    | 'GENERATE_INTERVIEW_QUESTIONS'
+    | 'GENERATE_EVALUATION_NOTES';
+  input: Record<string, unknown>;
 };

@@ -11,7 +11,7 @@ import {
 
 const stats = [
   {
-    name: 'Active Trials',
+    name: 'Active Assessments',
     value: '2',
     change: '+1 this week',
     icon: Briefcase,

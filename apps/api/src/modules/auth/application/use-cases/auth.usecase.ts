@@ -1,4 +1,7 @@
+import { AUTH } from '@microintern/shared';
+
 import { createModuleLogger } from '@/core/logger.js';
+import { TokenService } from '@/modules/auth/infrastructure/services/TokenService.js';
 import { AuthDomainError } from '@/shared/errors/DomainError.js';
 import {
   UnauthorizedError,
@@ -7,6 +10,7 @@ import {
   NotFoundError,
 } from '@/shared/errors/index.js';
 
+import type { IEmailAuthService } from '../interfaces/IEmailAuthService.js';
 import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
 import type {
   LoginDto,
@@ -113,6 +117,8 @@ export class RegisterCandidateUseCase {
     private readonly passwordService: IPasswordService,
     private readonly jwtService: IJwtService,
     private readonly sessionService: ISessionService,
+    private readonly emailService: IEmailAuthService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async execute(dto: RegisterCandidateDto): Promise<LoginResponse> {
@@ -135,13 +141,33 @@ export class RegisterCandidateUseCase {
       lastName: dto.lastName,
     });
 
+    // Generate verification token and enqueue welcome email (non-blocking)
+    const plainToken = this.tokenService.generateSecureToken();
+    const tokenHash = this.tokenService.hashToken(plainToken);
+    const expiresAt = new Date(
+      Date.now() + AUTH.EMAIL_VERIFICATION_EXPIRY_HOURS * 60 * 60 * 1000,
+    );
+
+    await this.userRepository.createVerificationToken({
+      userId: user.id,
+      type: 'EMAIL_VERIFICATION',
+      tokenHash,
+      expiresAt,
+    });
+
+    await this.emailService.sendWelcomeEmail({
+      email: user.email,
+      firstName: user.firstName,
+      verificationToken: plainToken,
+    });
+
     // Create session
     const sessionId = await this.sessionService.createSession(user.id);
 
     // Generate tokens
     const tokens = await this.jwtService.generateTokenPair(user, sessionId);
 
-    log.info({ userId: user.id }, 'Candidate registered successfully');
+    log.info({ userId: user.id }, 'Candidate registered successfully and verification email queued');
 
     return {
       user: {

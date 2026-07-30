@@ -24,6 +24,13 @@
   /* Semantic aliases */
   --color-background: var(--color-background-default);
   --color-foreground: var(--color-foreground-default);
+  --color-card: var(--card-bg);
+  --color-card-foreground: var(--card-fg);
+  --color-muted: var(--muted-bg);
+  --color-muted-foreground: var(--muted-fg);
+  --color-border: var(--border-color);
+  --color-input: var(--input-bg);
+  --color-ring: var(--ring-color);
 
   /* Neutral (slate-based) */
   --color-slate-50: oklch(0.984 0.003 247);
@@ -79,26 +86,26 @@
 :root {
   --color-background-default: oklch(0.99 0.002 247);
   --color-foreground-default: oklch(0.13 0.042 264);
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.13 0.042 264);
-  --color-muted: oklch(0.968 0.007 247);
-  --color-muted-foreground: oklch(0.554 0.046 257);
-  --color-border: oklch(0.929 0.013 255);
-  --color-input: oklch(0.929 0.013 255);
-  --color-ring: oklch(0.55 0.24 264);
+  --card-bg: oklch(1 0 0);
+  --card-fg: oklch(0.13 0.042 264);
+  --muted-bg: oklch(0.968 0.007 247);
+  --muted-fg: oklch(0.554 0.046 257);
+  --border-color: oklch(0.929 0.013 255);
+  --input-bg: oklch(0.929 0.013 255);
+  --ring-color: oklch(0.55 0.24 264);
 }
 
 /* ── Dark mode ────────────────────────────────────────── */
 .dark {
   --color-background-default: oklch(0.13 0.042 264);
   --color-foreground-default: oklch(0.97 0.02 264);
-  --color-card: oklch(0.18 0.038 264);
-  --color-card-foreground: oklch(0.97 0.02 264);
-  --color-muted: oklch(0.20 0.034 264);
-  --color-muted-foreground: oklch(0.60 0.04 257);
-  --color-border: oklch(0.25 0.030 264);
-  --color-input: oklch(0.25 0.030 264);
-  --color-ring: oklch(0.67 0.21 264);
+  --card-bg: oklch(0.18 0.038 264);
+  --card-fg: oklch(0.97 0.02 264);
+  --muted-bg: oklch(0.20 0.034 264);
+  --muted-fg: oklch(0.60 0.04 257);
+  --border-color: oklch(0.25 0.030 264);
+  --input-bg: oklch(0.25 0.030 264);
+  --ring-color: oklch(0.67 0.21 264);
 }
 
 /* ── Base styles ──────────────────────────────────────── */
@@ -106,7 +113,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  border-color: var(--color-border);
+  border-color: var(--border-color);
 }
 
 html {
