@@ -2,7 +2,7 @@ import { EvaluationStatus } from '@microintern/database';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { GetSubmissionEvaluationUseCase } from '@/modules/evaluation/application/use-cases/get-submission-evaluation.usecase.js';
-import { ListCandidateSubmissionsUseCase } from '@/modules/evaluation/application/use-cases/list-candidate-submissions.usecase.js';
+import { ListCandidateSubmissionsUseCase } from '@/modules/submission/application/use-cases/list-candidate-submissions.usecase.js';
 import { UnauthorizedError } from '@/shared/errors/index.js';
 
 describe('Submission & Evaluation Query Use Cases', () => {

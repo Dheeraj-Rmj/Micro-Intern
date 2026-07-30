@@ -3,9 +3,9 @@ import { StorageBucket } from '@microintern/shared';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { queues } from '@/infrastructure/queue/queues.js';
-import { StartAssessmentUseCase } from '@/modules/evaluation/application/use-cases/start-assessment.usecase.js';
-import { SubmitAssessmentUseCase } from '@/modules/evaluation/application/use-cases/submit-assessment.usecase.js';
-import { MaxAttemptsExceededError } from '@/modules/evaluation/domain/errors/submission.errors.js';
+import { StartAssessmentUseCase } from '@/modules/submission/application/use-cases/start-assessment.usecase.js';
+import { SubmitAssessmentUseCase } from '@/modules/submission/application/use-cases/submit-assessment.usecase.js';
+import { MaxAttemptsExceededError } from '@/modules/submission/domain/errors/submission.errors.js';
 import { eventBus, DOMAIN_EVENTS } from '@/shared/events/EventBus.js';
 
 vi.mock('@/infrastructure/queue/queues.js', () => ({

@@ -455,7 +455,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-slate-800 p-8 text-center text-sm text-slate-400">
-                    No tasks added to this section yet. Click "+ Add New Task" to begin.
+                    No tasks added to this section yet. Click &quot;+ Add New Task&quot; to begin.
                   </div>
                 )}
               </div>

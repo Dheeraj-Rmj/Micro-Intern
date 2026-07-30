@@ -49,8 +49,7 @@ describe('ProcessEvaluationUseCase', () => {
     mockAiEngine = {
       complete: vi.fn().mockResolvedValue({
         content: JSON.stringify({
-          earnedPoints: 40,
-          percentageScore: 80,
+          overallScore: 80,
           isPassed: true,
           summary: 'Candidate demonstrated deep comprehension of system resiliency and layer isolation.',
           strengths: ['Clear modular separation', 'Fault tolerance implementation'],
@@ -69,8 +68,8 @@ describe('ProcessEvaluationUseCase', () => {
     const evaluation = await useCase.execute('sub-1');
 
     expect(mockSubRepo.updateStatus).toHaveBeenCalledWith('sub-1', SubmissionStatus.UNDER_EVALUATION);
-    expect(mockAiEngine.complete).toHaveBeenCalledTimes(2); // Evaluated both task-1 and task-2
-    expect(evaluation.totalScore).toBe(80); // 40 earned per task = 80 out of 100 max points
+    expect(mockAiEngine.complete).toHaveBeenCalledTimes(1); // Evaluated all tasks in one batch call
+    expect(evaluation.totalScore).toBe(80); // 80% of 100 max points
     expect(evaluation.percentageScore).toBe(80);
     expect(evaluation.isPassed).toBe(true);
     expect(evaluation.status).toBe(EvaluationStatus.COMPLETED);
@@ -90,7 +89,7 @@ describe('ProcessEvaluationUseCase', () => {
   it('should mark submission as FAILED if computed percentage is below assessment passingScore', async () => {
     mockAiEngine.complete.mockResolvedValue({
       content: JSON.stringify({
-        earnedPoints: 20, // 20 + 20 = 40 out of 100 => 40% (below 70%)
+        overallScore: 40, // 40% (below 70%)
         strengths: [],
         improvements: ['Needs deeper review of ACID transactional logic'],
       }),
@@ -125,10 +124,9 @@ describe('ProcessEvaluationUseCase', () => {
       }),
     });
 
-    const evaluation = await useCase.execute('sub-1');
+    await expect(useCase.execute('sub-1')).rejects.toThrow('Security violation: AI prompt injection attempt detected.');
 
-    // Only task-2 should be processed by AI engine (task-1 caught by safety layer)
-    expect(mockAiEngine.complete).toHaveBeenCalledTimes(1);
-    expect(evaluation.improvements).toContain('Security violation: AI prompt injection attempt detected by AISafetyLayer. Task score forfeited.');
+    // None of the tasks should be processed by AI engine (caught by safety layer early)
+    expect(mockAiEngine.complete).toHaveBeenCalledTimes(0);
   });
 });

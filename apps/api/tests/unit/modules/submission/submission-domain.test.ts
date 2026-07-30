@@ -1,8 +1,8 @@
 import { SubmissionStatus } from '@microintern/database';
 import { describe, it, expect } from 'vitest';
 
-import { Submission } from '@/modules/evaluation/domain/entities/Submission.entity.js';
-import { AssessmentExpiredError, SubmissionAlreadyCompletedError } from '@/modules/evaluation/domain/errors/submission.errors.js';
+import { Submission } from '@/modules/submission/domain/entities/Submission.entity.js';
+import { AssessmentExpiredError, SubmissionAlreadyCompletedError } from '@/modules/submission/domain/errors/submission.errors.js';
 
 describe('Submission Domain Entity Validation', () => {
   const baseSubmissionProps = {
