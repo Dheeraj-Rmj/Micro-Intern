@@ -21,7 +21,7 @@
       "outputs": []
     },
     "type-check": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "db:generate"],
       "outputs": []
     },
     "test": {
