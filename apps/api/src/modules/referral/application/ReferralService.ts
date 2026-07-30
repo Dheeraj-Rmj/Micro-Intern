@@ -1,5 +1,5 @@
 import { createModuleLogger } from '@/core/logger.js';
-import { nanoid } from 'nanoid';
+import { randomBytes } from 'node:crypto';
 import type { PrismaClient } from '@microintern/database';
 
 const log = createModuleLogger('ReferralService');
@@ -20,7 +20,7 @@ export class ReferralService {
       };
     }
 
-    const referralCode = nanoid(12).toUpperCase();
+    const referralCode = randomBytes(6).toString('hex').toUpperCase();
     await this.db.referral.create({
       data: { referrerId: userId, referralCode, status: 'PENDING' },
     });
