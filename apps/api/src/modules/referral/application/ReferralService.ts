@@ -9,7 +9,7 @@ export class ReferralService {
 
   async generateReferralCode(userId: string): Promise<{ referralCode: string; referralUrl: string }> {
     // Check if user already has a code
-    const existing = await this.db.referral.findFirst({
+    const existing = await this.db.candidateReferral.findFirst({
       where: { referrerId: userId, status: 'PENDING' },
     });
 
@@ -21,7 +21,7 @@ export class ReferralService {
     }
 
     const referralCode = randomBytes(6).toString('hex').toUpperCase();
-    await this.db.referral.create({
+    await this.db.candidateReferral.create({
       data: { referrerId: userId, referralCode, status: 'PENDING' },
     });
 
@@ -33,7 +33,7 @@ export class ReferralService {
   }
 
   async trackConversion(referralCode: string, refereeId: string): Promise<boolean> {
-    const referral = await this.db.referral.findUnique({
+    const referral = await this.db.candidateReferral.findUnique({
       where: { referralCode },
     });
 
@@ -41,7 +41,7 @@ export class ReferralService {
       return false;
     }
 
-    await this.db.referral.update({
+    await this.db.candidateReferral.update({
       where: { referralCode },
       data: {
         refereeId,
@@ -55,14 +55,14 @@ export class ReferralService {
   }
 
   async getUserReferrals(userId: string) {
-    return this.db.referral.findMany({
+    return this.db.candidateReferral.findMany({
       where: { referrerId: userId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async getReferralStats(userId: string) {
-    const referrals = await this.db.referral.findMany({
+    const referrals = await this.db.candidateReferral.findMany({
       where: { referrerId: userId },
     });
 

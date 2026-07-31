@@ -2022,7 +2022,7 @@ model Interview {
   createdAt     DateTime            @default(now()) @map("created_at")
   updatedAt     DateTime            @updatedAt @map("updated_at")
 
-  questions InterviewQuestion[]
+  questions AIInterviewQuestion[]
   sessions  InterviewSession[]
 
   @@index([companyId])
@@ -2030,7 +2030,7 @@ model Interview {
   @@map("interviews")
 }
 
-model InterviewQuestion {
+model AIInterviewQuestion {
   id          String   @id @default(uuid()) @db.Uuid
   interviewId String   @map("interview_id") @db.Uuid
   text        String   @db.Text
@@ -2065,6 +2065,7 @@ model InterviewSession {
 
   interview Interview       @relation(fields: [interviewId], references: [id])
   answers   InterviewAnswer[]
+  recordings InterviewRecording[]
 
   @@index([interviewId])
   @@index([candidateId])
@@ -2081,7 +2082,7 @@ model InterviewAnswer {
   createdAt  DateTime @default(now()) @map("created_at")
 
   session  InterviewSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  question InterviewQuestion @relation(fields: [questionId], references: [id])
+  question AIInterviewQuestion @relation(fields: [questionId], references: [id])
 
   @@unique([sessionId, questionId])
   @@map("interview_answers")
@@ -2191,7 +2192,7 @@ model QuestionBank {
 
 // ── Feature 9: Referral & Affiliate System ───────────────────
 
-model Referral {
+model CandidateReferral {
   id           String    @id @default(uuid()) @db.Uuid
   referrerId   String    @map("referrer_id") @db.Uuid
   refereeId    String?   @map("referee_id") @db.Uuid
@@ -2202,6 +2203,8 @@ model Referral {
   convertedAt  DateTime? @map("converted_at")
   createdAt    DateTime  @default(now()) @map("created_at")
 
+  rewards      ReferralReward[]
+
   @@index([referrerId])
   @@index([referralCode])
   @@map("referrals")
@@ -2209,7 +2212,7 @@ model Referral {
 
 // ── Feature 12: Diversity & Inclusion Analytics ──────────────
 
-model DiversityDatapoint {
+model DiversityAnalytics {
   id            String   @id @default(uuid()) @db.Uuid
   candidateId   String   @unique @map("candidate_id") @db.Uuid
   gender        String?  @db.VarChar(50)
@@ -2235,4 +2238,60 @@ model SlackIntegration {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("slack_integrations")
+}
+
+// ── New Models for Phase 10 ─────────────────────────────
+
+model InterviewRecording {
+  id          String   @id @default(uuid()) @db.Uuid
+  sessionId   String   @map("session_id") @db.Uuid
+  url         String   @db.Text
+  durationMs  Int      @default(0) @map("duration_ms")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  session     InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@map("interview_recordings")
+}
+
+model ReferralReward {
+  id           String   @id @default(uuid()) @db.Uuid
+  referralId   String   @map("referral_id") @db.Uuid
+  rewardType   String   @db.VarChar(50)
+  rewardValue  Float
+  grantedAt    DateTime @default(now()) @map("granted_at")
+
+  referral     CandidateReferral @relation(fields: [referralId], references: [id], onDelete: Cascade)
+
+  @@index([referralId])
+  @@map("referral_rewards")
+}
+
+model AIJobDescription {
+  id            String   @id @default(uuid()) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  roleProfileId String?  @map("role_profile_id") @db.Uuid
+  originalText  String?  @db.Text
+  aiGenerated   String   @db.Text
+  status        String   @default("DRAFT") @db.VarChar(50)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@map("ai_job_descriptions")
+}
+
+model AIOfferLetter {
+  id          String   @id @default(uuid()) @db.Uuid
+  candidateId String   @map("candidate_id") @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  content     String   @db.Text
+  status      String   @default("DRAFT") @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([candidateId])
+  @@index([companyId])
+  @@map("ai_offer_letters")
 }

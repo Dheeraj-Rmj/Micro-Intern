@@ -13,7 +13,7 @@ export class DiversityAnalyticsService {
     disability?: boolean;
     veteranStatus?: boolean;
   }) {
-    return this.db.diversityDatapoint.upsert({
+    return this.db.diversityAnalytics.upsert({
       where: { candidateId },
       create: { candidateId, ...data },
       update: { ...data },
@@ -30,7 +30,7 @@ export class DiversityAnalyticsService {
     });
 
     const candidateIds = journeys.map((j) => j.candidateId);
-    const datapoints = await this.db.diversityDatapoint.findMany({
+    const datapoints = await this.db.diversityAnalytics.findMany({
       where: { candidateId: { in: candidateIds } },
     });
 
@@ -64,7 +64,7 @@ export class DiversityAnalyticsService {
   }
 
   async getPlatformDiversityReport() {
-    const datapoints = await this.db.diversityDatapoint.findMany();
+    const datapoints = await this.db.diversityAnalytics.findMany();
     return {
       total: datapoints.length,
       gender: this.aggregate(datapoints, 'gender'),
