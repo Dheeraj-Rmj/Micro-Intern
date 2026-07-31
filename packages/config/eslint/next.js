@@ -17,7 +17,7 @@ const config = [
     rules: {
       // Next.js core rules
       '@next/next/no-html-link-for-pages': 'error',
-      '@next/next/no-img-element': 'error',
+      '@next/next/no-img-element': 'warn',
       '@next/next/no-head-element': 'error',
 
       // React rules

@@ -72,7 +72,7 @@ export const SubmissionsPage: React.FC = () => {
           </div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">No Submissions Recorded</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 leading-relaxed">
-            You haven't submitted any completed trial deliverables or code repositories yet. Complete tasks in the trial workspace to see submissions here.
+            You haven&apos;t submitted any completed trial deliverables or code repositories yet. Complete tasks in the trial workspace to see submissions here.
           </p>
         </div>
       ) : (
@@ -96,7 +96,7 @@ export const SubmissionsPage: React.FC = () => {
 
                 {sub.feedback && (
                   <p className="text-xs text-slate-600 dark:text-slate-400 italic bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                    "{sub.feedback}"
+                    &quot;{sub.feedback}&quot;
                   </p>
                 )}
               </div>

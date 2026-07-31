@@ -95,7 +95,7 @@ export const MyApplicationsPage: React.FC = () => {
           </div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">No Applications Submitted</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 leading-relaxed">
-            You haven't submitted any applications for micro-trials yet. Explore available company trials to get started.
+            You haven&apos;t submitted any applications for micro-trials yet. Explore available company trials to get started.
           </p>
           <button
             onClick={() => setCurrentRoute('discover-trials')}

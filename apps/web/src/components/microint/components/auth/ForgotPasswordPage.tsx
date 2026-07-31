@@ -48,7 +48,7 @@ export const ForgotPasswordPage: React.FC = () => {
               </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Reset Instructions Sent!</h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                We sent a password recovery link to <span className="font-semibold text-slate-900 dark:text-white">{email}</span>. Please check your spam folder if you don't see it within 2 minutes.
+                We sent a password recovery link to <span className="font-semibold text-slate-900 dark:text-white">{email}</span>. Please check your spam folder if you don&apos;t see it within 2 minutes.
               </p>
               <button
                 onClick={() => setIsSent(false)}

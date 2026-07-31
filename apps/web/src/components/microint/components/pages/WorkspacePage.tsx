@@ -32,35 +32,12 @@ export const WorkspacePage: React.FC = () => {
 
   const trial = activeWorkspaceTrial || trials[0];
 
-  if (!trial) {
-    return (
-      <div>
-        <Breadcrumbs currentTitle="Workspace" />
-        <div className="py-20 px-6 text-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm max-w-lg mx-auto my-10">
-          <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-4">
-            <Code2 className="w-7 h-7" />
-          </div>
-          <h2 className="text-xl font-black text-slate-900 dark:text-white">No Active Workspace Trial</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-            Select an open trial from the Discover Trials catalog or open an shortlisted workspace from My Applications to start coding.
-          </p>
-          <button
-            onClick={() => setCurrentRoute('discover-trials')}
-            className="mt-6 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-600/20 transition-all cursor-pointer"
-          >
-            Discover Trials Now
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Timer Simulation
+  // Hooks declared unconditionally at top level
   const [secondsLeft, setSecondsLeft] = useState(9930); // ~2h 45m 30s
   const [codeContent, setCodeContent] = useState(`/**
  * MicroIntern Skill Trial Deliverable
- * Company: ${trial.company}
- * Task: ${trial.title}
+ * Company: ${trial ? trial.company : 'TechCorp'}
+ * Task: ${trial ? trial.title : 'Fullstack Feature'}
  */
 
 import React, { useState } from 'react';
@@ -98,6 +75,29 @@ export default function SubscriptionBillingEngine() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  if (!trial) {
+    return (
+      <div>
+        <Breadcrumbs currentTitle="Workspace" />
+        <div className="py-20 px-6 text-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm max-w-lg mx-auto my-10">
+          <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-4">
+            <Code2 className="w-7 h-7" />
+          </div>
+          <h2 className="text-xl font-black text-slate-900 dark:text-white">No Active Workspace Trial</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+            Select an open trial from the Discover Trials catalog or open an shortlisted workspace from My Applications to start coding.
+          </p>
+          <button
+            onClick={() => setCurrentRoute('discover-trials')}
+            className="mt-6 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-600/20 transition-all cursor-pointer"
+          >
+            Discover Trials Now
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const formatTime = (totalSec: number) => {
     const h = Math.floor(totalSec / 3600);

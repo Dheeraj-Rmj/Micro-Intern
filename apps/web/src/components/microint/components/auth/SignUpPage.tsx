@@ -3,6 +3,15 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Sparkles, Eye, EyeOff, ShieldCheck, AlertCircle } from 'lucide-react';
 
+interface FormErrors {
+  fullName?: string;
+  username?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  terms?: string;
+}
+
 export const SignUpPage: React.FC = () => {
   const { setCurrentRoute, showToast, setUserProfile } = useApp();
 
@@ -16,7 +25,7 @@ export const SignUpPage: React.FC = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const calculatePasswordStrength = (pass: string) => {
     let score = 0;
@@ -40,14 +49,14 @@ export const SignUpPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: Record<string, string> = {};
+    const newErrors: FormErrors = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-    if (!formData.username.trim()) newErrors.username = 'Username is required';
-    if (!formData.email.trim() || !formData.email.includes('@')) newErrors.email = 'Valid Email is required';
-    if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-    if (!formData.acceptTerms) newErrors.terms = 'You must accept the terms & privacy policy';
+    if (!formData.fullName.trim()) newErrors['fullName'] = 'Full Name is required';
+    if (!formData.username.trim()) newErrors['username'] = 'Username is required';
+    if (!formData.email.trim() || !formData.email.includes('@')) newErrors['email'] = 'Valid Email is required';
+    if (formData.password.length < 6) newErrors['password'] = 'Password must be at least 6 characters';
+    if (formData.password !== formData.confirmPassword) newErrors['confirmPassword'] = 'Passwords do not match';
+    if (!formData.acceptTerms) newErrors['terms'] = 'You must accept the terms & privacy policy';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -63,13 +72,13 @@ export const SignUpPage: React.FC = () => {
       email: formData.email,
     }));
 
-    showToast('Account Created!', 'Welcome to MicroIntern! Redirecting to Dashboard...', 'success');
-    setTimeout(() => setCurrentRoute('dashboard'), 800);
+    showToast('Account Created!', 'Welcome to MicroIntern candidate portal.', 'success');
+    setCurrentRoute('dashboard');
   };
 
   const handleSocialAuth = (provider: string) => {
-    showToast(`Registered via ${provider}`, 'Created verified candidate account!', 'success');
-    setTimeout(() => setCurrentRoute('dashboard'), 800);
+    showToast(`Registered via ${provider}`, 'Welcome!', 'success');
+    setCurrentRoute('dashboard');
   };
 
   return (
@@ -109,7 +118,7 @@ export const SignUpPage: React.FC = () => {
                 placeholder="e.g. Alex Vance"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
               />
-              {errors.fullName && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors.fullName}</p>}
+              {errors['fullName'] && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors['fullName']}</p>}
             </div>
 
             {/* Username */}
@@ -124,7 +133,7 @@ export const SignUpPage: React.FC = () => {
                 placeholder="alexvance_dev"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
               />
-              {errors.username && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors.username}</p>}
+              {errors['username'] && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors['username']}</p>}
             </div>
 
             {/* Email */}
@@ -139,7 +148,7 @@ export const SignUpPage: React.FC = () => {
                 placeholder="alex@university.edu"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
               />
-              {errors.email && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors.email}</p>}
+              {errors['email'] && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors['email']}</p>}
             </div>
 
             {/* Password */}
@@ -176,7 +185,7 @@ export const SignUpPage: React.FC = () => {
                   </div>
                 </div>
               )}
-              {errors.password && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors.password}</p>}
+              {errors['password'] && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors['password']}</p>}
             </div>
 
             {/* Confirm Password */}
@@ -191,7 +200,7 @@ export const SignUpPage: React.FC = () => {
                 placeholder="••••••••"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
               />
-              {errors.confirmPassword && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors.confirmPassword}</p>}
+              {errors['confirmPassword'] && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors['confirmPassword']}</p>}
             </div>
 
             {/* Accept Terms Checkbox */}
@@ -207,7 +216,7 @@ export const SignUpPage: React.FC = () => {
                   I accept the MicroIntern <span className="text-blue-600 dark:text-blue-400 font-semibold">Terms of Service</span> and <span className="text-blue-600 dark:text-blue-400 font-semibold">Privacy Policy</span>.
                 </span>
               </label>
-              {errors.terms && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors.terms}</p>}
+              {errors['terms'] && <p className="text-xs text-rose-500 mt-1 flex items-center gap-1"><AlertCircle className="w-3.5 h-3.5" />{errors['terms']}</p>}
             </div>
 
             {/* Create Account Button */}

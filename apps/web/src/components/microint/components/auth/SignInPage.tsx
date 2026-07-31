@@ -195,7 +195,7 @@ export const SignInPage: React.FC = () => {
           </div>
 
           <div className="mt-6 text-center text-xs text-slate-600 dark:text-slate-400">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button
               onClick={() => setCurrentRoute('signup')}
               className="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
