@@ -6,6 +6,7 @@ import { ThemeProvider } from 'next-themes';
 import { useState } from 'react';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './AuthProvider';
+import { AppProvider } from '@/components/microint/context/AppContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -49,8 +50,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          {children}
-          <Toaster
+          <AppProvider>
+            {children}
+            <Toaster
             position="bottom-right"
             richColors
             expand
@@ -66,6 +68,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               }
             }}
           />
+          </AppProvider>
         </AuthProvider>
         <ReactQueryDevtools
           initialIsOpen={false}
