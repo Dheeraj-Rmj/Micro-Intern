@@ -88,9 +88,29 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentRoute, setCurrentRoute] = useState<PageRoute>('loading');
+  const [currentRoute, setCurrentRoute] = useState<PageRoute>(() => {
+    if (typeof window !== 'undefined') {
+      const savedRoute = localStorage.getItem('microintern_current_route') as PageRoute | null;
+      if (savedRoute && savedRoute !== 'loading') {
+        return savedRoute;
+      }
+    }
+    return 'landing';
+  });
   const [role, setRole] = useState<UserRole>('candidate');
-  const [userProfile, setUserProfile] = useState<UserProfile>(INITIAL_USER_PROFILE);
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('microintern_user_profile');
+      if (saved) {
+        try {
+          return { ...INITIAL_USER_PROFILE, ...JSON.parse(saved) };
+        } catch (e) {
+          // ignore parse error
+        }
+      }
+    }
+    return INITIAL_USER_PROFILE;
+  });
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile>(INITIAL_COMPANY_PROFILE);
   const [trials, setTrials] = useState<Trial[]>(MOCK_TRIALS);
   const [applications, setApplications] = useState<Application[]>(MOCK_APPLICATIONS);
@@ -100,16 +120,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [interviews, setInterviews] = useState<InterviewSlot[]>(MOCK_INTERVIEWS);
   const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>(MOCK_CANDIDATES_SEARCH_POOL);
 
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('microintern_theme');
+      if (saved !== null) {
+        return saved === 'dark';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
   const [toastMessage, setToastMessage] = useState<ToastInfo | null>(null);
   const [activeWorkspaceTrial, setActiveWorkspaceTrial] = useState<Trial | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  // Persist current route across browser refresh
+  useEffect(() => {
+    if (typeof window !== 'undefined' && currentRoute !== 'loading') {
+      localStorage.setItem('microintern_current_route', currentRoute);
+    }
+  }, [currentRoute]);
+
+  // Persist user profile (avatar, resume, bio, skills, social links)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('microintern_user_profile', JSON.stringify(userProfile));
+    }
+  }, [userProfile]);
+
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('microintern_theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('microintern_theme', 'light');
     }
   }, [darkMode]);
 

@@ -20,31 +20,12 @@ import {
   Send,
   BarChart3,
   Rocket,
-  Mail,
-  MessageSquare,
   Building2,
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentRoute, showToast } = useApp();
+  const { setCurrentRoute } = useApp();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-
-  // Contact form state
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
-
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!contactName || !contactEmail || !contactMessage) {
-      showToast('Missing Fields', 'Please fill in all contact fields.', 'warning');
-      return;
-    }
-    showToast('Message Sent!', 'Thank you for reaching out. Our candidate support team will get back to you shortly.', 'success');
-    setContactName('');
-    setContactEmail('');
-    setContactMessage('');
-  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col selection:bg-purple-500 selection:text-white">
@@ -57,11 +38,6 @@ export const LandingPage: React.FC = () => {
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            {/* Tagline Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100 dark:bg-purple-950/80 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-bold mb-6 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-              <span>Version 1.0 Candidate Platform</span>
-            </div>
 
             {/* Exact Headline */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] max-w-4xl mx-auto">
@@ -329,69 +305,7 @@ export const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        {/* CONTACT SECTION */}
-        <section id="contact" className="py-16 md:py-24 bg-white dark:bg-slate-900/40 border-b border-slate-200/80 dark:border-slate-800/80">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-2">
-                Get In Touch
-              </h2>
-              <p className="text-3xl sm:text-4xl font-extrabold tracking-tight">Candidate Support & Enquiries</p>
-              <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                Have questions about skill trial submissions, stipends, or profile setup? Send us a message!
-              </p>
-            </div>
 
-            <form onSubmit={handleContactSubmit} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4 shadow-sm">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-600 dark:text-slate-400 mb-1">Your Name</label>
-                  <input
-                    type="text"
-                    value={contactName}
-                    onChange={(e) => setContactName(e.target.value)}
-                    placeholder="e.g. Alex Vance"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-600 dark:text-slate-400 mb-1">Your Email</label>
-                  <input
-                    type="email"
-                    value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
-                    placeholder="alex@university.edu"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-600 dark:text-slate-400 mb-1">Message</label>
-                <textarea
-                  value={contactMessage}
-                  onChange={(e) => setContactMessage(e.target.value)}
-                  placeholder="How can we help you with candidate skill trials?"
-                  rows={4}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Send Message</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </section>
 
         {/* FAQ SECTION */}
         <section id="faq" className="py-16 md:py-24">

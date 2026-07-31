@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Sparkles, Menu, X, Sun, Moon, ArrowRight } from 'lucide-react';
+import { Logo } from '../common/Logo';
 
 export const LandingNavbar: React.FC = () => {
   const { setCurrentRoute, darkMode, setDarkMode } = useApp();
@@ -9,7 +10,8 @@ export const LandingNavbar: React.FC = () => {
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
-    const element = document.getElementById(id);
+    const targetId = id === 'contact' ? 'footer' : id;
+    const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
@@ -19,15 +21,7 @@ export const LandingNavbar: React.FC = () => {
     <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/80 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
-        <button
-          onClick={() => setCurrentRoute('landing')}
-          className="flex items-center gap-2.5 font-black text-xl tracking-tight text-blue-600 dark:text-blue-400 cursor-pointer"
-        >
-          <div className="p-2 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/30">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <span>MICROINTERN</span>
-        </button>
+        <Logo size="md" onClick={() => setCurrentRoute('landing')} />
 
         {/* Desktop Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">

@@ -3,7 +3,6 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { PageRoute } from '../../types';
 import {
-  Sparkles,
   LayoutDashboard,
   User,
   Compass,
@@ -15,7 +14,9 @@ import {
   Settings,
   LogOut,
   X,
+  Sparkles,
 } from 'lucide-react';
+import { Logo } from '../common/Logo';
 
 interface SidebarProps {
   mobileOpen?: boolean;
@@ -48,6 +49,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
   };
 
   const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('microintern_current_route');
+    }
     showToast('Logged Out', 'You have been safely signed out.', 'info');
     setCurrentRoute('landing');
     if (setMobileOpen) setMobileOpen(false);
@@ -70,15 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
       <div>
         {/* Brand Header */}
         <div className="flex items-center justify-between pb-5 border-b border-slate-100 dark:border-slate-800">
-          <button
-            onClick={() => handleNavigate('landing')}
-            className="flex items-center gap-2.5 font-black text-lg tracking-tight text-blue-600 dark:text-blue-400 cursor-pointer"
-          >
-            <div className="p-2 rounded-xl bg-gradient-to-tr from-blue-600 via-emerald-500 to-amber-500 text-white shadow-md shadow-blue-600/20">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <span>MICROINTERN</span>
-          </button>
+          <Logo size="md" onClick={() => handleNavigate('landing')} />
           {setMobileOpen && (
             <button
               onClick={() => setMobileOpen(false)}

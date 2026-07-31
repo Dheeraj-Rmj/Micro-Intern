@@ -20,103 +20,209 @@ import {
   Image as ImageIcon,
   Sparkles,
   RotateCcw,
+  Info,
+  Edit3,
 } from 'lucide-react';
 
-// Zod validation schema for Candidate Profile form
+// Zod validation schema with ALL 7 text/list fields marked mandatory
 const profileSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'This field is required.')
+    .max(100, 'Full name must be under 100 characters'),
   headline: z
     .string()
-    .min(2, 'Headline must be at least 2 characters')
+    .min(1, 'This field is required.')
     .max(120, 'Headline must be under 120 characters'),
   bio: z
     .string()
-    .max(1000, 'Bio must be under 1000 characters')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'This field is required.')
+    .max(1000, 'Bio must be under 1000 characters'),
   skills: z
     .array(z.string())
+    .min(1, 'This field is required.')
     .max(20, 'You can add up to 20 skills maximum'),
   githubUrl: z
     .string()
+    .min(1, 'This field is required.')
     .refine(
-      (val) => !val || /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9_.-]+\/?$/i.test(val) || /^https?:\/\/[^\s]+$/i.test(val),
+      (val) => /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9_.-]+\/?$/i.test(val) || /^https?:\/\/[^\s]+$/i.test(val),
       { message: 'Please enter a valid GitHub profile URL (e.g. https://github.com/username)' }
-    )
-    .optional()
-    .or(z.literal('')),
+    ),
   linkedinUrl: z
     .string()
+    .min(1, 'This field is required.')
     .refine(
-      (val) => !val || /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_.-]+\/?$/i.test(val) || /^https?:\/\/[^\s]+$/i.test(val),
+      (val) => /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_.-]+\/?$/i.test(val) || /^https?:\/\/[^\s]+$/i.test(val),
       { message: 'Please enter a valid LinkedIn profile URL (e.g. https://linkedin.com/in/username)' }
-    )
-    .optional()
-    .or(z.literal('')),
+    ),
   portfolioUrl: z
     .string()
+    .min(1, 'This field is required.')
     .refine(
-      (val) => !val || /^https?:\/\/[^\s]+\.[^\s]+$/i.test(val),
-      { message: 'Please enter a valid URL (e.g. https://myportfolio.com)' }
-    )
-    .optional()
-    .or(z.literal('')),
+      (val) => /^https?:\/\/[^\s]+\.[^\s]+$/i.test(val),
+      { message: 'Please enter a valid URL (e.g. https://yourportfolio.com)' }
+    ),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
+const LOCAL_STORAGE_PROFILE_KEY = 'microintern_user_profile';
+
 export const ProfilePage: React.FC = () => {
   const { userProfile, setUserProfile, showToast } = useApp();
 
-  // Local state for file previews and error feedback
+  // Profile Save State: false initially, true after first successful save
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [isEditedAfterSave, setIsEditedAfterSave] = useState<boolean>(false);
+
+  // File states (initially empty or loaded from persistent state/localStorage)
   const [avatarPreview, setAvatarPreview] = useState<string>(userProfile.avatar || '');
   const [resumeName, setResumeName] = useState<string>(userProfile.resumeFileName || '');
+
+  // Resume Analyzing Loading Animation state
+  const [isAnalyzingResume, setIsAnalyzingResume] = useState<boolean>(false);
+  const [resumeProgress, setResumeProgress] = useState<number>(0);
+
   const [newSkillInput, setNewSkillInput] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [avatarDragOver, setAvatarDragOver] = useState<boolean>(false);
-  const [resumeDragOver, setResumeDragOver] = useState<boolean>(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [resumeError, setResumeError] = useState<string | null>(null);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize React Hook Form with Zod resolver
+  // React Hook Form
   const {
     register,
     handleSubmit,
     setValue,
     watch,
     reset,
-    formState: { errors },
+    trigger,
+    formState: { errors, isValid, isSubmitted },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
+    mode: 'onChange',
     defaultValues: {
-      headline: userProfile.headline || userProfile.experienceYears || 'Full Stack Engineer & Solution Architect',
-      bio: userProfile.bio || userProfile.aboutMe || '',
-      skills: userProfile.skills && userProfile.skills.length > 0 ? userProfile.skills : ['React', 'TypeScript', 'Node.js', 'Tailwind CSS'],
-      githubUrl: userProfile.githubUrl || '',
-      linkedinUrl: userProfile.linkedinUrl || '',
-      portfolioUrl: userProfile.portfolioUrl || '',
+      fullName: '',
+      headline: '',
+      bio: '',
+      skills: [],
+      githubUrl: '',
+      linkedinUrl: '',
+      portfolioUrl: '',
     },
   });
 
-  const currentSkills = watch('skills') || [];
-
-  // Update form defaults when userProfile changes
+  // On mount, load saved profile from userProfile or localStorage
   useEffect(() => {
-    reset({
-      headline: userProfile.headline || userProfile.experienceYears || 'Full Stack Engineer & Solution Architect',
-      bio: userProfile.bio || userProfile.aboutMe || '',
-      skills: userProfile.skills && userProfile.skills.length > 0 ? userProfile.skills : ['React', 'TypeScript', 'Node.js', 'Tailwind CSS'],
-      githubUrl: userProfile.githubUrl || '',
-      linkedinUrl: userProfile.linkedinUrl || '',
-      portfolioUrl: userProfile.portfolioUrl || '',
-    });
-    setAvatarPreview(userProfile.avatar || '');
-    setResumeName(userProfile.resumeFileName || '');
-  }, [userProfile, reset]);
+    let savedData: Partial<typeof userProfile> = userProfile;
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(LOCAL_STORAGE_PROFILE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          savedData = { ...userProfile, ...parsed };
+        } catch (e) {
+          // ignore error
+        }
+      }
+    }
 
-  // Handle Avatar validation & drag-and-drop
+    if (
+      savedData.fullName ||
+      savedData.headline ||
+      savedData.avatar ||
+      savedData.resumeFileName
+    ) {
+      reset({
+        fullName: savedData.fullName || '',
+        headline: savedData.headline || '',
+        bio: savedData.bio || savedData.aboutMe || '',
+        skills: savedData.skills || [],
+        githubUrl: savedData.githubUrl || '',
+        linkedinUrl: savedData.linkedinUrl || '',
+        portfolioUrl: savedData.portfolioUrl || '',
+      });
+
+      if (savedData.avatar) setAvatarPreview(savedData.avatar);
+      if (savedData.resumeFileName) setResumeName(savedData.resumeFileName);
+
+      // Check if all required fields are saved
+      if (
+        savedData.fullName &&
+        savedData.headline &&
+        savedData.bio &&
+        savedData.skills &&
+        savedData.skills.length > 0 &&
+        savedData.githubUrl &&
+        savedData.linkedinUrl &&
+        savedData.portfolioUrl &&
+        savedData.avatar &&
+        savedData.resumeFileName
+      ) {
+        setIsSaved(true);
+        setIsEditedAfterSave(false);
+      }
+    }
+  }, [reset]);
+
+  const currentSkills = watch('skills') || [];
+  const watchedFullName = watch('fullName') || '';
+  const watchedHeadline = watch('headline') || '';
+  const watchedBio = watch('bio') || '';
+  const watchedGithub = watch('githubUrl') || '';
+  const watchedLinkedin = watch('linkedinUrl') || '';
+  const watchedPortfolio = watch('portfolioUrl') || '';
+
+  // Track edits after initial successful save
+  useEffect(() => {
+    if (isSaved) {
+      setIsEditedAfterSave(true);
+    }
+  }, [
+    watchedFullName,
+    watchedHeadline,
+    watchedBio,
+    currentSkills,
+    watchedGithub,
+    watchedLinkedin,
+    watchedPortfolio,
+    avatarPreview,
+    resumeName,
+  ]);
+
+  // All 9 fields mandatory check
+  const allRequiredFieldsFilled = Boolean(
+    watchedFullName.trim() &&
+    watchedHeadline.trim() &&
+    watchedBio.trim() &&
+    currentSkills.length >= 1 &&
+    watchedGithub.trim() &&
+    watchedLinkedin.trim() &&
+    watchedPortfolio.trim() &&
+    avatarPreview &&
+    resumeName &&
+    isValid
+  );
+
+  // Button State & Text Determination
+  let buttonText = 'Save Profile';
+  let isButtonDisabled = false;
+
+  if (!isSaved) {
+    buttonText = 'Save Profile';
+    isButtonDisabled = !allRequiredFieldsFilled || isSaving;
+  } else if (!isEditedAfterSave) {
+    buttonText = 'Edit Profile';
+    isButtonDisabled = false;
+  } else {
+    buttonText = 'Save Changes';
+    isButtonDisabled = !allRequiredFieldsFilled || isSaving;
+  }
+
+  // Handle Avatar validation & upload
   const validateAndProcessAvatar = (file: File) => {
     setAvatarError(null);
     if (!file.type.startsWith('image/')) {
@@ -135,7 +241,14 @@ export const ProfilePage: React.FC = () => {
 
     const previewUrl = URL.createObjectURL(file);
     setAvatarPreview(previewUrl);
-    showToast('Avatar Preview Ready', `Uploaded ${file.name} (${(file.size / 1024).toFixed(0)}KB)`, 'info');
+
+    // Save avatar immediately to userProfile so header and sidebar update
+    const updated = { ...userProfile, avatar: previewUrl };
+    setUserProfile(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updated));
+    }
+    showToast('Avatar Uploaded', `Attached ${file.name}`, 'info');
   };
 
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,16 +258,7 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleAvatarDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setAvatarDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      validateAndProcessAvatar(file);
-    }
-  };
-
-  // Handle Resume validation & drag-and-drop (PDF only, max 10MB)
+  // Handle Resume validation, loading animation progress bar & notification
   const validateAndProcessResume = (file: File) => {
     setResumeError(null);
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
@@ -172,8 +276,34 @@ export const ProfilePage: React.FC = () => {
       return;
     }
 
-    setResumeName(file.name);
-    showToast('Resume Selected', `Attached ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`, 'info');
+    setIsAnalyzingResume(true);
+    setResumeProgress(0);
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      setResumeProgress(progress);
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          setIsAnalyzingResume(false);
+          setResumeName(file.name);
+
+          // Save resume name immediately to userProfile & localStorage
+          const updated = { ...userProfile, resumeFileName: file.name };
+          setUserProfile(updated);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updated));
+          }
+
+          showToast(
+            'Resume Uploaded Successfully',
+            'Automatic AI profile extraction will be available when the backend API is connected.',
+            'info'
+          );
+        }, 200);
+      }
+    }, 120);
   };
 
   const handleResumeFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,16 +313,7 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleResumeDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setResumeDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      validateAndProcessResume(file);
-    }
-  };
-
-  // Skills Tag Input Handlers (Max 20 skills)
+  // Skills Tag Input Handlers
   const handleAddSkill = () => {
     const trimmed = newSkillInput.trim();
     if (!trimmed) return;
@@ -210,52 +331,79 @@ export const ProfilePage: React.FC = () => {
     const updated = [...currentSkills, trimmed];
     setValue('skills', updated, { shouldValidate: true });
     setNewSkillInput('');
+    trigger('skills');
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
     const updated = currentSkills.filter((s) => s !== skillToRemove);
     setValue('skills', updated, { shouldValidate: true });
+    trigger('skills');
   };
 
   // Form Submission
   const onSaveProfile = (data: ProfileFormValues) => {
+    if (!avatarPreview) {
+      setAvatarError('This field is required.');
+    }
+    if (!resumeName) {
+      setResumeError('This field is required.');
+    }
+
+    if (!allRequiredFieldsFilled) {
+      trigger();
+      return;
+    }
+
     setIsSaving(true);
 
     setTimeout(() => {
-      setUserProfile((prev) => ({
-        ...prev,
+      const updatedProfile = {
+        ...userProfile,
+        fullName: data.fullName,
         headline: data.headline,
-        bio: data.bio || '',
-        aboutMe: data.bio || prev.aboutMe,
+        bio: data.bio,
+        aboutMe: data.bio,
         skills: data.skills,
-        githubUrl: data.githubUrl || '',
-        linkedinUrl: data.linkedinUrl || '',
-        portfolioUrl: data.portfolioUrl || '',
-        avatar: avatarPreview || prev.avatar,
-        resumeFileName: resumeName || prev.resumeFileName,
-      }));
+        githubUrl: data.githubUrl,
+        linkedinUrl: data.linkedinUrl,
+        portfolioUrl: data.portfolioUrl,
+        avatar: avatarPreview,
+        resumeFileName: resumeName,
+      };
+
+      setUserProfile(updatedProfile);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updatedProfile));
+      }
+
       setIsSaving(false);
-      showToast('Profile Saved!', 'Your Candidate Profile details have been updated successfully.', 'success');
-    }, 500);
+      setIsSaved(true);
+      setIsEditedAfterSave(false);
+      showToast('Profile Saved', 'Profile saved successfully.', 'success');
+    }, 400);
   };
 
   const handleReset = () => {
     reset({
-      headline: userProfile.headline || userProfile.experienceYears || 'Full Stack Engineer & Solution Architect',
-      bio: userProfile.bio || userProfile.aboutMe || '',
-      skills: userProfile.skills && userProfile.skills.length > 0 ? userProfile.skills : ['React', 'TypeScript', 'Node.js', 'Tailwind CSS'],
-      githubUrl: userProfile.githubUrl || '',
-      linkedinUrl: userProfile.linkedinUrl || '',
-      portfolioUrl: userProfile.portfolioUrl || '',
+      fullName: '',
+      headline: '',
+      bio: '',
+      skills: [],
+      githubUrl: '',
+      linkedinUrl: '',
+      portfolioUrl: '',
     });
-    setAvatarPreview(userProfile.avatar || '');
-    setResumeName(userProfile.resumeFileName || '');
+    setAvatarPreview('');
+    setResumeName('');
     setAvatarError(null);
     setResumeError(null);
-    showToast('Form Reset', 'Reverted form values to original saved state.', 'info');
+    setIsSaved(false);
+    setIsEditedAfterSave(false);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(LOCAL_STORAGE_PROFILE_KEY);
+    }
+    showToast('Form Reset', 'Cleared all candidate profile fields.', 'info');
   };
-
-  const watchedHeadline = watch('headline') || userProfile.headline || 'Full Stack Engineer & Solution Architect';
 
   return (
     <div className="space-y-8 pb-12">
@@ -273,7 +421,7 @@ export const ProfilePage: React.FC = () => {
                 {avatarPreview ? (
                   <img
                     src={avatarPreview}
-                    alt={userProfile.fullName || 'Candidate Avatar'}
+                    alt={watchedFullName || 'Candidate Avatar'}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -291,7 +439,7 @@ export const ProfilePage: React.FC = () => {
                 className="absolute inset-0 rounded-full bg-slate-950/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs font-bold transition-opacity cursor-pointer"
               >
                 <Upload className="w-6 h-6 mb-1 text-emerald-400" />
-                <span>Change Avatar</span>
+                <span>{avatarPreview ? 'Edit Avatar' : 'Upload Avatar'}</span>
               </button>
             </div>
 
@@ -300,18 +448,18 @@ export const ProfilePage: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                    {userProfile.fullName || 'Alex Vance'}
+                    {watchedFullName || 'Candidate Profile'}
                   </h1>
                   <p className="text-sm font-semibold text-emerald-300 flex items-center justify-center sm:justify-start gap-1.5 mt-0.5">
                     <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span>{watchedHeadline}</span>
+                    <span>{watchedHeadline || 'Unspecified Headline'}</span>
                   </p>
                 </div>
 
                 <div className="shrink-0 flex items-center justify-center sm:justify-start">
                   <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold flex items-center gap-1.5 shadow-sm">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Trust Score: {userProfile.trustScore || 92}/100</span>
+                    <span>Trust Score: {userProfile.trustScore || 0}/100</span>
                   </span>
                 </div>
               </div>
@@ -328,127 +476,167 @@ export const ProfilePage: React.FC = () => {
         {/* ================= 2. EDIT PROFILE FORM ================= */}
         <form onSubmit={handleSubmit(onSaveProfile)} className="space-y-8">
           
-          {/* DRAG-AND-DROP UPLOAD SECTION */}
+          {/* UPLOAD CARDS SECTION */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            {/* DRAG & DROP AVATAR UPLOAD (Image only, Max 5MB) */}
+            {/* AVATAR UPLOAD CARD (Single button, hides upload area after upload, shows Edit Avatar) */}
             <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
                     <ImageIcon className="w-4 h-4 text-blue-600" />
-                    <span>Avatar Upload</span>
+                    <span>Avatar Upload <span className="text-rose-500">*</span></span>
                   </h3>
                   <span className="text-[11px] font-semibold text-slate-500">Max 5MB (Image)</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Drag & drop an image or click to select file. Supported formats: PNG, JPG, WebP.
+                  Upload a professional profile image (PNG, JPG, WebP).
                 </p>
 
-                {/* Avatar Dropzone */}
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setAvatarDragOver(true);
-                  }}
-                  onDragLeave={() => setAvatarDragOver(false)}
-                  onDrop={handleAvatarDrop}
-                  onClick={() => avatarInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
-                    avatarDragOver
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 scale-[1.01]'
-                      : 'border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 hover:border-blue-400'
-                  }`}
-                >
-                  <input
-                    ref={avatarInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarFileChange}
-                    className="hidden"
-                  />
-                  <Upload className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-1 animate-bounce" />
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    {avatarDragOver ? 'Drop image file here' : 'Drag & Drop Avatar Image Here'}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    or <span className="text-blue-600 dark:text-blue-400 underline font-semibold">Browse Files</span>
-                  </p>
-                </div>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarFileChange}
+                  className="hidden"
+                />
 
-                {avatarError && (
-                  <p className="text-xs text-rose-500 font-semibold flex items-center gap-1.5 mt-2">
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    <span>{avatarError}</span>
-                  </p>
+                {!avatarPreview ? (
+                  /* Initially show ONLY ONE Upload Avatar button */
+                  <div className="py-6 flex flex-col items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-600/20 transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      <Upload className="w-4 h-4" />
+                      <span>Upload Avatar</span>
+                    </button>
+                    {(!avatarPreview && (avatarError || isSubmitted)) && (
+                      <p className="text-xs text-rose-500 font-semibold flex items-center gap-1.5 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>This field is required.</span>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  /* Uploaded state: Hide upload area, display avatar preview & Edit Avatar button */
+                  <div className="p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={avatarPreview}
+                        alt="Uploaded Avatar"
+                        className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-500"
+                      />
+                      <div>
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-100 block">Avatar Uploaded</span>
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Image Ready
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-blue-500" />
+                      <span>Edit Avatar</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* DRAG & DROP RESUME UPLOAD (PDF only, Max 10MB) */}
+            {/* RESUME UPLOAD CARD (Single button, hides upload area after upload, shows Replace Resume) */}
             <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
                     <FileText className="w-4 h-4 text-emerald-600" />
-                    <span>Resume Upload</span>
+                    <span>Resume Upload <span className="text-rose-500">*</span></span>
                   </h3>
                   <span className="text-[11px] font-semibold text-slate-500">Max 10MB (PDF Only)</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  Drag & drop your PDF resume file. Accepted format: PDF document (.pdf).
+                  Upload your PDF resume document (.pdf).
                 </p>
 
-                {/* Resume Dropzone */}
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setResumeDragOver(true);
-                  }}
-                  onDragLeave={() => setResumeDragOver(false)}
-                  onDrop={handleResumeDrop}
-                  onClick={() => resumeInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
-                    resumeDragOver
-                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 scale-[1.01]'
-                      : 'border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 hover:border-emerald-400'
-                  }`}
-                >
-                  <input
-                    ref={resumeInputRef}
-                    type="file"
-                    accept=".pdf,application/pdf"
-                    onChange={handleResumeFileChange}
-                    className="hidden"
-                  />
-                  <FileText className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mb-1" />
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    {resumeDragOver ? 'Drop PDF file here' : 'Drag & Drop PDF Resume Here'}
-                  </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    or <span className="text-emerald-600 dark:text-emerald-400 underline font-semibold">Browse Files</span>
-                  </p>
-                </div>
+                <input
+                  ref={resumeInputRef}
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  onChange={handleResumeFileChange}
+                  className="hidden"
+                />
 
-                {resumeError && (
-                  <p className="text-xs text-rose-500 font-semibold flex items-center gap-1.5 mt-2">
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    <span>{resumeError}</span>
-                  </p>
-                )}
-
-                {/* Selected Resume Pill */}
-                {resumeName && (
-                  <div className="mt-3 p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 truncate">
-                      <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span className="font-semibold text-emerald-950 dark:text-emerald-200 truncate">
-                        {resumeName}
-                      </span>
+                {isAnalyzingResume ? (
+                  /* Analyzing Loading State */
+                  <div className="border border-emerald-500/40 rounded-2xl p-6 text-center bg-emerald-50/50 dark:bg-emerald-950/30 flex flex-col items-center justify-center gap-3">
+                    <div className="p-3 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                      <Sparkles className="w-6 h-6 animate-spin" />
                     </div>
-                    <span className="text-[10px] uppercase font-bold text-emerald-600 px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 shrink-0">
-                      PDF Attached
-                    </span>
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      Analyzing Resume...
+                    </p>
+                    <div className="w-full max-w-xs bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div
+                        className="bg-emerald-500 h-full transition-all duration-150 ease-out"
+                        style={{ width: `${resumeProgress}%` }}
+                      />
+                    </div>
+                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">{resumeProgress}%</span>
+                  </div>
+                ) : !resumeName ? (
+                  /* Initially show ONLY ONE Upload Resume button */
+                  <div className="py-6 flex flex-col items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => resumeInputRef.current?.click()}
+                      className="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      <Upload className="w-4 h-4" />
+                      <span>Upload Resume</span>
+                    </button>
+                    {(!resumeName && (resumeError || isSubmitted)) && (
+                      <p className="text-xs text-rose-500 font-semibold flex items-center gap-1.5 mt-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>This field is required.</span>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  /* Uploaded state: Hide upload area, display filename + Replace Resume button */
+                  <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 shrink-0">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-xs font-bold text-emerald-950 dark:text-emerald-100 block truncate">
+                            {resumeName}
+                          </span>
+                          <span className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">
+                            PDF Attached
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => resumeInputRef.current?.click()}
+                        className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all cursor-pointer flex items-center gap-1.5 shadow-xs shrink-0"
+                      >
+                        <Upload className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Replace Resume</span>
+                      </button>
+                    </div>
+
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed border-t border-emerald-200/60 dark:border-emerald-800/60 pt-2">
+                      Resume uploaded successfully. Automatic AI profile extraction will be available when the backend API is connected.
+                    </p>
                   </div>
                 )}
               </div>
@@ -458,12 +646,51 @@ export const ProfilePage: React.FC = () => {
 
           {/* FORM FIELDS CARD */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2 text-slate-900 dark:text-slate-100">
-              <User className="w-5 h-5 text-blue-600" />
-              <span>Profile Details & Portfolio</span>
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-3">
+              <h3 className="text-lg font-bold flex items-center gap-2 text-slate-900 dark:text-slate-100">
+                <User className="w-5 h-5 text-blue-600" />
+                <span>Profile Details & Portfolio</span>
+              </h3>
+
+              {/* Header Resume Banner/Button */}
+              <div className="inline-flex items-center gap-3 p-2 px-3 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-xs">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span className="text-slate-600 dark:text-slate-300">Upload your resume PDF to complete your profile.</span>
+                <button
+                  type="button"
+                  onClick={() => resumeInputRef.current?.click()}
+                  className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer shrink-0"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Upload Resume</span>
+                </button>
+              </div>
+            </div>
 
             <div className="space-y-6">
+              {/* FIELD 0: FULL NAME */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                  Full Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register('fullName')}
+                  placeholder="e.g. Alex Vance"
+                  className={`w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 transition-all ${
+                    errors.fullName
+                      ? 'border-rose-500 focus:ring-rose-500'
+                      : 'border-slate-200 dark:border-slate-700 focus:ring-blue-500'
+                  }`}
+                />
+                {errors.fullName && (
+                  <p className="text-xs text-rose-500 font-semibold flex items-center gap-1 mt-1">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    <span>{errors.fullName.message}</span>
+                  </p>
+                )}
+              </div>
+
               {/* FIELD 1: HEADLINE */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
@@ -472,7 +699,7 @@ export const ProfilePage: React.FC = () => {
                 <input
                   type="text"
                   {...register('headline')}
-                  placeholder="e.g. Senior Full Stack Engineer | React & Node.js Specialist"
+                  placeholder="e.g. Full Stack Developer"
                   className={`w-full px-4 py-3 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 transition-all ${
                     errors.headline
                       ? 'border-rose-500 focus:ring-rose-500'
@@ -490,12 +717,12 @@ export const ProfilePage: React.FC = () => {
               {/* FIELD 2: BIO */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                  Bio / About Me
+                  Bio / About Me <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   rows={4}
                   {...register('bio')}
-                  placeholder="Tell recruiters and team leads about your experience, achievements, and technical background..."
+                  placeholder="Tell recruiters about your experience, achievements, and technical background..."
                   className={`w-full p-4 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 transition-all ${
                     errors.bio
                       ? 'border-rose-500 focus:ring-rose-500'
@@ -514,7 +741,7 @@ export const ProfilePage: React.FC = () => {
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-                    Technical Skills (Max 20)
+                    Technical Skills (Max 20) <span className="text-rose-500">*</span>
                   </label>
                   <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
                     {currentSkills.length} / 20 Skills
@@ -551,9 +778,13 @@ export const ProfilePage: React.FC = () => {
                     type="text"
                     value={newSkillInput}
                     onChange={(e) => setNewSkillInput(e.target.value)}
-                    placeholder="Add skill (e.g. Next.js, GraphQL, PyTorch)"
+                    placeholder="Add skill (e.g. React, Node.js, Python)"
                     disabled={currentSkills.length >= 20}
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    className={`flex-1 px-4 py-2.5 rounded-xl border bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 disabled:opacity-50 ${
+                      errors.skills
+                        ? 'border-rose-500 focus:ring-rose-500'
+                        : 'border-slate-200 dark:border-slate-700 focus:ring-blue-500'
+                    }`}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -589,7 +820,9 @@ export const ProfilePage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* GitHub URL */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">GitHub URL</label>
+                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                      GitHub URL <span className="text-rose-500">*</span>
+                    </label>
                     <div className="relative">
                       <Github className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
                       <input
@@ -612,7 +845,9 @@ export const ProfilePage: React.FC = () => {
 
                   {/* LinkedIn URL */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">LinkedIn URL</label>
+                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                      LinkedIn URL <span className="text-rose-500">*</span>
+                    </label>
                     <div className="relative">
                       <Linkedin className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
                       <input
@@ -635,13 +870,15 @@ export const ProfilePage: React.FC = () => {
 
                   {/* Portfolio URL */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">Portfolio URL</label>
+                    <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+                      Portfolio URL <span className="text-rose-500">*</span>
+                    </label>
                     <div className="relative">
                       <Globe className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
                       <input
                         type="url"
                         {...register('portfolioUrl')}
-                        placeholder="https://myportfolio.dev"
+                        placeholder="https://yourportfolio.com"
                         className={`w-full pl-10 pr-3 py-2.5 rounded-xl border bg-slate-50 dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 ${
                           errors.portfolioUrl
                             ? 'border-rose-500 focus:ring-rose-500'
@@ -661,25 +898,41 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* ACTION BUTTONS */}
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs sm:text-sm transition-colors cursor-pointer flex items-center gap-2 text-slate-700 dark:text-slate-300"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Reset</span>
-            </button>
+          {/* ACTION BUTTONS & SAVE PROFILE STATE */}
+          <div className="flex flex-col items-end gap-2 pt-2">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs sm:text-sm transition-colors cursor-pointer flex items-center gap-2 text-slate-700 dark:text-slate-300"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Reset</span>
+              </button>
 
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-600/20 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
-            >
-              <Save className="w-4 h-4" />
-              <span>{isSaving ? 'Saving Changes...' : 'Save Profile'}</span>
-            </button>
+              <button
+                type="submit"
+                disabled={isButtonDisabled}
+                className={`px-8 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 ${
+                  isButtonDisabled
+                    ? 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed border border-slate-300 dark:border-slate-700 shadow-none'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20 cursor-pointer'
+                }`}
+              >
+                {isSaved && !isEditedAfterSave ? (
+                  <Edit3 className="w-4 h-4" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                <span>{isSaving ? 'Saving...' : buttonText}</span>
+              </button>
+            </div>
+
+            {isButtonDisabled && (
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                Please fill all required fields to enable saving.
+              </p>
+            )}
           </div>
 
         </form>

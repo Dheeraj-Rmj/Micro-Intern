@@ -2,29 +2,26 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { Sparkles, Github, Twitter, Linkedin, Heart, Mail, Phone, MapPin } from 'lucide-react';
+import { Logo } from '../common/Logo';
 
 export const LandingFooter: React.FC = () => {
   const { setCurrentRoute } = useApp();
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
+    const targetId = id === 'contact' ? 'footer' : id;
+    const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
+    <footer id="footer" className="bg-slate-900 text-slate-300 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand Info */}
           <div className="md:col-span-1 space-y-4">
-            <div className="flex items-center gap-2 font-black text-xl text-white">
-              <div className="p-2 rounded-xl bg-blue-600 text-white">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <span>MICROINTERN</span>
-            </div>
+            <Logo size="lg" onClick={() => setCurrentRoute('landing')} />
             <p className="text-xs text-slate-400 leading-relaxed">
               AI Powered Skill Trial Platform empowering developers and designers to prove their talent through real 2–5 day company trials and land paid tech internships.
             </p>

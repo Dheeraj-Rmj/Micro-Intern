@@ -1,28 +1,43 @@
 'use client';
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useApp } from '../../context/AppContext';
 import { Sparkles, Eye, EyeOff, LogIn } from 'lucide-react';
+import { Logo } from '../common/Logo';
+
+const signInSchema = z.object({
+  identifier: z.string().min(1, 'This field is required.'),
+  password: z.string().min(1, 'This field is required.'),
+  rememberMe: z.boolean().optional(),
+});
+
+type SignInFormData = z.infer<typeof signInSchema>;
 
 export const SignInPage: React.FC = () => {
   const { setCurrentRoute, showToast, setUserProfile } = useApp();
-
-  const [identifier, setIdentifier] = useState('alex.vance@university.edu');
-  const [password, setPassword] = useState('password123');
-  const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!identifier || !password) {
-      showToast('Missing Credentials', 'Please enter your email/username and password.', 'warning');
-      return;
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      identifier: '',
+      password: '',
+      rememberMe: true,
+    },
+  });
 
-    if (identifier.includes('alex') || identifier.includes('@')) {
+  const onSubmit = (data: SignInFormData) => {
+    if (data.identifier.includes('alex') || data.identifier.includes('@')) {
       setUserProfile((prev) => ({
         ...prev,
-        email: identifier.includes('@') ? identifier : prev.email,
-        username: !identifier.includes('@') ? identifier : prev.username,
+        email: data.identifier.includes('@') ? data.identifier : prev.email,
+        username: !data.identifier.includes('@') ? data.identifier : prev.username,
       }));
     }
 
@@ -39,16 +54,8 @@ export const SignInPage: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-slate-900 dark:text-slate-100">
       <div className="max-w-md mx-auto w-full">
         {/* Logo Branding */}
-        <div className="text-center mb-8">
-          <button
-            onClick={() => setCurrentRoute('landing')}
-            className="inline-flex items-center gap-2.5 text-2xl font-black tracking-tight text-blue-600 dark:text-blue-400 hover:opacity-90 transition-opacity cursor-pointer"
-          >
-            <div className="p-2 rounded-xl bg-gradient-to-tr from-blue-600 via-emerald-500 to-amber-500 text-white shadow-md">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <span>MICROINTERN</span>
-          </button>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Logo size="lg" onClick={() => setCurrentRoute('landing')} />
           <h2 className="mt-4 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Candidate Login
           </h2>
@@ -59,7 +66,7 @@ export const SignInPage: React.FC = () => {
 
         {/* Sign In Card */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-2xl p-6 sm:p-8">
-          <form onSubmit={handleSignIn} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Email or Username */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
@@ -67,11 +74,19 @@ export const SignInPage: React.FC = () => {
               </label>
               <input
                 type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="alex.vance@university.edu or alexvance_dev"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                {...register('identifier')}
+                placeholder="Enter email or username"
+                className={`w-full px-3.5 py-2.5 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 dark:text-white ${
+                  errors.identifier
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-slate-200 dark:border-slate-700 focus:ring-blue-500'
+                }`}
               />
+              {errors.identifier && (
+                <p className="mt-1 text-xs text-red-500 font-medium">
+                  {errors.identifier.message}
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -82,10 +97,13 @@ export const SignInPage: React.FC = () => {
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white pr-10"
+                  {...register('password')}
+                  placeholder="Enter password"
+                  className={`w-full px-3.5 py-2.5 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 dark:text-white pr-10 ${
+                    errors.password
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-slate-200 dark:border-slate-700 focus:ring-blue-500'
+                  }`}
                 />
                 <button
                   type="button"
@@ -95,6 +113,11 @@ export const SignInPage: React.FC = () => {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-500 font-medium">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             {/* Remember Me & Forgot Password */}
@@ -102,8 +125,7 @@ export const SignInPage: React.FC = () => {
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
+                  {...register('rememberMe')}
                   className="rounded text-blue-600 focus:ring-blue-500 dark:bg-slate-800"
                 />
                 <span className="text-slate-600 dark:text-slate-400 font-medium">Remember Me</span>
