@@ -55,6 +55,10 @@
   /* Typography */
   --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-serif: '"Instrument Serif"', serif;
+  
+  /* Prisma Primary */
+  --color-primary: #DEDBC8;
 }
 
 /* ── Light Theme Variables ──────────────────────────── */
@@ -307,4 +311,12 @@ select:focus {
 ::selection {
   background-color: rgba(212, 175, 55, 0.3);
   color: #FFFFFF;
+}
+
+/* ── Primary Brand Color Variable ── */
+:root {
+  --brand-primary: #D4AF37; /* Gold */
+}
+.dark {
+  --brand-primary: #C5F015; /* Lime Green */
 }

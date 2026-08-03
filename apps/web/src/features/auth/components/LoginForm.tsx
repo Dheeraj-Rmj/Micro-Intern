@@ -147,7 +147,7 @@ export function LoginForm() {
               <span>Signing in...</span>
             </>
           ) : (
-            <span>Sign in to candidate portal</span>
+            <span>Sign in</span>
           )}
         </button>
       </form>
