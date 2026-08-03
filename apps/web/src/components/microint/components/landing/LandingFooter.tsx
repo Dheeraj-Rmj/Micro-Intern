@@ -114,7 +114,13 @@ export const LandingFooter: React.FC = () => {
         </div>
 
         <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© 2026 MicroIntern Platform Inc. All rights reserved.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <p>© 2026 MicroIntern Platform Inc. All rights reserved.</p>
+            <span className="hidden sm:inline text-slate-700">&bull;</span>
+            <p>
+              Micro intern &mdash; A product of <span className="text-white font-semibold">RMJ IT solution</span>
+            </p>
+          </div>
           <p className="flex items-center gap-1">
             Built with <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> for Next-Gen Engineers
           </p>

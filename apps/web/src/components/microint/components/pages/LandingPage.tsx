@@ -452,7 +452,13 @@ export const LandingPage: React.FC = () => {
 
         {/* Copyright Bar */}
         <div className="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 mt-8">
-          <p className="text-xs text-gray-600 font-medium">Copyright &copy; 2026 Micro Intern Inc. All rights reserved.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <p className="text-xs text-gray-600 font-medium">Copyright &copy; 2026 Micro Intern Inc. All rights reserved.</p>
+            <span className="hidden sm:inline text-gray-700">&bull;</span>
+            <p className="text-xs text-gray-500 font-medium">
+              Micro Intern &mdash; A product of <span className="text-[#E1E0CC] font-semibold">RMJ IT solution</span>
+            </p>
+          </div>
           <div className="flex gap-6">
             <button
               type="button"
