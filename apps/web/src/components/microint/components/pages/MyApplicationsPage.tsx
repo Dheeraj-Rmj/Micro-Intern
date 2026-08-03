@@ -96,7 +96,7 @@ export const MyApplicationsPage: React.FC = () => {
           </div>
           <h3 className="text-2xl tracking-tight text-black dark:text-[#E1E0CC] font-serif">No applications yet</h3>
           <p className="text-sm text-black/50 dark:text-[#E1E0CC]/60 max-w-sm mx-auto mt-2 leading-relaxed">
-            You haven't submitted any applications for micro-trials. Explore available company trials to get started.
+            You haven&apos;t submitted any applications for micro-trials. Explore available company trials to get started.
           </p>
           <button
             onClick={() => setCurrentRoute('discover-trials')}
@@ -129,7 +129,7 @@ export const MyApplicationsPage: React.FC = () => {
                   </h3>
 
                   <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70 font-medium flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#111111] dark:bg-[#E1E0CC]"></span> Stage: {app.stage}
+                    <span className="w-2 h-2 rounded-full bg-[#111111] dark:bg-[#E1E0CC]" /> Stage: {app.stage}
                   </p>
                 </div>
 

@@ -75,7 +75,7 @@ export const LandingPage: React.FC = () => {
                 FAQ
               </a>
 
-              <div className="w-px h-4 bg-white/20 mx-2 hidden sm:block"></div>
+              <div className="w-px h-4 bg-white/20 mx-2 hidden sm:block" />
 
               <button
                 onClick={() => setCurrentRoute('signin')}
@@ -389,7 +389,7 @@ export const LandingPage: React.FC = () => {
           <div className="lg:col-span-1">
             <h3 className="text-2xl font-black tracking-tight text-[#E1E0CC] mb-6">Micro Intern</h3>
             <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-xs">
-              The world's first AI-powered skill trial platform. We replace resumes with verified, working code.
+              The world&apos;s first AI-powered skill trial platform. We replace resumes with verified, working code.
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-black hover:bg-[#E1E0CC] hover:border-[#E1E0CC] transition-all cursor-pointer">
@@ -606,7 +606,7 @@ const FaqItem: React.FC<{ question: string, answer: string, delay: number }> = (
       <div className="flex justify-between items-center gap-4">
         <h4 className="text-lg md:text-xl font-medium text-[#E1E0CC] group-hover:text-white transition-colors">{question}</h4>
         <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.3 }} className="text-primary shrink-0">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
         </motion.div>
       </div>
       <motion.div

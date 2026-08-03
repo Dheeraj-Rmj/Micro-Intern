@@ -110,7 +110,7 @@ export const DiscoverTrialsPage: React.FC = () => {
           </div>
           <h3 className="text-2xl tracking-tight text-black dark:text-[#E1E0CC] font-serif">No matching trials</h3>
           <p className="text-sm text-black/50 dark:text-[#E1E0CC]/60 max-w-sm mx-auto mt-2 leading-relaxed">
-            We couldn't find any skill trials matching your search or filters. Try resetting your query.
+            We could not find any skill trials matching your search or filters. Try resetting your query.
           </p>
           <button
             onClick={() => {

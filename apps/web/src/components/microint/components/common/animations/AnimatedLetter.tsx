@@ -8,6 +8,28 @@ interface AnimatedLetterProps {
   className?: string;
 }
 
+interface CharSpanProps {
+  char: string;
+  i: number;
+  totalChars: number;
+  scrollYProgress: any;
+}
+
+const CharSpan: React.FC<CharSpanProps> = ({ char, i, totalChars, scrollYProgress }) => {
+  const charProgress = i / totalChars;
+  const opacity = useTransform(
+    scrollYProgress,
+    [charProgress - 0.1, charProgress + 0.05],
+    [0.2, 1]
+  );
+
+  return (
+    <motion.span style={{ opacity }}>
+      {char === ' ' ? '\u00A0' : char}
+    </motion.span>
+  );
+};
+
 export const AnimatedLetter: React.FC<AnimatedLetterProps> = ({ text, className = '' }) => {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -20,20 +42,16 @@ export const AnimatedLetter: React.FC<AnimatedLetterProps> = ({ text, className 
 
   return (
     <p ref={container} className={`flex flex-wrap ${className}`}>
-      {characters.map((char, i) => {
-        const charProgress = i / totalChars;
-        const opacity = useTransform(
-          scrollYProgress,
-          [charProgress - 0.1, charProgress + 0.05],
-          [0.2, 1]
-        );
-
-        return (
-          <motion.span key={i} style={{ opacity }}>
-            {char === ' ' ? '\u00A0' : char}
-          </motion.span>
-        );
-      })}
+      {characters.map((char, i) => (
+        <CharSpan
+          key={i}
+          char={char}
+          i={i}
+          totalChars={totalChars}
+          scrollYProgress={scrollYProgress}
+        />
+      ))}
     </p>
   );
 };
+
