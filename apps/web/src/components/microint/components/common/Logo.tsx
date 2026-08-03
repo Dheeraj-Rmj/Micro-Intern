@@ -12,22 +12,22 @@ export const Logo: React.FC<LogoProps> = ({
   className = '',
   onClick,
 }) => {
-  const heightClasses = {
-    sm: 'h-7 sm:h-8',
-    md: 'h-9 sm:h-10',
-    lg: 'h-11 sm:h-12',
-    xl: 'h-14 sm:h-16',
+  const sizeClasses = {
+    sm: 'w-6 h-6',
+    md: 'w-8 h-8',
+    lg: 'w-10 h-10',
+    xl: 'w-12 h-12',
   };
 
   return (
     <div
       onClick={onClick}
-      className={`inline-flex items-center cursor-pointer transition-transform hover:scale-[1.02] shrink-0 ${className}`}
+      className={`inline-flex items-center gap-2 cursor-pointer transition-transform hover:scale-[1.02] shrink-0 ${className}`}
     >
       <img
-        src="/logo.png"
+        src="/MI.png"
         alt="MicroIntern Logo"
-        className={`${heightClasses[size]} w-auto object-contain shrink-0`}
+        className={`${sizeClasses[size]} shrink-0 w-auto object-contain`}
       />
     </div>
   );

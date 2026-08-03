@@ -3,6 +3,7 @@ import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { PageRoute } from '../../types';
 import {
+  Sparkles,
   LayoutDashboard,
   User,
   Compass,
@@ -14,7 +15,10 @@ import {
   Settings,
   LogOut,
   X,
-  Sparkles,
+  Users,
+  ShieldCheck,
+  Terminal,
+  Key,
 } from 'lucide-react';
 import { Logo } from '../common/Logo';
 
@@ -27,41 +31,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
   const {
     currentRoute,
     setCurrentRoute,
+    role,
+    setRole,
     unreadNotificationsCount,
     showToast,
-    userProfile,
   } = useApp();
-
-  const getInitials = (name?: string) => {
-    if (!name || !name.trim()) return 'CP';
-    const parts = name.trim().split(' ');
-    const first = parts[0];
-    const last = parts[parts.length - 1];
-    if (parts.length >= 2 && first && last && first[0] && last[0]) {
-      return (first[0] + last[0]).toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase();
-  };
 
   const handleNavigate = (route: PageRoute) => {
     setCurrentRoute(route);
     if (setMobileOpen) setMobileOpen(false);
   };
 
+
+
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('microintern_current_route');
     }
-    showToast('Logged Out', 'You have been safely signed out.', 'info');
+    showToast('Signed Out', 'You have been logged out of MicroIntern.', 'info');
     setCurrentRoute('landing');
     if (setMobileOpen) setMobileOpen(false);
   };
 
-  const candidateMenuItems = [
-    { id: 'dashboard' as PageRoute, label: 'Dashboard', icon: LayoutDashboard },
+  interface MenuItem {
+    id: PageRoute;
+    label: string;
+    icon: React.ElementType;
+    badge?: number;
+  }
+
+  const candidateMenuItems: MenuItem[] = [
     { id: 'profile' as PageRoute, label: 'My Profile', icon: User },
-    { id: 'discover-trials' as PageRoute, label: 'Discover Trials', icon: Compass },
-    { id: 'my-applications' as PageRoute, label: 'My Applications', icon: FileCheck },
+    { id: 'network' as PageRoute, label: 'Professional Network & Feed', icon: Users },
     { id: 'workspace' as PageRoute, label: 'Workspace', icon: Code2 },
     { id: 'submissions' as PageRoute, label: 'Submissions', icon: Send },
     { id: 'notifications' as PageRoute, label: 'Notifications', icon: Bell, badge: unreadNotificationsCount },
@@ -69,96 +70,87 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
     { id: 'settings' as PageRoute, label: 'Settings', icon: Settings },
   ];
 
+  const companyMenuItems: MenuItem[] = [
+    { id: 'company-dashboard' as PageRoute, label: 'Enterprise Admin Center', icon: LayoutDashboard },
+    { id: 'company-applications' as PageRoute, label: 'Candidate Applicants', icon: Users },
+    { id: 'company-recruiters' as PageRoute, label: 'Recruiter Logins & Seats', icon: Key },
+    { id: 'company-manage-trials' as PageRoute, label: 'Skill Trials & Escrow', icon: Sparkles },
+    { id: 'company-create-trial' as PageRoute, label: 'Post New Trial', icon: Code2 },
+  ];
+
+  const adminMenuItems: MenuItem[] = [
+    { id: 'admin-dashboard' as PageRoute, label: 'Command Center', icon: LayoutDashboard },
+    { id: 'admin-users' as PageRoute, label: 'User Governance', icon: Users },
+    { id: 'admin-trials' as PageRoute, label: 'Trials & Escrow', icon: Sparkles },
+    { id: 'admin-trust-ai' as PageRoute, label: 'AI Trust Engine', icon: ShieldCheck },
+    { id: 'admin-audit-logs' as PageRoute, label: 'SOC-2 Audit Stream', icon: Terminal },
+    { id: 'admin-settings' as PageRoute, label: 'Feature Flags & APIs', icon: Settings },
+  ];
+
+  const isSuperAdminView = currentRoute.startsWith('admin-') || role === 'admin';
+  const isCompanyView = currentRoute.startsWith('company-') || role === 'company';
+  const isAdminView = isSuperAdminView || isCompanyView;
+  const menuItems: MenuItem[] = isSuperAdminView
+    ? adminMenuItems
+    : isCompanyView
+    ? companyMenuItems
+    : candidateMenuItems;
+
   const content = (
-    <div className="h-full flex flex-col justify-between bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 text-slate-900 dark:text-slate-100 p-4 select-none overflow-y-auto">
+    <div className="h-full flex flex-col justify-between bg-white dark:bg-[#101010] rounded-[32px] shadow-sm border border-black/5 dark:border-white/10 text-[#111111] dark:text-[#E1E0CC] py-6 px-3 select-none overflow-y-auto">
       <div>
         {/* Brand Header */}
-        <div className="flex items-center justify-between pb-5 border-b border-slate-100 dark:border-slate-800">
-          <Logo size="md" onClick={() => handleNavigate('landing')} />
+        <div className="flex items-center justify-center pb-6 border-b border-black/5 dark:border-white/10 mb-6">
+          <Logo size="sm" onClick={() => handleNavigate('landing')} />
           {setMobileOpen && (
             <button
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="lg:hidden absolute right-4 top-6 p-1.5 rounded-lg text-black/50 dark:text-[#E1E0CC]/50 hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10"
             >
               <X className="w-5 h-5" />
             </button>
           )}
         </div>
 
-        {/* Workspace Mode Tag */}
-        <div className="mt-4 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Workspace</span>
-            <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Candidate Portal
-            </span>
-          </div>
-        </div>
-
         {/* Navigation Menu */}
-        <nav className="mt-5 space-y-1">
-          {candidateMenuItems.map((item) => {
+        <nav className="space-y-3">
+          {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentRoute === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavigate(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                title={item.label}
+                className={`w-12 h-12 flex items-center justify-center rounded-full transition-all cursor-pointer mx-auto ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-slate-100'
+                    ? isAdminView
+                      ? 'bg-amber-500 text-black shadow-md font-bold scale-105'
+                      : 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-md font-bold'
+                    : 'text-black/40 dark:text-[#E1E0CC]/40 hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10 hover:text-black dark:hover:text-[#E1E0CC]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
+                <div className="relative flex items-center justify-center">
+                  <Icon className="w-5 h-5" />
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#D92B26] rounded-full border-2 border-white dark:border-[#101010]" />
+                  )}
                 </div>
-                {item.badge !== undefined && item.badge > 0 && (
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      isActive ? 'bg-white text-blue-600' : 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
               </button>
             );
           })}
         </nav>
       </div>
 
-      {/* Bottom Profile Info & Logout */}
-      <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2 mt-4">
-        <div
-          onClick={() => handleNavigate('profile')}
-          className="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-        >
-          {userProfile.avatar ? (
-            <img src={userProfile.avatar} alt="Avatar" className="w-8 h-8 rounded-full object-cover ring-2 ring-blue-400 dark:ring-blue-600" />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center font-bold text-xs text-blue-700 dark:text-blue-300 ring-2 ring-blue-400 dark:ring-blue-600">
-              {getInitials(userProfile.fullName)}
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
-              {userProfile.fullName || 'Candidate Profile'}
-            </div>
-            <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-              {userProfile.email || 'Complete profile'}
-            </div>
-          </div>
-        </div>
+      {/* Bottom Profile Info, Portal Switcher & Logout */}
+      <div className="pt-6 border-t border-black/5 dark:border-white/10 space-y-3 flex flex-col items-center">
 
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+          title="Logout"
+          className="w-12 h-12 flex items-center justify-center rounded-full text-black/40 dark:text-[#E1E0CC]/40 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-colors cursor-pointer"
         >
-          <LogOut className="w-4 h-4" />
-          <span>Logout</span>
+          <LogOut className="w-5 h-5" />
         </button>
       </div>
     </div>
@@ -167,15 +159,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
   return (
     <>
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:block w-64 h-screen sticky top-0 flex-shrink-0">
+      <aside className="hidden lg:block w-28 h-screen sticky top-0 flex-shrink-0 p-4 pl-6">
         {content}
       </aside>
 
       {/* Mobile Drawer Overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
-          <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setMobileOpen && setMobileOpen(false)} />
-          <div className="relative w-64 h-full z-10">{content}</div>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen && setMobileOpen(false)} />
+          <div className="relative w-24 h-full z-10 p-4">{content}</div>
         </div>
       )}
     </>

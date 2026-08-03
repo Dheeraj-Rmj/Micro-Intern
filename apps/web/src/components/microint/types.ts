@@ -4,10 +4,14 @@ export type PageRoute =
   | 'landing'
   | 'role-selection'
   | 'signin'
+  | 'login'
+  | 'enterprise-login'
+  | 'system-ops'
   | 'signup'
   | 'forgot-password'
   // Candidate Routes
   | 'dashboard'
+  | 'network'
   | 'profile'
   | 'discover-trials'
   | 'my-applications'
@@ -28,15 +32,22 @@ export type PageRoute =
   | 'company-reports'
   | 'company-notifications'
   | 'company-settings'
+  | 'company-recruiters'
   // Recruiter Portal Routes
   | 'recruiter-dashboard'
   | 'recruiter-pipeline'
   | 'recruiter-candidates'
   | 'recruiter-interviews'
   | 'recruiter-offers'
-  | 'recruiter-reports'
   | 'recruiter-notifications'
-  | 'recruiter-settings';
+  | 'recruiter-settings'
+  // Super Admin Portal Routes
+  | 'admin-dashboard'
+  | 'admin-users'
+  | 'admin-trials'
+  | 'admin-trust-ai'
+  | 'admin-audit-logs'
+  | 'admin-settings';
 
 export type UserRole = 'candidate' | 'recruiter' | 'company' | 'admin';
 
@@ -84,6 +95,7 @@ export interface Submission {
   score?: number;
   feedback?: string;
   fileNames: string[];
+  repoUrl?: string;
 }
 
 export interface AppNotification {
@@ -117,6 +129,7 @@ export interface UserProfile {
   experienceYears: string;
   resumeFileName: string;
   aboutMe: string;
+  bannerUrl?: string;
   headline?: string;
   bio?: string;
   skills: string[];

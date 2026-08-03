@@ -47,232 +47,230 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="pb-12 text-[#111111] dark:text-[#E1E0CC] max-w-[1200px] mx-auto w-full font-sans">
       <Breadcrumbs currentTitle="Settings" />
 
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-black">Candidate Settings</h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Manage account security, notification preferences, and interface appearance.
-          </p>
+        <div className="mb-10 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-black dark:text-[#E1E0CC]">
+              Settings
+            </h1>
+            <p className="text-sm text-black/50 dark:text-[#E1E0CC]/60 mt-2 font-medium">
+              Manage account security, notification preferences, and interface appearance.
+            </p>
+          </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 mb-8 overflow-x-auto pb-1">
+        {/* Tab Navigation */}
+        <div className="flex items-center gap-2 mb-8 p-1.5 bg-black/5 dark:bg-[#101010] rounded-full overflow-x-auto border border-black/5 dark:border-white/10 shadow-sm">
           {[
-            { id: 'profile', label: 'Profile Overview', icon: User },
-            { id: 'security', label: 'Security & Password', icon: Lock },
+            { id: 'profile', label: 'Profile Shortcut', icon: User },
+            { id: 'security', label: 'Security & 2FA', icon: Lock },
             { id: 'notifications', label: 'Notifications', icon: Bell },
-            { id: 'theme', label: 'Appearance & Theme', icon: Sun },
-          ].map((t) => {
-            const Icon = t.icon;
-            const isActive = activeTab === t.id;
+            { id: 'theme', label: 'Appearance', icon: Sun },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
             return (
               <button
-                key={t.id}
-                onClick={() => setActiveTab(t.id as any)}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 font-bold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? 'border-purple-600 text-purple-600 dark:text-purple-400'
-                    : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'bg-[#111111] text-white dark:bg-[#E1E0CC] dark:text-black shadow-sm'
+                    : 'bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 text-black/60 dark:text-[#E1E0CC]/60 hover:text-black dark:hover:text-[#E1E0CC]'
                 }`}
               >
                 <Icon className="w-4 h-4" />
-                <span>{t.label}</span>
+                <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Tab Content */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-          {/* PROFILE TAB */}
+        {/* Card Body */}
+        <div className="bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 rounded-[40px] p-8 sm:p-12 shadow-sm">
           {activeTab === 'profile' && (
-            <div className="space-y-6">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Account Details</h3>
-              <p className="text-xs text-slate-500">
-                To edit full personal details, resume upload, or social links, visit the main Profile Editor.
+            <div className="space-y-6 text-center sm:text-left">
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+                Profile Management
+              </h3>
+              <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70">
+                To edit your name, photo, portfolio links, or resume file, use our dedicated Profile Editor.
               </p>
-
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Full Name:</span>
-                  <span className="font-bold">{userProfile.fullName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Username:</span>
-                  <span className="font-bold">@{userProfile.username}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Email Address:</span>
-                  <span className="font-bold">{userProfile.email}</span>
-                </div>
+              <div className="pt-4">
+                <button
+                  onClick={() => setCurrentRoute('profile')}
+                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                >
+                  Open Profile Editor
+                </button>
               </div>
-
-              <button
-                onClick={() => setCurrentRoute('profile')}
-                className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors cursor-pointer"
-              >
-                Open Full Profile Editor →
-              </button>
             </div>
           )}
 
-          {/* SECURITY TAB */}
           {activeTab === 'security' && (
             <form onSubmit={handleSaveSecurity} className="space-y-6">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Password & Authentication</h3>
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+                Password & Security
+              </h3>
 
               <div className="space-y-4 max-w-md">
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">Current Password</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-[#E1E0CC]/60 mb-2">
+                    Current Password
+                  </label>
                   <input
                     type="password"
                     value={securityForm.currentPassword}
                     onChange={(e) => setSecurityForm({ ...securityForm, currentPassword: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none"
+                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-[#E1E0CC]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">New Password</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-[#E1E0CC]/60 mb-2">
+                    New Password
+                  </label>
                   <input
                     type="password"
                     value={securityForm.newPassword}
                     onChange={(e) => setSecurityForm({ ...securityForm, newPassword: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none"
+                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-[#E1E0CC]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-slate-500 mb-1">Confirm New Password</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-[#E1E0CC]/60 mb-2">
+                    Confirm New Password
+                  </label>
                   <input
                     type="password"
                     value={securityForm.confirmPassword}
                     onChange={(e) => setSecurityForm({ ...securityForm, confirmPassword: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none"
+                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-[#E1E0CC]"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={securityForm.twoFactor}
-                    onChange={(e) => setSecurityForm({ ...securityForm, twoFactor: e.target.checked })}
-                    className="rounded text-purple-600 focus:ring-purple-500"
-                  />
-                  <div>
-                    <p className="text-xs font-bold">Enable Two-Factor Authentication (2FA)</p>
-                    <p className="text-[11px] text-slate-500">Require email verification code on candidate login.</p>
-                  </div>
-                </label>
+              <div className="pt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-sm text-black dark:text-[#E1E0CC]">Two-Factor Authentication</h4>
+                  <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">Require 2FA code upon sign in</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={securityForm.twoFactor}
+                  onChange={(e) => setSecurityForm({ ...securityForm, twoFactor: e.target.checked })}
+                  className="w-5 h-5 accent-[#111111] dark:accent-[#E1E0CC] cursor-pointer"
+                />
               </div>
 
-              <button
-                type="submit"
-                className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors cursor-pointer"
-              >
-                Update Security Settings
-              </button>
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                >
+                  Save Security Settings
+                </button>
+              </div>
             </form>
           )}
 
-          {/* NOTIFICATIONS TAB */}
           {activeTab === 'notifications' && (
             <div className="space-y-6">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Notification Preferences</h3>
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+                Notification Preferences
+              </h3>
 
               <div className="space-y-4">
                 {[
                   {
                     key: 'emailTrialShortlist',
-                    title: 'Email on Trial Shortlist',
-                    desc: 'Get notified instantly when a company shortlists your application for a trial workspace.',
+                    title: 'Trial Shortlist Alerts',
+                    desc: 'Notify via email when shortlisted for a micro-trial',
                   },
                   {
                     key: 'emailNewTrials',
-                    title: 'Recommended Trial Alerts',
-                    desc: 'Weekly email digest of newly published trials matching your tech stack.',
+                    title: 'New Trial Recommendations',
+                    desc: 'Weekly digest of trials matching your skills',
                   },
                   {
                     key: 'trustScoreUpdates',
                     title: 'Trust Score Updates',
-                    desc: 'Alerts when your candidate Trust Score increases or badges unlock.',
+                    desc: 'Notify when your Trust Score changes',
+                  },
+                  {
+                    key: 'browserPush',
+                    title: 'Browser Push Notifications',
+                    desc: 'Instant desktop alerts for messages and updates',
                   },
                 ].map((item) => (
-                  <label key={item.key} className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 cursor-pointer">
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-black/5 dark:bg-white/5"
+                  >
+                    <div>
+                      <h4 className="font-bold text-sm text-black dark:text-[#E1E0CC]">{item.title}</h4>
+                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">{item.desc}</p>
+                    </div>
                     <input
                       type="checkbox"
                       checked={(notifPrefs as any)[item.key]}
-                      onChange={(e) => setNotifPrefs({ ...notifPrefs, [item.key]: e.target.checked })}
-                      className="mt-1 rounded text-purple-600 focus:ring-purple-500"
+                      onChange={(e) =>
+                        setNotifPrefs({ ...notifPrefs, [item.key]: e.target.checked })
+                      }
+                      className="w-5 h-5 accent-[#111111] dark:accent-[#E1E0CC] cursor-pointer"
                     />
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">{item.title}</p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{item.desc}</p>
-                    </div>
-                  </label>
+                  </div>
                 ))}
               </div>
 
-              <button
-                type="button"
-                onClick={handleSaveNotifs}
-                className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors cursor-pointer"
-              >
-                Save Preferences
-              </button>
+              <div className="pt-4">
+                <button
+                  onClick={handleSaveNotifs}
+                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                >
+                  Save Notification Preferences
+                </button>
+              </div>
             </div>
           )}
 
-          {/* THEME TAB */}
           {activeTab === 'theme' && (
             <div className="space-y-6">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Interface Appearance</h3>
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+                Appearance & Theme
+              </h3>
+              <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70">
+                Choose between warm Bone-Cream Light Mode or deep sleek Dark Mode.
+              </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                 <button
-                  type="button"
                   onClick={() => setDarkMode(false)}
-                  className={`p-5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                  className={`p-6 rounded-3xl border-2 flex flex-col items-center gap-3 transition-all cursor-pointer ${
                     !darkMode
-                      ? 'border-purple-600 bg-purple-50/50 dark:bg-purple-950/30 font-bold'
-                      : 'border-slate-200 dark:border-slate-700'
+                      ? 'border-[#111111] bg-black/5 font-bold shadow-sm'
+                      : 'border-black/10 dark:border-white/10 hover:border-black/20'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <Sun className="w-5 h-5 text-amber-500" />
-                    <div>
-                      <p className="text-xs font-bold">Light Mode</p>
-                      <p className="text-[10px] text-slate-500">Clean SaaS theme</p>
-                    </div>
-                  </div>
-                  {!darkMode && <CheckCircle2 className="w-4 h-4 text-purple-600" />}
+                  <Sun className={`w-8 h-8 ${!darkMode ? 'text-black' : 'text-black/40'}`} />
+                  <span className="text-sm text-black dark:text-[#E1E0CC]">Light Mode</span>
                 </button>
 
                 <button
-                  type="button"
                   onClick={() => setDarkMode(true)}
-                  className={`p-5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                  className={`p-6 rounded-3xl border-2 flex flex-col items-center gap-3 transition-all cursor-pointer ${
                     darkMode
-                      ? 'border-purple-600 bg-slate-800 font-bold'
-                      : 'border-slate-200 dark:border-slate-700'
+                      ? 'border-[#E1E0CC] bg-white/5 text-[#E1E0CC] font-bold shadow-sm'
+                      : 'border-black/10 dark:border-white/10 hover:border-white/20'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <Moon className="w-5 h-5 text-purple-400" />
-                    <div>
-                      <p className="text-xs font-bold">Dark Mode</p>
-                      <p className="text-[10px] text-slate-400">Low-glare dark theme</p>
-                    </div>
-                  </div>
-                  {darkMode && <CheckCircle2 className="w-4 h-4 text-purple-400" />}
+                  <Moon className={`w-8 h-8 ${darkMode ? 'text-[#E1E0CC]' : 'text-black/50 dark:text-[#E1E0CC]/50'}`} />
+                  <span className="text-sm text-black dark:text-[#E1E0CC]">Dark Mode</span>
                 </button>
               </div>
             </div>

@@ -88,6 +88,12 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const [currentRoute, setCurrentRoute] = useState<PageRoute>(() => {
     if (typeof window !== 'undefined') {
       const savedRoute = localStorage.getItem('microintern_current_route') as PageRoute | null;
@@ -411,6 +417,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setApplications((prev) => [newApp, ...prev]);
     showToast('Invitation Sent!', `Invited ${candidate.fullName} to trial "${trial.title}".`, 'success');
   };
+
+  if (!isMounted) return null;
 
   return (
     <AppContext.Provider

@@ -13,6 +13,12 @@ import {
   Sparkles,
   CheckCircle2,
   Home,
+  LayoutDashboard,
+  Users,
+  ShieldCheck,
+  Terminal,
+  Key,
+  Building2,
 } from 'lucide-react';
 
 interface DashboardHeaderProps {
@@ -23,12 +29,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
   const {
     userProfile,
     setCurrentRoute,
+    currentRoute,
+    role,
+    setRole,
     darkMode,
     setDarkMode,
     notifications,
     markNotificationRead,
-    searchQuery,
-    setSearchQuery,
     showToast,
   } = useApp();
 
@@ -36,13 +43,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setCurrentRoute('discover-trials');
-    }
-  };
 
   const handleLogout = () => {
     setProfileDropdownOpen(false);
@@ -53,110 +53,118 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
     setCurrentRoute('landing');
   };
 
+
+  const candidateNavTabs = [
+    { id: 'dashboard', label: 'Apprentice Hub', icon: Home },
+    { id: 'discover-trials', label: 'Explore Skill Trials', icon: Sparkles },
+    { id: 'workspace', label: 'IDE & Environment', icon: CheckCircle2 },
+    { id: 'profile', label: 'Profile & Portfolio', icon: User },
+  ];
+
+  const companyNavTabs = [
+    { id: 'company-dashboard', label: 'Enterprise Hub', icon: LayoutDashboard },
+    { id: 'company-applications', label: 'Applicant Pipeline', icon: Users },
+    { id: 'company-recruiters', label: 'Recruiter Logins', icon: Key },
+    { id: 'company-manage-trials', label: 'Skill Trials', icon: Sparkles },
+  ];
+
+  const adminNavTabs = [
+    { id: 'admin-dashboard', label: 'Command Center', icon: LayoutDashboard },
+    { id: 'admin-users', label: 'Users & eKYC', icon: Users },
+    { id: 'admin-trials', label: 'Escrow Trials', icon: Sparkles },
+    { id: 'admin-trust-ai', label: 'AI Engine', icon: ShieldCheck },
+  ];
+
+  const isSuperAdminView = currentRoute.startsWith('admin-') || role === 'admin';
+  const isCompanyView = currentRoute.startsWith('company-') || role === 'company';
+  const isAdminView = isSuperAdminView || isCompanyView;
+
+  const navTabs = isSuperAdminView
+    ? adminNavTabs
+    : isCompanyView
+    ? companyNavTabs
+    : candidateNavTabs;
+
   return (
-    <header className="sticky top-0 z-30 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 h-16 flex items-center justify-between text-slate-900 dark:text-slate-100">
-      {/* Left: Mobile Toggle + Search Bar */}
-      <div className="flex items-center gap-3 flex-1 max-w-md">
+    <header className="w-full px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between z-30 relative gap-4">
+      {/* Left: Mobile Toggle */}
+      <div className="flex-shrink-0 flex items-center">
         <button
           onClick={onToggleMobileSidebar}
-          className="lg:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+          className="lg:hidden p-3 rounded-full bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm text-black dark:text-[#E1E0CC]"
         >
-          <Menu className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+          <Menu className="w-5 h-5" />
         </button>
+      </div>
 
-        <form onSubmit={handleSearchSubmit} className="relative w-full">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search trials, skills, companies..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border-none text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-          />
-        </form>
+      {/* Center: Dynamic Nothing-Style Floating Pill Navigation */}
+      <div className="hidden md:flex items-center p-1.5 rounded-full bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm">
+        {navTabs.map((tab) => {
+          const isActive = currentRoute === tab.id;
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setCurrentRoute(tab.id as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-serif text-xs transition-all duration-300 cursor-pointer ${
+                isActive
+                  ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-md font-bold'
+                  : 'text-black/60 dark:text-[#E1E0CC]/60 hover:text-black dark:hover:text-[#E1E0CC]'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3">
-        {/* Back to Home Button */}
-        <button
-          type="button"
-          onClick={() => setCurrentRoute('landing')}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition-all cursor-pointer shadow-xs"
-          title="Back to Public Landing Page"
-        >
-          <Home className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-          <span className="hidden sm:inline">Back to Home</span>
-        </button>
+      <div className="flex items-center gap-2.5">
 
-        {/* Trust Score Badge */}
-        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold">
-          <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-          <span>Trust Score: {userProfile.trustScore}/100</span>
-        </div>
-
-        {/* Theme Toggle */}
+        {/* Theme Toggle Pill */}
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-          title="Toggle Theme"
+          className="p-3.5 rounded-full bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm hover:scale-105 transition-transform cursor-pointer"
+          title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
-          {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+          {darkMode ? <Sun className="w-4 h-4 text-[#E1E0CC]" /> : <Moon className="w-4 h-4 text-black" />}
         </button>
 
-        {/* Notification Bell Dropdown */}
+        {/* Notifications */}
         <div className="relative">
           <button
             onClick={() => {
               setNotifDropdownOpen(!notifDropdownOpen);
               setProfileDropdownOpen(false);
             }}
-            className="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 relative transition-colors cursor-pointer"
+            className="p-3.5 rounded-full bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm hover:scale-105 transition-transform relative cursor-pointer"
           >
-            <Bell className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+            <Bell className="w-4 h-4 text-black dark:text-[#E1E0CC]" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-extrabold flex items-center justify-center animate-pulse">
-                {unreadCount}
-              </span>
+              <span className="absolute top-1 right-2 w-2.5 h-2.5 rounded-full bg-[#D92B26] border-2 border-white dark:border-[#101010]" />
             )}
           </button>
 
-          {/* Notifications Panel */}
           {notifDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-4 z-50">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <h4 className="font-bold text-sm">Notifications</h4>
-                <button
-                  onClick={() => setCurrentRoute('notifications')}
-                  className="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline"
-                >
-                  View All
-                </button>
-              </div>
-
-              <div className="mt-3 space-y-2.5 max-h-64 overflow-y-auto">
+            <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 rounded-[24px] shadow-2xl p-5 z-50">
+              <h4 className="font-bold text-base text-black dark:text-[#E1E0CC] mb-4">Notifications</h4>
+              <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                 {notifications.length === 0 ? (
-                  <div className="py-6 text-center text-slate-500 dark:text-slate-400 text-xs">
-                    <Bell className="w-6 h-6 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
-                    <p className="font-semibold text-slate-700 dark:text-slate-300">No Notifications Yet</p>
-                    <p className="text-[11px] mt-0.5 text-slate-400">Updates will appear here as you interact with skill trials.</p>
-                  </div>
+                  <p className="text-black/40 dark:text-[#E1E0CC]/40 text-sm text-center py-4">No notifications.</p>
                 ) : (
                   notifications.slice(0, 4).map((n) => (
                     <div
                       key={n.id}
                       onClick={() => markNotificationRead(n.id)}
-                      className={`p-3 rounded-xl border text-xs transition-colors cursor-pointer ${
+                      className={`p-4 rounded-2xl cursor-pointer transition-colors ${
                         n.read
-                          ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-                          : 'bg-blue-50/70 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/80 font-medium text-slate-800 dark:text-slate-200'
+                          ? 'bg-black/5 dark:bg-[#E1E0CC]/5 text-black/60 dark:text-[#E1E0CC]/60'
+                          : 'bg-[#E1E0CC]/15 dark:bg-[#E1E0CC]/15 border border-[#E1E0CC]/30 text-black dark:text-[#E1E0CC]'
                       }`}
                     >
-                      <div className="flex items-center justify-between font-bold mb-1">
-                        <span>{n.title}</span>
-                        <span className="text-[10px] font-normal text-slate-400">{n.timestamp}</span>
-                      </div>
-                      <p className="line-clamp-2 leading-relaxed">{n.message}</p>
+                      <div className="font-bold text-sm mb-1">{n.title}</div>
+                      <p className="text-xs opacity-80">{n.message}</p>
                     </div>
                   ))
                 )}
@@ -165,68 +173,42 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
           )}
         </div>
 
-        {/* Profile Avatar Dropdown */}
+        {/* Profile Avatar */}
         <div className="relative">
           <button
             onClick={() => {
               setProfileDropdownOpen(!profileDropdownOpen);
               setNotifDropdownOpen(false);
             }}
-            className="flex items-center gap-2 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-full p-0.5 bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm hover:scale-105 transition-transform overflow-hidden cursor-pointer"
           >
             {userProfile.avatar ? (
-              <img
-                src={userProfile.avatar}
-                alt="Avatar"
-                className="w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/50"
-              />
+              <img src={userProfile.avatar} alt="Avatar" className="w-full h-full rounded-full object-cover" />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs ring-2 ring-blue-500/50">
-                <User className="w-4 h-4" />
+              <div className="w-full h-full rounded-full bg-[#E1E0CC] text-black font-bold flex items-center justify-center text-sm">
+                {(userProfile.fullName || 'C').charAt(0).toUpperCase()}
               </div>
             )}
           </button>
 
           {profileDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-2 z-50">
-              <div className="p-3 border-b border-slate-100 dark:border-slate-800">
-                <p className="font-bold text-sm text-slate-900 dark:text-white leading-none">
-                  {userProfile.fullName || 'Candidate User'}
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  {userProfile.email || 'Complete Your Profile'}
-                </p>
+            <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 rounded-[24px] shadow-2xl p-3 z-50">
+              <div className="p-3 mb-2">
+                <p className="font-bold text-sm text-black dark:text-[#E1E0CC]">{userProfile.fullName || 'Candidate'}</p>
+                <p className="text-xs text-black/50 dark:text-[#E1E0CC]/50">{userProfile.email}</p>
               </div>
-
-              <div className="py-1 space-y-0.5">
+              <div className="space-y-1">
                 <button
-                  onClick={() => {
-                    setProfileDropdownOpen(false);
-                    setCurrentRoute('profile');
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  onClick={() => { setProfileDropdownOpen(false); setCurrentRoute('profile'); }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10 cursor-pointer"
                 >
-                  <User className="w-4 h-4 text-blue-500" />
-                  <span>My Profile</span>
+                  <User className="w-4 h-4" /> My Profile
                 </button>
-
-                <button
-                  onClick={() => {
-                    setProfileDropdownOpen(false);
-                    setCurrentRoute('settings');
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  <Settings className="w-4 h-4 text-blue-500" />
-                  <span>Settings</span>
-                </button>
-
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span>Logout</span>
+                  <LogOut className="w-4 h-4" /> Logout
                 </button>
               </div>
             </div>

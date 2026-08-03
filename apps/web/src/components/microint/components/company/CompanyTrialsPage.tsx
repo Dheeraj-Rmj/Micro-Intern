@@ -1,0 +1,236 @@
+'use client';
+import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
+import {
+  Sparkles,
+  Plus,
+  DollarSign,
+  Users,
+  Calendar,
+  CheckCircle2,
+  Lock,
+  Building2,
+  FileText,
+} from 'lucide-react';
+
+interface CompanyTrialItem {
+  id: string;
+  title: string;
+  category: string;
+  stipend: string;
+  applicantsCount: number;
+  status: 'ACTIVE' | 'DRAFT' | 'COMPLETED';
+  deadline: string;
+}
+
+const INITIAL_ENTERPRISE_TRIALS: CompanyTrialItem[] = [];
+
+export const CompanyTrialsPage: React.FC = () => {
+  const { showToast } = useApp();
+  const [trials, setTrials] = useState<CompanyTrialItem[]>(INITIAL_ENTERPRISE_TRIALS);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [title, setTitle] = useState('');
+  const [stipend, setStipend] = useState('$3,500');
+  const [category, setCategory] = useState('Full Stack');
+
+  const handleCreateTrial = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      showToast('Missing Title', 'Please enter a skill trial title.', 'warning');
+      return;
+    }
+
+    const newTrial: CompanyTrialItem = {
+      id: `ZOH-0${trials.length + 1}`,
+      title,
+      category,
+      stipend,
+      applicantsCount: 0,
+      status: 'ACTIVE',
+      deadline: '10 days left',
+    };
+
+    setTrials([newTrial, ...trials]);
+    setTitle('');
+    setShowCreateModal(false);
+    showToast(
+      'Trial Published & Escrow Locked',
+      `"${title}" is now live for verified candidates to apply. ${stipend} escrow pool deposited.`,
+      'success'
+    );
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-300 pb-16">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500 font-mono text-xs font-bold uppercase tracking-wider">
+              ENTERPRISE ESCROW TRIALS
+            </span>
+            <span className="text-xs font-mono text-black/50 dark:text-[#E1E0CC]/50">
+              ENTERPRISE ORGANIZATION
+            </span>
+          </div>
+          <h1 className="text-3xl font-bold font-serif text-black dark:text-[#E1E0CC]">
+            Manage Skill Trials & Escrow Pools
+          </h1>
+          <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70 mt-1">
+            Create practical skill trials to discover top engineering and design talent.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Post New Skill Trial</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="p-6 rounded-[28px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm">
+          <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-medium">
+            Active Skill Trials
+          </p>
+          <p className="text-3xl font-serif font-bold text-black dark:text-[#E1E0CC] mt-1">
+            {trials.length}
+          </p>
+        </div>
+        <div className="p-6 rounded-[28px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm">
+          <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-medium">
+            Total Locked Escrow
+          </p>
+          <p className="text-3xl font-serif font-bold text-amber-500 mt-1">$4,800</p>
+        </div>
+        <div className="p-6 rounded-[28px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm">
+          <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-medium">
+            Trial Completion Rate
+          </p>
+          <p className="text-3xl font-serif font-bold text-emerald-500 mt-1">94.2%</p>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {trials.map((t) => (
+          <div
+            key={t.id}
+            className="p-7 rounded-[32px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md transition-all space-y-4 relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 font-mono text-xs font-bold text-black/70 dark:text-white/70">
+                {t.category}
+              </span>
+              <span
+                className={`px-2.5 py-1 rounded-full font-mono text-xs font-bold ${
+                  t.status === 'ACTIVE'
+                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                }`}
+              >
+                {t.status}
+              </span>
+            </div>
+
+            <h3 className="text-xl font-bold font-serif text-black dark:text-[#E1E0CC]">
+              {t.title}
+            </h3>
+
+            <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5 text-xs text-black/70 dark:text-[#E1E0CC]/70 font-mono">
+              <div className="flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-indigo-500" />
+                <span>{t.applicantsCount} Candidates Applied</span>
+              </div>
+              <div className="flex items-center gap-1 text-amber-500 font-bold">
+                <Lock className="w-3.5 h-3.5" />
+                <span>{t.stipend} Escrow Locked</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md p-8 rounded-[36px] bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-serif font-bold text-black dark:text-[#E1E0CC]">
+                Post New Enterprise Trial
+              </h3>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateTrial} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                  Trial Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. AI Copilot UI Component / GraphQL Sync"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none focus:border-amber-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                  Category
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none"
+                >
+                  <option value="Full Stack">Full Stack</option>
+                  <option value="Frontend">Frontend</option>
+                  <option value="AI / ML">AI / ML</option>
+                  <option value="Backend">Backend</option>
+                  <option value="UI/UX Design">UI/UX Design</option>
+                  <option value="DevOps">DevOps</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                  Stipend Amount (Locked in Escrow)
+                </label>
+                <input
+                  type="text"
+                  value={stipend}
+                  onChange={(e) => setStipend(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="flex-1 py-3 rounded-2xl border border-black/10 dark:border-white/10 text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md cursor-pointer"
+                >
+                  Publish Trial
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

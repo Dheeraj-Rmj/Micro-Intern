@@ -48,66 +48,52 @@ export const DiscoverTrialsPage: React.FC = () => {
   });
 
   return (
-    <div>
-      <Breadcrumbs currentTitle="Discover Trials" />
-
-      {/* Header Banner */}
-      <div className="mb-8 p-6 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-purple-600/20 blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-semibold mb-3 border border-purple-500/30">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>2-5 Day Paid Industry Trials</span>
+    <div className="pb-12 text-[#111111] dark:text-[#E1E0CC] max-w-[1200px] mx-auto w-full font-sans">
+      {/* Header Title */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6 mt-4">
+        <div>
+          <div className="flex items-center gap-3 text-black/40 dark:text-[#E1E0CC]/50 text-sm font-semibold mb-2">
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4" /> Paid Trials
+            </span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">Explore Skill Trials</h1>
-          <p className="mt-2 text-xs sm:text-sm text-slate-300">
-            Skip traditional screening. Complete micro-trials created by real tech companies to earn stipends and direct internship placements.
-          </p>
+          <h1 className="text-3xl sm:text-5xl tracking-tight font-serif font-normal text-[#111111] dark:text-[#E1E0CC]">
+            Discover Skill Trials
+          </h1>
         </div>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm mb-8 space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search Field */}
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by trial title, company or skill tag (e.g. React, Python)..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-          </div>
-
-          {/* Difficulty Dropdown */}
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-400" />
-            <select
-              value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus:outline-none cursor-pointer"
+      <div className="p-4 rounded-[32px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 mb-8 flex flex-col md:flex-row gap-4 items-center">
+        <div className="relative flex-1 w-full">
+          <Search className="w-4 h-4 text-black/40 dark:text-[#E1E0CC]/40 absolute left-4 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search trials by role, company, or skill..."
+            className="w-full pl-12 pr-4 py-3.5 rounded-full bg-black/5 dark:bg-white/5 border border-transparent text-sm focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-black dark:text-[#E1E0CC] placeholder:text-black/40 dark:placeholder:text-[#E1E0CC]/40"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-[#E1E0CC]/40 hover:text-black dark:hover:text-[#E1E0CC] cursor-pointer"
             >
-              {difficulties.map((d) => (
-                <option key={d} value={d}>
-                  {d === 'All' ? 'All Difficulties' : d}
-                </option>
-              ))}
-            </select>
-          </div>
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
-        {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {categories.map((cat) => (
+        {/* Category Filters */}
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+          {categories.slice(0, 4).map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm'
+                  : 'bg-black/5 dark:bg-white/5 text-black/60 dark:text-[#E1E0CC]/60 hover:bg-black/10 dark:hover:bg-white/10'
               }`}
             >
               {cat}
@@ -116,205 +102,173 @@ export const DiscoverTrialsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Trial Cards Grid */}
+      {/* Trials Grid */}
       {filteredTrials.length === 0 ? (
-        <div className="py-16 px-6 text-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-4">
+        <div className="py-24 px-6 text-center rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10">
+          <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 text-black dark:text-[#E1E0CC] flex items-center justify-center mx-auto mb-6">
             <Search className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">No Active Trials Found</h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 leading-relaxed">
-            No skill trials match your current search criteria or no company trials have been published yet.
+          <h3 className="text-2xl tracking-tight text-black dark:text-[#E1E0CC] font-serif">No matching trials</h3>
+          <p className="text-sm text-black/50 dark:text-[#E1E0CC]/60 max-w-sm mx-auto mt-2 leading-relaxed">
+            We couldn't find any skill trials matching your search or filters. Try resetting your query.
           </p>
-          {(searchQuery || selectedCategory !== 'All' || selectedDifficulty !== 'All') && (
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory('All');
-                setSelectedDifficulty('All');
-              }}
-              className="mt-5 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow transition-colors cursor-pointer"
-            >
-              Reset Filters & Search
-            </button>
-          )}
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedCategory('All');
+              setSelectedDifficulty('All');
+            }}
+            className="mt-8 px-6 py-3 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm shadow-sm transition-transform hover:scale-105 cursor-pointer inline-flex items-center gap-2"
+          >
+            Reset Filters
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTrials.map((t) => (
-            <div
-              key={t.id}
-              className="group rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-xl hover:border-purple-300 dark:hover:border-purple-800 transition-all flex flex-col justify-between"
-            >
-              <div>
-                {/* Card Top: Logo, Company & Bookmark */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={t.logo}
-                      alt={t.company}
-                      className="w-10 h-10 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700"
-                    />
-                    <div>
-                      <h4 className="font-bold text-xs text-slate-900 dark:text-white leading-tight">{t.company}</h4>
-                      <span className="text-[10px] font-semibold text-purple-600 dark:text-purple-400">{t.category}</span>
-                    </div>
+          {filteredTrials.map((trial) => {
+            const isBookmarked = trial.isBookmarked;
+            return (
+              <div
+                key={trial.id}
+                className="group rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:shadow-lg transition-all"
+              >
+                <div>
+                  {/* Top row: Company + Bookmark */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-bold text-black/40 dark:text-[#E1E0CC]/50 uppercase tracking-widest">
+                      {trial.company}
+                    </span>
+                    <button
+                      onClick={() => toggleBookmark(trial.id)}
+                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+                        isBookmarked
+                          ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black'
+                          : 'bg-black/5 dark:bg-white/5 text-black/40 dark:text-[#E1E0CC]/40 hover:text-black dark:hover:text-[#E1E0CC]'
+                      }`}
+                    >
+                      <Bookmark className="w-4 h-4 fill-current" />
+                    </button>
+                  </div>
+
+                  <h3 className="text-2xl tracking-tight font-serif text-black dark:text-[#E1E0CC] mb-3 leading-snug">
+                    {trial.title}
+                  </h3>
+
+                  <p className="text-xs text-black/60 dark:text-[#E1E0CC]/70 line-clamp-2 leading-relaxed mb-6">
+                    {trial.description}
+                  </p>
+
+                  {/* Skills tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {trial.skillsRequired.slice(0, 3).map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 text-[10px] font-bold text-black/60 dark:text-[#E1E0CC]/70 uppercase tracking-wider"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  {/* Footer stats */}
+                  <div className="flex items-center justify-between pt-4 border-t border-black/5 dark:border-white/10 text-xs font-medium text-black/60 dark:text-[#E1E0CC]/60 mb-6">
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" /> {trial.duration}
+                    </span>
+                    <span className="flex items-center gap-1.5 font-bold text-black dark:text-[#E1E0CC]">
+                      <Award className="w-3.5 h-3.5 text-[#111111] dark:text-[#E1E0CC]" /> {trial.stipend}
+                    </span>
                   </div>
 
                   <button
-                    onClick={() => toggleBookmark(t.id)}
-                    className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                      t.isBookmarked
-                        ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-600 dark:text-purple-300'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600'
-                    }`}
-                    title="Bookmark Trial"
+                    onClick={() => setActiveModalTrial(trial)}
+                    className="w-full py-3.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm shadow-sm transition-transform group-hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2"
                   >
-                    <Bookmark className={`w-4 h-4 ${t.isBookmarked ? 'fill-purple-600 dark:fill-purple-300' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Title & Description */}
-                <h3 className="font-bold text-base mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-2">
-                  {t.title}
-                </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed mb-4">
-                  {t.description}
-                </p>
-
-                {/* Skill Tags */}
-                <div className="flex flex-wrap gap-1.5 mb-5">
-                  {t.skillsRequired.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-mono font-medium text-slate-600 dark:text-slate-300"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Card Footer: Metadata & Actions */}
-              <div>
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 mb-4">
-                  <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1">
-                    <Award className="w-3.5 h-3.5 text-emerald-500" />
-                    {t.stipend}
-                  </span>
-
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-amber-500" />
-                    {t.duration}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setActiveModalTrial(t)}
-                    className="py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
-                  >
-                    View Details
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      if (t.status === 'applied' || t.status === 'in_progress') {
-                        setActiveWorkspaceTrial(t);
-                        setCurrentRoute('workspace');
-                      } else {
-                        applyForTrial(t.id);
-                      }
-                    }}
-                    className={`py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all cursor-pointer ${
-                      t.status === 'applied' || t.status === 'in_progress'
-                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                        : 'bg-purple-600 hover:bg-purple-700 text-white shadow-purple-600/20'
-                    }`}
-                  >
-                    {t.status === 'applied' || t.status === 'in_progress' ? 'Open Workspace' : 'Apply Now'}
+                    <span>View Brief & Apply</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Trial Detail Modal */}
+      {/* Trial Brief Modal */}
       {activeModalTrial && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setActiveModalTrial(null)} />
+          <div className="bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 rounded-[40px] max-w-2xl w-full p-8 sm:p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto z-10 text-[#111111] dark:text-[#E1E0CC]">
             <button
               onClick={() => setActiveModalTrial(null)}
-              className="absolute top-6 right-6 p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 cursor-pointer"
+              className="absolute right-6 top-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-black/60 dark:text-[#E1E0CC]/60 hover:text-black dark:hover:text-[#E1E0CC] cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-4 mb-6">
-              <img
-                src={activeModalTrial.logo}
-                alt={activeModalTrial.company}
-                className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/30"
-              />
-              <div>
-                <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
-                  {activeModalTrial.company}
+            <span className="text-xs font-bold text-black/40 dark:text-[#E1E0CC]/50 uppercase tracking-widest block mb-2">
+              {activeModalTrial.company} • {activeModalTrial.category}
+            </span>
+            <h2 className="text-3xl font-serif text-black dark:text-[#E1E0CC] mb-4">
+              {activeModalTrial.title}
+            </h2>
+            <p className="text-sm text-black/70 dark:text-[#E1E0CC]/75 leading-relaxed mb-8">
+              {activeModalTrial.description}
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="p-5 rounded-3xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black">
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 block mb-1">
+                  Stipend & Reward
                 </span>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
-                  {activeModalTrial.title}
-                </h2>
+                <span className="text-xl font-bold">{activeModalTrial.stipend}</span>
+              </div>
+              <div className="p-5 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
+                <span className="text-[10px] font-bold text-black/40 dark:text-[#E1E0CC]/50 uppercase tracking-widest block mb-1">
+                  Time Commitment
+                </span>
+                <span className="text-xl font-bold text-black dark:text-[#E1E0CC]">{activeModalTrial.duration}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/80 grid grid-cols-3 gap-3 text-center mb-6">
-              <div>
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Reward Stipend</p>
-                <p className="text-sm font-extrabold text-purple-700 dark:text-purple-300">{activeModalTrial.stipend}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Trial Duration</p>
-                <p className="text-sm font-extrabold text-purple-700 dark:text-purple-300">{activeModalTrial.duration}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Applicants</p>
-                <p className="text-sm font-extrabold text-purple-700 dark:text-purple-300">{activeModalTrial.applicantsCount}</p>
-              </div>
+            <div className="space-y-4 mb-8">
+              <h4 className="font-bold text-sm uppercase tracking-widest text-black/60 dark:text-[#E1E0CC]/60">
+                Deliverables Required
+              </h4>
+              <ul className="space-y-2">
+                {[
+                  'Clean, documented source code or design files',
+                  'Brief 2-minute walkthrough recording of solution',
+                  'Test cases or verification checklist',
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-sm text-black/80 dark:text-[#E1E0CC]/80">
+                    <CheckCircle2 className="w-5 h-5 text-[#111111] dark:text-[#E1E0CC] shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <div className="space-y-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-              <div>
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-1">Trial Task Overview</h4>
-                <p className="leading-relaxed">{activeModalTrial.description}</p>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-sm text-slate-900 dark:text-white mb-2">Expected Deliverables</h4>
-                <ul className="space-y-1.5 list-disc list-inside text-slate-600 dark:text-slate-400">
-                  {activeModalTrial.deliverables.map((d, i) => (
-                    <li key={i}>{d}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
+            <div className="flex items-center justify-end gap-3 pt-6 border-t border-black/5 dark:border-white/10">
               <button
                 onClick={() => setActiveModalTrial(null)}
-                className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer"
+                className="px-6 py-3 rounded-full font-bold text-sm text-black/60 dark:text-[#E1E0CC]/60 hover:text-black dark:hover:text-[#E1E0CC] cursor-pointer"
               >
-                Close
+                Cancel
               </button>
-
               <button
                 onClick={() => {
                   applyForTrial(activeModalTrial.id);
+                  setActiveWorkspaceTrial(activeModalTrial);
                   setActiveModalTrial(null);
+                  setCurrentRoute('workspace');
                 }}
-                className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/30 cursor-pointer"
+                className="px-8 py-3 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-sm font-bold shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center gap-2"
               >
-                Apply for Trial
+                <span>Start Trial Now</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>

@@ -70,12 +70,5 @@ export const FAQ_ITEMS = [
   },
 ];
 
-export const MOCK_COMPANIES = [
-  { name: 'NeuralFlow', domain: 'AI Infrastructure', trials: 14 },
-  { name: 'Stripe Build', domain: 'Fintech & Payments', trials: 28 },
-  { name: 'ScaleAI', domain: 'LLM Benchmarks', trials: 19 },
-  { name: 'Vercel Partner', domain: 'Frontend Cloud', trials: 32 },
-  { name: 'CloudOps', domain: 'DevOps & Kubernetes', trials: 11 },
-  { name: 'DataStream', domain: 'Realtime Analytics', trials: 22 },
-];
+export const MOCK_COMPANIES: any[] = [];
 

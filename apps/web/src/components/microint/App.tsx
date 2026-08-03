@@ -18,9 +18,24 @@ import { SubmissionsPage } from './components/pages/SubmissionsPage';
 import { NotificationsPage } from './components/pages/NotificationsPage';
 import { AchievementsPage } from './components/pages/AchievementsPage';
 import { SettingsPage } from './components/pages/SettingsPage';
+import { NetworkPage } from './components/pages/NetworkPage';
+import {
+  SuperAdminDashboard,
+  SuperAdminUsersPage,
+  SuperAdminTrialsPage,
+  SuperAdminTrustAIPage,
+  SuperAdminAuditLogsPage,
+  SuperAdminSettingsPage,
+} from './components/admin';
+import {
+  CompanyDashboard,
+  CompanyApplicationsPage,
+  CompanyTrialsPage,
+  CompanyRecruitersPage,
+} from './components/company';
 
 const MainRouter: React.FC = () => {
-  const { currentRoute } = useApp();
+  const { currentRoute, setCurrentRoute, role, setRole, showToast } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // 1. Fullscreen Loading Screen
@@ -48,10 +63,31 @@ const MainRouter: React.FC = () => {
     );
   }
 
-  if (currentRoute === 'signin') {
+  // Public Candidate Login
+  if (currentRoute === 'signin' || currentRoute === 'login') {
     return (
       <>
-        <SignInPage />
+        <SignInPage initialPortal="candidate" />
+        <Toast />
+      </>
+    );
+  }
+
+  // Private Enterprise Portal Login (/enterprise/login — Recruiters & Company Admins share this page)
+  if (currentRoute === 'enterprise-login') {
+    return (
+      <>
+        <SignInPage initialPortal="enterprise" />
+        <Toast />
+      </>
+    );
+  }
+
+  // Private Super Admin Ops Portal Login (/system-ops — Hidden, MFA Enforced)
+  if (currentRoute === 'system-ops') {
+    return (
+      <>
+        <SignInPage initialPortal="ops" />
         <Toast />
       </>
     );
@@ -66,11 +102,14 @@ const MainRouter: React.FC = () => {
     );
   }
 
-  // 4. Candidate Dashboard Application Layout
+  // 4. Candidate & Super Admin Dashboard Layout
   const renderDashboardView = () => {
     switch (currentRoute) {
+      // Candidate Routes
       case 'dashboard':
         return <CandidateDashboard />;
+      case 'network':
+        return <NetworkPage />;
       case 'profile':
         return <ProfilePage />;
       case 'discover-trials':
@@ -87,21 +126,59 @@ const MainRouter: React.FC = () => {
         return <AchievementsPage />;
       case 'settings':
         return <SettingsPage />;
+      // Company Portal (Enterprise Admin - Zoho Corp)
+      case 'company-dashboard':
+        return <CompanyDashboard />;
+      case 'company-applications':
+      case 'company-evaluations':
+      case 'company-interviews':
+        return <CompanyApplicationsPage />;
+      case 'company-recruiters':
+      case 'company-settings':
+        return <CompanyRecruitersPage />;
+      case 'company-create-trial':
+      case 'company-manage-trials':
+        return <CompanyTrialsPage />;
+      // Super Admin Portal Routes
+      case 'admin-dashboard':
+        return <SuperAdminDashboard />;
+      case 'admin-users':
+        return <SuperAdminUsersPage />;
+      case 'admin-trials':
+        return <SuperAdminTrialsPage />;
+      case 'admin-trust-ai':
+        return <SuperAdminTrustAIPage />;
+      case 'admin-audit-logs':
+        return <SuperAdminAuditLogsPage />;
+      case 'admin-settings':
+        return <SuperAdminSettingsPage />;
       default:
         return <CandidateDashboard />;
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-[#F3F2EA] dark:bg-black text-[#111111] dark:text-[#E1E0CC] transition-colors duration-300 relative overflow-x-hidden selection:bg-[#DEDBC8] selection:text-black">
+      {/* ── Sparse Ambient Dot Matrix Background (Nothing Style) ────────── */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-0"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(225,224,204,0.18) 1.5px, transparent 1.5px)',
+          backgroundSize: '100px 100px',
+          backgroundPosition: 'center center',
+        }}
+      />
+
       {/* Persistent Responsive Sidebar */}
-      <Sidebar mobileOpen={mobileSidebarOpen} setMobileOpen={setMobileSidebarOpen} />
+      <div className="relative z-10 flex">
+        <Sidebar mobileOpen={mobileSidebarOpen} setMobileOpen={setMobileSidebarOpen} />
+      </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
         <DashboardHeader onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)} />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full mx-auto">
           {renderDashboardView()}
         </main>
       </div>
