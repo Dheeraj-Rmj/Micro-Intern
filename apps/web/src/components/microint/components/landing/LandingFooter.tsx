@@ -118,7 +118,15 @@ export const LandingFooter: React.FC = () => {
             <p>© 2026 MicroIntern Platform Inc. All rights reserved.</p>
             <span className="hidden sm:inline text-slate-700">&bull;</span>
             <p>
-              Micro intern &mdash; A product of <span className="text-white font-semibold">RMJ IT solution</span>
+              Micro intern &mdash; A product of{' '}
+              <a
+                href="https://rmjit.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:underline font-semibold transition-colors"
+              >
+                RMJ IT solution
+              </a>
             </p>
           </div>
           <p className="flex items-center gap-1">

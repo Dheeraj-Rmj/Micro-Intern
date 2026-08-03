@@ -456,7 +456,15 @@ export const LandingPage: React.FC = () => {
             <p className="text-xs text-gray-600 font-medium">Copyright &copy; 2026 Micro Intern Inc. All rights reserved.</p>
             <span className="hidden sm:inline text-gray-700">&bull;</span>
             <p className="text-xs text-gray-500 font-medium">
-              Micro Intern &mdash; A product of <span className="text-[#E1E0CC] font-semibold">RMJ IT solution</span>
+              Micro Intern &mdash; A product of{' '}
+              <a
+                href="https://rmjit.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#E1E0CC] hover:underline font-semibold transition-colors"
+              >
+                RMJ IT solution
+              </a>
             </p>
           </div>
           <div className="flex gap-6">
