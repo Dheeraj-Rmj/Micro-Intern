@@ -101,17 +101,6 @@ export const LandingPage: React.FC = () => {
                 transition={{ delay: 0.3, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                 className="max-w-3xl"
               >
-                {/* Framer / Griffin Animated Pill Badge */}
-                <motion.div
-                  initial={{ y: -16, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-md text-xs font-medium text-white mb-6 select-none shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-                >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-                  <span className="text-white/90">New: 48-Hour Technical Work Trials</span>
-                </motion.div>
-
                 <h1
                   className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white font-normal"
                   style={{ fontFamily: "'Playfair Display', serif" }}
