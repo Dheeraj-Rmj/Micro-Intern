@@ -105,8 +105,8 @@ export const LandingPage: React.FC = () => {
                   className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white font-normal"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  Prove Your Skill.<br />
-                  <span className="italic" style={{ color: '#E1C87A' }}>Change</span> Your World.
+                  Evaluate By Building.<br />
+                  <span className="italic" style={{ color: '#E1C87A' }}>Hire</span> By Code.
                 </h1>
               </motion.div>
 
@@ -118,7 +118,7 @@ export const LandingPage: React.FC = () => {
                   transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="text-primary/90 font-bold text-xs sm:text-sm md:text-base leading-[1.4] mb-6"
                 >
-                  MicroIntern is a worldwide network of developers, designers, and creators bound not by resumes, but by passion and hunger to prove potential through authentic skill trials.
+                  Replace resumes and subjective interviews with 48-hour practical engineering trials. Evaluate candidates on actual production code before making a hire.
                 </motion.p>
 
                 <motion.button
@@ -151,9 +151,9 @@ export const LandingPage: React.FC = () => {
           <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-4xl mx-auto leading-[0.95] sm:leading-[0.9]">
             <WordsPullUpMultiStyle 
               segments={[
-                { text: "This is MicroIntern,", className: "font-normal" },
-                { text: "a revolutionary platform.", className: "font-serif italic font-normal px-2 text-[#DEDBC8]/90" },
-                { text: "Built for pure vision and authentic skill evaluation.", className: "font-normal" }
+                { text: "No whiteboards.", className: "font-normal" },
+                { text: "No keyword filtering.", className: "font-serif italic font-normal px-2 text-[#DEDBC8]/90" },
+                { text: "Just real engineering trials that prove what candidates can build.", className: "font-normal" }
               ]} 
               className="justify-center"
             />
@@ -161,7 +161,7 @@ export const LandingPage: React.FC = () => {
 
           <div className="mt-16 md:mt-24 max-w-2xl mx-auto">
             <AnimatedLetter 
-              text="Over the last two years, we have partnered with top-tier tech enterprises to craft authentic evaluation trials. Together, we have replaced thousands of resumes with verified working code, enabling talented candidates to unlock real opportunities."
+              text="We work directly with engineering teams to design practical repository tasks. Candidates fix bugs, implement features, and submit pull requests in an isolated environment—giving companies objective proof of work."
               className="text-[#DEDBC8] text-xs sm:text-sm md:text-base md:text-lg leading-relaxed justify-center"
             />
           </div>
@@ -194,7 +194,7 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <h3 className="text-2xl font-medium text-[#E1E0CC] mb-4">RMJ IT Solution</h3>
                 <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-                  RMJ IT Solution is a forward-thinking technology company focused on building transformative software products that bridge the gap between talent and opportunity. Our mission is to use cutting-edge AI and engineering to create platforms that empower individuals and organizations alike.
+                  RMJ IT Solution builds software for technical teams and modern organizations. We focus on developer tooling, transparent evaluation pipelines, and practical applications that eliminate hiring friction.
                 </p>
               </div>
 
@@ -205,17 +205,17 @@ export const LandingPage: React.FC = () => {
               <div className="bg-[#101010] rounded-3xl p-8 flex-1">
                 <h4 className="text-[#E1E0CC] font-medium text-lg mb-3">Our Vision</h4>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  We believe resumes are broken. RMJ IT Solution built MicroIntern to replace them — giving every developer, designer, and creator a fair shot by letting their actual work speak for itself. We envision a world where opportunities are earned through skill, not papers.
+                  Traditional technical hiring relies on resumes and keyword filtering. RMJ IT Solution built MicroIntern to standardize work-sample evaluations—allowing engineering teams to evaluate talent on actual codebases rather than algorithmic puzzles.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <div className="bg-[#101010] rounded-3xl p-6">
-                  <h4 className="text-primary font-bold text-lg mb-2">AI-Powered</h4>
-                  <p className="text-gray-500 text-xs leading-relaxed">Skill trials evaluated using state-of-the-art AI grading engines.</p>
+                  <h4 className="text-primary font-bold text-lg mb-2">Automated Grading</h4>
+                  <p className="text-gray-500 text-xs leading-relaxed">Automated test suites and code-review rubrics for fast, objective feedback.</p>
                 </div>
                 <div className="bg-[#101010] rounded-3xl p-6">
-                  <h4 className="text-primary font-bold text-lg mb-2">Global Reach</h4>
-                  <p className="text-gray-500 text-xs leading-relaxed">Connecting talent and companies across more than 30 countries worldwide.</p>
+                  <h4 className="text-primary font-bold text-lg mb-2">Global Talent</h4>
+                  <p className="text-gray-500 text-xs leading-relaxed">Open technical evaluations accessible to developers across 30+ countries.</p>
                 </div>
               </div>
             </div>
@@ -234,8 +234,8 @@ export const LandingPage: React.FC = () => {
           <div className="mb-16 md:mb-24 px-4">
             <WordsPullUpMultiStyle 
               segments={[
-                { text: "Enterprise-grade evaluation for modern teams.", className: "text-[#E1E0CC] block mb-2" },
-                { text: "Built for fairness. Powered by skill.", className: "text-gray-500 block" }
+                { text: "Standardized technical evaluations.", className: "text-[#E1E0CC] block mb-2" },
+                { text: "Practical tasks. Objective verification.", className: "text-gray-500 block" }
               ]}
               className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-normal tracking-tight"
             />
@@ -357,23 +357,23 @@ export const LandingPage: React.FC = () => {
           <div className="flex flex-col">
             <FaqItem 
               delay={0.1}
-              question="What exactly is an AI Skill Trial?" 
-              answer="It's an immersive, browser-based coding environment where you solve real-world tasks. Our proprietary AI engine evaluates your code's architecture, logic, and efficiency instantly, providing verifiable proof of your skills directly to employers."
+              question="What is a Skill Trial?" 
+              answer="It is a practical, browser-based coding assignment where you work on a real codebase. You submit code that is evaluated on correctness, structure, and best practices."
             />
             <FaqItem 
               delay={0.2}
-              question="Who reviews my code?" 
-              answer="Your code undergoes a dual-layer review: instantly by our AI models for correctness and style, and subsequently by senior engineers from our partner enterprises when you choose to apply for their specific roles."
+              question="Who evaluates the submissions?" 
+              answer="Submissions are first validated by automated test suites and linting checks, then reviewed by engineering leaders from hiring companies."
             />
             <FaqItem 
               delay={0.3}
-              question="Do I need a traditional resume?" 
-              answer="No. MicroIntern is built on the philosophy of proving potential through action. Your verified Trust Score, generated from completed skill trials, replaces the traditional resume."
+              question="Do I need to submit a resume?" 
+              answer="No. MicroIntern focuses entirely on proof of work. Your completed trials and verified code score serve as your credentials."
             />
             <FaqItem 
               delay={0.4}
-              question="Is MicroIntern free for developers?" 
-              answer="Yes! Joining the platform, building your profile, and taking skill trials is completely free for developers. We only charge partner enterprises who use the platform to source verified talent."
+              question="Is MicroIntern free for candidates?" 
+              answer="Yes. Candidates can create a profile and complete evaluation trials at no cost. Hiring organizations pay to evaluate and recruit verified candidates."
             />
           </div>
         </div>
@@ -389,7 +389,7 @@ export const LandingPage: React.FC = () => {
           <div className="lg:col-span-1">
             <h3 className="text-2xl font-black tracking-tight text-[#E1E0CC] mb-6">Micro Intern</h3>
             <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-xs">
-              The world&apos;s first AI-powered skill trial platform. We replace resumes with verified, working code.
+              Practical 48-hour work trials. We replace resumes with verified, production-ready code.
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-black hover:bg-[#E1E0CC] hover:border-[#E1E0CC] transition-all cursor-pointer">

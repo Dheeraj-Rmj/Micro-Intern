@@ -23,7 +23,7 @@ export const LandingFooter: React.FC = () => {
           <div className="md:col-span-1 space-y-4">
             <Logo size="lg" onClick={() => setCurrentRoute('landing')} />
             <p className="text-xs text-slate-400 leading-relaxed">
-              AI Powered Skill Trial Platform empowering developers and designers to prove their talent through real 2–5 day company trials and land paid tech internships.
+              An open technical evaluation platform where engineers complete practical 2–5 day work trials to earn paid internships based on real code.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a href="#" className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
