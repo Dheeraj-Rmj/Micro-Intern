@@ -101,6 +101,17 @@ export const LandingPage: React.FC = () => {
                 transition={{ delay: 0.3, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                 className="max-w-3xl"
               >
+                {/* Framer / Griffin Animated Pill Badge */}
+                <motion.div
+                  initial={{ y: -16, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-md text-xs font-medium text-white mb-6 select-none shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                  <span className="text-white/90">New: 48-Hour Technical Work Trials</span>
+                </motion.div>
+
                 <h1
                   className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white font-normal"
                   style={{ fontFamily: "'Playfair Display', serif" }}
@@ -126,7 +137,9 @@ export const LandingPage: React.FC = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="group flex items-center bg-primary rounded-full pl-6 pr-2 py-2 text-black font-medium text-sm sm:text-base transition-all hover:gap-3 cursor-pointer"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group flex items-center bg-primary rounded-full pl-6 pr-2 py-2 text-black font-medium text-sm sm:text-base transition-all hover:gap-3 hover:shadow-[0_0_30px_rgba(225,200,122,0.4)] cursor-pointer"
                 >
                   <span>Join the platform</span>
                   <div className="ml-4 bg-black rounded-full w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-transform group-hover:scale-110">
@@ -187,9 +200,13 @@ export const LandingPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             {/* Left: Company Info */}
-            <div className="bg-[#101010] rounded-3xl p-8 sm:p-10 flex flex-col justify-between">
+            <motion.div 
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="bg-gradient-to-b from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-white/25 rounded-3xl p-8 sm:p-10 flex flex-col justify-between transition-colors duration-500 backdrop-blur-xl"
+            >
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-8 shadow-[0_0_15px_rgba(225,200,122,0.15)]">
                   <span className="text-primary font-bold text-xl">R</span>
                 </div>
                 <h3 className="text-2xl font-medium text-[#E1E0CC] mb-4">RMJ IT Solution</h3>
@@ -198,25 +215,37 @@ export const LandingPage: React.FC = () => {
                 </p>
               </div>
 
-            </div>
+            </motion.div>
 
             {/* Right: Vision + Cards */}
             <div className="flex flex-col gap-6">
-              <div className="bg-[#101010] rounded-3xl p-8 flex-1">
+              <motion.div 
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="bg-gradient-to-b from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-white/25 rounded-3xl p-8 flex-1 transition-colors duration-500 backdrop-blur-xl"
+              >
                 <h4 className="text-[#E1E0CC] font-medium text-lg mb-3">Our Vision</h4>
                 <p className="text-gray-400 text-sm leading-relaxed">
                   Traditional technical hiring relies on resumes and keyword filtering. RMJ IT Solution built MicroIntern to standardize work-sample evaluations—allowing engineering teams to evaluate talent on actual codebases rather than algorithmic puzzles.
                 </p>
-              </div>
+              </motion.div>
               <div className="grid grid-cols-2 gap-6">
-                <div className="bg-[#101010] rounded-3xl p-6">
+                <motion.div 
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="bg-gradient-to-b from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-white/25 rounded-3xl p-6 transition-colors duration-500 backdrop-blur-xl"
+                >
                   <h4 className="text-primary font-bold text-lg mb-2">Automated Grading</h4>
                   <p className="text-gray-500 text-xs leading-relaxed">Automated test suites and code-review rubrics for fast, objective feedback.</p>
-                </div>
-                <div className="bg-[#101010] rounded-3xl p-6">
+                </motion.div>
+                <motion.div 
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="bg-gradient-to-b from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-white/25 rounded-3xl p-6 transition-colors duration-500 backdrop-blur-xl"
+                >
                   <h4 className="text-primary font-bold text-lg mb-2">Global Talent</h4>
                   <p className="text-gray-500 text-xs leading-relaxed">Open technical evaluations accessible to developers across 30+ countries.</p>
-                </div>
+                </motion.div>
               </div>
             </div>
 
@@ -228,6 +257,8 @@ export const LandingPage: React.FC = () => {
       <section id="features" className="relative min-h-screen bg-black py-24 md:py-32 px-4 md:px-6">
         {/* Subtle Noise Overlay for Features Section */}
         <div className="absolute inset-0 z-0 bg-noise opacity-[0.15] pointer-events-none" />
+        {/* Ambient Radial LED Orb (Griffin / Arion Framer aesthetic) */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[350px] bg-gradient-to-tr from-primary/15 via-emerald-500/10 to-transparent blur-[140px] rounded-full pointer-events-none opacity-50" />
 
         <div className="relative z-10 max-w-[1400px] mx-auto">
           {/* Features Header */}
@@ -584,25 +615,46 @@ export const LandingPage: React.FC = () => {
   );
 };
 
-// Internal component for Feature Cards animation
+// Internal component for Feature Cards animation (Griffin / Arion Framer Spotlight Card)
 const FeatureCard: React.FC<{ children: React.ReactNode; className?: string; delay: number }> = ({ children, className = '', delay }) => {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
 
   return (
     <motion.div
       ref={ref}
-      initial={{ scale: 0.95, opacity: 0 }}
-      animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
-      transition={{ delay, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
+      initial={{ scale: 0.95, opacity: 0, y: 24 }}
+      animate={isInView ? { scale: 1, opacity: 1, y: 0 } : { scale: 0.95, opacity: 0, y: 24 }}
+      transition={{ delay, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -6, transition: { duration: 0.3, ease: 'easeOut' } }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`relative overflow-hidden transition-colors duration-500 border border-white/10 hover:border-white/25 bg-gradient-to-b from-white/[0.07] to-white/[0.02] backdrop-blur-xl ${className}`}
     >
-      {children}
+      {/* Dynamic Cursor Spotlight Glow */}
+      <div
+        className="pointer-events-none absolute -inset-px transition-opacity duration-500 z-0"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(225, 200, 122, 0.14), transparent 40%)`,
+        }}
+      />
+      <div className="relative z-10 h-full flex flex-col">
+        {children}
+      </div>
     </motion.div>
   );
 };
 
-// Internal component for FAQ Items animation
+// Internal component for FAQ Items animation (Framer Motion spring accordion)
 const FaqItem: React.FC<{ question: string, answer: string, delay: number }> = ({ question, answer, delay }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const ref = React.useRef(null);
@@ -613,19 +665,24 @@ const FaqItem: React.FC<{ question: string, answer: string, delay: number }> = (
       ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="py-6 md:py-8 cursor-pointer group"
+      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="py-6 md:py-8 border-b border-white/10 hover:border-white/25 transition-colors cursor-pointer group"
       onClick={() => setIsOpen(!isOpen)}
     >
       <div className="flex justify-between items-center gap-4">
         <h4 className="text-lg md:text-xl font-medium text-[#E1E0CC] group-hover:text-white transition-colors">{question}</h4>
-        <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.3 }} className="text-primary shrink-0">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+        <motion.div 
+          animate={{ rotate: isOpen ? 45 : 0 }} 
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }} 
+          className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-primary group-hover:border-primary/50 group-hover:bg-primary/10 transition-colors shrink-0"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
         </motion.div>
       </div>
       <motion.div
         initial={false}
         animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0, marginTop: isOpen ? 16 : 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="overflow-hidden"
       >
         <p className="text-gray-400 text-sm md:text-base leading-relaxed pr-12">{answer}</p>
