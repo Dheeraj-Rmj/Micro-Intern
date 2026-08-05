@@ -61,6 +61,14 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
       showToast('Missing Credentials', 'Please enter your email and password.', 'warning');
       return;
     }
+
+    // Password Strength Validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      showToast('Weak Password', 'Password must be at least 8 characters, contain uppercase, lowercase, number, and special character.', 'warning');
+      return;
+    }
+
     if (initialPortal === 'ops' && !mfaCode) {
       showToast('MFA Token Required', 'Please enter your 6-digit MFA code or YubiKey passkey to access Operations.', 'warning');
       return;
@@ -75,7 +83,11 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
       username: !identifier.includes('@') ? identifier : prev.username,
     }));
 
-    if (initialPortal === 'candidate') {
+    if (identifier === 'admin' || identifier === 'admin@microintern.com') {
+      setRole('admin');
+      showToast('Admin Session Active', 'Authenticated as Admin.', 'success');
+      setCurrentRoute('admin-dashboard');
+    } else if (initialPortal === 'candidate') {
       setRole('candidate');
       showToast('Candidate Session Active', 'Authenticated to app.microintern.com (Candidate Portal).', 'success');
       setCurrentRoute('dashboard');

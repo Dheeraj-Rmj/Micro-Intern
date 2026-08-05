@@ -399,13 +399,21 @@ export const ProfilePage: React.FC = () => {
 
           // Dynamic import of PDF.js from CDN to bypass package manager issues
           const loadPDFJS = async () => {
-            if (window.pdfjsLib) return window.pdfjsLib;
+            const getLib = () => window.pdfjsLib || (window as any)['pdfjs-dist/build/pdf'];
+            if (getLib()) return getLib();
             return new Promise((resolve, reject) => {
               const script = document.createElement('script');
               script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
               script.onload = () => {
-                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-                resolve(window.pdfjsLib);
+                const lib = getLib();
+                if (!lib) {
+                  reject(new Error('pdfjsLib not found after script load'));
+                  return;
+                }
+                // Ensure it's globally available as pdfjsLib
+                window.pdfjsLib = lib;
+                lib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                resolve(lib);
               };
               script.onerror = reject;
               document.body.appendChild(script);
@@ -415,7 +423,7 @@ export const ProfilePage: React.FC = () => {
           try {
             const pdfjsLib = await loadPDFJS();
             const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
             
             let fullText = '';
             for (let i = 1; i <= pdf.numPages; i++) {
@@ -463,24 +471,61 @@ export const ProfilePage: React.FC = () => {
               return new RegExp(`\\b${escapedSkill}\\b`, 'i').test(fullText);
             });
 
-            // Extract Name (Fallback to filename if not found easily)
-            let simulatedName = 'Candidate';
-            const rawName = file.name.toLowerCase().replace('.pdf', '');
-            const cleanName = rawName.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            if (cleanName.length > 2) simulatedName = cleanName;
+            // 1. Extract Name
+            const cleanFullText = fullText.replace(/\\s+/g, ' ').trim();
+            let extractedName = '';
+            const nameMatch = cleanFullText.match(/^([A-Z][a-z]+(?:\\s+[A-Z][a-z]+){1,2})/);
+            if (nameMatch && nameMatch[1] && nameMatch[1].length < 40) {
+              extractedName = nameMatch[1];
+            } else {
+              const words = cleanFullText.split(' ').filter(w => /^[A-Za-z]+$/.test(w));
+              if (words.length >= 2) {
+                extractedName = words[0] + ' ' + words[1];
+              }
+            }
+
+            // 2. Extract Bio / Summary
+            let extractedBio = '';
+            const summaryMatch = cleanFullText.match(/(?:Summary|Profile|Objective|About Me)\\s*(.*?)(?:Experience|Education|Skills|Work History|Employment|Projects)/i);
+            
+            if (summaryMatch && summaryMatch[1]) {
+              extractedBio = summaryMatch[1].trim().substring(0, 500);
+            }
+            
+            // Clear bio if it accidentally grabbed contact info or is too short
+            if (extractedBio.includes('@') || /\\+?[0-9]{10}/.test(extractedBio) || extractedBio.length < 20) {
+              extractedBio = '';
+            }
+
+            // 3. Extract Headline
+            let extractedHeadline = '';
+            const commonTitles = ['Software Developer', 'Software Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Data Scientist', 'Product Manager', 'Designer', 'Engineer', 'Developer', 'Analyst'];
+            const introText = cleanFullText.substring(0, 500);
+            for (const title of commonTitles) {
+              if (new RegExp(`\\\\b${title}\\\\b`, 'i').test(introText)) {
+                extractedHeadline = title;
+                break;
+              }
+            }
+
+            // Clean URLs
+            let cleanLinkedin = linkedin.replace(/[^a-zA-Z0-9-.:/?=]/g, '');
+            let cleanGithub = github.replace(/[^a-zA-Z0-9-.:/?=]/g, '');
+            let cleanPortfolio = portfolio.replace(/[^a-zA-Z0-9-.:/?=]/g, '');
 
             // Set form values
-            setValue('fullName', simulatedName, { shouldValidate: true, shouldDirty: true });
-            setValue('headline', 'Software Engineer', { shouldValidate: true, shouldDirty: true });
-            
-            const bioText = `Passionate developer. Extracted from resume ${file.name}.` + (email ? ` Contact: ${email}` : '');
-            setValue('bio', bioText, { shouldValidate: true, shouldDirty: true });
+            setValue('fullName', extractedName, { shouldValidate: true, shouldDirty: true });
+            setValue('headline', extractedHeadline, { shouldValidate: true, shouldDirty: true });
+            setValue('bio', extractedBio, { shouldValidate: true, shouldDirty: true });
             
             if (foundSkills.length > 0) {
               setValue('skills', foundSkills.slice(0, 7), { shouldValidate: true, shouldDirty: true });
             } else {
               setValue('skills', ['JavaScript', 'React'], { shouldValidate: true, shouldDirty: true });
             }
+
+            // Fallback for URLs
+            const fallbackStr = extractedName.replace(/\s/g, '').toLowerCase() || 'candidate';
 
             // Validate Link Helper
             const validateLink = async (url: string, type: 'github' | 'linkedin' | 'portfolio', expectedName: string) => {
@@ -505,9 +550,9 @@ export const ProfilePage: React.FC = () => {
 
             // Run validations concurrently for speed
             const [validGithub, validLinkedin, validPortfolio] = await Promise.all([
-              validateLink(github || `https://github.com/${rawName.replace(/\s/g, '')}`, 'github', simulatedName),
-              validateLink(linkedin || `https://linkedin.com/in/${rawName.replace(/\s/g, '')}`, 'linkedin', simulatedName),
-              validateLink(portfolio || `https://${rawName.replace(/\s/g, '')}.dev`, 'portfolio', simulatedName)
+              validateLink(cleanGithub || `https://github.com/${fallbackStr}`, 'github', extractedName),
+              validateLink(cleanLinkedin || `https://linkedin.com/in/${fallbackStr}`, 'linkedin', extractedName),
+              validateLink(cleanPortfolio || `https://${fallbackStr}.dev`, 'portfolio', extractedName)
             ]);
 
             if (validGithub) setValue('githubUrl', validGithub, { shouldValidate: true, shouldDirty: true });
