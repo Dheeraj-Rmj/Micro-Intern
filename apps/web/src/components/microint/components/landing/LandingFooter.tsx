@@ -16,7 +16,7 @@ export const LandingFooter: React.FC = () => {
   };
 
   return (
-    <footer id="footer" className="bg-slate-900 text-slate-300 border-t border-slate-800">
+    <footer id="footer" className="bg-white text-slate-500 border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand Info */}
@@ -26,13 +26,13 @@ export const LandingFooter: React.FC = () => {
               An open technical evaluation platform where engineers complete practical 2–5 day work trials to earn paid internships based on real code.
             </p>
             <div className="flex items-center gap-3 pt-2">
-              <a href="#" className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+              <a href="#" className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 transition-colors">
                 <Github className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+              <a href="#" className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 transition-colors">
                 <Twitter className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+              <a href="#" className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 transition-colors">
                 <Linkedin className="w-4 h-4" />
               </a>
             </div>
@@ -40,7 +40,7 @@ export const LandingFooter: React.FC = () => {
 
           {/* Quick Navigation */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Navigation</h4>
+            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Navigation</h4>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li>
                 <button onClick={() => scrollToSection('hero')} className="hover:text-blue-400 transition-colors cursor-pointer">
@@ -77,7 +77,7 @@ export const LandingFooter: React.FC = () => {
 
           {/* Candidate Access */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Candidate Access</h4>
+            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Candidate Access</h4>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li>
                 <button onClick={() => setCurrentRoute('signin')} className="hover:text-blue-400 transition-colors cursor-pointer">
@@ -99,7 +99,7 @@ export const LandingFooter: React.FC = () => {
 
           {/* Contact Details */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Candidate Support</h4>
+            <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Candidate Support</h4>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-purple-400" />
@@ -113,17 +113,17 @@ export const LandingFooter: React.FC = () => {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-2">
             <p>© 2026 MicroIntern Platform Inc. All rights reserved.</p>
             <span className="hidden sm:inline text-slate-700">&bull;</span>
             <p>
-              Micro intern &mdash; A product of{' '}
+              <strong className="text-slate-800 font-bold">MicroIntern</strong> &mdash; A product of{' '}
               <a
                 href="https://rmjit.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white hover:underline font-semibold transition-colors"
+                className="text-slate-900 hover:underline font-semibold transition-colors"
               >
                 RMJ IT solution
               </a>

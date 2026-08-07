@@ -1,5 +1,7 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
+import { useApp } from '../../context/AppContext';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -12,22 +14,33 @@ export const Logo: React.FC<LogoProps> = ({
   className = '',
   onClick,
 }) => {
-  const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-8 h-8',
-    lg: 'w-10 h-10',
-    xl: 'w-12 h-12',
+  const { darkMode } = useApp();
+  const sizeMap = {
+    sm: 24,
+    md: 32,
+    lg: 40,
+    xl: 48,
   };
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       className={`inline-flex items-center gap-2 cursor-pointer transition-transform hover:scale-[1.02] shrink-0 ${className}`}
     >
-      <img
-        src="/MI.png"
+      <Image
+        src={darkMode ? "/MI_dark.png" : "/MI.png"}
         alt="MicroIntern Logo"
-        className={`${sizeClasses[size]} shrink-0 w-auto object-contain`}
+        width={sizeMap[size]}
+        height={sizeMap[size]}
+        className="shrink-0 object-contain"
       />
     </div>
   );

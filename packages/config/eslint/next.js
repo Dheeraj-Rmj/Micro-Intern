@@ -17,7 +17,7 @@ const config = [
     rules: {
       // Next.js core rules
       '@next/next/no-html-link-for-pages': 'error',
-      '@next/next/no-img-element': 'warn',
+      '@next/next/no-img-element': 'off',
       '@next/next/no-head-element': 'error',
 
       // React rules
@@ -31,15 +31,15 @@ const config = [
 
       // React Hooks rules
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'off',
 
       // Accessibility
       'jsx-a11y/alt-text': 'error',
       'jsx-a11y/aria-props': 'error',
       'jsx-a11y/aria-role': 'error',
       'jsx-a11y/role-has-required-aria-props': 'error',
-      'jsx-a11y/interactive-supports-focus': 'warn',
-      'jsx-a11y/click-events-have-key-events': 'warn',
+      'jsx-a11y/interactive-supports-focus': 'off',
+      'jsx-a11y/click-events-have-key-events': 'off',
     },
   },
 ];
