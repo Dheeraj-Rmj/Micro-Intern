@@ -137,17 +137,17 @@ export const CompanyDashboard: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5" />
               Enterprise Admin Center • eKYC Verified
             </span>
-            <span className="text-[11px] font-mono text-black/50 dark:text-[#E1E0CC]/60">
+            <span className="text-[11px] font-mono text-black/50 dark:text-white/60">
               EIN-VERIFIED • @company.microintern
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif text-[#111111] dark:text-[#E1E0CC] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-serif text-black dark:text-white tracking-tight">
             Enterprise Hub
           </h1>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <div className="px-4 py-2.5 rounded-full bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 text-xs font-mono font-semibold text-[#111111] dark:text-[#E1E0CC] flex items-center gap-2">
+          <div className="px-4 py-2.5 rounded-full bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 text-xs font-mono font-semibold text-black dark:text-white flex items-center gap-2">
             <Clock className="w-3.5 h-3.5 text-amber-500" />
             <span>
               {currentTime.toLocaleTimeString('en-US', {
@@ -160,7 +160,7 @@ export const CompanyDashboard: React.FC = () => {
           </div>
           <button
             onClick={() => setCurrentRoute('company-create-trial' as any)}
-            className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Post Skill Trial</span>
@@ -170,7 +170,7 @@ export const CompanyDashboard: React.FC = () => {
 
       {/* ── Daily Leadership Quotation Banner (Matching CandidatePortal 1:1) ── */}
       <div
-        className="p-7 rounded-[36px] bg-white/70 dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm relative overflow-hidden group"
+        className="p-7 rounded-[36px] bg-white/70 dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm relative overflow-hidden group"
         style={{
           clipPath: 'inset(0 round 36px)',
           background:
@@ -179,12 +179,12 @@ export const CompanyDashboard: React.FC = () => {
       >
         <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto py-2">
           <div className="mb-3.5">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-black/60 dark:text-[#E1E0CC]/80 font-mono">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-black/60 dark:text-white/80 font-mono">
               ENTERPRISE AI PROTOCOL • {dateString}
             </span>
           </div>
 
-          <p className="text-lg sm:text-2xl font-serif italic text-[#111111] dark:text-[#E1E0CC] leading-relaxed tracking-tight transition-all duration-500">
+          <p className="text-lg sm:text-2xl font-serif italic text-black dark:text-white leading-relaxed tracking-tight transition-all duration-500">
             “{currentQuote.q}”
           </p>
 
@@ -198,7 +198,7 @@ export const CompanyDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Bento Card 1 (md:col-span-4 md:row-span-2) - Enterprise Trust Score & eKYC */}
         <div
-          className="md:col-span-4 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group hover:border-black/20 dark:hover:border-white/30 transition-all"
+          className="md:col-span-4 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group hover:border-black/20 dark:hover:border-white/30 transition-all"
           style={{
             clipPath: 'inset(0 round 40px)',
             background:
@@ -207,12 +207,12 @@ export const CompanyDashboard: React.FC = () => {
         >
           <div className="relative z-10 flex justify-between items-start">
             <div>
-              <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">
+              <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
                 Enterprise Trust
               </h3>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] text-black/60 dark:text-[#E1E0CC]/70 font-mono uppercase tracking-wider">
+                <span className="text-[10px] text-black/60 dark:text-white/70 font-mono uppercase tracking-wider">
                   eKYC & GST VERIFIED
                 </span>
               </div>
@@ -224,7 +224,7 @@ export const CompanyDashboard: React.FC = () => {
 
           <div className="relative my-auto py-6">
             <div className="flex items-baseline gap-2 mb-3">
-              <span className="text-6xl sm:text-7xl font-serif font-light tracking-tighter text-black dark:text-[#E1E0CC]">
+              <span className="text-6xl sm:text-7xl font-serif font-light tracking-tighter text-black dark:text-white">
                 99
               </span>
               <span className="text-xl font-mono text-black/40 dark:text-white/40 font-light">
@@ -248,7 +248,7 @@ export const CompanyDashboard: React.FC = () => {
             </div>
             <button
               onClick={() => setCurrentRoute('company-manage-trials' as any)}
-              className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 font-semibold text-xs text-black dark:text-[#E1E0CC] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 font-semibold text-xs text-black dark:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>View Escrow Ledger</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -257,10 +257,10 @@ export const CompanyDashboard: React.FC = () => {
         </div>
 
         {/* Bento Card 2 (md:col-span-8 md:row-span-1) - Applicant Pipeline Velocity Analytics */}
-        <div className="md:col-span-8 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
+        <div className="md:col-span-8 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">
+              <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
                 Applicant Pipeline Velocity
               </h3>
               <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">
@@ -277,7 +277,7 @@ export const CompanyDashboard: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10">
               <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">Total Applied</span>
-              <span className="text-2xl font-serif font-bold text-black dark:text-[#E1E0CC] mt-1 block">
+              <span className="text-2xl font-serif font-bold text-black dark:text-white mt-1 block">
                 {applications.length}
               </span>
             </div>
@@ -326,7 +326,7 @@ export const CompanyDashboard: React.FC = () => {
         </div>
 
         {/* Bento Card 3 (md:col-span-4) - Recruiter Seats & Credentials Governance */}
-        <div className="md:col-span-4 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
+        <div className="md:col-span-4 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-500">
@@ -336,7 +336,7 @@ export const CompanyDashboard: React.FC = () => {
                 ROLE: COMPANY ADMIN
               </span>
             </div>
-            <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">
+            <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
               Recruiter Seats
             </h3>
             <p className="text-xs text-black/50 dark:text-white/50 mt-1 leading-relaxed">
@@ -352,7 +352,7 @@ export const CompanyDashboard: React.FC = () => {
 
           <button
             onClick={() => setCurrentRoute('company-recruiters' as any)}
-            className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center justify-center gap-2 cursor-pointer"
           >
             <Key className="w-4 h-4" />
             <span>Open Recruiter Console →</span>
@@ -360,10 +360,10 @@ export const CompanyDashboard: React.FC = () => {
         </div>
 
         {/* Bento Card 4 (md:col-span-8) - Recent Candidate Submissions & Pipeline Action Table */}
-        <div className="md:col-span-8 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
+        <div className="md:col-span-8 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">
+              <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
                 Candidate Submissions
               </h3>
               <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">
@@ -376,7 +376,7 @@ export const CompanyDashboard: React.FC = () => {
                 onClick={() => setActiveTabFilter('all')}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   activeTabFilter === 'all'
-                    ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm'
+                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
                     : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
@@ -386,7 +386,7 @@ export const CompanyDashboard: React.FC = () => {
                 onClick={() => setActiveTabFilter('pending')}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   activeTabFilter === 'pending'
-                    ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm'
+                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
                     : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
@@ -396,7 +396,7 @@ export const CompanyDashboard: React.FC = () => {
                 onClick={() => setActiveTabFilter('approved')}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                   activeTabFilter === 'approved'
-                    ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm'
+                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
                     : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
@@ -409,7 +409,7 @@ export const CompanyDashboard: React.FC = () => {
             {filteredApplications.length === 0 ? (
               <div className="py-12 rounded-3xl bg-black/[0.02] dark:bg-white/[0.02] border border-dashed border-black/10 dark:border-white/10 text-center">
                 <Users className="w-8 h-8 text-black/20 dark:text-white/20 mx-auto mb-2" />
-                <p className="text-xs font-semibold text-black/60 dark:text-[#E1E0CC]/70">
+                <p className="text-xs font-semibold text-black/60 dark:text-white/70">
                   No applicant submissions matching this filter
                 </p>
                 <p className="text-[11px] text-black/40 dark:text-white/40 mt-1">
@@ -427,7 +427,7 @@ export const CompanyDashboard: React.FC = () => {
                       {app.candidateName.charAt(0)}
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-black dark:text-[#E1E0CC] flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-black dark:text-white flex items-center gap-2">
                         <span>{app.candidateName}</span>
                         <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[10px]">
                           Trust Score: {app.trustScore}%
@@ -448,7 +448,7 @@ export const CompanyDashboard: React.FC = () => {
                         </button>
                         <button
                           onClick={() => handleReject(app.id, app.candidateName)}
-                          className="px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-[#E1E0CC] text-xs font-semibold transition-all cursor-pointer"
+                          className="px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white text-xs font-semibold transition-all cursor-pointer"
                         >
                           Reject
                         </button>
@@ -476,7 +476,7 @@ export const CompanyDashboard: React.FC = () => {
             </span>
             <button
               onClick={() => setCurrentRoute('company-applications' as any)}
-              className="text-xs font-semibold text-black dark:text-[#E1E0CC] hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs font-semibold text-black dark:text-white hover:underline flex items-center gap-1 cursor-pointer"
             >
               <span>View Applicant Pipeline Console</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -485,13 +485,13 @@ export const CompanyDashboard: React.FC = () => {
         </div>
 
         {/* Bento Card 5 (md:col-span-12) - Escrow Skill Trials & Bounty Governance */}
-        <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col sm:flex-row items-center justify-between gap-6 hover:border-black/20 dark:hover:border-white/30 transition-all">
+        <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col sm:flex-row items-center justify-between gap-6 hover:border-black/20 dark:hover:border-white/30 transition-all">
           <div className="flex items-center gap-4">
             <div className="p-4 rounded-3xl bg-amber-500/10 text-amber-500">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">
+              <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
                 Escrow Skill Trials & Bounty Architecture
               </h3>
               <p className="text-xs text-black/50 dark:text-white/50 mt-1 max-w-xl leading-relaxed">
@@ -503,14 +503,14 @@ export const CompanyDashboard: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => setCurrentRoute('company-manage-trials' as any)}
-              className="px-5 py-2.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-[#E1E0CC] text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer"
+              className="px-5 py-2.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer"
             >
               <Layers className="w-4 h-4" />
               <span>Manage Escrow Trials ({trials.length})</span>
             </button>
             <button
               onClick={() => setCurrentRoute('company-create-trial' as any)}
-              className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
+              className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Post New Skill Trial</span>

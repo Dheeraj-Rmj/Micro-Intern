@@ -28,7 +28,7 @@ export const ForgotPasswordPage: React.FC = () => {
   return (
     <div
       className={`min-h-screen relative overflow-hidden flex items-center justify-center p-4 font-sans select-none transition-colors duration-300 ${
-        isDark ? 'bg-[#0E0E0E] text-white' : 'bg-[#F3F2EA] text-[#111111]'
+        isDark ? 'bg-[#0E0E0E] text-white' : 'bg-[#FAFAFA] text-black'
       }`}
     >
       {/* ── Sparse Ambient Dot Matrix Background (Nothing Style) ────────── */}
@@ -49,7 +49,7 @@ export const ForgotPasswordPage: React.FC = () => {
         className={`absolute top-6 left-6 w-10 h-10 rounded-full shadow-sm flex items-center justify-center transition-all cursor-pointer z-20 ${
           isDark
             ? 'bg-[#262626] hover:bg-[#333333] text-white'
-            : 'bg-white hover:bg-[#EAEAEA] text-[#111111] border border-black/10'
+            : 'bg-white hover:bg-[#EAEAEA] text-black border border-black/10'
         }`}
         title="Back to home"
       >
@@ -63,7 +63,7 @@ export const ForgotPasswordPage: React.FC = () => {
           className={`w-10 h-10 rounded-full shadow-sm flex items-center justify-center transition-all cursor-pointer ${
             isDark
               ? 'bg-[#262626] hover:bg-[#333333] text-white'
-              : 'bg-white hover:bg-[#EAEAEA] text-[#111111] border border-black/10'
+              : 'bg-white hover:bg-[#EAEAEA] text-black border border-black/10'
           }`}
           title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
@@ -74,7 +74,7 @@ export const ForgotPasswordPage: React.FC = () => {
       {/* ── Vertical Left Brand Text ────────────────────────────────── */}
       <div
         className={`absolute left-6 top-1/2 -translate-y-1/2 -rotate-90 origin-left text-[11px] font-mono tracking-[0.3em] uppercase select-none z-10 pointer-events-none whitespace-nowrap transition-colors duration-300 ${
-          isDark ? 'text-white/50' : 'text-[#111111]/60'
+          isDark ? 'text-white/50' : 'text-black/60'
         }`}
       >
         MICRO INTERN
@@ -85,7 +85,7 @@ export const ForgotPasswordPage: React.FC = () => {
         className={`w-full max-w-[440px] rounded-[32px] p-8 md:p-10 shadow-2xl relative z-20 my-auto transition-colors duration-300 ${
           isDark
             ? 'bg-[#262626] text-white'
-            : 'bg-[#EDEDE7] border border-black/[0.08] text-[#111111]'
+            : 'bg-[#EDEDE7] border border-black/[0.08] text-black'
         }`}
       >
         <h1 className="text-3xl font-serif font-normal tracking-tight mb-2">Forgot password</h1>
@@ -97,7 +97,7 @@ export const ForgotPasswordPage: React.FC = () => {
           <div className="py-4 space-y-5 text-center">
             <div
               className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto ${
-                isDark ? 'bg-white/10 text-white' : 'bg-[#F0F0F0] text-[#111111]'
+                isDark ? 'bg-white/10 text-white' : 'bg-[#F0F0F0] text-black'
               }`}
             >
               <CheckCircle2 className="w-7 h-7" />
@@ -106,7 +106,7 @@ export const ForgotPasswordPage: React.FC = () => {
               <h3 className="text-lg font-bold mb-1">Reset link sent</h3>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#6E6E6E]'}`}>
                 We sent a password recovery link to{' '}
-                <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#111111]'}`}>{email}</span>. Check your
+                <span className={`font-semibold ${isDark ? 'text-white' : 'text-black'}`}>{email}</span>. Check your
                 inbox or spam folder.
               </p>
             </div>
@@ -114,7 +114,7 @@ export const ForgotPasswordPage: React.FC = () => {
               type="button"
               onClick={() => setIsSent(false)}
               className={`text-xs font-semibold hover:underline cursor-pointer block mx-auto ${
-                isDark ? 'text-white' : 'text-[#111111]'
+                isDark ? 'text-white' : 'text-black'
               }`}
             >
               Resend to another email
@@ -131,7 +131,7 @@ export const ForgotPasswordPage: React.FC = () => {
                 className={`w-full px-4 py-3.5 rounded-2xl text-sm transition-all focus:outline-none border ${
                   isDark
                     ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                    : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                    : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
                 }`}
               />
             </div>

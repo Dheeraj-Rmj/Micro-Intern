@@ -22,4 +22,12 @@ export interface IAdminRepository {
   listPendingCompanies(): Promise<CompanySummary[]>;
   findUserById(userId: string): Promise<UserSummary | null>;
   updateUserStatus(userId: string, status: string): Promise<UserSummary>;
+  listUsers(filters: { search?: string; role?: string }): Promise<any[]>;
+  listTrials(filters: { search?: string; status?: string }): Promise<any[]>;
+  listAuditLogs(filters: { search?: string; severity?: string }): Promise<any[]>;
+  getEscrowMetrics(): Promise<any>;
+  getSubscriptionMetrics(): Promise<any>;
+  getPaymentMetrics(): Promise<any>;
+  getGlobalAnalytics(): Promise<any>;
 }
+

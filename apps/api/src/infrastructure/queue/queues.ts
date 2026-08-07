@@ -77,6 +77,11 @@ export const queues = {
       attempts: 2,
     },
   }),
+
+  resumeParser: new Queue(QUEUE_NAMES.RESUME_PARSER, {
+    connection: bullMQConnection(),
+    defaultJobOptions,
+  }),
 };
 
 /**

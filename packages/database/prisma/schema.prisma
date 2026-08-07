@@ -367,9 +367,13 @@ model Company {
   deletedAt DateTime? @map("deleted_at")
   deletedBy String?   @map("deleted_by") @db.Uuid
 
-  members     CompanyMember[]
-  assessments Assessment[]
-  TalentPool  TalentPool[]
+  members        CompanyMember[]
+  assessments    Assessment[]
+  TalentPool     TalentPool[]
+  departments    CompanyDepartment[]
+  analytics      CompanyAnalyticsSnapshot[]
+  billing        CompanyBilling?
+  aiInsights     AIInsightRecommendation[]
 
   @@index([slug])
   @@index([status])
@@ -396,6 +400,89 @@ model CompanyMember {
   @@index([userId])
   @@index([role])
   @@map("company_members")
+}
+
+model CompanyDepartment {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  name        String   @db.VarChar(255)
+  headcount   Int      @default(0)
+  budget      Float    @default(0.0)
+  status      String   @default("Active") @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@map("company_departments")
+}
+
+model CompanyAnalyticsSnapshot {
+  id                   String   @id @default(uuid()) @db.Uuid
+  companyId            String   @map("company_id") @db.Uuid
+  snapshotDate         DateTime @default(now()) @map("snapshot_date")
+  timeToHireDays       Float    @map("time_to_hire_days")
+  offerAcceptanceRate  Float    @map("offer_acceptance_rate")
+  candidateDropRate    Float    @map("candidate_drop_rate")
+  totalPlacements      Int      @map("total_placements")
+  
+  // JSON field for funnel data
+  funnelData           Json?    @map("funnel_data")
+  
+  // JSON field for source data
+  sourceData           Json?    @map("source_data")
+  
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([snapshotDate])
+  @@map("company_analytics_snapshots")
+}
+
+model CompanyBilling {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @unique @map("company_id") @db.Uuid
+  stripeCustomerId String?  @map("stripe_customer_id")
+  planName         String   @default("Free Plan") @db.VarChar(100)
+  renewalDate      DateTime? @map("renewal_date")
+  
+  recruiterSeatsUsed Int    @default(1) @map("recruiter_seats_used")
+  recruiterSeatsMax  Int    @default(5) @map("recruiter_seats_max")
+  
+  aiCreditsUsed      Int    @default(0) @map("ai_credits_used")
+  aiCreditsMax       Int    @default(100) @map("ai_credits_max")
+  
+  storageUsedBytes   BigInt @default(0) @map("storage_used_bytes")
+  storageMaxBytes    BigInt @default(1073741824) @map("storage_max_bytes") // 1GB
+  
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("company_billing")
+}
+
+model AIInsightRecommendation {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  type        String   @db.VarChar(100) // 'SKILL_SHORTAGE', 'MARKET_TREND', 'STRATEGY'
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  severity    String?  @db.VarChar(50) // 'High', 'Medium', 'Critical'
+  metadata    Json?
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  isDismissed Boolean  @default(false) @map("is_dismissed")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([type])
+  @@map("ai_insight_recommendations")
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -5,3 +5,7 @@ export { UploadLogoUseCase } from './use-cases/upload-logo.usecase.js';
 export { InviteTeamMemberUseCase } from './use-cases/invite-team-member.usecase.js';
 export { ListTeamMembersUseCase } from './use-cases/list-team-members.usecase.js';
 export { RemoveTeamMemberUseCase } from './use-cases/remove-team-member.usecase.js';
+export { GetDepartmentsUseCase } from './use-cases/get-departments.usecase.js';
+export { GetHiringAnalyticsUseCase } from './use-cases/get-hiring-analytics.usecase.js';
+export { GetBillingUseCase } from './use-cases/get-billing.usecase.js';
+export { GetAIInsightsUseCase } from './use-cases/get-ai-insights.usecase.js';

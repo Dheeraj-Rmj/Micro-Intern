@@ -21,17 +21,23 @@ import { SettingsPage } from './components/pages/SettingsPage';
 import { NetworkPage } from './components/pages/NetworkPage';
 import {
   SuperAdminDashboard,
-  SuperAdminUsersPage,
-  SuperAdminTrialsPage,
-  SuperAdminTrustAIPage,
-  SuperAdminAuditLogsPage,
-  SuperAdminSettingsPage,
+  SuperAdminOrganizationPage,
+  SuperAdminSubscriptionsPage,
+  SuperAdminAIAnalyticsPage,
+  SuperAdminPaymentsPage,
+  SuperAdminGlobalAnalyticsPage,
+  SuperAdminSystemPage,
+  SuperAdminEscrowTrialsPage,
 } from './components/admin';
 import {
   CompanyDashboard,
   CompanyApplicationsPage,
   CompanyTrialsPage,
   CompanyRecruitersPage,
+  CompanyDepartmentsPage,
+  CompanyHiringAnalyticsPage,
+  CompanyBillingPage,
+  CompanyAIInsightsPage,
 } from './components/company';
 
 const MainRouter: React.FC = () => {
@@ -129,45 +135,53 @@ const MainRouter: React.FC = () => {
       // Company Portal (Enterprise Admin - Zoho Corp)
       case 'company-dashboard':
         return <CompanyDashboard />;
+      case 'company-recruiters':
+        return <CompanyRecruitersPage />;
+      case 'company-departments':
+        return <CompanyDepartmentsPage />;
+      case 'company-hiring-analytics':
+        return <CompanyHiringAnalyticsPage />;
+      case 'company-billing':
+        return <CompanyBillingPage />;
+      case 'company-ai-insights':
+        return <CompanyAIInsightsPage />;
+      
+      // Kept for backward compatibility/internal routing if needed
       case 'company-applications':
       case 'company-evaluations':
       case 'company-interviews':
         return <CompanyApplicationsPage />;
-      case 'company-recruiters':
       case 'company-settings':
         return <CompanyRecruitersPage />;
       case 'company-create-trial':
       case 'company-manage-trials':
         return <CompanyTrialsPage />;
-      // Super Admin Portal Routes
       case 'admin-dashboard':
         return <SuperAdminDashboard />;
-      case 'admin-users':
-        return <SuperAdminUsersPage />;
       case 'admin-trials':
-        return <SuperAdminTrialsPage />;
+        return <SuperAdminEscrowTrialsPage />;
+      case 'admin-users':
+      case 'admin-organization':
+        return <SuperAdminOrganizationPage />;
+      case 'admin-subscriptions':
+        return <SuperAdminSubscriptionsPage />;
       case 'admin-trust-ai':
-        return <SuperAdminTrustAIPage />;
-      case 'admin-audit-logs':
-        return <SuperAdminAuditLogsPage />;
-      case 'admin-settings':
-        return <SuperAdminSettingsPage />;
+      case 'admin-ai-analytics':
+        return <SuperAdminAIAnalyticsPage />;
+      case 'admin-payments':
+        return <SuperAdminPaymentsPage />;
+      case 'admin-global-analytics':
+        return <SuperAdminGlobalAnalyticsPage />;
+      case 'admin-system':
+        return <SuperAdminSystemPage />;
       default:
         return <CandidateDashboard />;
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-[#F3F2EA] dark:bg-black text-[#111111] dark:text-[#E1E0CC] transition-colors duration-300 relative overflow-x-hidden selection:bg-[#DEDBC8] selection:text-black">
-      {/* ── Sparse Ambient Dot Matrix Background (Nothing Style) ────────── */}
-      <div
-        className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-0"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(225,224,204,0.18) 1.5px, transparent 1.5px)',
-          backgroundSize: '100px 100px',
-          backgroundPosition: 'center center',
-        }}
-      />
+    <div className="min-h-screen flex bg-[#FAFAFA] dark:bg-black text-black dark:text-white transition-colors duration-300 relative overflow-x-hidden selection:bg-gray-200 selection:text-gray-900">
+      {/* Background layer removed for clean SaaS UI */}
 
       {/* Persistent Responsive Sidebar */}
       <div className="relative z-10 flex">

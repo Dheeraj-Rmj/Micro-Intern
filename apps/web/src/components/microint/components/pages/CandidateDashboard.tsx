@@ -513,11 +513,11 @@ export const CandidateDashboard: React.FC = () => {
   const calendarData = getCalendarDays();
 
   return (
-    <div className="pb-12 text-[#111111] dark:text-[#E1E0CC] max-w-[1200px] mx-auto w-full font-sans">
+    <div className="pb-12 text-black dark:text-white max-w-[1200px] mx-auto w-full font-sans">
       {/* Top Action Bar & Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6 mt-4">
         <div>
-          <h1 className="text-3xl sm:text-5xl tracking-tight font-serif font-normal text-[#111111] dark:text-[#E1E0CC]">
+          <h1 className="text-3xl sm:text-5xl tracking-tight font-serif font-normal text-black dark:text-white">
             Candidate Performance
           </h1>
         </div>
@@ -525,20 +525,20 @@ export const CandidateDashboard: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setActiveModal('calendar')}
-            className="w-11 h-11 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm flex items-center justify-center hover:scale-105 transition-transform cursor-pointer"
+            className="w-11 h-11 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm flex items-center justify-center hover:scale-105 transition-transform cursor-pointer"
             title="Open Interactive Calendar"
           >
             <Calendar className="w-4 h-4" />
           </button>
           <button
             onClick={() => setActiveModal('calendar')}
-            className="px-5 py-2.5 rounded-full bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 text-sm font-semibold text-[#111111] dark:text-[#E1E0CC] hover:border-black/20 dark:hover:border-white/20 transition-all cursor-pointer"
+            className="px-5 py-2.5 rounded-full bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 text-sm font-semibold text-black dark:text-white hover:border-black/20 dark:hover:border-white/20 transition-all cursor-pointer"
           >
             {dateString}
           </button>
           <button
             onClick={() => setActiveModal('add-widget')}
-            className="px-5 py-2.5 rounded-full bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 text-sm font-semibold text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10 transition-colors flex items-center gap-2 cursor-pointer"
+            className="px-5 py-2.5 rounded-full bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 text-sm font-semibold text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add widget</span>
@@ -548,19 +548,19 @@ export const CandidateDashboard: React.FC = () => {
 
       {/* Profile Incomplete Banner */}
       {isProfileIncomplete && (
-        <div className="mb-6 p-5 rounded-[32px] bg-[#E1E0CC]/15 dark:bg-[#E1E0CC]/10 border border-[#E1E0CC]/30 dark:border-[#E1E0CC]/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mb-6 p-5 rounded-[32px] bg-white/15 dark:bg-white/10 border border-white/20/30 dark:border-white/20/20 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-full bg-[#E1E0CC] text-black">
+            <div className="p-3 rounded-full bg-white text-black">
               <UserCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-black dark:text-[#E1E0CC]">Profile Incomplete</h3>
-              <p className="text-xs text-black/60 dark:text-[#E1E0CC]/70">Upload resume to apply for active skill trials.</p>
+              <h3 className="font-bold text-sm text-black dark:text-white">Profile Incomplete</h3>
+              <p className="text-xs text-black/60 dark:text-white/70">Upload resume to apply for active skill trials.</p>
             </div>
           </div>
           <button
             onClick={() => setCurrentRoute('profile')}
-            className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform shadow-sm cursor-pointer"
+            className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform shadow-sm cursor-pointer"
           >
             Complete Profile
           </button>
@@ -569,7 +569,7 @@ export const CandidateDashboard: React.FC = () => {
 
       {/* ── Daily Motivational Quotation Banner (ZenQuotes API) ── */}
       <div
-        className="mb-8 p-7 rounded-[36px] bg-white/70 dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm relative overflow-hidden group"
+        className="mb-8 p-7 rounded-[36px] bg-white/70 dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm relative overflow-hidden group"
         style={{
           clipPath: 'inset(0 round 36px)',
           background:
@@ -579,7 +579,7 @@ export const CandidateDashboard: React.FC = () => {
         <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto py-2">
           {/* Live Ticking Clock (Hours:Minutes:Seconds AM/PM) - No Date */}
           <div className="mb-3.5">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-black/60 dark:text-[#E1E0CC]/80 font-mono">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-black/60 dark:text-white/80 font-mono">
               {currentTime.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -590,7 +590,7 @@ export const CandidateDashboard: React.FC = () => {
           </div>
 
           {/* Quotation text */}
-          <p className="text-lg sm:text-2xl font-serif italic text-[#111111] dark:text-[#E1E0CC] leading-relaxed tracking-tight transition-all duration-500">
+          <p className="text-lg sm:text-2xl font-serif italic text-black dark:text-white leading-relaxed tracking-tight transition-all duration-500">
             “{currentQuote.q}”
           </p>
 
@@ -605,9 +605,8 @@ export const CandidateDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Trust Score Card */}
         {enabledWidgets['trust-score'] && (
-          <div
-            onClick={() => openWidgetDetail('trust-score')}
-            className="md:col-span-4 md:row-span-3 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+          <div role="presentation" onClick={() => openWidgetDetail('trust-score')}
+            className="md:col-span-4 md:row-span-3 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
             style={{
               clipPath: 'inset(0 round 40px)',
               background:
@@ -618,10 +617,10 @@ export const CandidateDashboard: React.FC = () => {
             {/* Top Header */}
             <div className="relative z-10 flex justify-between items-start">
               <div>
-                <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">Trust Score</h3>
+                <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">Trust Score</h3>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] text-black/60 dark:text-[#E1E0CC]/70 font-mono uppercase tracking-wider">
+                  <span className="text-[10px] text-black/60 dark:text-white/70 font-mono uppercase tracking-wider">
                     {trustBadgeText}
                   </span>
                 </div>
@@ -631,7 +630,7 @@ export const CandidateDashboard: React.FC = () => {
                   e.stopPropagation();
                   openWidgetDetail('trust-score');
                 }}
-                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10 cursor-pointer text-[#111111] dark:text-[#E1E0CC]"
+                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer text-black dark:text-white"
               >
                 <Info className="w-3.5 h-3.5" />
               </button>
@@ -640,7 +639,7 @@ export const CandidateDashboard: React.FC = () => {
             {/* Center Editorial Score & Linear Gauge (Out of 100) */}
             <div className="relative my-auto py-6">
               <div className="flex items-baseline gap-2 mb-3">
-                <span className="text-6xl sm:text-7xl font-serif font-light tracking-tighter text-black dark:text-[#E1E0CC]">
+                <span className="text-6xl sm:text-7xl font-serif font-light tracking-tighter text-black dark:text-white">
                   {realTrustScore}
                 </span>
                 <span className="text-xl font-mono text-black/40 dark:text-white/40 font-light">
@@ -666,7 +665,7 @@ export const CandidateDashboard: React.FC = () => {
             {/* Algorithmic Verification & Real Data Rows */}
             <div className="relative z-10 space-y-3">
               <div className="p-4 rounded-3xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-2.5 text-xs font-semibold text-black dark:text-[#E1E0CC]">
+                <div className="flex items-center gap-2.5 text-xs font-semibold text-black dark:text-white">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" /> Algorithmic Trust Verification
                 </div>
                 <span className="text-[11px] font-mono uppercase font-bold text-black/60 dark:text-white/60">
@@ -677,12 +676,12 @@ export const CandidateDashboard: React.FC = () => {
               <div className="p-4 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-black/50 dark:text-white/50">Completed Skill Trials</span>
-                  <span className="font-mono font-bold text-black dark:text-[#E1E0CC]">{completedTrialsCount}</span>
+                  <span className="font-mono font-bold text-black dark:text-white">{completedTrialsCount}</span>
                 </div>
                 <div className="h-px w-full bg-black/5 dark:bg-white/10" />
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-black/50 dark:text-white/50">Pending Invitations</span>
-                  <span className="font-mono font-bold text-black dark:text-[#E1E0CC]">{pendingInvitationsCount}</span>
+                  <span className="font-mono font-bold text-black dark:text-white">{pendingInvitationsCount}</span>
                 </div>
               </div>
             </div>
@@ -691,15 +690,14 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* Activity Card */}
         {enabledWidgets['activity'] && (
-          <div
-            onClick={() => openWidgetDetail('activity')}
-            className="md:col-span-4 md:row-span-2 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col relative overflow-hidden cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+          <div role="presentation" onClick={() => openWidgetDetail('activity')}
+            className="md:col-span-4 md:row-span-2 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col relative overflow-hidden cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
           >
             <div className="flex justify-between items-start mb-2">
               <div>
-                <div className="text-base font-medium text-black dark:text-[#E1E0CC]">Activity</div>
-                <p className="text-[11px] text-black/40 dark:text-[#E1E0CC]/50 mt-1">Completed this week</p>
-                <div className="text-4xl font-light tracking-tighter text-black dark:text-[#E1E0CC] mt-1">
+                <div className="text-base font-medium text-black dark:text-white">Activity</div>
+                <p className="text-[11px] text-black/40 dark:text-white/50 mt-1">Completed this week</p>
+                <div className="text-4xl font-light tracking-tighter text-black dark:text-white mt-1">
                   {submissions.length}
                 </div>
               </div>
@@ -709,11 +707,11 @@ export const CandidateDashboard: React.FC = () => {
                     e.stopPropagation();
                     openWidgetDetail('activity');
                   }}
-                  className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-white/10"
+                  className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
                 >
                   <Info className="w-3.5 h-3.5" />
                 </button>
-                <button className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-white/10">
+                <button className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10">
                   <ArrowRight className="w-3.5 h-3.5 transform -rotate-45" />
                 </button>
               </div>
@@ -725,17 +723,17 @@ export const CandidateDashboard: React.FC = () => {
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-2 group relative">
                     {i === 6 && val > 0 && (
-                      <div className="absolute -top-7 px-2 py-0.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-[9px] font-bold">
+                      <div className="absolute -top-7 px-2 py-0.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black text-[9px] font-bold">
                         New
                       </div>
                     )}
                     <div
                       className={`w-full rounded-full transition-all duration-300 ${
-                        i === 6 ? 'bg-[#111111] dark:bg-[#E1E0CC]' : 'bg-black/5 dark:bg-white/5'
+                        i === 6 ? 'bg-[#111111] dark:bg-white' : 'bg-black/5 dark:bg-white/5'
                       }`}
                       style={{ height: `${h}%` }}
                     />
-                    <span className="text-[9px] text-black/30 dark:text-[#E1E0CC]/40 uppercase font-semibold">
+                    <span className="text-[9px] text-black/30 dark:text-white/40 uppercase font-semibold">
                       {last7DaysLabels[i]}
                     </span>
                   </div>
@@ -747,15 +745,14 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* Trial Applications Card */}
         {enabledWidgets['trial-applications'] && (
-          <div
-            onClick={() => openWidgetDetail('trial-applications')}
-            className="md:col-span-4 md:row-span-2 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+          <div role="presentation" onClick={() => openWidgetDetail('trial-applications')}
+            className="md:col-span-4 md:row-span-2 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
           >
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h3 className="text-base font-medium text-black dark:text-[#E1E0CC]">Trial Applications</h3>
-                <p className="text-[11px] text-black/40 dark:text-[#E1E0CC]/50 mt-1">For all time</p>
-                <div className="text-4xl font-light tracking-tighter text-black dark:text-[#E1E0CC] mt-1">
+                <h3 className="text-base font-medium text-black dark:text-white">Trial Applications</h3>
+                <p className="text-[11px] text-black/40 dark:text-white/50 mt-1">For all time</p>
+                <div className="text-4xl font-light tracking-tighter text-black dark:text-white mt-1">
                   {totalApplications}
                 </div>
               </div>
@@ -765,7 +762,7 @@ export const CandidateDashboard: React.FC = () => {
                     e.stopPropagation();
                     openWidgetDetail('trial-applications');
                   }}
-                  className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black cursor-pointer"
+                  className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center bg-[#111111] dark:bg-white text-white dark:text-black cursor-pointer"
                 >
                   <Info className="w-3.5 h-3.5" />
                 </button>
@@ -774,11 +771,11 @@ export const CandidateDashboard: React.FC = () => {
                     e.stopPropagation();
                     setCurrentRoute('my-applications');
                   }}
-                  className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-white/10"
+                  className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </button>
-                <button className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-white/10">
+                <button className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10">
                   <ArrowRight className="w-3.5 h-3.5 transform -rotate-45" />
                 </button>
               </div>
@@ -791,7 +788,7 @@ export const CandidateDashboard: React.FC = () => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1"
-                  className="text-black/20 dark:text-[#E1E0CC]/20 transition-all duration-700"
+                  className="text-black/20 dark:text-white/20 transition-all duration-700"
                   strokeDasharray="2 2"
                 />
                 <path
@@ -799,7 +796,7 @@ export const CandidateDashboard: React.FC = () => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                  className="text-[#111111] dark:text-[#E1E0CC] transition-all duration-700"
+                  className="text-black dark:text-white transition-all duration-700"
                 />
                 <circle cx="75" cy={appY + 2} r="2.5" className="fill-[#111111] dark:fill-[#E1E0CC] transition-all duration-700" />
                 <g transform={`translate(66, ${Math.max(1, appY - 8)})`} className="transition-all duration-700">
@@ -815,14 +812,13 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* Average Match Score Card */}
         {enabledWidgets['average-match-score'] && (
-          <div
-            onClick={() => openWidgetDetail('average-match-score')}
-            className="md:col-span-4 md:row-span-1 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-6 flex items-center justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+          <div role="presentation" onClick={() => openWidgetDetail('average-match-score')}
+            className="md:col-span-4 md:row-span-1 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-6 flex items-center justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
           >
             <div>
-              <h3 className="text-base font-medium text-black dark:text-[#E1E0CC]">Average Match Score</h3>
-              <p className="text-[11px] text-black/40 dark:text-[#E1E0CC]/50 mt-1">Across all trials</p>
-              <div className="text-3xl font-light tracking-tighter text-black dark:text-[#E1E0CC] mt-1">
+              <h3 className="text-base font-medium text-black dark:text-white">Average Match Score</h3>
+              <p className="text-[11px] text-black/40 dark:text-white/50 mt-1">Across all trials</p>
+              <div className="text-3xl font-light tracking-tighter text-black dark:text-white mt-1">
                 {averageMatchScore}%
               </div>
             </div>
@@ -834,11 +830,11 @@ export const CandidateDashboard: React.FC = () => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.5"
-                  className="text-black/30 dark:text-[#E1E0CC]/30 transition-all duration-700"
+                  className="text-black/30 dark:text-white/30 transition-all duration-700"
                 />
-                <circle cx="20" cy={matchY1} r="2" fill="currentColor" className="text-black dark:text-[#E1E0CC] transition-all duration-700" />
-                <circle cx="50" cy={matchY2} r="2" fill="currentColor" className="text-black dark:text-[#E1E0CC] transition-all duration-700" />
-                <circle cx="80" cy={matchY3} r="2" fill="currentColor" className="text-black dark:text-[#E1E0CC] transition-all duration-700" />
+                <circle cx="20" cy={matchY1} r="2" fill="currentColor" className="text-black dark:text-white transition-all duration-700" />
+                <circle cx="50" cy={matchY2} r="2" fill="currentColor" className="text-black dark:text-white transition-all duration-700" />
+                <circle cx="80" cy={matchY3} r="2" fill="currentColor" className="text-black dark:text-white transition-all duration-700" />
                 <g transform={`translate(39, ${Math.max(0, matchY2 - 13)})`} className="transition-all duration-700">
                   <rect width="22" height="8.5" rx="4.25" className="fill-[#111111] dark:fill-[#E1E0CC]" />
                   <text x="11" y="5.8" className="fill-white dark:fill-black" fontSize="4" fontWeight="bold" textAnchor="middle">
@@ -854,11 +850,11 @@ export const CandidateDashboard: React.FC = () => {
                   e.stopPropagation();
                   openWidgetDetail('average-match-score');
                 }}
-                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-white/10"
+                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
               >
                 <Info className="w-3.5 h-3.5" />
               </button>
-              <button className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-white/10">
+              <button className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10">
                 <ArrowRight className="w-3.5 h-3.5 transform -rotate-45" />
               </button>
             </div>
@@ -867,15 +863,14 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* Workspace Hours Card */}
         {enabledWidgets['workspace-hours'] && (
-          <div
-            onClick={() => openWidgetDetail('workspace-hours')}
-            className="md:col-span-4 md:row-span-1 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+          <div role="presentation" onClick={() => openWidgetDetail('workspace-hours')}
+            className="md:col-span-4 md:row-span-1 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
           >
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-base font-medium text-black dark:text-[#E1E0CC]">Workspace Hours</h3>
-                <p className="text-[11px] text-black/40 dark:text-[#E1E0CC]/50 mt-0.5">Total Logged</p>
-                <div className="text-3xl font-light tracking-tighter text-black dark:text-[#E1E0CC] mt-1">
+                <h3 className="text-base font-medium text-black dark:text-white">Workspace Hours</h3>
+                <p className="text-[11px] text-black/40 dark:text-white/50 mt-0.5">Total Logged</p>
+                <div className="text-3xl font-light tracking-tighter text-black dark:text-white mt-1">
                   {totalWorkspaceHours}
                   <span className="text-sm">hrs</span>
                 </div>
@@ -885,7 +880,7 @@ export const CandidateDashboard: React.FC = () => {
                   e.stopPropagation();
                   openWidgetDetail('workspace-hours');
                 }}
-                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-[#111111] dark:text-[#E1E0CC] hover:bg-black/5 dark:hover:bg-white/10"
+                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center cursor-pointer text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
               >
                 <Info className="w-3.5 h-3.5" />
               </button>
@@ -893,12 +888,12 @@ export const CandidateDashboard: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-2 mt-auto pt-2">
               <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl text-xs font-semibold">
-                <span className="text-black/50 dark:text-[#E1E0CC]/60">Coding</span>
-                <span className="text-black dark:text-[#E1E0CC]">72%</span>
+                <span className="text-black/50 dark:text-white/60">Coding</span>
+                <span className="text-black dark:text-white">72%</span>
               </div>
               <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-xl text-xs font-semibold">
-                <span className="text-black/50 dark:text-[#E1E0CC]/60">Design</span>
-                <span className="text-black dark:text-[#E1E0CC]">28%</span>
+                <span className="text-black/50 dark:text-white/60">Design</span>
+                <span className="text-black dark:text-white">28%</span>
               </div>
             </div>
           </div>
@@ -906,17 +901,16 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* New Widget 1: Upcoming Deadlines Card */}
         {enabledWidgets['upcoming-deadlines'] && (
-          <div
-            onClick={() => openWidgetDetail('upcoming-deadlines')}
-            className="md:col-span-6 md:row-span-1 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+          <div role="presentation" onClick={() => openWidgetDetail('upcoming-deadlines')}
+            className="md:col-span-6 md:row-span-1 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
           >
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-base font-medium text-black dark:text-[#E1E0CC] flex items-center gap-2">
+                <h3 className="text-base font-medium text-black dark:text-white flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-cyan-400" />
                   Upcoming Deadlines
                 </h3>
-                <p className="text-[11px] text-black/40 dark:text-[#E1E0CC]/50 mt-1">Next milestone schedule</p>
+                <p className="text-[11px] text-black/40 dark:text-white/50 mt-1">Next milestone schedule</p>
               </div>
               <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-500 text-xs font-semibold">
                 {activeTrials.length} Active
@@ -926,18 +920,18 @@ export const CandidateDashboard: React.FC = () => {
             {activeTrials.length > 0 ? (
               <div className="mt-3 flex items-center justify-between bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
                 <div className="text-xs">
-                  <div className="font-semibold text-black dark:text-[#E1E0CC]">{activeTrials[0]?.title}</div>
-                  <div className="text-[10px] text-black/50 dark:text-[#E1E0CC]/50">
+                  <div className="font-semibold text-black dark:text-white">{activeTrials[0]?.title}</div>
+                  <div className="text-[10px] text-black/50 dark:text-white/50">
                     {activeTrials[0]?.company} • {activeTrials[0]?.duration}
                   </div>
                 </div>
-                <div className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black">
+                <div className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#111111] dark:bg-white text-white dark:text-black">
                   In Progress
                 </div>
               </div>
             ) : (
               <div className="mt-3 flex items-center justify-between bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
-                <div className="text-xs font-medium text-black/60 dark:text-[#E1E0CC]/70">
+                <div className="text-xs font-medium text-black/60 dark:text-white/70">
                   No active deadlines. Discover trials to get started.
                 </div>
                 <button
@@ -945,7 +939,7 @@ export const CandidateDashboard: React.FC = () => {
                     e.stopPropagation();
                     setCurrentRoute('discover-trials');
                   }}
-                  className="text-xs font-bold px-3 py-1 rounded-lg bg-black/10 dark:bg-white/10 text-black dark:text-[#E1E0CC] hover:bg-black/20 dark:hover:bg-white/20"
+                  className="text-xs font-bold px-3 py-1 rounded-lg bg-black/10 dark:bg-white/10 text-black dark:text-white hover:bg-black/20 dark:hover:bg-white/20"
                 >
                   Explore
                 </button>
@@ -956,17 +950,16 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* New Widget 2: Skill Competency Showcase */}
         {enabledWidgets['skill-showcase'] && (
-          <div
-            onClick={() => openWidgetDetail('skill-showcase')}
-            className="md:col-span-6 md:row-span-1 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+          <div role="presentation" onClick={() => openWidgetDetail('skill-showcase')}
+            className="md:col-span-6 md:row-span-1 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-6 flex flex-col justify-between cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
           >
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-base font-medium text-black dark:text-[#E1E0CC] flex items-center gap-2">
+                <h3 className="text-base font-medium text-black dark:text-white flex items-center gap-2">
                   <Award className="w-4 h-4 text-yellow-400" />
                   Skill Competency Showcase
                 </h3>
-                <p className="text-[11px] text-black/40 dark:text-[#E1E0CC]/50 mt-1">Verified work credentials</p>
+                <p className="text-[11px] text-black/40 dark:text-white/50 mt-1">Verified work credentials</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -991,7 +984,7 @@ export const CandidateDashboard: React.FC = () => {
                   <Plus className="w-3 h-3" />
                   Add Skill
                 </button>
-                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-black dark:text-[#E1E0CC] text-xs font-semibold">
+                <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-black dark:text-white text-xs font-semibold">
                   {displaySkills.length} Badges
                 </span>
               </div>
@@ -1001,7 +994,7 @@ export const CandidateDashboard: React.FC = () => {
               {displaySkills.slice(0, 3).map((skill, index) => (
                 <div
                   key={index}
-                  className="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-xs font-semibold whitespace-nowrap text-black dark:text-[#E1E0CC] flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-xs font-semibold whitespace-nowrap text-black dark:text-white flex items-center gap-1.5"
                 >
                   <TechSkillIcon skill={skill} size={16} />
                   <span>{skill}</span>
@@ -1013,18 +1006,15 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* Jina AI Web Reader Card */}
         {enabledWidgets['jina-reader'] && (
-          <div
-            onClick={() => {
+          <div role="presentation" onClick={() => {
               openWidgetDetail('jina-reader');
               if (!jinaMarkdown && jinaUrl.trim()) {
                 fetchJinaReader(jinaUrl);
               }
             }}
-            className="md:col-span-12 lg:col-span-6 md:row-span-2 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+            className="md:col-span-12 lg:col-span-6 md:row-span-2 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
             style={{
-              clipPath: 'inset(0 round 40px)',
-              background:
-                'radial-gradient(circle 320px at 90% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 70%)',
+              clipPath: 'inset(0 round 40px)'
             }}
           >
 
@@ -1035,14 +1025,14 @@ export const CandidateDashboard: React.FC = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">
+                    <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
                       AI Web Reader
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 font-mono text-[10px] font-bold">
                       AI READER v1
                     </span>
                   </div>
-                  <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                  <p className="text-xs text-black/80 dark:text-white/80 mt-0.5">
                     Convert any documentation, repo, or article URL into clean LLM-ready Markdown.
                   </p>
                 </div>
@@ -1055,14 +1045,13 @@ export const CandidateDashboard: React.FC = () => {
                     fetchJinaReader(jinaUrl);
                   }
                 }}
-                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10 cursor-pointer text-[#111111] dark:text-[#E1E0CC]"
+                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer text-black dark:text-white"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div
-              onClick={(e) => e.stopPropagation()}
+            <div role="presentation" onClick={(e) => e.stopPropagation()}
               className="relative z-10 p-2 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex items-center gap-2 mb-4"
             >
               <input
@@ -1070,14 +1059,14 @@ export const CandidateDashboard: React.FC = () => {
                 value={jinaUrl}
                 onChange={(e) => setJinaUrl(e.target.value)}
                 placeholder="Paste URL (e.g., https://github.com/facebook/react)..."
-                className="w-full px-3 py-2 bg-transparent text-xs text-black dark:text-[#E1E0CC] placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none font-mono"
+                className="w-full px-3 py-2 bg-transparent text-xs text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:outline-none font-mono"
               />
               <button
                 onClick={() => {
                   openWidgetDetail('jina-reader');
                   fetchJinaReader(jinaUrl);
                 }}
-                className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-xs font-semibold hover:opacity-90 transition-opacity shrink-0 flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black text-xs font-semibold hover:opacity-90 transition-opacity shrink-0 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Read</span>
                 <ArrowRight className="w-3 h-3" />
@@ -1085,7 +1074,7 @@ export const CandidateDashboard: React.FC = () => {
             </div>
 
             <div className="relative z-10 flex flex-wrap items-center gap-2 text-xs">
-              <span className="text-[10px] font-mono uppercase text-black/40 dark:text-white/40 mr-1">Sample URLs:</span>
+              <span className="text-[10px] font-mono uppercase text-black/60 dark:text-white/60 mr-1">Sample URLs:</span>
               {[
                 { label: 'React 19 Repo', url: 'https://github.com/facebook/react' },
                 { label: 'React Docs', url: 'https://react.dev' },
@@ -1110,18 +1099,15 @@ export const CandidateDashboard: React.FC = () => {
 
         {/* Tavily AI Web Search Card */}
         {enabledWidgets['tavily-search'] && (
-          <div
-            onClick={() => {
+          <div role="presentation" onClick={() => {
               openWidgetDetail('tavily-search');
               if (!tavilyAnswer && !tavilyResults.length && tavilyQuery.trim()) {
                 fetchTavilySearch(tavilyQuery);
               }
             }}
-            className="md:col-span-12 lg:col-span-6 md:row-span-2 rounded-[40px] bg-white dark:bg-[#101010] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
+            className="md:col-span-12 lg:col-span-6 md:row-span-2 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group cursor-pointer hover:border-black/20 dark:hover:border-white/30 transition-all"
             style={{
-              clipPath: 'inset(0 round 40px)',
-              background:
-                'radial-gradient(circle 320px at 90% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
+              clipPath: 'inset(0 round 40px)'
             }}
           >
 
@@ -1132,14 +1118,14 @@ export const CandidateDashboard: React.FC = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-medium tracking-tight text-black dark:text-[#E1E0CC] font-serif">
+                    <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
                       AI Web Search
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-mono text-[10px] font-bold">
                       AI SEARCH v1
                     </span>
                   </div>
-                  <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                  <p className="text-xs text-black/80 dark:text-white/80 mt-0.5">
                     Live web research & synthesized AI answers for technical trials.
                   </p>
                 </div>
@@ -1152,14 +1138,13 @@ export const CandidateDashboard: React.FC = () => {
                     fetchTavilySearch(tavilyQuery);
                   }
                 }}
-                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10 cursor-pointer text-[#111111] dark:text-[#E1E0CC]"
+                className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer text-black dark:text-white"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div
-              onClick={(e) => e.stopPropagation()}
+            <div role="presentation" onClick={(e) => e.stopPropagation()}
               className="relative z-10 p-2 rounded-2xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex items-center gap-2 mb-4"
             >
               <input
@@ -1167,14 +1152,14 @@ export const CandidateDashboard: React.FC = () => {
                 value={tavilyQuery}
                 onChange={(e) => setTavilyQuery(e.target.value)}
                 placeholder="Search tech docs, trends, interview questions..."
-                className="w-full px-3 py-2 bg-transparent text-xs text-black dark:text-[#E1E0CC] placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none font-mono"
+                className="w-full px-3 py-2 bg-transparent text-xs text-black dark:text-white placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none font-mono"
               />
               <button
                 onClick={() => {
                   openWidgetDetail('tavily-search');
                   fetchTavilySearch(tavilyQuery);
                 }}
-                className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-xs font-semibold hover:opacity-90 transition-opacity shrink-0 flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black text-xs font-semibold hover:opacity-90 transition-opacity shrink-0 flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Search</span>
                 <ArrowRight className="w-3 h-3" />
@@ -1210,18 +1195,16 @@ export const CandidateDashboard: React.FC = () => {
       {/* 1. CALENDAR MODAL                                        */}
       {/* ======================================================== */}
       {activeModal === 'calendar' && (
-        <div
-          onClick={() => setActiveModal('none')}
+        <div role="presentation" onClick={() => setActiveModal('none')}
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 rounded-[36px] p-7 max-w-lg w-full shadow-2xl text-[#111111] dark:text-[#E1E0CC]"
+          <div role="presentation" onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[36px] p-7 max-w-lg w-full shadow-2xl text-black dark:text-white"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Schedule & Calendar</h2>
-                <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                <h2 className="text-2xl font-serif text-black dark:text-white">Schedule & Calendar</h2>
+                <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                   Track upcoming trial deadlines and milestones
                 </p>
               </div>
@@ -1251,7 +1234,7 @@ export const CandidateDashboard: React.FC = () => {
             </div>
 
             {/* Day header */}
-            <div className="grid grid-cols-7 text-center text-xs font-bold text-black/40 dark:text-[#E1E0CC]/40 mb-2">
+            <div className="grid grid-cols-7 text-center text-xs font-bold text-black/40 dark:text-white/40 mb-2">
               <div>Su</div>
               <div>Mo</div>
               <div>Tu</div>
@@ -1270,7 +1253,7 @@ export const CandidateDashboard: React.FC = () => {
                     !item.isCurrentMonth
                       ? 'opacity-0 pointer-events-none'
                       : item.isToday
-                      ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold shadow-md'
+                      ? 'bg-[#111111] dark:bg-white text-white dark:text-black font-bold shadow-md'
                       : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 cursor-pointer'
                   }`}
                   title={item.eventTitle || undefined}
@@ -1289,7 +1272,7 @@ export const CandidateDashboard: React.FC = () => {
 
             {/* Upcoming Milestones List */}
             <div className="border-t border-black/10 dark:border-white/10 pt-4">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-black/50 dark:text-[#E1E0CC]/50 mb-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50 mb-3">
                 Upcoming Deadlines This Month
               </h4>
               <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
@@ -1299,19 +1282,19 @@ export const CandidateDashboard: React.FC = () => {
                       <div className="flex items-center gap-2.5">
                         <span className="w-2 h-2 rounded-full bg-emerald-400" />
                         <div>
-                          <div className="font-semibold text-black dark:text-[#E1E0CC]">{trial.title}</div>
-                          <div className="text-[10px] text-black/50 dark:text-[#E1E0CC]/50">
+                          <div className="font-semibold text-black dark:text-white">{trial.title}</div>
+                          <div className="text-[10px] text-black/50 dark:text-white/50">
                             {trial.company} • {trial.duration}
                           </div>
                         </div>
                       </div>
-                      <span className="px-2.5 py-1 rounded-lg bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold">
+                      <span className="px-2.5 py-1 rounded-lg bg-[#111111] dark:bg-white text-white dark:text-black font-bold">
                         {index === 0 ? 'Due Soon' : 'Active'}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-center text-black/60 dark:text-[#E1E0CC]/70">
+                  <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-center text-black/60 dark:text-white/70">
                     No active trial deadlines this month.
                   </div>
                 )}
@@ -1321,7 +1304,7 @@ export const CandidateDashboard: React.FC = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveModal('none')}
-                className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform"
+                className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform"
               >
                 Close Calendar
               </button>
@@ -1334,18 +1317,16 @@ export const CandidateDashboard: React.FC = () => {
       {/* 2. ADD WIDGET MODAL                                      */}
       {/* ======================================================== */}
       {activeModal === 'add-widget' && (
-        <div
-          onClick={() => setActiveModal('none')}
+        <div role="presentation" onClick={() => setActiveModal('none')}
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 rounded-[36px] p-7 max-w-lg w-full shadow-2xl text-[#111111] dark:text-[#E1E0CC]"
+          <div role="presentation" onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[36px] p-7 max-w-lg w-full shadow-2xl text-black dark:text-white"
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Customize Widgets</h2>
-                <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                <h2 className="text-2xl font-serif text-black dark:text-white">Customize Widgets</h2>
+                <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                   Toggle or add widgets on your Candidate Performance dashboard
                 </p>
               </div>
@@ -1361,8 +1342,7 @@ export const CandidateDashboard: React.FC = () => {
               {availableWidgets.map((widget) => {
                 const isEnabled = enabledWidgets[widget.id];
                 return (
-                  <div
-                    key={widget.id}
+                  <div role="presentation" key={widget.id}
                     onClick={(e) => toggleWidget(widget.id, e)}
                     className={`p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
                       isEnabled
@@ -1376,19 +1356,19 @@ export const CandidateDashboard: React.FC = () => {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm text-black dark:text-[#E1E0CC]">{widget.name}</span>
+                          <span className="font-bold text-sm text-black dark:text-white">{widget.name}</span>
                           <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10 font-medium">
                             {widget.category}
                           </span>
                         </div>
-                        <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">{widget.description}</p>
+                        <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">{widget.description}</p>
                       </div>
                     </div>
 
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
                         isEnabled
-                          ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black'
+                          ? 'bg-[#111111] dark:bg-white text-white dark:text-black'
                           : 'border border-black/20 dark:border-white/20'
                       }`}
                     >
@@ -1412,14 +1392,14 @@ export const CandidateDashboard: React.FC = () => {
                     'skill-showcase': true,
                   })
                 }
-                className="text-xs font-semibold text-black/60 dark:text-[#E1E0CC]/70 hover:underline"
+                className="text-xs font-semibold text-black/60 dark:text-white/70 hover:underline"
               >
                 Enable All Widgets
               </button>
 
               <button
                 onClick={() => setActiveModal('none')}
-                className="px-7 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform"
+                className="px-7 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform"
               >
                 Save Layout
               </button>
@@ -1432,13 +1412,11 @@ export const CandidateDashboard: React.FC = () => {
       {/* 3. WIDGET DETAIL MODAL                                   */}
       {/* ======================================================== */}
       {activeModal === 'widget-detail' && selectedWidgetId && (
-        <div
-          onClick={() => setActiveModal('none')}
+        <div role="presentation" onClick={() => setActiveModal('none')}
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className={`bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 rounded-[32px] p-6 md:p-7 w-full shadow-2xl text-[#111111] dark:text-[#E1E0CC] transition-all ${
+          <div role="presentation" onClick={(e) => e.stopPropagation()}
+            className={`bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[32px] p-6 md:p-7 w-full shadow-2xl text-black dark:text-white transition-all ${
               selectedWidgetId === 'tavily-search' || selectedWidgetId === 'jina-reader'
                 ? 'max-w-3xl'
                 : 'max-w-xl'
@@ -1453,8 +1431,8 @@ export const CandidateDashboard: React.FC = () => {
                       <ShieldCheck className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Trust Score Analytics</h2>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">Verified candidate reputation metrics</p>
+                      <h2 className="text-2xl font-serif text-black dark:text-white">Trust Score Analytics</h2>
+                      <p className="text-xs text-black/50 dark:text-white/60">Verified candidate reputation metrics</p>
                     </div>
                   </div>
                   <button
@@ -1467,12 +1445,12 @@ export const CandidateDashboard: React.FC = () => {
 
                 <div className="p-6 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between mb-6">
                   <div>
-                    <div className="text-sm font-semibold text-black/60 dark:text-[#E1E0CC]/70">Overall Trust Score</div>
-                    <div className="text-4xl font-bold tracking-tight text-black dark:text-[#E1E0CC] mt-1">
+                    <div className="text-sm font-semibold text-black/60 dark:text-white/70">Overall Trust Score</div>
+                    <div className="text-4xl font-bold tracking-tight text-black dark:text-white mt-1">
                       {userProfile.trustScore} <span className="text-base font-normal opacity-60">pts</span>
                     </div>
                   </div>
-                  <div className="px-4 py-2 rounded-2xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs">
+                  <div className="px-4 py-2 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs">
                     Elite Tier Verified
                   </div>
                 </div>
@@ -1484,7 +1462,7 @@ export const CandidateDashboard: React.FC = () => {
                       <span>96%</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                      <div className="w-[96%] h-full bg-[#111111] dark:bg-[#E1E0CC] rounded-full" />
+                      <div className="w-[96%] h-full bg-[#111111] dark:bg-white rounded-full" />
                     </div>
                   </div>
 
@@ -1494,7 +1472,7 @@ export const CandidateDashboard: React.FC = () => {
                       <span>100%</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                      <div className="w-full h-full bg-[#111111] dark:bg-[#E1E0CC] rounded-full" />
+                      <div className="w-full h-full bg-[#111111] dark:bg-white rounded-full" />
                     </div>
                   </div>
 
@@ -1504,12 +1482,12 @@ export const CandidateDashboard: React.FC = () => {
                       <span>92%</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                      <div className="w-[92%] h-full bg-[#111111] dark:bg-[#E1E0CC] rounded-full" />
+                      <div className="w-[92%] h-full bg-[#111111] dark:bg-white rounded-full" />
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-black/70 dark:text-[#E1E0CC]/80">
+                <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-black/70 dark:text-white/80">
                   <span className="font-bold">Tip:</span> Completing your next trial submission 24 hours ahead of schedule will grant a +15 point Trust Score boost.
                 </div>
               </div>
@@ -1524,8 +1502,8 @@ export const CandidateDashboard: React.FC = () => {
                       <Activity className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Weekly Activity Log</h2>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">Detailed submission and review record</p>
+                      <h2 className="text-2xl font-serif text-black dark:text-white">Weekly Activity Log</h2>
+                      <p className="text-xs text-black/50 dark:text-white/60">Detailed submission and review record</p>
                     </div>
                   </div>
                   <button
@@ -1538,16 +1516,16 @@ export const CandidateDashboard: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
-                    <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-semibold">Submissions This Week</div>
-                    <div className="text-3xl font-bold text-black dark:text-[#E1E0CC] mt-1">{submissions.length}</div>
+                    <div className="text-xs text-black/50 dark:text-white/60 font-semibold">Submissions This Week</div>
+                    <div className="text-3xl font-bold text-black dark:text-white mt-1">{submissions.length}</div>
                   </div>
                   <div className="p-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
-                    <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-semibold">Active Trials</div>
-                    <div className="text-3xl font-bold text-black dark:text-[#E1E0CC] mt-1">{trials.length}</div>
+                    <div className="text-xs text-black/50 dark:text-white/60 font-semibold">Active Trials</div>
+                    <div className="text-3xl font-bold text-black dark:text-white mt-1">{trials.length}</div>
                   </div>
                 </div>
 
-                <h4 className="text-xs font-bold uppercase tracking-wider text-black/50 dark:text-[#E1E0CC]/50 mb-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50 mb-3">
                   Recent Trial Submissions
                 </h4>
                 <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
@@ -1555,18 +1533,18 @@ export const CandidateDashboard: React.FC = () => {
                     submissions.map((sub, idx) => (
                       <div key={idx} className="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-between">
                         <div>
-                          <div className="font-semibold text-sm text-black dark:text-[#E1E0CC]">{sub.trialTitle}</div>
-                          <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                          <div className="font-semibold text-sm text-black dark:text-white">{sub.trialTitle}</div>
+                          <div className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                             Submitted on {new Date(sub.submittedAt).toLocaleDateString()}
                           </div>
                         </div>
-                        <span className="px-3 py-1 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-xs font-bold capitalize">
+                        <span className="px-3 py-1 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black text-xs font-bold capitalize">
                           {sub.status}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-6 text-xs text-black/50 dark:text-[#E1E0CC]/60">
+                    <div className="text-center py-6 text-xs text-black/50 dark:text-white/60">
                       No submissions logged yet this week. Start a trial workspace!
                     </div>
                   )}
@@ -1583,8 +1561,8 @@ export const CandidateDashboard: React.FC = () => {
                       <Send className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Trial Applications</h2>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">All submitted applications & invitations</p>
+                      <h2 className="text-2xl font-serif text-black dark:text-white">Trial Applications</h2>
+                      <p className="text-xs text-black/50 dark:text-white/60">All submitted applications & invitations</p>
                     </div>
                   </div>
                   <button
@@ -1598,15 +1576,15 @@ export const CandidateDashboard: React.FC = () => {
                 <div className="grid grid-cols-3 gap-3 mb-6">
                   <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-center">
                     <div className="text-2xl font-bold">{totalApplications}</div>
-                    <div className="text-[10px] text-black/50 dark:text-[#E1E0CC]/60 font-semibold">Total Applied</div>
+                    <div className="text-[10px] text-black/50 dark:text-white/60 font-semibold">Total Applied</div>
                   </div>
                   <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-center">
                     <div className="text-2xl font-bold">{pendingInvitationsCount}</div>
-                    <div className="text-[10px] text-black/50 dark:text-[#E1E0CC]/60 font-semibold">Shortlisted</div>
+                    <div className="text-[10px] text-black/50 dark:text-white/60 font-semibold">Shortlisted</div>
                   </div>
                   <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-center">
                     <div className="text-2xl font-bold">{completedTrialsCount}</div>
-                    <div className="text-[10px] text-black/50 dark:text-[#E1E0CC]/60 font-semibold">Completed</div>
+                    <div className="text-[10px] text-black/50 dark:text-white/60 font-semibold">Completed</div>
                   </div>
                 </div>
 
@@ -1615,18 +1593,18 @@ export const CandidateDashboard: React.FC = () => {
                     applications.map((app, idx) => (
                       <div key={idx} className="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-between">
                         <div>
-                          <div className="font-semibold text-sm text-black dark:text-[#E1E0CC]">{app.trialTitle}</div>
-                          <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                          <div className="font-semibold text-sm text-black dark:text-white">{app.trialTitle}</div>
+                          <div className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                             Applied {new Date(app.appliedDate || (app as any).appliedAt || Date.now()).toLocaleDateString()}
                           </div>
                         </div>
-                        <span className="px-3 py-1 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-xs font-bold capitalize">
+                        <span className="px-3 py-1 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black text-xs font-bold capitalize">
                           {app.status}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-6 text-xs text-black/50 dark:text-[#E1E0CC]/60">
+                    <div className="text-center py-6 text-xs text-black/50 dark:text-white/60">
                       No trial applications submitted yet.
                     </div>
                   )}
@@ -1637,7 +1615,7 @@ export const CandidateDashboard: React.FC = () => {
                     setActiveModal('none');
                     setCurrentRoute('my-applications');
                   }}
-                  className="w-full py-3 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-[1.02] transition-transform"
+                  className="w-full py-3 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-[1.02] transition-transform"
                 >
                   Manage All Applications
                 </button>
@@ -1653,8 +1631,8 @@ export const CandidateDashboard: React.FC = () => {
                       <Target className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Match Score Analytics</h2>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">AI skill alignment with enterprise roles</p>
+                      <h2 className="text-2xl font-serif text-black dark:text-white">Match Score Analytics</h2>
+                      <p className="text-xs text-black/50 dark:text-white/60">AI skill alignment with enterprise roles</p>
                     </div>
                   </div>
                   <button
@@ -1667,12 +1645,12 @@ export const CandidateDashboard: React.FC = () => {
 
                 <div className="p-6 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between mb-6">
                   <div>
-                    <div className="text-sm font-semibold text-black/60 dark:text-[#E1E0CC]/70">Average Alignment</div>
-                    <div className="text-4xl font-bold tracking-tight text-black dark:text-[#E1E0CC] mt-1">
+                    <div className="text-sm font-semibold text-black/60 dark:text-white/70">Average Alignment</div>
+                    <div className="text-4xl font-bold tracking-tight text-black dark:text-white mt-1">
                       {averageMatchScore}% <span className="text-base font-normal opacity-60">match</span>
                     </div>
                   </div>
-                  <div className="px-4 py-2 rounded-2xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs">
+                  <div className="px-4 py-2 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs">
                     High Compatibility
                   </div>
                 </div>
@@ -1692,7 +1670,7 @@ export const CandidateDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-black/70 dark:text-[#E1E0CC]/80">
+                <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-black/70 dark:text-white/80">
                   <span className="font-bold">How it works:</span> Our AI engine maps your verified code submissions, git history, and skill badges directly against enterprise role requirements.
                 </div>
               </div>
@@ -1707,8 +1685,8 @@ export const CandidateDashboard: React.FC = () => {
                       <Clock className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Workspace Productivity</h2>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">Logged hours and task distribution</p>
+                      <h2 className="text-2xl font-serif text-black dark:text-white">Workspace Productivity</h2>
+                      <p className="text-xs text-black/50 dark:text-white/60">Logged hours and task distribution</p>
                     </div>
                   </div>
                   <button
@@ -1721,16 +1699,16 @@ export const CandidateDashboard: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
-                    <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-semibold">Total Logged Hours</div>
-                    <div className="text-3xl font-bold text-black dark:text-[#E1E0CC] mt-1">{totalWorkspaceHours} hrs</div>
+                    <div className="text-xs text-black/50 dark:text-white/60 font-semibold">Total Logged Hours</div>
+                    <div className="text-3xl font-bold text-black dark:text-white mt-1">{totalWorkspaceHours} hrs</div>
                   </div>
                   <div className="p-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
-                    <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-semibold">Avg Session Duration</div>
-                    <div className="text-3xl font-bold text-black dark:text-[#E1E0CC] mt-1">2.4 hrs</div>
+                    <div className="text-xs text-black/50 dark:text-white/60 font-semibold">Avg Session Duration</div>
+                    <div className="text-3xl font-bold text-black dark:text-white mt-1">2.4 hrs</div>
                   </div>
                 </div>
 
-                <h4 className="text-xs font-bold uppercase tracking-wider text-black/50 dark:text-[#E1E0CC]/50 mb-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50 mb-3">
                   Time Breakdown by Discipline
                 </h4>
                 <div className="space-y-3 mb-6">
@@ -1740,7 +1718,7 @@ export const CandidateDashboard: React.FC = () => {
                       <span>72% ({Math.round(totalWorkspaceHours * 0.72)} hrs)</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                      <div className="w-[72%] h-full bg-[#111111] dark:bg-[#E1E0CC] rounded-full" />
+                      <div className="w-[72%] h-full bg-[#111111] dark:bg-white rounded-full" />
                     </div>
                   </div>
 
@@ -1750,7 +1728,7 @@ export const CandidateDashboard: React.FC = () => {
                       <span>28% ({Math.round(totalWorkspaceHours * 0.28)} hrs)</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                      <div className="w-[28%] h-full bg-[#111111] dark:bg-[#E1E0CC] rounded-full" />
+                      <div className="w-[28%] h-full bg-[#111111] dark:bg-white rounded-full" />
                     </div>
                   </div>
                 </div>
@@ -1766,8 +1744,8 @@ export const CandidateDashboard: React.FC = () => {
                       <Calendar className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Upcoming Deadlines</h2>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">Immediate countdowns & milestones</p>
+                      <h2 className="text-2xl font-serif text-black dark:text-white">Upcoming Deadlines</h2>
+                      <p className="text-xs text-black/50 dark:text-white/60">Immediate countdowns & milestones</p>
                     </div>
                   </div>
                   <button
@@ -1783,18 +1761,18 @@ export const CandidateDashboard: React.FC = () => {
                     activeTrials.map((trial) => (
                       <div key={trial.id} className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-between">
                         <div>
-                          <div className="font-bold text-sm text-black dark:text-[#E1E0CC]">{trial.title}</div>
-                          <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                          <div className="font-bold text-sm text-black dark:text-white">{trial.title}</div>
+                          <div className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                             {trial.company} • {trial.duration}
                           </div>
                         </div>
-                        <span className="px-3 py-1 rounded-lg bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-xs font-bold">
+                        <span className="px-3 py-1 rounded-lg bg-[#111111] dark:bg-white text-white dark:text-black text-xs font-bold">
                           Active
                         </span>
                       </div>
                     ))
                   ) : (
-                    <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-center text-black/60 dark:text-[#E1E0CC]/70">
+                    <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 text-xs text-center text-black/60 dark:text-white/70">
                       No active trials found. Explore trials to add deadlines.
                     </div>
                   )}
@@ -1805,7 +1783,7 @@ export const CandidateDashboard: React.FC = () => {
                     setActiveModal('none');
                     setCurrentRoute('discover-trials');
                   }}
-                  className="w-full py-3 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer"
+                  className="w-full py-3 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer"
                 >
                   Discover New Trials
                 </button>
@@ -1821,8 +1799,8 @@ export const CandidateDashboard: React.FC = () => {
                       <Award className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">Verified Badges & Skills</h2>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">Earned competencies & credentials</p>
+                      <h2 className="text-2xl font-serif text-black dark:text-white">Verified Badges & Skills</h2>
+                      <p className="text-xs text-black/50 dark:text-white/60">Earned competencies & credentials</p>
                     </div>
                   </div>
                   <button
@@ -1840,8 +1818,8 @@ export const CandidateDashboard: React.FC = () => {
                         <TechSkillIcon skill={skill} size={28} />
                       </div>
                       <div>
-                        <div className="font-bold text-sm text-black dark:text-[#E1E0CC]">{skill}</div>
-                        <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                        <div className="font-bold text-sm text-black dark:text-white">{skill}</div>
+                        <div className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                           Verified proficiency & candidate competency
                         </div>
                       </div>
@@ -1855,7 +1833,7 @@ export const CandidateDashboard: React.FC = () => {
                       setActiveModal('none');
                       setCurrentRoute('profile');
                     }}
-                    className="flex-1 py-3 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer flex items-center justify-center gap-2"
+                    className="flex-1 py-3 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer flex items-center justify-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
                     Add / Manage Skills in Profile
@@ -1865,7 +1843,7 @@ export const CandidateDashboard: React.FC = () => {
                       setActiveModal('none');
                       setCurrentRoute('achievements');
                     }}
-                    className="px-6 py-3 rounded-full border border-black/10 dark:border-white/10 text-black dark:text-[#E1E0CC] font-bold text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                    className="px-6 py-3 rounded-full border border-black/10 dark:border-white/10 text-black dark:text-white font-bold text-sm hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
                   >
                     View All Achievements
                   </button>
@@ -1883,14 +1861,14 @@ export const CandidateDashboard: React.FC = () => {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="text-2xl font-serif text-black dark:text-[#E1E0CC]">
+                        <h2 className="text-2xl font-serif text-black dark:text-white">
                           AI Web Reader
                         </h2>
                         <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 font-mono text-xs font-bold">
                           AI READER v1
                         </span>
                       </div>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">
+                      <p className="text-xs text-black/50 dark:text-white/60">
                         Convert any URL into clean, LLM-ready markdown instantly
                       </p>
                     </div>
@@ -1910,12 +1888,12 @@ export const CandidateDashboard: React.FC = () => {
                     value={jinaUrl}
                     onChange={(e) => setJinaUrl(e.target.value)}
                     placeholder="Enter web link (e.g., https://github.com/facebook/react)..."
-                    className="w-full px-3 py-2 bg-transparent text-sm text-black dark:text-[#E1E0CC] placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-transparent text-sm text-black dark:text-white placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none font-mono"
                   />
                   <button
                     onClick={() => fetchJinaReader(jinaUrl)}
                     disabled={jinaLoading}
-                    className="px-5 py-2.5 rounded-xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-xs font-semibold hover:opacity-90 transition-opacity shrink-0 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black text-xs font-semibold hover:opacity-90 transition-opacity shrink-0 flex items-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {jinaLoading ? (
                       <>
@@ -1956,7 +1934,7 @@ export const CandidateDashboard: React.FC = () => {
                 {jinaLoading ? (
                   <div className="p-12 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex flex-col items-center justify-center text-center">
                     <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mb-4" />
-                    <div className="font-serif text-lg text-black dark:text-[#E1E0CC] mb-1">
+                    <div className="font-serif text-lg text-black dark:text-white mb-1">
                       Converting URL to clean Markdown...
                     </div>
                     <p className="text-xs text-black/50 dark:text-white/50 max-w-md">
@@ -1973,10 +1951,10 @@ export const CandidateDashboard: React.FC = () => {
                     {/* Stats bar */}
                     <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 mb-3 text-xs">
                       <div className="flex items-center gap-4">
-                        <span className="text-black/60 dark:text-[#E1E0CC]/70">
-                          Chars: <strong className="text-black dark:text-[#E1E0CC]">{jinaMarkdown.length.toLocaleString()}</strong>
+                        <span className="text-black/60 dark:text-white/70">
+                          Chars: <strong className="text-black dark:text-white">{jinaMarkdown.length.toLocaleString()}</strong>
                         </span>
-                        <span className="text-black/60 dark:text-[#E1E0CC]/70">
+                        <span className="text-black/60 dark:text-white/70">
                           Est. Tokens: <strong className="text-indigo-500 font-mono">~{Math.round(jinaMarkdown.length / 4).toLocaleString()}</strong>
                         </span>
                       </div>
@@ -2003,14 +1981,14 @@ export const CandidateDashboard: React.FC = () => {
                     </div>
 
                     {/* Markdown display */}
-                    <pre className="max-h-[380px] overflow-y-auto font-mono text-xs p-5 rounded-3xl bg-[#111111] text-[#E1E0CC] border border-white/10 whitespace-pre-wrap leading-relaxed">
+                    <pre className="max-h-[380px] overflow-y-auto font-mono text-xs p-5 rounded-3xl bg-[#111111] text-white border border-white/10 whitespace-pre-wrap leading-relaxed">
                       {jinaMarkdown}
                     </pre>
                   </div>
                 ) : (
                   <div className="p-12 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-center">
                     <Globe className="w-8 h-8 text-black/30 dark:text-white/30 mx-auto mb-3" />
-                    <div className="font-serif text-lg text-black dark:text-[#E1E0CC] mb-1">
+                    <div className="font-serif text-lg text-black dark:text-white mb-1">
                       Ready to Convert
                     </div>
                     <p className="text-xs text-black/50 dark:text-white/50 max-w-sm mx-auto">
@@ -2032,14 +2010,14 @@ export const CandidateDashboard: React.FC = () => {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="text-lg sm:text-xl font-serif font-semibold tracking-tight text-black dark:text-[#E1E0CC]">
+                        <h2 className="text-lg sm:text-xl font-serif font-semibold tracking-tight text-black dark:text-white">
                           AI Research Console
                         </h2>
                         <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-mono text-[10px] font-bold">
                           v1 • LIVE
                         </span>
                       </div>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">
+                      <p className="text-xs text-black/50 dark:text-white/60">
                         Synthesized technical research & verified developer citations
                       </p>
                     </div>
@@ -2089,7 +2067,7 @@ export const CandidateDashboard: React.FC = () => {
                     value={tavilyQuery}
                     onChange={(e) => setTavilyQuery(e.target.value)}
                     placeholder="Search technical docs, interview patterns, system design trade-offs..."
-                    className="w-full bg-transparent text-sm text-black dark:text-[#E1E0CC] placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none font-mono py-1"
+                    className="w-full bg-transparent text-sm text-black dark:text-white placeholder:text-black/40 dark:placeholder:text-white/40 focus:outline-none font-mono py-1"
                   />
                   <button
                     onClick={() => fetchTavilySearch(tavilyQuery)}
@@ -2138,7 +2116,7 @@ export const CandidateDashboard: React.FC = () => {
                 {tavilyLoading ? (
                   <div className="py-10 px-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex flex-col items-center justify-center text-center">
                     <Loader2 className="w-8 h-8 animate-spin text-emerald-500 mb-3" />
-                    <div className="font-serif text-base text-black dark:text-[#E1E0CC] mb-1 font-medium">
+                    <div className="font-serif text-base text-black dark:text-white mb-1 font-medium">
                       Synthesizing technical research...
                     </div>
                     <p className="text-xs text-black/50 dark:text-white/50 max-w-sm">
@@ -2159,7 +2137,7 @@ export const CandidateDashboard: React.FC = () => {
                           <Sparkles className="w-3.5 h-3.5 animate-pulse" />
                           <span>AI Executive Answer</span>
                         </div>
-                        <p className="text-xs sm:text-sm leading-relaxed text-black/90 dark:text-[#E1E0CC]/90 font-sans tracking-wide border-l-2 border-emerald-500/50 pl-3">
+                        <p className="text-xs sm:text-sm leading-relaxed text-black/90 dark:text-white/90 font-sans tracking-wide border-l-2 border-emerald-500/50 pl-3">
                           {tavilyAnswer}
                         </p>
                       </div>
@@ -2192,7 +2170,7 @@ export const CandidateDashboard: React.FC = () => {
                                     href={result.url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-sm font-serif font-semibold text-black dark:text-[#E1E0CC] hover:text-emerald-500 transition-colors flex items-center gap-1 group-hover:underline truncate"
+                                    className="text-sm font-serif font-semibold text-black dark:text-white hover:text-emerald-500 transition-colors flex items-center gap-1 group-hover:underline truncate"
                                   >
                                     <span className="truncate">{result.title}</span>
                                     <ExternalLink className="w-3 h-3 opacity-50 shrink-0" />
@@ -2222,7 +2200,7 @@ export const CandidateDashboard: React.FC = () => {
                                 {result.url}
                               </div>
 
-                              <p className="text-[11px] text-black/75 dark:text-[#E1E0CC]/80 font-sans leading-relaxed line-clamp-2">
+                              <p className="text-[11px] text-black/75 dark:text-white/80 font-sans leading-relaxed line-clamp-2">
                                 {result.content}
                               </p>
                             </div>
@@ -2234,7 +2212,7 @@ export const CandidateDashboard: React.FC = () => {
                 ) : (
                   <div className="py-10 px-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-center">
                     <Search className="w-8 h-8 text-black/30 dark:text-white/30 mx-auto mb-2.5" />
-                    <div className="font-serif text-base text-black dark:text-[#E1E0CC] font-medium mb-1">
+                    <div className="font-serif text-base text-black dark:text-white font-medium mb-1">
                       Ready to Research
                     </div>
                     <p className="text-xs text-black/50 dark:text-white/50 max-w-sm mx-auto">
@@ -2248,7 +2226,7 @@ export const CandidateDashboard: React.FC = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveModal('none')}
-                className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform"
+                className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform"
               >
                 Close Details
               </button>

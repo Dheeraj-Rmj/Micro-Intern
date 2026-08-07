@@ -7,12 +7,39 @@ import { authMiddleware } from '@/middleware/auth.middleware.js';
 import { requireRole } from '@/middleware/rbac.middleware.js';
 import { validate } from '@/middleware/validate.middleware.js';
 
-
-import type { CandidateController } from './candidate.controller.js';
+import { getStorageService } from '@/infrastructure/storage/StorageService.js';
+import { queues } from '@/infrastructure/queue/queues.js';
+import { GetProfileUseCase } from '../application/use-cases/get-profile.usecase.js';
+import { UpdateProfileUseCase } from '../application/use-cases/update-profile.usecase.js';
+import { CalculateCompletionUseCase } from '../application/use-cases/calculate-completion.usecase.js';
+import { UploadAvatarUseCase } from '../application/use-cases/upload-avatar.usecase.js';
+import { UploadResumeUseCase } from '../application/use-cases/upload-resume.usecase.js';
+import { GetResumeUrlUseCase } from '../application/use-cases/get-resume-url.usecase.js';
+import { CandidateController } from './candidate.controller.js';
 import type { RequestHandler } from 'express';
 
 export function createCandidateRouter(): Router {
   const container = getContainer();
+
+  try {
+    container.get('CandidateController');
+  } catch {
+    container.register('GetProfileUseCase', (infra) => new GetProfileUseCase(infra.db));
+    container.register('UpdateProfileUseCase', (infra) => new UpdateProfileUseCase(infra.db, container.get('CalculateCompletionUseCase')));
+    container.register('CalculateCompletionUseCase', (infra) => new CalculateCompletionUseCase(infra.db));
+    container.register('UploadAvatarUseCase', (infra) => new UploadAvatarUseCase(infra.db, getStorageService(), container.get('CalculateCompletionUseCase')));
+    container.register('UploadResumeUseCase', (infra) => new UploadResumeUseCase(infra.db, getStorageService(), container.get('CalculateCompletionUseCase'), queues.resumeParser));
+    container.register('GetResumeUrlUseCase', (infra) => new GetResumeUrlUseCase(infra.db, getStorageService()));
+
+    container.register('CandidateController', () => new CandidateController(
+      container.get('GetProfileUseCase'),
+      container.get('UpdateProfileUseCase'),
+      container.get('UploadAvatarUseCase'),
+      container.get('UploadResumeUseCase'),
+      container.get('GetResumeUrlUseCase')
+    ));
+  }
+
   const controller = container.get<CandidateController>('CandidateController');
 
 

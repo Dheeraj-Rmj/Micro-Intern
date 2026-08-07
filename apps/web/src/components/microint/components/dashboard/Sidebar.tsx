@@ -71,20 +71,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
   ];
 
   const companyMenuItems: MenuItem[] = [
-    { id: 'company-dashboard' as PageRoute, label: 'Enterprise Admin Center', icon: LayoutDashboard },
-    { id: 'company-applications' as PageRoute, label: 'Candidate Applicants', icon: Users },
-    { id: 'company-recruiters' as PageRoute, label: 'Recruiter Logins & Seats', icon: Key },
-    { id: 'company-manage-trials' as PageRoute, label: 'Skill Trials & Escrow', icon: Sparkles },
-    { id: 'company-create-trial' as PageRoute, label: 'Post New Trial', icon: Code2 },
+    { id: 'company-dashboard' as PageRoute, label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'company-recruiters' as PageRoute, label: 'Recruiter Management', icon: Users },
+    { id: 'company-departments' as PageRoute, label: 'Department Management', icon: Sparkles },
+    { id: 'company-hiring-analytics' as PageRoute, label: 'Hiring Analytics', icon: Compass },
+    { id: 'company-billing' as PageRoute, label: 'Billing & Subscription', icon: FileCheck },
+    { id: 'company-ai-insights' as PageRoute, label: 'AI Insights', icon: Code2 },
   ];
 
   const adminMenuItems: MenuItem[] = [
-    { id: 'admin-dashboard' as PageRoute, label: 'Command Center', icon: LayoutDashboard },
-    { id: 'admin-users' as PageRoute, label: 'User Governance', icon: Users },
-    { id: 'admin-trials' as PageRoute, label: 'Trials & Escrow', icon: Sparkles },
-    { id: 'admin-trust-ai' as PageRoute, label: 'AI Trust Engine', icon: ShieldCheck },
-    { id: 'admin-audit-logs' as PageRoute, label: 'SOC-2 Audit Stream', icon: Terminal },
-    { id: 'admin-settings' as PageRoute, label: 'Feature Flags & APIs', icon: Settings },
+    { id: 'admin-dashboard' as PageRoute, label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'admin-organization' as PageRoute, label: 'Organization Management', icon: Users },
+    { id: 'admin-subscriptions' as PageRoute, label: 'Subscription Management', icon: Award },
+    { id: 'admin-ai-analytics' as PageRoute, label: 'AI Usage Analytics', icon: Sparkles },
+    { id: 'admin-payments' as PageRoute, label: 'Payment Dashboard', icon: FileCheck },
+    { id: 'admin-global-analytics' as PageRoute, label: 'Global Analytics', icon: Compass },
+    { id: 'admin-system' as PageRoute, label: 'System Management', icon: Settings },
   ];
 
   const isSuperAdminView = currentRoute.startsWith('admin-') || role === 'admin';
@@ -97,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
     : candidateMenuItems;
 
   const content = (
-    <div className="h-full flex flex-col justify-between bg-white dark:bg-[#101010] rounded-[32px] shadow-sm border border-black/5 dark:border-white/10 text-[#111111] dark:text-[#E1E0CC] py-6 px-3 select-none overflow-y-auto">
+    <div className="h-full flex flex-col justify-between bg-white dark:bg-[#0A0A0A] rounded-[32px] shadow-sm border border-black/5 dark:border-white/10 text-black dark:text-white py-6 px-3 select-none overflow-y-auto">
       <div>
         {/* Brand Header */}
         <div className="flex items-center justify-center pb-6 border-b border-black/5 dark:border-white/10 mb-6">
@@ -105,7 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
           {setMobileOpen && (
             <button
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden absolute right-4 top-6 p-1.5 rounded-lg text-black/50 dark:text-[#E1E0CC]/50 hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10"
+              className="lg:hidden absolute right-4 top-6 p-1.5 rounded-lg text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/10"
             >
               <X className="w-5 h-5" />
             </button>
@@ -126,8 +128,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
                   isActive
                     ? isAdminView
                       ? 'bg-amber-500 text-black shadow-md font-bold scale-105'
-                      : 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-md font-bold'
-                    : 'text-black/40 dark:text-[#E1E0CC]/40 hover:bg-black/5 dark:hover:bg-[#E1E0CC]/10 hover:text-black dark:hover:text-[#E1E0CC]'
+                      : 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-md font-bold'
+                    : 'text-black/40 dark:text-white/40 hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white'
                 }`}
               >
                 <div className="relative flex items-center justify-center">
@@ -148,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
         <button
           onClick={handleLogout}
           title="Logout"
-          className="w-12 h-12 flex items-center justify-center rounded-full text-black/40 dark:text-[#E1E0CC]/40 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-colors cursor-pointer"
+          className="w-12 h-12 flex items-center justify-center rounded-full text-black/40 dark:text-white/40 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-colors cursor-pointer"
         >
           <LogOut className="w-5 h-5" />
         </button>

@@ -9,6 +9,10 @@ import type {
   InviteTeamMemberUseCase,
   ListTeamMembersUseCase,
   RemoveTeamMemberUseCase,
+  GetDepartmentsUseCase,
+  GetHiringAnalyticsUseCase,
+  GetBillingUseCase,
+  GetAIInsightsUseCase,
 } from '../application/index.js';
 import type { CreateCompanyInput, UpdateCompanyInput, InviteTeamMemberInput } from '@microintern/shared';
 import type { Request, Response, NextFunction } from 'express';
@@ -22,6 +26,10 @@ export class CompanyController {
     private readonly inviteTeamMemberUseCase: InviteTeamMemberUseCase,
     private readonly listTeamMembersUseCase: ListTeamMembersUseCase,
     private readonly removeTeamMemberUseCase: RemoveTeamMemberUseCase,
+    private readonly getDepartmentsUseCase: GetDepartmentsUseCase,
+    private readonly getHiringAnalyticsUseCase: GetHiringAnalyticsUseCase,
+    private readonly getBillingUseCase: GetBillingUseCase,
+    private readonly getAIInsightsUseCase: GetAIInsightsUseCase,
   ) {}
 
   private getAuthenticatedUserId(req: Request): string {
@@ -108,6 +116,50 @@ export class CompanyController {
       }
       await this.removeTeamMemberUseCase.execute(userId, targetUserId);
       ResponseFormatter.noContent(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getDepartments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const result = await this.getDepartmentsUseCase.execute(company.id);
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getHiringAnalytics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const result = await this.getHiringAnalyticsUseCase.execute(company.id);
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getBilling = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const result = await this.getBillingUseCase.execute(company.id);
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAIInsights = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const result = await this.getAIInsightsUseCase.execute(company.id);
+      ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);
     }

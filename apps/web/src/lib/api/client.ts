@@ -17,7 +17,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } f
  */
 
 const API_BASE_URL =
-  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001';
+  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001/api/v1';
 
 // In-memory access token store
 // This module is a singleton — token persists across component unmounts
@@ -100,7 +100,8 @@ function createApiClient(): AxiosInstance {
           // Refresh failed — clear token and redirect to login
           clearAccessToken();
           if (typeof window !== 'undefined') {
-            window.location.href = '/auth/login?reason=session_expired';
+            localStorage.setItem('microintern_current_route', 'signin');
+            window.location.href = '/';
           }
         }
       }
@@ -116,8 +117,12 @@ function createApiClient(): AxiosInstance {
  * Silently refresh the access token using the httpOnly refresh cookie.
  */
 async function silentRefresh(): Promise<string | null> {
+  const refreshUrl = API_BASE_URL.endsWith('/api/v1')
+    ? `${API_BASE_URL}/auth/refresh`
+    : `${API_BASE_URL}/api/v1/auth/refresh`;
+
   const response = await axios.post<{ data: { accessToken: string } }>(
-    `${API_BASE_URL}/api/v1/auth/refresh`,
+    refreshUrl,
     {},
     { withCredentials: true },
   );

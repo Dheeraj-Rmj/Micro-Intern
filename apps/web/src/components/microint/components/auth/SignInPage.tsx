@@ -14,7 +14,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
@@ -153,7 +153,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
   return (
     <div
       className={`min-h-screen relative overflow-hidden flex items-center justify-center p-4 font-sans select-none transition-colors duration-300 ${
-        isDark ? 'bg-[#0E0E0E] text-white' : 'bg-[#F3F2EA] text-[#111111]'
+        isDark ? 'bg-[#0E0E0E] text-white' : 'bg-[#FAFAFA] text-black'
       }`}
     >
       {/* ── Sparse Ambient Dot Matrix Background (Nothing Style) ────────── */}
@@ -203,7 +203,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
         className={`relative z-10 w-full max-w-[420px] rounded-[36px] p-8 sm:p-10 transition-all duration-300 shadow-2xl ${
           isDark
             ? 'bg-[#181818] border border-white/10 text-white'
-            : 'bg-[#EDEDE7] border border-black/[0.08] text-[#111111]'
+            : 'bg-[#EDEDE7] border border-black/[0.08] text-black'
         }`}
       >
         {/* ── Portal Title & Subtitle (Clean & Strict Architecture) ── */}
@@ -260,7 +260,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               className={`w-full px-4 py-3.5 rounded-2xl text-sm transition-all focus:outline-none border ${
                 isDark
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
             />
           </div>
@@ -283,7 +283,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               className={`w-full px-4 py-3.5 pr-14 rounded-2xl text-sm transition-all focus:outline-none border ${
                 isDark
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
             />
             <button
@@ -292,7 +292,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all cursor-pointer ${
                 isDark
                   ? 'text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-sm'
-                  : 'text-[#111111] bg-black/10 hover:bg-black/15 border border-black/10 shadow-sm'
+                  : 'text-black bg-black/10 hover:bg-black/15 border border-black/10 shadow-sm'
               }`}
               title={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -323,7 +323,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               type="button"
               onClick={() => setCurrentRoute('forgot-password')}
               className={`text-xs font-semibold hover:underline cursor-pointer ${
-                isDark ? 'text-white/80 hover:text-white' : 'text-[#111111]'
+                isDark ? 'text-white/80 hover:text-white' : 'text-black'
               }`}
             >
               Forgot your password?
@@ -449,7 +449,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               setShowPrivacyModal(true);
             }}
             className={`font-semibold underline hover:opacity-80 cursor-pointer ${
-              isDark ? 'text-white' : 'text-[#111111]'
+              isDark ? 'text-white' : 'text-black'
             }`}
           >
             Privacy Policy
@@ -463,7 +463,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               setShowAgreementModal(true);
             }}
             className={`font-semibold underline hover:opacity-80 cursor-pointer ${
-              isDark ? 'text-white' : 'text-[#111111]'
+              isDark ? 'text-white' : 'text-black'
             }`}
           >
             User Agreement
@@ -497,7 +497,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
             className={`relative rounded-[32px] shadow-2xl w-full max-w-[420px] p-8 border ${
               isDark
                 ? 'bg-[#181818] text-white border-white/15'
-                : 'bg-white text-[#111111] border-black/15'
+                : 'bg-white text-black border-black/15'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -622,7 +622,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div
             className={`relative rounded-[32px] shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden border ${
-              isDark ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-[#111111] border-black/10'
+              isDark ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-black border-black/10'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -632,7 +632,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                 type="button"
                 onClick={() => setShowPrivacyModal(false)}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-[#111111]'
+                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
                 }`}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -676,7 +676,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div
             className={`relative rounded-[32px] shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden border ${
-              isDark ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-[#111111] border-black/10'
+              isDark ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-black border-black/10'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -686,7 +686,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                 type="button"
                 onClick={() => setShowAgreementModal(false)}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-[#111111]'
+                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
                 }`}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>

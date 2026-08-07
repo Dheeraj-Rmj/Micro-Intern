@@ -19,6 +19,10 @@ import {
   InviteTeamMemberUseCase,
   ListTeamMembersUseCase,
   RemoveTeamMemberUseCase,
+  GetDepartmentsUseCase,
+  GetHiringAnalyticsUseCase,
+  GetBillingUseCase,
+  GetAIInsightsUseCase,
 } from '../application/index.js';
 import { PrismaCompanyRepository, registerCompanyEventListeners } from '../infrastructure/index.js';
 
@@ -48,6 +52,11 @@ export function createCompanyRouter(): Router {
     container.register('InviteTeamMemberUseCase', () => new InviteTeamMemberUseCase(container.get('ICompanyRepository')));
     container.register('ListTeamMembersUseCase', () => new ListTeamMembersUseCase(container.get('ICompanyRepository')));
     container.register('RemoveTeamMemberUseCase', () => new RemoveTeamMemberUseCase(container.get('ICompanyRepository')));
+    container.register('GetDepartmentsUseCase', () => new GetDepartmentsUseCase(container.get('ICompanyRepository')));
+    container.register('GetHiringAnalyticsUseCase', () => new GetHiringAnalyticsUseCase(container.get('ICompanyRepository')));
+    container.register('GetBillingUseCase', () => new GetBillingUseCase(container.get('ICompanyRepository')));
+    container.register('GetAIInsightsUseCase', () => new GetAIInsightsUseCase(container.get('ICompanyRepository')));
+    
     container.register('CompanyController', () => new CompanyController(
       container.get('CreateCompanyUseCase'),
       container.get('GetContextCompanyUseCase'),
@@ -55,7 +64,11 @@ export function createCompanyRouter(): Router {
       container.get('UploadLogoUseCase'),
       container.get('InviteTeamMemberUseCase'),
       container.get('ListTeamMembersUseCase'),
-      container.get('RemoveTeamMemberUseCase')
+      container.get('RemoveTeamMemberUseCase'),
+      container.get('GetDepartmentsUseCase'),
+      container.get('GetHiringAnalyticsUseCase'),
+      container.get('GetBillingUseCase'),
+      container.get('GetAIInsightsUseCase')
     ));
 
     registerCompanyEventListeners();
@@ -149,6 +162,38 @@ export function createCompanyRouter(): Router {
     requireRole(Role.COMPANY_OWNER) as RequestHandler,
     audit(AuditAction.DELETE, 'CompanyMember') as RequestHandler,
     (req, res, next) => { controller.removeMember(req, res, next).catch(next); },
+  );
+
+  // GET /api/v1/companies/me/departments
+  router.get(
+    '/me/departments',
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
+    (req, res, next) => { controller.getDepartments(req, res, next).catch(next); },
+  );
+
+  // GET /api/v1/companies/me/analytics
+  router.get(
+    '/me/analytics',
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
+    (req, res, next) => { controller.getHiringAnalytics(req, res, next).catch(next); },
+  );
+
+  // GET /api/v1/companies/me/billing
+  router.get(
+    '/me/billing',
+    authMiddleware as RequestHandler,
+    requireRole(Role.COMPANY_OWNER) as RequestHandler,
+    (req, res, next) => { controller.getBilling(req, res, next).catch(next); },
+  );
+
+  // GET /api/v1/companies/me/ai-insights
+  router.get(
+    '/me/ai-insights',
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
+    (req, res, next) => { controller.getAIInsights(req, res, next).catch(next); },
   );
 
   return router;

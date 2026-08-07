@@ -34,7 +34,7 @@ export const SignUpPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
@@ -112,7 +112,7 @@ export const SignUpPage: React.FC = () => {
   return (
     <div
       className={`min-h-screen relative overflow-hidden flex items-center justify-center p-4 font-sans select-none transition-colors duration-300 ${
-        isDark ? 'bg-[#0E0E0E] text-white' : 'bg-[#F3F2EA] text-[#111111]'
+        isDark ? 'bg-[#0E0E0E] text-white' : 'bg-[#FAFAFA] text-black'
       }`}
     >
       {/* ── Sparse Ambient Dot Matrix Background (Nothing Style) ────────── */}
@@ -133,7 +133,7 @@ export const SignUpPage: React.FC = () => {
         className={`absolute top-6 left-6 w-10 h-10 rounded-full shadow-sm flex items-center justify-center transition-all cursor-pointer z-20 ${
           isDark
             ? 'bg-[#262626] hover:bg-[#333333] text-white'
-            : 'bg-white hover:bg-[#EAEAEA] text-[#111111] border border-black/10'
+            : 'bg-white hover:bg-[#EAEAEA] text-black border border-black/10'
         }`}
         title="Back to home"
       >
@@ -147,7 +147,7 @@ export const SignUpPage: React.FC = () => {
           className={`w-10 h-10 rounded-full shadow-sm flex items-center justify-center transition-all cursor-pointer ${
             isDark
               ? 'bg-[#262626] hover:bg-[#333333] text-white'
-              : 'bg-white hover:bg-[#EAEAEA] text-[#111111] border border-black/10'
+              : 'bg-white hover:bg-[#EAEAEA] text-black border border-black/10'
           }`}
           title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
@@ -158,7 +158,7 @@ export const SignUpPage: React.FC = () => {
       {/* ── Vertical Left Brand Text ────────────────────────────────── */}
       <div
         className={`absolute left-6 top-1/2 -translate-y-1/2 -rotate-90 origin-left text-[11px] font-mono tracking-[0.3em] uppercase select-none z-10 pointer-events-none whitespace-nowrap transition-colors duration-300 ${
-          isDark ? 'text-white/50' : 'text-[#111111]/60'
+          isDark ? 'text-white/50' : 'text-black/60'
         }`}
       >
         MICRO INTERN
@@ -169,7 +169,7 @@ export const SignUpPage: React.FC = () => {
         className={`w-full max-w-[460px] rounded-[32px] p-8 md:p-10 shadow-2xl relative z-20 my-auto transition-colors duration-300 ${
           isDark
             ? 'bg-[#262626] text-white'
-            : 'bg-[#EDEDE7] border border-black/[0.08] text-[#111111]'
+            : 'bg-[#EDEDE7] border border-black/[0.08] text-black'
         }`}
       >
         <h1 className="text-3xl font-serif font-normal tracking-tight mb-6">Create account</h1>
@@ -185,7 +185,7 @@ export const SignUpPage: React.FC = () => {
               className={`w-full px-4 py-3 rounded-2xl text-sm transition-all focus:outline-none border ${
                 isDark
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
             />
             <ErrorMsg msg={errors.fullName} />
@@ -201,7 +201,7 @@ export const SignUpPage: React.FC = () => {
               className={`w-full px-4 py-3 rounded-2xl text-sm transition-all focus:outline-none border ${
                 isDark
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
             />
             <ErrorMsg msg={errors.username} />
@@ -217,7 +217,7 @@ export const SignUpPage: React.FC = () => {
               className={`w-full px-4 py-3 rounded-2xl text-sm transition-all focus:outline-none border ${
                 isDark
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
             />
             <ErrorMsg msg={errors.email} />
@@ -242,7 +242,7 @@ export const SignUpPage: React.FC = () => {
                 className={`w-full px-4 py-3 pr-14 rounded-2xl text-sm transition-all focus:outline-none border ${
                   isDark
                     ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                    : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                    : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
                 }`}
               />
               <button
@@ -251,7 +251,7 @@ export const SignUpPage: React.FC = () => {
                 className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all cursor-pointer ${
                   isDark
                     ? 'text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-sm'
-                    : 'text-[#111111] bg-black/10 hover:bg-black/15 border border-black/10 shadow-sm'
+                    : 'text-black bg-black/10 hover:bg-black/15 border border-black/10 shadow-sm'
                 }`}
                 title={showPassword ? 'Hide password' : 'Show password'}
               >
@@ -297,7 +297,7 @@ export const SignUpPage: React.FC = () => {
               className={`w-full px-4 py-3 rounded-2xl text-sm transition-all focus:outline-none border ${
                 isDark
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-[#111111] placeholder:text-[#111111]/40 focus:border-black focus:bg-white'
+                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
             />
             <ErrorMsg msg={errors.confirmPassword} />
@@ -321,7 +321,7 @@ export const SignUpPage: React.FC = () => {
                     e.stopPropagation();
                     setShowTermsModal(true);
                   }}
-                  className={`font-semibold hover:underline cursor-pointer ${isDark ? 'text-white' : 'text-[#111111]'}`}
+                  className={`font-semibold hover:underline cursor-pointer ${isDark ? 'text-white' : 'text-black'}`}
                 >
                   Terms of Service
                 </button>{' '}
@@ -333,7 +333,7 @@ export const SignUpPage: React.FC = () => {
                     e.stopPropagation();
                     setShowPrivacyModal(true);
                   }}
-                  className={`font-semibold hover:underline cursor-pointer ${isDark ? 'text-white' : 'text-[#111111]'}`}
+                  className={`font-semibold hover:underline cursor-pointer ${isDark ? 'text-white' : 'text-black'}`}
                 >
                   Privacy Policy
                 </button>
@@ -439,7 +439,7 @@ export const SignUpPage: React.FC = () => {
               setShowPrivacyModal(true);
             }}
             className={`font-semibold underline hover:opacity-80 cursor-pointer ${
-              isDark ? 'text-white' : 'text-[#111111]'
+              isDark ? 'text-white' : 'text-black'
             }`}
           >
             Privacy Policy
@@ -453,7 +453,7 @@ export const SignUpPage: React.FC = () => {
               setShowTermsModal(true);
             }}
             className={`font-semibold underline hover:opacity-80 cursor-pointer ${
-              isDark ? 'text-white' : 'text-[#111111]'
+              isDark ? 'text-white' : 'text-black'
             }`}
           >
             User Agreement
@@ -480,7 +480,7 @@ export const SignUpPage: React.FC = () => {
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div
             className={`relative rounded-3xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col ${
-              isDark ? 'bg-[#262626] text-white' : 'bg-white text-[#111111]'
+              isDark ? 'bg-[#262626] text-white' : 'bg-white text-black'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -489,7 +489,7 @@ export const SignUpPage: React.FC = () => {
               <button
                 onClick={() => setShowTermsModal(false)}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-[#111111]'
+                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
                 }`}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -532,7 +532,7 @@ export const SignUpPage: React.FC = () => {
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
           <div
             className={`relative rounded-3xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col ${
-              isDark ? 'bg-[#262626] text-white' : 'bg-white text-[#111111]'
+              isDark ? 'bg-[#262626] text-white' : 'bg-white text-black'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -541,7 +541,7 @@ export const SignUpPage: React.FC = () => {
               <button
                 onClick={() => setShowPrivacyModal(false)}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-[#111111]'
+                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
                 }`}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>

@@ -62,14 +62,14 @@ export const CompanyApplicationsPage: React.FC = () => {
             <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 font-mono text-xs font-bold uppercase tracking-wider">
               APPLICANTS & SUBMISSIONS
             </span>
-            <span className="text-xs font-mono text-black/50 dark:text-[#E1E0CC]/50">
+            <span className="text-xs font-mono text-black/50 dark:text-white/50">
               ENTERPRISE PORTAL
             </span>
           </div>
-          <h1 className="text-3xl font-bold font-serif text-black dark:text-[#E1E0CC]">
+          <h1 className="text-3xl font-bold font-serif text-black dark:text-white">
             Candidate Skill Trial Applications
           </h1>
-          <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70 mt-1">
+          <p className="text-sm text-black/60 dark:text-white/70 mt-1">
             Review completed code submissions from candidates applying to your enterprise apprenticeship trials.
           </p>
         </div>
@@ -77,7 +77,7 @@ export const CompanyApplicationsPage: React.FC = () => {
 
       {/* Filter bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm overflow-x-auto w-full sm:w-auto">
+        <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm overflow-x-auto w-full sm:w-auto">
           {[
             { id: 'ALL', label: 'All Submissions' },
             { id: 'PENDING', label: 'Pending Review' },
@@ -91,8 +91,8 @@ export const CompanyApplicationsPage: React.FC = () => {
                 onClick={() => setStatusFilter(tab.id as any)}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-black dark:bg-[#E1E0CC] text-white dark:text-black shadow-md'
-                    : 'text-black/60 dark:text-[#E1E0CC]/60 hover:text-black dark:hover:text-white'
+                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-md'
+                    : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
                 {tab.label}
@@ -108,17 +108,17 @@ export const CompanyApplicationsPage: React.FC = () => {
             placeholder="Search candidates, trials, email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500 transition-all shadow-sm"
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-[36px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm overflow-hidden">
+      <div className="rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-black/5 dark:border-white/10 text-[11px] font-mono uppercase tracking-wider text-black/40 dark:text-[#E1E0CC]/40 bg-black/[0.015] dark:bg-white/[0.02]">
+              <tr className="border-b border-black/5 dark:border-white/10 text-[11px] font-mono uppercase tracking-wider text-black/40 dark:text-white/40 bg-black/[0.015] dark:bg-white/[0.02]">
                 <th className="py-4 px-6">Candidate</th>
                 <th className="py-4 px-4">Applied Skill Trial</th>
                 <th className="py-4 px-4">AI Trust Score</th>
@@ -131,10 +131,10 @@ export const CompanyApplicationsPage: React.FC = () => {
               {filteredApps.map((a) => (
                 <tr key={a.id} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors">
                   <td className="py-4 px-6">
-                    <div className="font-bold text-black dark:text-[#E1E0CC]">{a.candidateName}</div>
+                    <div className="font-bold text-black dark:text-white">{a.candidateName}</div>
                     <div className="font-mono text-[11px] text-black/50 dark:text-white/50">{a.email}</div>
                   </td>
-                  <td className="py-4 px-4 font-semibold text-black dark:text-[#E1E0CC]">
+                  <td className="py-4 px-4 font-semibold text-black dark:text-white">
                     {a.trialTitle}
                   </td>
                   <td className="py-4 px-4">

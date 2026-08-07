@@ -36,10 +36,9 @@ import { createAIToolsRouter } from '@/modules/management/presentation/ai-tools.
 
 export function createV1Router(): Router {
   const v1Router = Router();
+  const companyRouter = createCompanyRouter();
   const assessmentRouter = createAssessmentRouter();
   attachAssessmentSubmissionRoutes(assessmentRouter);
-
-  const companyRouter = createCompanyRouter();
 
   // ── Core Platform ──────────────────────────────────────────────────────────
   v1Router.use('/auth', createAuthRouter());

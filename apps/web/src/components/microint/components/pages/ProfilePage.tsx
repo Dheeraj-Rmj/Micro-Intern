@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -56,23 +57,20 @@ const profileSchema = z.object({
     .string()
     .min(1, 'This field is required.')
     .refine(
-      (val) => /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9_.-]+\/?$/i.test(val) || /^https?:\/\/[^\s]+$/i.test(val),
+      (val) => /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9_-]+\/?$/i.test(val),
       { message: 'Please enter a valid GitHub profile URL (e.g. https://github.com/username)' }
     ),
   linkedinUrl: z
     .string()
     .min(1, 'This field is required.')
     .refine(
-      (val) => /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_.-]+\/?$/i.test(val) || /^https?:\/\/[^\s]+$/i.test(val),
+      (val) => /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/i.test(val),
       { message: 'Please enter a valid LinkedIn profile URL (e.g. https://linkedin.com/in/username)' }
     ),
   portfolioUrl: z
     .string()
     .min(1, 'This field is required.')
-    .refine(
-      (val) => /^https?:\/\/[^\s]+\.[^\s]+$/i.test(val),
-      { message: 'Please enter a valid URL (e.g. https://yourportfolio.com)' }
-    ),
+    .url('Please enter a valid URL (e.g. https://yourportfolio.com)'),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -686,14 +684,14 @@ export const ProfilePage: React.FC = () => {
 
       <div className="max-w-4xl mx-auto space-y-8">
         {/* ================= 1. PROFILE HEADER ================= */}
-        <div className="relative overflow-hidden rounded-[40px] bg-white dark:bg-[#101010] text-black dark:text-[#E1E0CC] border border-black/5 dark:border-white/10 shadow-sm">
+        <div className="relative overflow-hidden rounded-[40px] bg-white dark:bg-[#0A0A0A] text-black dark:text-white border border-black/5 dark:border-white/10 shadow-sm">
           {/* Banner Area */}
           <div className="relative h-48 sm:h-64 w-full bg-black/5 dark:bg-white/5 overflow-hidden group">
             {bannerPreview ? (
-              <img src={bannerPreview} alt="Profile Banner" className="w-full h-full object-cover" />
+              <Image src={bannerPreview} alt="Profile Banner" className="w-full h-full object-cover" fill unoptimized />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-[#101010] to-[#1a1a1a] dark:from-black dark:to-white/5 flex items-center justify-center">
-                <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 rounded-full bg-[#E1E0CC]/10 blur-3xl pointer-events-none" />
+              <div className="absolute inset-0 bg-black/5 dark:bg-gradient-to-b dark:from-white/[0.03] dark:to-transparent border-b border-black/10 dark:border-white/[0.05] flex items-center justify-center">
+                <div className="absolute inset-0 opacity-10 dark:opacity-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
               </div>
             )}
             
@@ -715,13 +713,13 @@ export const ProfilePage: React.FC = () => {
           <div className="relative z-10 px-6 sm:px-8 pb-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 -mt-16 sm:-mt-20">
             {/* Avatar Preview */}
             <div className="relative group shrink-0">
-              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full ring-4 ring-white dark:ring-[#101010] overflow-hidden bg-black/90 dark:bg-white/90 flex items-center justify-center shadow-lg">
+              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full ring-4 ring-white dark:ring-[#101010] overflow-hidden bg-black/90 dark:bg-white/90 flex items-center justify-center shadow-lg">
                 {userProfile.avatar && userProfile.avatar.startsWith('blob:') ? (
                   <div className="w-full h-full flex items-center justify-center bg-black/10 dark:bg-white/10 text-xs text-center p-2">Invalid Session Image. Please Re-upload.</div>
                 ) : userProfile.avatar ? (
-                  <img src={userProfile.avatar} alt="Candidate Avatar" className="w-full h-full object-cover" />
+                  <Image src={userProfile.avatar} alt="Candidate Avatar" className="w-full h-full object-cover" fill unoptimized />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black text-4xl font-black">
+                  <div className="w-full h-full flex items-center justify-center bg-[#111111] dark:bg-white text-white dark:text-black text-4xl font-black">
                     {(userProfile.fullName || 'C').charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -733,7 +731,7 @@ export const ProfilePage: React.FC = () => {
                 onClick={() => avatarInputRef.current?.click()}
                 className="absolute inset-0 rounded-full bg-slate-950/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs font-bold transition-opacity cursor-pointer"
               >
-                <Upload className="w-6 h-6 mb-1 text-[#E1E0CC]" />
+                <Upload className="w-6 h-6 mb-1 text-white" />
                 <span>{avatarPreview ? 'Edit Avatar' : 'Upload Avatar'}</span>
               </button>
             </div>
@@ -742,17 +740,17 @@ export const ProfilePage: React.FC = () => {
             <div className="flex-1 text-center sm:text-left space-y-2 mt-20 sm:mt-24">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black dark:text-[#E1E0CC]">
+                  <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black dark:text-white">
                     {watchedFullName || 'Candidate Profile'}
                   </h1>
-                  <p className="text-sm font-semibold text-[#111111] dark:text-[#E1E0CC] flex items-center justify-center sm:justify-start gap-1.5 mt-0.5">
-                    <Sparkles className="w-4 h-4 text-[#111111] dark:text-[#E1E0CC]" />
+                  <p className="text-sm font-semibold text-black dark:text-white flex items-center justify-center sm:justify-start gap-1.5 mt-0.5">
+                    <Sparkles className="w-4 h-4 text-black dark:text-white" />
                     <span>{watchedHeadline || 'Unspecified Headline'}</span>
                   </p>
                 </div>
 
                 <div className="shrink-0 flex items-center justify-center sm:justify-start">
-                  <span className="px-3.5 py-1.5 rounded-full bg-[#111111] text-white dark:bg-[#E1E0CC] dark:text-black border border-black/10 dark:border-white/10 text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                  <span className="px-3.5 py-1.5 rounded-full bg-[#111111] text-white dark:bg-white dark:text-black border border-black/10 dark:border-white/10 text-xs font-bold flex items-center gap-1.5 shadow-sm">
                     <CheckCircle2 className="w-4 h-4 text-white dark:text-black" />
                     <span>Trust Score: {userProfile.trustScore || 0}/100</span>
                   </span>
@@ -774,16 +772,16 @@ export const ProfilePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* AVATAR UPLOAD CARD (Single button, hides upload area after upload, shows Edit Avatar) */}
-            <div className="p-6 rounded-[40px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between">
+            <div className="p-6 rounded-[40px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-[#E1E0CC] flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-black dark:text-[#E1E0CC]" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-black dark:text-white" />
                     <span>Avatar Upload <span className="text-rose-500">*</span></span>
                   </h3>
-                  <span className="text-[11px] font-semibold text-black/50 dark:text-[#E1E0CC]/50">Max 5MB (Image)</span>
+                  <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">Max 5MB (Image)</span>
                 </div>
-                <p className="text-xs text-black/50 dark:text-[#E1E0CC]/50 mb-4">
+                <p className="text-xs text-black/50 dark:text-white/50 mb-4">
                   Upload a professional profile image (PNG, JPG, WebP).
                 </p>
 
@@ -801,7 +799,7 @@ export const ProfilePage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => avatarInputRef.current?.click()}
-                      className="px-6 py-3 rounded-[24px] bg-[#111111] dark:bg-[#E1E0CC] hover:opacity-90 text-white dark:text-black font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer flex items-center gap-2"
+                      className="px-6 py-3 rounded-[24px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-black dark:text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer flex items-center gap-2"
                     >
                       <Upload className="w-4 h-4" />
                       <span>Upload Avatar</span>
@@ -827,8 +825,8 @@ export const ProfilePage: React.FC = () => {
                         />
                       )}
                       <div>
-                        <span className="text-xs font-bold text-black dark:text-[#E1E0CC] block">Avatar Uploaded</span>
-                        <span className="text-[10px] text-[#111111] dark:text-[#E1E0CC] font-semibold flex items-center gap-1">
+                        <span className="text-xs font-bold text-black dark:text-white block">Avatar Uploaded</span>
+                        <span className="text-[10px] text-black dark:text-white font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" /> Image Ready
                         </span>
                       </div>
@@ -858,16 +856,16 @@ export const ProfilePage: React.FC = () => {
 
 
             {/* RESUME UPLOAD CARD (Single button, hides upload area after upload, shows Replace Resume) */}
-            <div className="p-6 rounded-[40px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between">
+            <div className="p-6 rounded-[40px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-[#E1E0CC] flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-[#111111] dark:text-[#E1E0CC]" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-black dark:text-white" />
                     <span>Resume Upload <span className="text-rose-500">*</span></span>
                   </h3>
-                  <span className="text-[11px] font-semibold text-black/50 dark:text-[#E1E0CC]/50">Max 10MB (PDF Only)</span>
+                  <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">Max 10MB (PDF Only)</span>
                 </div>
-                <p className="text-xs text-black/50 dark:text-[#E1E0CC]/50 mb-4">
+                <p className="text-xs text-black/50 dark:text-white/50 mb-4">
                   Upload your PDF resume document (.pdf).
                 </p>
 
@@ -882,15 +880,15 @@ export const ProfilePage: React.FC = () => {
                 {isAnalyzingResume ? (
                   /* Analyzing Loading State */
                   <div className="border border-black/10 dark:border-white/10 rounded-[24px] p-6 text-center bg-black/5 dark:bg-white/5 flex flex-col items-center justify-center gap-3">
-                    <div className="p-3 rounded-xl bg-black/5 dark:bg-white/10 text-[#111111] dark:text-[#E1E0CC]">
+                    <div className="p-3 rounded-xl bg-black/5 dark:bg-white/10 text-black dark:text-white">
                       <Sparkles className="w-6 h-6 animate-spin" />
                     </div>
-                    <p className="text-xs font-bold text-black dark:text-[#E1E0CC]">
+                    <p className="text-xs font-bold text-black dark:text-white">
                       Analyzing Resume...
                     </p>
                     <div className="w-full max-w-xs bg-black/10 dark:bg-white/10 h-2 rounded-full overflow-hidden">
                       <div
-                        className="bg-[#111111] dark:bg-[#E1E0CC] h-full transition-all duration-150 ease-out"
+                        className="bg-[#111111] dark:bg-white h-full transition-all duration-150 ease-out"
                         style={{ width: `${resumeProgress}%` }}
                       />
                     </div>
@@ -902,7 +900,7 @@ export const ProfilePage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => resumeInputRef.current?.click()}
-                      className="px-6 py-3 rounded-[24px] bg-emerald-600 hover:bg-emerald-700 text-black dark:text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all cursor-pointer flex items-center gap-2"
+                      className="px-6 py-3 rounded-[24px] bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-black dark:text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer flex items-center gap-2"
                     >
                       <Upload className="w-4 h-4" />
                       <span>Upload Resume</span>
@@ -919,14 +917,14 @@ export const ProfilePage: React.FC = () => {
                   <div className="p-4 rounded-[24px] bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-3">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-[#111111] dark:text-[#E1E0CC] shrink-0">
+                        <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-black dark:text-white shrink-0">
                           <FileText className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
                           <span className="text-xs font-bold text-emerald-950 dark:text-emerald-100 block truncate">
                             {resumeName}
                           </span>
-                          <span className="text-[10px] uppercase font-bold text-[#111111] dark:text-[#E1E0CC]">
+                          <span className="text-[10px] uppercase font-bold text-black dark:text-white">
                             PDF Attached
                           </span>
                         </div>
@@ -937,7 +935,7 @@ export const ProfilePage: React.FC = () => {
                         onClick={() => resumeInputRef.current?.click()}
                         className="px-3.5 py-2 rounded-xl bg-white dark:bg-white/5 border border-black/5 dark:border-white/20 hover:bg-black/5 text-xs font-bold text-black dark:text-white transition-all cursor-pointer flex items-center gap-1.5 shadow-xs shrink-0"
                       >
-                        <Upload className="w-3.5 h-3.5 text-[#111111] dark:text-[#E1E0CC]" />
+                        <Upload className="w-3.5 h-3.5 text-black dark:text-white" />
                         <span>Replace Resume</span>
                       </button>
                     </div>
@@ -953,26 +951,14 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           {/* FORM FIELDS CARD */}
-          <div className="p-6 sm:p-8 rounded-[40px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
+          <div className="p-6 sm:p-8 rounded-[40px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-black/5 dark:border-white/10 gap-3">
-              <h3 className="text-lg font-bold flex items-center gap-2 text-black dark:text-[#E1E0CC]">
-                <User className="w-5 h-5 text-black dark:text-[#E1E0CC]" />
+              <h3 className="text-lg font-bold flex items-center gap-2 text-black dark:text-white">
+                <User className="w-5 h-5 text-black dark:text-white" />
                 <span>Profile Details & Portfolio</span>
               </h3>
 
-              {/* Header Resume Banner/Button */}
-              <div className="inline-flex items-center gap-3 p-2 px-3 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-black/10 dark:border-white/10 text-xs">
-                <Info className="w-4 h-4 text-black dark:text-blue-400 shrink-0" />
-                <span className="text-black/60 dark:text-[#E1E0CC]/70">Upload your resume PDF to complete your profile.</span>
-                <button
-                  type="button"
-                  onClick={() => resumeInputRef.current?.click()}
-                  className="px-3 py-1 rounded-lg bg-[#111111] dark:bg-[#E1E0CC] hover:opacity-90 text-white dark:text-black font-bold text-xs flex items-center gap-1 shadow-sm transition-all cursor-pointer shrink-0"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Upload Resume</span>
-                </button>
-              </div>
+
             </div>
 
             <div className="space-y-6">
@@ -1064,7 +1050,7 @@ export const ProfilePage: React.FC = () => {
                     {currentSkills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 text-black dark:text-[#E1E0CC] border border-black/10 dark:border-white/10 text-xs font-semibold shadow-xs"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 text-black dark:text-white border border-black/10 dark:border-white/10 text-xs font-semibold shadow-xs"
                       >
                         <TechSkillIcon skill={skill} size={15} />
                         <span>{skill}</span>
@@ -1109,7 +1095,7 @@ export const ProfilePage: React.FC = () => {
                     type="button"
                     onClick={() => handleAddSkill()}
                     disabled={currentSkills.length >= 20 || !newSkillInput.trim()}
-                    className="px-4 py-2.5 rounded-xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-1 cursor-pointer"
+                    className="px-4 py-2.5 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold text-xs hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-1 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add Tag</span>
@@ -1132,14 +1118,14 @@ export const ProfilePage: React.FC = () => {
                       <Award className="w-4 h-4 text-yellow-500" />
                       Verified Certifications & AI Validator
                     </label>
-                    <p className="text-[11px] text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                    <p className="text-[11px] text-black/50 dark:text-white/60 mt-0.5">
                       Add certifications and validate them with AI to boost your verified trust score.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowAddCertModal(true)}
-                    className="px-3 py-1.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 py-1.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Add Certification
@@ -1157,7 +1143,7 @@ export const ProfilePage: React.FC = () => {
                           <Award className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="font-bold text-sm text-black dark:text-[#E1E0CC] flex items-center gap-2">
+                          <div className="font-bold text-sm text-black dark:text-white flex items-center gap-2">
                             <span>{cert.title}</span>
                             {cert.aiVerified && (
                               <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-bold flex items-center gap-1">
@@ -1166,7 +1152,7 @@ export const ProfilePage: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                          <div className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                             Issuer: <span className="font-medium">{cert.issuer}</span>
                             {cert.score && (
                               <span className="ml-2 font-bold text-emerald-600 dark:text-emerald-400">
@@ -1203,7 +1189,7 @@ export const ProfilePage: React.FC = () => {
                 {showAddCertModal && (
                   <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-black dark:text-[#E1E0CC]">Add New Certification</span>
+                      <span className="text-xs font-bold text-black dark:text-white">Add New Certification</span>
                       <button
                         type="button"
                         onClick={() => setShowAddCertModal(false)}
@@ -1222,7 +1208,7 @@ export const ProfilePage: React.FC = () => {
                           value={newCertTitle}
                           onChange={(e) => setNewCertTitle(e.target.value)}
                           placeholder="e.g. Google Cloud Professional Architect"
-                          className="w-full px-3 py-2 rounded-xl border border-black/10 dark:border-white/20 bg-white dark:bg-[#101010] text-xs"
+                          className="w-full px-3 py-2 rounded-xl border border-black/10 dark:border-white/20 bg-white dark:bg-[#0A0A0A] text-xs"
                         />
                       </div>
                       <div>
@@ -1234,7 +1220,7 @@ export const ProfilePage: React.FC = () => {
                           value={newCertIssuer}
                           onChange={(e) => setNewCertIssuer(e.target.value)}
                           placeholder="e.g. Google Cloud / Coursera / AWS"
-                          className="w-full px-3 py-2 rounded-xl border border-black/10 dark:border-white/20 bg-white dark:bg-[#101010] text-xs"
+                          className="w-full px-3 py-2 rounded-xl border border-black/10 dark:border-white/20 bg-white dark:bg-[#0A0A0A] text-xs"
                         />
                       </div>
                     </div>
@@ -1247,7 +1233,7 @@ export const ProfilePage: React.FC = () => {
                         value={newCertUrl}
                         onChange={(e) => setNewCertUrl(e.target.value)}
                         placeholder="https://www.verify.org/credential/12345"
-                        className="w-full px-3 py-2 rounded-xl border border-black/10 dark:border-white/20 bg-white dark:bg-[#101010] text-xs"
+                        className="w-full px-3 py-2 rounded-xl border border-black/10 dark:border-white/20 bg-white dark:bg-[#0A0A0A] text-xs"
                       />
                     </div>
                     <div className="flex justify-end gap-2 pt-1">
@@ -1261,7 +1247,7 @@ export const ProfilePage: React.FC = () => {
                       <button
                         type="button"
                         onClick={handleAddCertification}
-                        className="px-4 py-1.5 rounded-lg bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs"
+                        className="px-4 py-1.5 rounded-lg bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs"
                       >
                         Add & Save
                       </button>
@@ -1361,7 +1347,7 @@ export const ProfilePage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-6 py-3 rounded-xl border border-black/5 dark:border-black/20 dark:border-white/20 hover:bg-black/5 dark:bg-white/5 dark:hover:bg-black/90 dark:bg-white/90 font-semibold text-xs sm:text-sm transition-colors cursor-pointer flex items-center gap-2 text-black dark:text-white dark:text-black/30 dark:text-white/30"
+                className="px-6 py-3 rounded-xl border border-black/10 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/10 font-semibold text-xs sm:text-sm transition-colors cursor-pointer flex items-center gap-2 text-black dark:text-white"
               >
                 <RotateCcw className="w-4 h-4" />
                 <span>Reset</span>
@@ -1372,8 +1358,8 @@ export const ProfilePage: React.FC = () => {
                 disabled={isButtonDisabled}
                 className={`px-8 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 ${
                   isButtonDisabled
-                    ? 'bg-slate-300 dark:bg-white/5 text-black/50 dark:text-white/50 cursor-not-allowed border border-slate-300 dark:border-white/20 shadow-none'
-                    : 'bg-[#111111] dark:bg-[#E1E0CC] hover:opacity-90 text-white dark:text-black shadow-sm cursor-pointer'
+                    ? 'bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 cursor-not-allowed border border-black/10 dark:border-white/10 shadow-none'
+                    : 'bg-black dark:bg-white hover:opacity-90 text-white dark:text-black shadow-sm cursor-pointer'
                 }`}
               >
                 {isSaved && !isEditedAfterSave ? (

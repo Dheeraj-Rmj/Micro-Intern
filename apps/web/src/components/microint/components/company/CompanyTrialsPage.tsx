@@ -68,14 +68,14 @@ export const CompanyTrialsPage: React.FC = () => {
             <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500 font-mono text-xs font-bold uppercase tracking-wider">
               ENTERPRISE ESCROW TRIALS
             </span>
-            <span className="text-xs font-mono text-black/50 dark:text-[#E1E0CC]/50">
+            <span className="text-xs font-mono text-black/50 dark:text-white/50">
               ENTERPRISE ORGANIZATION
             </span>
           </div>
-          <h1 className="text-3xl font-bold font-serif text-black dark:text-[#E1E0CC]">
+          <h1 className="text-3xl font-bold font-serif text-black dark:text-white">
             Manage Skill Trials & Escrow Pools
           </h1>
-          <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70 mt-1">
+          <p className="text-sm text-black/60 dark:text-white/70 mt-1">
             Create practical skill trials to discover top engineering and design talent.
           </p>
         </div>
@@ -90,22 +90,22 @@ export const CompanyTrialsPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-[28px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm">
-          <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-medium">
+        <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
+          <p className="text-xs text-black/50 dark:text-white/60 font-medium">
             Active Skill Trials
           </p>
-          <p className="text-3xl font-serif font-bold text-black dark:text-[#E1E0CC] mt-1">
+          <p className="text-3xl font-serif font-bold text-black dark:text-white mt-1">
             {trials.length}
           </p>
         </div>
-        <div className="p-6 rounded-[28px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm">
-          <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-medium">
+        <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
+          <p className="text-xs text-black/50 dark:text-white/60 font-medium">
             Total Locked Escrow
           </p>
           <p className="text-3xl font-serif font-bold text-amber-500 mt-1">$4,800</p>
         </div>
-        <div className="p-6 rounded-[28px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm">
-          <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 font-medium">
+        <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
+          <p className="text-xs text-black/50 dark:text-white/60 font-medium">
             Trial Completion Rate
           </p>
           <p className="text-3xl font-serif font-bold text-emerald-500 mt-1">94.2%</p>
@@ -116,7 +116,7 @@ export const CompanyTrialsPage: React.FC = () => {
         {trials.map((t) => (
           <div
             key={t.id}
-            className="p-7 rounded-[32px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md transition-all space-y-4 relative overflow-hidden"
+            className="p-7 rounded-[32px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md transition-all space-y-4 relative overflow-hidden"
           >
             <div className="flex items-center justify-between">
               <span className="px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 font-mono text-xs font-bold text-black/70 dark:text-white/70">
@@ -133,11 +133,11 @@ export const CompanyTrialsPage: React.FC = () => {
               </span>
             </div>
 
-            <h3 className="text-xl font-bold font-serif text-black dark:text-[#E1E0CC]">
+            <h3 className="text-xl font-bold font-serif text-black dark:text-white">
               {t.title}
             </h3>
 
-            <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5 text-xs text-black/70 dark:text-[#E1E0CC]/70 font-mono">
+            <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5 text-xs text-black/70 dark:text-white/70 font-mono">
               <div className="flex items-center gap-1.5">
                 <Users className="w-4 h-4 text-indigo-500" />
                 <span>{t.applicantsCount} Candidates Applied</span>
@@ -154,9 +154,9 @@ export const CompanyTrialsPage: React.FC = () => {
       {/* Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md p-8 rounded-[36px] bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95">
+          <div className="w-full max-w-md p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-serif font-bold text-black dark:text-[#E1E0CC]">
+              <h3 className="text-xl font-serif font-bold text-black dark:text-white">
                 Post New Enterprise Trial
               </h3>
               <button
@@ -169,7 +169,7 @@ export const CompanyTrialsPage: React.FC = () => {
 
             <form onSubmit={handleCreateTrial} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Trial Title
                 </label>
                 <input
@@ -177,19 +177,19 @@ export const CompanyTrialsPage: React.FC = () => {
                   placeholder="e.g. AI Copilot UI Component / GraphQL Sync"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none focus:border-amber-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Category
                 </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
                 >
                   <option value="Full Stack">Full Stack</option>
                   <option value="Frontend">Frontend</option>
@@ -201,14 +201,14 @@ export const CompanyTrialsPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Stipend Amount (Locked in Escrow)
                 </label>
                 <input
                   type="text"
                   value={stipend}
                   onChange={(e) => setStipend(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
                 />
               </div>
 

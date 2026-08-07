@@ -132,7 +132,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (saved !== null) {
         return saved === 'dark';
       }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      // Force light theme by default as requested
+      return false;
     }
     return false;
   });

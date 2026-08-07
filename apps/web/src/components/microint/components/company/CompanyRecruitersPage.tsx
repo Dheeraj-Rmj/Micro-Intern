@@ -95,14 +95,14 @@ export const CompanyRecruitersPage: React.FC = () => {
             <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500 font-mono text-xs font-bold uppercase tracking-wider">
               ENTERPRISE RECRUITER GOVERNANCE
             </span>
-            <span className="text-xs font-mono text-black/50 dark:text-[#E1E0CC]/50">
+            <span className="text-xs font-mono text-black/50 dark:text-white/50">
               DOMAIN: @company.microintern
             </span>
           </div>
-          <h1 className="text-3xl font-bold font-serif text-black dark:text-[#E1E0CC]">
+          <h1 className="text-3xl font-bold font-serif text-black dark:text-white">
             Manage Recruiter Accounts & Corporate Logins
           </h1>
-          <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70 mt-1">
+          <p className="text-sm text-black/60 dark:text-white/70 mt-1">
             Generate and administer official MicroIntern recruiter credentials for your enterprise hiring team.
           </p>
         </div>
@@ -116,17 +116,17 @@ export const CompanyRecruitersPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Generate New Recruiter Login Form */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="p-7 rounded-[36px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm space-y-5">
+          <div className="p-7 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-5">
             <div className="flex items-center gap-2.5 border-b border-black/5 dark:border-white/10 pb-4">
               <UserPlus className="w-5 h-5 text-amber-500" />
-              <h2 className="text-lg font-serif text-black dark:text-[#E1E0CC]">
+              <h2 className="text-lg font-serif text-black dark:text-white">
                 Generate Recruiter Login
               </h2>
             </div>
 
             <form onSubmit={handleGenerateLogin} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Recruiter Full Name
                 </label>
                 <input
@@ -134,12 +134,12 @@ export const CompanyRecruitersPage: React.FC = () => {
                   placeholder="e.g. Ananya Rao"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none focus:border-amber-500 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Login Handle (Domain: @company.microintern)
                 </label>
                 <div className="flex items-center rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 overflow-hidden">
@@ -148,7 +148,7 @@ export const CompanyRecruitersPage: React.FC = () => {
                     placeholder="e.g. ananya.r"
                     value={handle}
                     onChange={(e) => setHandle(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-transparent text-xs text-black dark:text-[#E1E0CC] focus:outline-none font-mono"
+                    className="w-full px-3 py-2.5 bg-transparent text-xs text-black dark:text-white focus:outline-none font-mono"
                   />
                   <span className="px-3 py-2.5 bg-black/5 dark:bg-white/5 text-[11px] font-mono font-bold text-amber-500 shrink-0">
                     @company.microintern
@@ -157,13 +157,13 @@ export const CompanyRecruitersPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Role Title
                 </label>
                 <select
                   value={roleTitle}
                   onChange={(e) => setRoleTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
                 >
                   <option value="Technical Recruiter">Technical Recruiter</option>
                   <option value="Senior Engineering Recruiter">Senior Engineering Recruiter</option>
@@ -195,13 +195,13 @@ export const CompanyRecruitersPage: React.FC = () => {
 
         {/* Right Column: Active Recruiter Accounts List */}
         <div className="lg:col-span-8 space-y-6">
-          <div className="p-8 rounded-[36px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
+          <div className="p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-5">
               <div>
-                <h2 className="text-xl font-serif text-black dark:text-[#E1E0CC]">
+                <h2 className="text-xl font-serif text-black dark:text-white">
                   Active Enterprise Recruiter Credentials ({recruiters.length})
                 </h2>
-                <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">
+                <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
                   Recruiters can log into MicroIntern with these credentials to evaluate applicants and issue offers.
                 </p>
               </div>
@@ -219,7 +219,7 @@ export const CompanyRecruitersPage: React.FC = () => {
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2.5">
-                      <span className="font-bold text-base text-black dark:text-[#E1E0CC]">
+                      <span className="font-bold text-base text-black dark:text-white">
                         {rec.name}
                       </span>
                       <span className="text-xs text-black/60 dark:text-white/60 font-medium">
@@ -246,7 +246,7 @@ export const CompanyRecruitersPage: React.FC = () => {
                   <div className="flex items-center gap-2.5 shrink-0">
                     <button
                       onClick={() => handleCopyCredentials(rec.email)}
-                      className="px-4 py-2.5 rounded-xl bg-black dark:bg-[#E1E0CC] text-white dark:text-black font-semibold text-xs hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      className="px-4 py-2.5 rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold text-xs hover:opacity-90 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
                       title="Copy Login Credentials & Temporary Password"
                     >
                       {copiedEmail === rec.email ? (

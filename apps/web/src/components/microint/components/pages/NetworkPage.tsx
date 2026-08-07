@@ -484,13 +484,13 @@ export const NetworkPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto py-6 px-4 space-y-6">
       {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#101010] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-black dark:text-[#E1E0CC] flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold text-black dark:text-white flex items-center gap-2.5">
             <Users className="w-6 h-6 text-purple-500" />
             Professional Network & LinkedIn Feed
           </h1>
-          <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-1">
+          <p className="text-xs text-black/50 dark:text-white/60 mt-1">
             Real-time feed with LinkedIn multi-reactions, verified AI credentials, and full public candidate profiles.
           </p>
         </div>
@@ -500,7 +500,7 @@ export const NetworkPage: React.FC = () => {
             onClick={() => setActiveTab('feed')}
             className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'feed'
-                ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm'
+                ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
                 : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
             }`}
           >
@@ -510,7 +510,7 @@ export const NetworkPage: React.FC = () => {
             onClick={() => setActiveTab('network')}
             className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'network'
-                ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm'
+                ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
                 : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
             }`}
           >
@@ -529,7 +529,7 @@ export const NetworkPage: React.FC = () => {
           {/* Main Feed Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Search & Hashtag Bar */}
-            <div className="bg-white dark:bg-[#101010] p-4 rounded-2xl border border-black/5 dark:border-white/10 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-white dark:bg-[#0A0A0A] p-4 rounded-2xl border border-black/5 dark:border-white/10 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="relative flex-1">
                 <Search className="w-4 h-4 absolute left-3.5 top-3 text-black/40 dark:text-white/40" />
                 <input
@@ -558,7 +558,7 @@ export const NetworkPage: React.FC = () => {
                       className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                         isActive
                           ? 'bg-purple-600 text-white shadow-xs'
-                          : 'bg-black/5 dark:bg-white/10 text-black/70 dark:text-[#E1E0CC]/70 hover:bg-black/10'
+                          : 'bg-black/5 dark:bg-white/10 text-black/70 dark:text-white/70 hover:bg-black/10'
                       }`}
                     >
                       {tag}
@@ -577,7 +577,7 @@ export const NetworkPage: React.FC = () => {
             </div>
 
             {/* Create Post Box */}
-            <div className="bg-white dark:bg-[#101010] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
               <div className="flex items-start gap-3">
                 <img
                   src={userProfile.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}
@@ -588,7 +588,7 @@ export const NetworkPage: React.FC = () => {
                   value={newPostText}
                   onChange={(e) => setNewPostText(e.target.value)}
                   placeholder="Share an achievement, AI-validated certification, or technical insight..."
-                  className="w-full min-h-[90px] p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
+                  className="w-full min-h-[90px] p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-xs text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
                 />
               </div>
 
@@ -601,7 +601,7 @@ export const NetworkPage: React.FC = () => {
                       <select
                         value={newPostHashtag}
                         onChange={(e) => setNewPostHashtag(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#101010] border border-black/10 text-xs text-black dark:text-[#E1E0CC]"
+                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#0A0A0A] border border-black/10 text-xs text-black dark:text-white"
                       >
                         <option value="#AgenticAI">#AgenticAI</option>
                         <option value="#SystemDesign">#SystemDesign</option>
@@ -619,7 +619,7 @@ export const NetworkPage: React.FC = () => {
                         value={newPostRepoUrl}
                         onChange={(e) => setNewPostRepoUrl(e.target.value)}
                         placeholder="https://github.com/username/project"
-                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#101010] border border-black/10 text-xs text-black dark:text-white"
+                        className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#0A0A0A] border border-black/10 text-xs text-black dark:text-white"
                       />
                     </div>
                   </div>
@@ -646,7 +646,7 @@ export const NetworkPage: React.FC = () => {
                         className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-purple-600 text-white shadow-xs'
-                            : 'bg-black/5 dark:bg-white/10 text-black dark:text-[#E1E0CC] hover:bg-black/10'
+                            : 'bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10'
                         }`}
                       >
                         <TechSkillIcon skill={skill} size={13} />
@@ -670,7 +670,7 @@ export const NetworkPage: React.FC = () => {
                     type="button"
                     onClick={handleCreatePost}
                     disabled={!newPostText.trim()}
-                    className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                    className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Post</span>
@@ -682,9 +682,9 @@ export const NetworkPage: React.FC = () => {
             {/* Posts Feed */}
             <div className="space-y-4">
               {filteredPosts.length === 0 ? (
-                <div className="bg-white dark:bg-[#101010] p-12 rounded-[32px] text-center border border-black/5 dark:border-white/10 space-y-3">
+                <div className="bg-white dark:bg-[#0A0A0A] p-12 rounded-[32px] text-center border border-black/5 dark:border-white/10 space-y-3">
                   <Award className="w-10 h-10 text-black/20 dark:text-white/20 mx-auto" />
-                  <p className="text-sm font-bold text-black dark:text-[#E1E0CC]">
+                  <p className="text-sm font-bold text-black dark:text-white">
                     {posts.length === 0 ? 'No updates in your feed yet' : 'No matching network updates'}
                   </p>
                   <p className="text-xs text-black/50 dark:text-white/50 max-w-sm mx-auto">
@@ -711,7 +711,7 @@ export const NetworkPage: React.FC = () => {
                   return (
                     <div
                       key={post.id}
-                      className="bg-white dark:bg-[#101010] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4 hover:border-black/15 dark:hover:border-white/20 transition-all relative"
+                      className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4 hover:border-black/15 dark:hover:border-white/20 transition-all relative"
                     >
                       {/* Author Header (CLICK TO VIEW FULL PUBLIC LINKEDIN PROFILE) */}
                       <div className="flex items-start justify-between">
@@ -728,7 +728,7 @@ export const NetworkPage: React.FC = () => {
                           />
                           <div>
                             <div className="flex items-center gap-2">
-                              <h4 className="font-bold text-sm text-black dark:text-[#E1E0CC] group-hover/author:text-purple-600 dark:group-hover/author:text-purple-400 transition-colors">
+                              <h4 className="font-bold text-sm text-black dark:text-white group-hover/author:text-purple-600 dark:group-hover/author:text-purple-400 transition-colors">
                                 {post.authorName}
                               </h4>
                               {post.aiVerifiedBadge && (
@@ -738,7 +738,7 @@ export const NetworkPage: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60 mt-0.5">{post.authorHeadline}</p>
+                            <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">{post.authorHeadline}</p>
                             <span className="text-[11px] text-black/40 dark:text-white/40">{post.timeAgo}</span>
                           </div>
                         </div>
@@ -751,7 +751,7 @@ export const NetworkPage: React.FC = () => {
                       </div>
 
                       {/* Post Content */}
-                      <p className="text-xs sm:text-sm text-black dark:text-[#E1E0CC] leading-relaxed whitespace-pre-line">
+                      <p className="text-xs sm:text-sm text-black dark:text-white leading-relaxed whitespace-pre-line">
                         {post.content}
                       </p>
 
@@ -766,7 +766,7 @@ export const NetworkPage: React.FC = () => {
                           <div className="flex items-center gap-2.5">
                             <Code2 className="w-5 h-5 text-purple-500" />
                             <div>
-                              <div className="text-xs font-bold text-black dark:text-[#E1E0CC]">
+                              <div className="text-xs font-bold text-black dark:text-white">
                                 {post.githubRepoUrl.replace('https://github.com/', '')}
                               </div>
                               <div className="text-[10px] text-black/40 dark:text-white/40">
@@ -784,7 +784,7 @@ export const NetworkPage: React.FC = () => {
                           {post.skills.map((skill, idx) => (
                             <span
                               key={idx}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 text-black dark:text-[#E1E0CC] text-xs font-semibold"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 text-black dark:text-white text-xs font-semibold"
                             >
                               <TechSkillIcon skill={skill} size={15} />
                               <span>{skill}</span>
@@ -891,7 +891,7 @@ export const NetworkPage: React.FC = () => {
                               <div className="flex items-center justify-between">
                                 <span
                                   onClick={() => handleOpenProfileByName(c.name, 'Candidate Community Member', c.avatar || '')}
-                                  className="font-bold text-xs text-black dark:text-[#E1E0CC] hover:text-purple-600 cursor-pointer"
+                                  className="font-bold text-xs text-black dark:text-white hover:text-purple-600 cursor-pointer"
                                 >
                                   {c.name}
                                 </span>
@@ -914,7 +914,7 @@ export const NetworkPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleAddComment(post.id)}
-                              className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs cursor-pointer"
+                              className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs cursor-pointer"
                             >
                               Reply
                             </button>
@@ -930,12 +930,12 @@ export const NetworkPage: React.FC = () => {
 
           {/* Right Sidebar: AI Profile Strength & Verified Credentials */}
           <div className="space-y-6">
-            <div className="bg-white dark:bg-[#101010] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
-              <h3 className="font-bold text-sm text-black dark:text-[#E1E0CC] flex items-center gap-2">
+            <div className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
+              <h3 className="font-bold text-sm text-black dark:text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-purple-500" />
                 Your Verified Network Score
               </h3>
-              <p className="text-xs text-black/60 dark:text-[#E1E0CC]/70">
+              <p className="text-xs text-black/60 dark:text-white/70">
                 Candidates with AI-validated certifications and active community posts get 3.2x more trial invitations.
               </p>
               <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-center space-y-1">
@@ -944,15 +944,15 @@ export const NetworkPage: React.FC = () => {
               </div>
               <button
                 onClick={() => setCurrentRoute('profile')}
-                className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:opacity-90 transition-all cursor-pointer"
+                className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:opacity-90 transition-all cursor-pointer"
               >
                 Add Certification in Profile
               </button>
             </div>
 
             {/* Trending Community Hashtags & Topics */}
-            <div className="bg-white dark:bg-[#101010] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
-              <h3 className="font-bold text-sm text-black dark:text-[#E1E0CC] flex items-center gap-2">
+            <div className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
+              <h3 className="font-bold text-sm text-black dark:text-white flex items-center gap-2">
                 <Hash className="w-4 h-4 text-purple-500" />
                 Trending on MicroIntern
               </h3>
@@ -969,7 +969,7 @@ export const NetworkPage: React.FC = () => {
                     className="p-3 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 transition-colors cursor-pointer flex items-center justify-between"
                   >
                     <div>
-                      <div className="font-bold text-xs text-black dark:text-[#E1E0CC]">{item.tag}</div>
+                      <div className="font-bold text-xs text-black dark:text-white">{item.tag}</div>
                       <div className="text-[10px] text-black/50 dark:text-white/50">{item.desc}</div>
                     </div>
                     <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400">{item.posts}</span>
@@ -984,8 +984,8 @@ export const NetworkPage: React.FC = () => {
         <div className="space-y-6">
           {/* Pending Requests Section */}
           {peers.filter(p => p.status === 'pending').length > 0 && (
-            <div className="bg-white dark:bg-[#101010] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
-              <h3 className="font-bold text-sm text-black dark:text-[#E1E0CC] flex items-center gap-2">
+            <div className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
+              <h3 className="font-bold text-sm text-black dark:text-white flex items-center gap-2">
                 <UserPlus className="w-4 h-4 text-purple-500" />
                 Pending Connection Requests ({peers.filter(p => p.status === 'pending').length})
               </h3>
@@ -1003,7 +1003,7 @@ export const NetworkPage: React.FC = () => {
                       >
                         <img src={peer.avatar} alt={peer.name} className="w-12 h-12 rounded-full object-cover" />
                         <div>
-                          <div className="font-bold text-sm text-black dark:text-[#E1E0CC] group-hover/peer:text-purple-600">
+                          <div className="font-bold text-sm text-black dark:text-white group-hover/peer:text-purple-600">
                             {peer.name}
                           </div>
                           <div className="text-xs text-black/60 dark:text-white/60">{peer.headline}</div>
@@ -1035,9 +1035,9 @@ export const NetworkPage: React.FC = () => {
           )}
 
           {/* Connected Peers & Suggested Directory */}
-          <div className="bg-white dark:bg-[#101010] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h3 className="font-bold text-sm text-black dark:text-[#E1E0CC]">
+              <h3 className="font-bold text-sm text-black dark:text-white">
                 Your Connections & Recommended Peers (Click Name to View Full Account)
               </h3>
               {peers.length === 0 && (
@@ -1055,14 +1055,14 @@ export const NetworkPage: React.FC = () => {
             {peers.length === 0 ? (
               <div className="p-12 rounded-[24px] bg-black/5 dark:bg-white/5 text-center space-y-3">
                 <Users className="w-10 h-10 text-black/20 dark:text-white/20 mx-auto" />
-                <p className="text-sm font-bold text-black dark:text-[#E1E0CC]">No connections or recommended peers yet</p>
+                <p className="text-sm font-bold text-black dark:text-white">No connections or recommended peers yet</p>
                 <p className="text-xs text-black/50 dark:text-white/50 max-w-sm mx-auto">
                   Click the discover button above to populate verified candidate profiles and inspect their full LinkedIn-style accounts!
                 </p>
                 <button
                   type="button"
                   onClick={handleDiscoverDirectory}
-                  className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:opacity-90 transition-all cursor-pointer inline-flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:opacity-90 transition-all cursor-pointer inline-flex items-center gap-2"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Explore Candidate Directory</span>
@@ -1085,7 +1085,7 @@ export const NetworkPage: React.FC = () => {
                         className="w-12 h-12 rounded-full object-cover border border-black/10 group-hover/card:ring-2 ring-purple-500 transition-all"
                       />
                       <div>
-                        <div className="font-bold text-sm text-black dark:text-[#E1E0CC] group-hover/card:text-purple-600 transition-colors">
+                        <div className="font-bold text-sm text-black dark:text-white group-hover/card:text-purple-600 transition-colors">
                           {peer.name}
                         </div>
                         <p className="text-xs text-black/60 dark:text-white/60 mt-0.5">{peer.headline}</p>
@@ -1107,7 +1107,7 @@ export const NetworkPage: React.FC = () => {
                             className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                               skill.endorsedByMe
                                 ? 'bg-purple-600 text-white shadow-xs'
-                                : 'bg-black/5 dark:bg-white/10 text-black dark:text-[#E1E0CC] hover:bg-black/10'
+                                : 'bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10'
                             }`}
                             title={`Click to endorse ${skill.name}`}
                           >
@@ -1129,7 +1129,7 @@ export const NetworkPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleOpenChat(peer)}
-                            className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:opacity-90 flex items-center gap-1.5 cursor-pointer"
+                            className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:opacity-90 flex items-center gap-1.5 cursor-pointer"
                           >
                             <MessageSquare className="w-3.5 h-3.5" />
                             Message
@@ -1147,7 +1147,7 @@ export const NetworkPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleConnectPeer(peer.id)}
-                          className="w-full py-2 rounded-xl bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-xs hover:opacity-90 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                          className="w-full py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:opacity-90 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                         >
                           <UserPlus className="w-3.5 h-3.5" />
                           Connect
@@ -1202,7 +1202,7 @@ export const NetworkPage: React.FC = () => {
                   />
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-xl sm:text-2xl font-bold text-black dark:text-[#E1E0CC]">
+                      <h2 className="text-xl sm:text-2xl font-bold text-black dark:text-white">
                         {selectedPublicPeer.name}
                       </h2>
                       <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold flex items-center gap-1">
@@ -1265,7 +1265,7 @@ export const NetworkPage: React.FC = () => {
                   <Briefcase className="w-3.5 h-3.5" />
                   About
                 </h4>
-                <p className="text-xs sm:text-sm text-black dark:text-[#E1E0CC] leading-relaxed">
+                <p className="text-xs sm:text-sm text-black dark:text-white leading-relaxed">
                   {selectedPublicPeer.about ||
                     `${selectedPublicPeer.headline}. Verified candidate on MicroIntern demonstrating high-throughput engineering and AI competencies.`}
                 </p>
@@ -1289,7 +1289,7 @@ export const NetworkPage: React.FC = () => {
                       className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 flex items-start justify-between"
                     >
                       <div>
-                        <div className="font-bold text-xs text-black dark:text-[#E1E0CC]">{cert.title}</div>
+                        <div className="font-bold text-xs text-black dark:text-white">{cert.title}</div>
                         <div className="text-[10px] text-black/60 dark:text-white/60 mt-0.5">{cert.issuer}</div>
                       </div>
                       <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 text-[10px] font-bold">
@@ -1320,7 +1320,7 @@ export const NetworkPage: React.FC = () => {
                       className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                         skill.endorsedByMe
                           ? 'bg-purple-600 text-white shadow-md'
-                          : 'bg-black/5 dark:bg-white/10 text-black dark:text-[#E1E0CC] hover:bg-black/10'
+                          : 'bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10'
                       }`}
                       title={`Endorse ${selectedPublicPeer.name} on ${skill.name}`}
                     >
@@ -1392,7 +1392,7 @@ export const NetworkPage: React.FC = () => {
                   className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
-                  <h4 className="font-bold text-sm text-black dark:text-[#E1E0CC] group-hover/chatpeer:text-purple-600">
+                  <h4 className="font-bold text-sm text-black dark:text-white group-hover/chatpeer:text-purple-600">
                     {activeChatPeer.name}
                   </h4>
                   <p className="text-xs text-black/50 dark:text-white/60">{activeChatPeer.headline}</p>
@@ -1417,8 +1417,8 @@ export const NetworkPage: React.FC = () => {
                   <div
                     className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm ${
                       msg.sender === 'me'
-                        ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-medium'
-                        : 'bg-black/5 dark:bg-white/10 text-black dark:text-[#E1E0CC]'
+                        ? 'bg-[#111111] dark:bg-white text-white dark:text-black font-medium'
+                        : 'bg-black/5 dark:bg-white/10 text-black dark:text-white'
                     }`}
                   >
                     {msg.text}
@@ -1438,7 +1438,7 @@ export const NetworkPage: React.FC = () => {
                   if (e.key === 'Enter') handleSendMessage();
                 }}
                 placeholder={`Message ${activeChatPeer.name}...`}
-                className="flex-1 px-4 py-2.5 rounded-full bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
+                className="flex-1 px-4 py-2.5 rounded-full bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
               />
               <button
                 type="button"

@@ -1,6 +1,8 @@
 export * from './SuperAdminDashboard';
-export * from './SuperAdminUsersPage';
-export * from './SuperAdminTrialsPage';
-export * from './SuperAdminTrustAIPage';
-export * from './SuperAdminAuditLogsPage';
-export * from './SuperAdminSettingsPage';
+export * from './SuperAdminOrganizationPage';
+export * from './SuperAdminSubscriptionsPage';
+export { SuperAdminAIAnalyticsPage } from './SuperAdminAIAnalyticsPage';
+export * from './SuperAdminPaymentsPage';
+export { SuperAdminGlobalAnalyticsPage } from './SuperAdminGlobalAnalyticsPage';
+export { SuperAdminEscrowTrialsPage } from './SuperAdminEscrowTrialsPage';
+export * from './SuperAdminSystemPage';

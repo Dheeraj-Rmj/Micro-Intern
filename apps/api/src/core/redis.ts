@@ -19,12 +19,13 @@ const log = createModuleLogger('Redis');
 let redisClient: Redis | null = null;
 
 export function createRedisClient(options?: { maxRetriesPerRequest?: null }): Redis {
+  console.log('createRedisClient options:', options);
   const client = new Redis(config.REDIS_URL, {
     password: config.REDIS_PASSWORD ?? undefined,
     db: config.REDIS_DB,
     lazyConnect: true,
     enableReadyCheck: true,
-    maxRetriesPerRequest: options?.maxRetriesPerRequest ?? 3,
+    maxRetriesPerRequest: options?.maxRetriesPerRequest === null ? null : (options?.maxRetriesPerRequest ?? 3),
     retryStrategy: (times: number) => {
       const delay = Math.min(times * 500, 5000); // Max 5s backoff
       log.warn({ attempt: times, delayMs: delay }, 'Redis reconnecting...');
@@ -62,7 +63,9 @@ export function getRedisClient(): Redis {
  */
 export async function connectRedis(): Promise<void> {
   const client = getRedisClient();
-  await client.connect();
+  if (client.status === 'wait' || client.status === 'close') {
+    await client.connect();
+  }
   log.info('Redis client connected successfully');
 }
 

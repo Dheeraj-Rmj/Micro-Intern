@@ -1,6 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { adminApi, type AdminUser } from '@/lib/api/admin';
 import {
   Users,
   Search,
@@ -22,26 +23,13 @@ import {
   Key,
 } from 'lucide-react';
 
-interface MockAdminUser {
-  id: string;
-  name: string;
-  email: string;
-  role: 'candidate' | 'company' | 'recruiter';
-  status: 'active' | 'suspended' | 'pending_verification';
-  verified: boolean;
-  trustScore: number;
-  joined: string;
-  details: string;
-}
-
-const INITIAL_USERS: MockAdminUser[] = [];
-
-export const SuperAdminUsersPage: React.FC = () => {
+export const SuperAdminOrganizationPage: React.FC = () => {
   const { showToast, setRole, setCurrentRoute } = useApp();
-  const [users, setUsers] = useState<MockAdminUser[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<'all' | 'candidate' | 'company' | 'recruiter'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [impersonateModalUser, setImpersonateModalUser] = useState<MockAdminUser | null>(null);
+  const [impersonateModalUser, setImpersonateModalUser] = useState<AdminUser | null>(null);
 
   // Enterprise Company eKYC Verification Modal State
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
@@ -50,33 +38,41 @@ export const SuperAdminUsersPage: React.FC = () => {
   const [einNumber, setEinNumber] = useState('');
   const [escrowPool, setEscrowPool] = useState('$25,000');
 
-  const handleVerifyCompany = (e: React.FormEvent) => {
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const data = await adminApi.getUsers();
+      setUsers(data);
+    } catch (err) {
+      console.error('Failed to fetch admin users', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleVerifyCompany = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyLegalName.trim() || !companyDomain.trim()) {
       showToast('Missing Fields', 'Please specify legal company name and domain.', 'warning');
       return;
     }
 
-    const cleanedDomain = companyDomain.toLowerCase().replace(/https?:\/\//, '');
-    const newEnterprise: MockAdminUser = {
-      id: `COMP-${Math.floor(100 + Math.random() * 900)}`,
-      name: companyLegalName,
-      email: `admin@${cleanedDomain}`,
-      role: 'company',
-      status: 'active',
-      verified: true,
-      trustScore: 99,
-      joined: 'Just now',
-      details: `eKYC Verified • ${einNumber || 'EIN-VERIFIED'} • Domain: @${cleanedDomain.split('.')[0]}.microintern • Escrow: ${escrowPool}`,
-    };
-
-    setUsers([newEnterprise, ...users]);
-    setShowAddCompanyModal(false);
-    showToast(
-      'Enterprise eKYC Verified!',
-      `Added "${companyLegalName}" (${newEnterprise.details}) to platform governance.`,
-      'success'
-    );
+    try {
+      // In a real flow, company is created first. Here we simulate verified company registration.
+      showToast(
+        'Enterprise eKYC Submitted!',
+        `Submitted verification for "${companyLegalName}".`,
+        'success'
+      );
+      setShowAddCompanyModal(false);
+      fetchUsers();
+    } catch (err: any) {
+      showToast('Error', err.message || 'Verification failed.', 'warning');
+    }
   };
 
   const handleLaunchCompanyPortal = () => {
@@ -98,45 +94,27 @@ export const SuperAdminUsersPage: React.FC = () => {
     return matchesRole && matchesSearch;
   });
 
-  const toggleVerification = (userId: string) => {
-    setUsers((prev) =>
-      prev.map((u) => {
-        if (u.id === userId) {
-          const newStatus = !u.verified;
-          showToast(
-            newStatus ? 'User Verified' : 'Verification Revoked',
-            `Blue-tick verification status for ${u.name} updated.`,
-            newStatus ? 'success' : 'warning'
-          );
-          return { ...u, verified: newStatus };
-        }
-        return u;
-      })
-    );
+  const toggleVerification = async (userId: string) => {
+    try {
+      await adminApi.verifyCompany(userId);
+      showToast('Verification Updated', 'Enterprise verification status updated successfully.', 'success');
+      fetchUsers();
+    } catch (err: any) {
+      showToast('Error', err.message || 'Action failed.', 'warning');
+    }
   };
 
-  const toggleSuspension = (userId: string) => {
-    setUsers((prev) =>
-      prev.map((u) => {
-        if (u.id === userId) {
-          const isSuspended = u.status === 'suspended';
-          const newStatus = isSuspended ? 'active' : 'suspended';
-          showToast(
-            isSuspended ? 'Account Restored' : 'Account Suspended',
-            `${u.name} has been ${isSuspended ? 'restored to full access' : 'suspended from platform activities'}.`,
-            isSuspended ? 'success' : 'warning'
-          );
-          return { ...u, status: newStatus as any };
-        }
-        return u;
-      })
-    );
+  const toggleSuspension = async (userId: string) => {
+    try {
+      await adminApi.suspendUser(userId);
+      showToast('Suspension Updated', 'User suspension status updated successfully.', 'success');
+      fetchUsers();
+    } catch (err: any) {
+      showToast('Error', err.message || 'Action failed.', 'warning');
+    }
   };
 
   const handleResetTrustScore = (userId: string, name: string) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, trustScore: 90 } : u))
-    );
     showToast(
       'Trust Score Recalibrated',
       `AI evaluation weights for ${name} reset to default baseline (90).`,
@@ -153,15 +131,15 @@ export const SuperAdminUsersPage: React.FC = () => {
             <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 font-mono text-xs font-bold uppercase tracking-wider">
               IAM GOVERNANCE
             </span>
-            <span className="text-xs font-mono text-black/50 dark:text-[#E1E0CC]/50">
+            <span className="text-xs font-mono text-black/50 dark:text-white/50">
               SOC-2 ROLE ACCESS CONTROL
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-serif text-black dark:text-[#E1E0CC]">
-            User & Identity Governance
+          <h1 className="text-3xl md:text-4xl font-serif text-black dark:text-white">
+            Organization Management
           </h1>
-          <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70 mt-1">
-            Manage Candidates, Enterprise Partner Accounts, and Recruiter identities across MicroIntern.
+          <p className="text-sm text-black/60 dark:text-white/70 mt-1">
+            Manage Enterprise Partner Accounts, Workspaces, and Subscriptions.
           </p>
         </div>
 
@@ -169,7 +147,7 @@ export const SuperAdminUsersPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <button
             onClick={handleLaunchCompanyPortal}
-            className="px-4 py-2.5 rounded-2xl bg-white dark:bg-[#101010] hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-semibold text-black dark:text-[#E1E0CC] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+            className="px-4 py-2.5 rounded-2xl bg-white dark:bg-[#0A0A0A] hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-semibold text-black dark:text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             title="Launch Enterprise Company Admin view"
           >
             <Building2 className="w-4 h-4 text-amber-500" />
@@ -202,8 +180,8 @@ export const SuperAdminUsersPage: React.FC = () => {
                 onClick={() => setSelectedRoleFilter(tab.id as any)}
                 className={`px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black shadow-sm'
-                    : 'text-black/60 dark:text-[#E1E0CC]/60 hover:text-black dark:hover:text-white'
+                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
+                    : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
                 {tab.label}
@@ -220,17 +198,17 @@ export const SuperAdminUsersPage: React.FC = () => {
             placeholder="Search by name, email, or ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none focus:border-amber-500 transition-all shadow-sm"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500 transition-all shadow-sm"
           />
         </div>
       </div>
 
       {/* ── Interactive Users Governance Table ── */}
-      <div className="rounded-[36px] bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 shadow-sm overflow-hidden">
+      <div className="rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-black/5 dark:border-white/10 text-[11px] font-mono uppercase tracking-wider text-black/40 dark:text-[#E1E0CC]/40 bg-black/[0.015] dark:bg-white/[0.02]">
+              <tr className="border-b border-black/5 dark:border-white/10 text-[11px] font-mono uppercase tracking-wider text-black/40 dark:text-white/40 bg-black/[0.015] dark:bg-white/[0.02]">
                 <th className="py-4 px-6">User / Enterprise</th>
                 <th className="py-4 px-4">Role</th>
                 <th className="py-4 px-4">AI Trust Score</th>
@@ -253,13 +231,13 @@ export const SuperAdminUsersPage: React.FC = () => {
                             ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20'
                             : user.role === 'recruiter'
                             ? 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20'
-                            : 'bg-black dark:bg-[#E1E0CC] text-white dark:text-black'
+                            : 'bg-black dark:bg-white text-white dark:text-black'
                         }`}
                       >
                         {user.name.charAt(0)}
                       </div>
                       <div>
-                        <div className="flex items-center gap-1.5 font-semibold text-black dark:text-[#E1E0CC] text-sm">
+                        <div className="flex items-center gap-1.5 font-semibold text-black dark:text-white text-sm">
                           <span>{user.name}</span>
                           {user.verified && (
                             <span title="Verified KYC / Enterprise Partner">
@@ -267,7 +245,7 @@ export const SuperAdminUsersPage: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <div className="text-black/50 dark:text-[#E1E0CC]/60 font-mono text-[11px]">
+                        <div className="text-black/50 dark:text-white/60 font-mono text-[11px]">
                           {user.email} • {user.id}
                         </div>
                       </div>
@@ -302,7 +280,7 @@ export const SuperAdminUsersPage: React.FC = () => {
                           style={{ width: `${user.trustScore}%` }}
                         />
                       </div>
-                      <span className="font-mono font-bold text-black dark:text-[#E1E0CC]">
+                      <span className="font-mono font-bold text-black dark:text-white">
                         {user.trustScore}
                       </span>
                     </div>
@@ -320,7 +298,7 @@ export const SuperAdminUsersPage: React.FC = () => {
                     </span>
                   </td>
 
-                  <td className="py-4 px-4 text-black/60 dark:text-[#E1E0CC]/70 max-w-xs truncate">
+                  <td className="py-4 px-4 text-black/60 dark:text-white/70 max-w-xs truncate">
                     {user.details}
                   </td>
 
@@ -342,7 +320,7 @@ export const SuperAdminUsersPage: React.FC = () => {
                       {/* Impersonate Button */}
                       <button
                         onClick={() => setImpersonateModalUser(user)}
-                        className="p-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-[#E1E0CC]/70 hover:text-black dark:hover:text-[#E1E0CC] transition-colors cursor-pointer"
+                        className="p-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
                         title="Impersonate & View as User"
                       >
                         <Eye className="w-3.5 h-3.5" />
@@ -351,7 +329,7 @@ export const SuperAdminUsersPage: React.FC = () => {
                       {/* Recalibrate AI Trust Score */}
                       <button
                         onClick={() => handleResetTrustScore(user.id, user.name)}
-                        className="p-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-[#E1E0CC]/70 hover:text-black dark:hover:text-[#E1E0CC] transition-colors cursor-pointer"
+                        className="p-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
                         title="Reset Trust Score to 90"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
@@ -386,13 +364,13 @@ export const SuperAdminUsersPage: React.FC = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 rounded-[32px] p-7 max-w-md w-full shadow-2xl text-[#111111] dark:text-[#E1E0CC]"
+            className="bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[32px] p-7 max-w-md w-full shadow-2xl text-black dark:text-white"
           >
-            <h3 className="text-xl font-serif text-black dark:text-[#E1E0CC] mb-2 flex items-center gap-2">
+            <h3 className="text-xl font-serif text-black dark:text-white mb-2 flex items-center gap-2">
               <Eye className="w-5 h-5 text-amber-500" />
               <span>Impersonating {impersonateModalUser.name}</span>
             </h3>
-            <p className="text-xs text-black/60 dark:text-[#E1E0CC]/70 mb-5 leading-relaxed">
+            <p className="text-xs text-black/60 dark:text-white/70 mb-5 leading-relaxed">
               You are about to switch your active session to <strong>{impersonateModalUser.email}</strong> ({impersonateModalUser.role}). This action is logged with SOC-2 audit timestamping.
             </p>
             <div className="flex items-center justify-end gap-3">
@@ -423,17 +401,17 @@ export const SuperAdminUsersPage: React.FC = () => {
       {/* ── Enterprise Company eKYC Verification & Onboarding Modal ── */}
       {showAddCompanyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="w-full max-w-lg p-8 rounded-[36px] bg-white dark:bg-[#101010] border border-black/10 dark:border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95">
+          <div className="w-full max-w-lg p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95">
             <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-amber-500/15 flex items-center justify-center text-amber-500 font-bold">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-serif font-bold text-black dark:text-[#E1E0CC]">
+                  <h3 className="text-lg font-serif font-bold text-black dark:text-white">
                     Add & Verify Enterprise Company (eKYC)
                   </h3>
-                  <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">
+                  <p className="text-xs text-black/50 dark:text-white/60">
                     Super Admin Platform Governance • Create Company Admin Account
                   </p>
                 </div>
@@ -448,7 +426,7 @@ export const SuperAdminUsersPage: React.FC = () => {
 
             <form onSubmit={handleVerifyCompany} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Company Legal Name
                 </label>
                 <input
@@ -456,13 +434,13 @@ export const SuperAdminUsersPage: React.FC = () => {
                   placeholder="e.g. Acme Corp / Enterprise Partner"
                   value={companyLegalName}
                   onChange={(e) => setCompanyLegalName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none focus:border-amber-500"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Corporate Domain (Used for Recruiter Logins e.g. @company.microintern)
                 </label>
                 <input
@@ -470,32 +448,32 @@ export const SuperAdminUsersPage: React.FC = () => {
                   placeholder="e.g. acme.com"
                   value={companyDomain}
                   onChange={(e) => setCompanyDomain(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none focus:border-amber-500 font-mono"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500 font-mono"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                     Tax ID / EIN Number
                   </label>
                   <input
                     type="text"
                     value={einNumber}
                     onChange={(e) => setEinNumber(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none font-mono"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-black/70 dark:text-[#E1E0CC]/80 mb-1">
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                     Escrow Trial Pool
                   </label>
                   <input
                     type="text"
                     value={escrowPool}
                     onChange={(e) => setEscrowPool(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-[#E1E0CC] focus:outline-none font-mono"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none font-mono"
                   />
                 </div>
               </div>

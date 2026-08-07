@@ -2,3 +2,7 @@ export * from './CompanyDashboard';
 export * from './CompanyApplicationsPage';
 export * from './CompanyRecruitersPage';
 export * from './CompanyTrialsPage';
+export * from './CompanyDepartmentsPage';
+export * from './CompanyHiringAnalyticsPage';
+export * from './CompanyBillingPage';
+export * from './CompanyAIInsightsPage';

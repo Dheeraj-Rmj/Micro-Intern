@@ -47,23 +47,23 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="pb-12 text-[#111111] dark:text-[#E1E0CC] max-w-[1200px] mx-auto w-full font-sans">
+    <div className="pb-12 text-black dark:text-white max-w-[1200px] mx-auto w-full font-sans">
       <Breadcrumbs currentTitle="Settings" />
 
       <div className="max-w-4xl mx-auto">
         <div className="mb-10 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-black dark:text-[#E1E0CC]">
+            <h1 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-black dark:text-white">
               Settings
             </h1>
-            <p className="text-sm text-black/50 dark:text-[#E1E0CC]/60 mt-2 font-medium">
+            <p className="text-sm text-black/50 dark:text-white/60 mt-2 font-medium">
               Manage account security, notification preferences, and interface appearance.
             </p>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mb-8 p-1.5 bg-black/5 dark:bg-[#101010] rounded-full overflow-x-auto border border-black/5 dark:border-white/10 shadow-sm">
+        <div className="flex items-center gap-2 mb-8 p-1.5 bg-black/5 dark:bg-[#0A0A0A] rounded-full overflow-x-auto border border-black/5 dark:border-white/10 shadow-sm">
           {[
             { id: 'profile', label: 'Profile Shortcut', icon: User },
             { id: 'security', label: 'Security & 2FA', icon: Lock },
@@ -78,8 +78,8 @@ export const SettingsPage: React.FC = () => {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? 'bg-[#111111] text-white dark:bg-[#E1E0CC] dark:text-black shadow-sm'
-                    : 'bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 text-black/60 dark:text-[#E1E0CC]/60 hover:text-black dark:hover:text-[#E1E0CC]'
+                    ? 'bg-[#111111] text-white dark:bg-white dark:text-black shadow-sm'
+                    : 'bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -90,19 +90,19 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {/* Card Body */}
-        <div className="bg-white dark:bg-[#101010] border border-black/5 dark:border-white/10 rounded-[40px] p-8 sm:p-12 shadow-sm">
+        <div className="bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 rounded-[40px] p-8 sm:p-12 shadow-sm">
           {activeTab === 'profile' && (
             <div className="space-y-6 text-center sm:text-left">
-              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-white">
                 Profile Management
               </h3>
-              <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70">
+              <p className="text-sm text-black/60 dark:text-white/70">
                 To edit your name, photo, portfolio links, or resume file, use our dedicated Profile Editor.
               </p>
               <div className="pt-4">
                 <button
                   onClick={() => setCurrentRoute('profile')}
-                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
                 >
                   Open Profile Editor
                 </button>
@@ -112,13 +112,13 @@ export const SettingsPage: React.FC = () => {
 
           {activeTab === 'security' && (
             <form onSubmit={handleSaveSecurity} className="space-y-6">
-              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-white">
                 Password & Security
               </h3>
 
               <div className="space-y-4 max-w-md">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-[#E1E0CC]/60 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-white/60 mb-2">
                     Current Password
                   </label>
                   <input
@@ -126,11 +126,11 @@ export const SettingsPage: React.FC = () => {
                     value={securityForm.currentPassword}
                     onChange={(e) => setSecurityForm({ ...securityForm, currentPassword: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-[#E1E0CC]"
+                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-[#E1E0CC]/60 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-white/60 mb-2">
                     New Password
                   </label>
                   <input
@@ -138,11 +138,11 @@ export const SettingsPage: React.FC = () => {
                     value={securityForm.newPassword}
                     onChange={(e) => setSecurityForm({ ...securityForm, newPassword: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-[#E1E0CC]"
+                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-[#E1E0CC]/60 mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-black/50 dark:text-white/60 mb-2">
                     Confirm New Password
                   </label>
                   <input
@@ -150,15 +150,15 @@ export const SettingsPage: React.FC = () => {
                     value={securityForm.confirmPassword}
                     onChange={(e) => setSecurityForm({ ...securityForm, confirmPassword: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-[#E1E0CC]"
+                    className="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent focus:outline-none focus:border-black/10 dark:focus:border-white/10 text-sm text-black dark:text-white"
                   />
                 </div>
               </div>
 
               <div className="pt-4 border-t border-black/5 dark:border-white/10 flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-sm text-black dark:text-[#E1E0CC]">Two-Factor Authentication</h4>
-                  <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">Require 2FA code upon sign in</p>
+                  <h4 className="font-bold text-sm text-black dark:text-white">Two-Factor Authentication</h4>
+                  <p className="text-xs text-black/50 dark:text-white/60">Require 2FA code upon sign in</p>
                 </div>
                 <input
                   type="checkbox"
@@ -171,7 +171,7 @@ export const SettingsPage: React.FC = () => {
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
                 >
                   Save Security Settings
                 </button>
@@ -181,7 +181,7 @@ export const SettingsPage: React.FC = () => {
 
           {activeTab === 'notifications' && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-white">
                 Notification Preferences
               </h3>
 
@@ -213,8 +213,8 @@ export const SettingsPage: React.FC = () => {
                     className="flex items-center justify-between p-4 rounded-2xl bg-black/5 dark:bg-white/5"
                   >
                     <div>
-                      <h4 className="font-bold text-sm text-black dark:text-[#E1E0CC]">{item.title}</h4>
-                      <p className="text-xs text-black/50 dark:text-[#E1E0CC]/60">{item.desc}</p>
+                      <h4 className="font-bold text-sm text-black dark:text-white">{item.title}</h4>
+                      <p className="text-xs text-black/50 dark:text-white/60">{item.desc}</p>
                     </div>
                     <input
                       type="checkbox"
@@ -231,7 +231,7 @@ export const SettingsPage: React.FC = () => {
               <div className="pt-4">
                 <button
                   onClick={handleSaveNotifs}
-                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-[#E1E0CC] text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                  className="px-8 py-3.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm hover:scale-105 transition-transform cursor-pointer shadow-sm"
                 >
                   Save Notification Preferences
                 </button>
@@ -241,10 +241,10 @@ export const SettingsPage: React.FC = () => {
 
           {activeTab === 'theme' && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-[#E1E0CC]">
+              <h3 className="text-2xl font-serif tracking-tight text-black dark:text-white">
                 Appearance & Theme
               </h3>
-              <p className="text-sm text-black/60 dark:text-[#E1E0CC]/70">
+              <p className="text-sm text-black/60 dark:text-white/70">
                 Choose between warm Bone-Cream Light Mode or deep sleek Dark Mode.
               </p>
 
@@ -258,19 +258,19 @@ export const SettingsPage: React.FC = () => {
                   }`}
                 >
                   <Sun className={`w-8 h-8 ${!darkMode ? 'text-black' : 'text-black/40'}`} />
-                  <span className="text-sm text-black dark:text-[#E1E0CC]">Light Mode</span>
+                  <span className="text-sm text-black dark:text-white">Light Mode</span>
                 </button>
 
                 <button
                   onClick={() => setDarkMode(true)}
                   className={`p-6 rounded-3xl border-2 flex flex-col items-center gap-3 transition-all cursor-pointer ${
                     darkMode
-                      ? 'border-[#E1E0CC] bg-white/5 text-[#E1E0CC] font-bold shadow-sm'
+                      ? 'border-white/20 bg-white/5 text-white font-bold shadow-sm'
                       : 'border-black/10 dark:border-white/10 hover:border-white/20'
                   }`}
                 >
-                  <Moon className={`w-8 h-8 ${darkMode ? 'text-[#E1E0CC]' : 'text-black/50 dark:text-[#E1E0CC]/50'}`} />
-                  <span className="text-sm text-black dark:text-[#E1E0CC]">Dark Mode</span>
+                  <Moon className={`w-8 h-8 ${darkMode ? 'text-white' : 'text-black/50 dark:text-white/50'}`} />
+                  <span className="text-sm text-black dark:text-white">Dark Mode</span>
                 </button>
               </div>
             </div>

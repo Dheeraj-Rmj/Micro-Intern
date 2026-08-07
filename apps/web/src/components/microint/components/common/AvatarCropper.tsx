@@ -142,10 +142,10 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#101010] border border-white/10 rounded-[32px] p-6 max-w-md w-full shadow-2xl flex flex-col gap-6 text-[#E1E0CC]">
+      <div className="bg-[#0A0A0A] border border-white/10 rounded-[32px] p-6 max-w-md w-full shadow-2xl flex flex-col gap-6 text-white">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold text-[#E1E0CC]">Adjust Avatar</h2>
-          <button onClick={onClose} className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-[#E1E0CC] transition-colors">
+          <h2 className="text-xl font-bold text-white">Adjust Avatar</h2>
+          <button onClick={onClose} className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -162,7 +162,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
           <canvas ref={canvasRef} width={300} height={300} className="cursor-move" />
         </div>
 
-        <div className="flex items-center gap-4 text-[#E1E0CC]/60">
+        <div className="flex items-center gap-4 text-white/60">
           <ZoomOut className="w-5 h-5 shrink-0" />
           <input 
             type="range" 
@@ -178,7 +178,7 @@ export const AvatarCropper: React.FC<AvatarCropperProps> = ({
 
         <button 
           onClick={handleSave}
-          className="w-full py-3.5 rounded-full bg-[#E1E0CC] text-black font-bold text-sm hover:scale-105 transition-transform flex items-center justify-center gap-2"
+          className="w-full py-3.5 rounded-full bg-white text-black font-bold text-sm hover:scale-105 transition-transform flex items-center justify-center gap-2"
         >
           <Check className="w-4 h-4" /> Save Avatar
         </button>

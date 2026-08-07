@@ -22,6 +22,11 @@ export type PageRoute =
   | 'settings'
   // Company Portal Routes
   | 'company-dashboard'
+  | 'company-recruiters'
+  | 'company-departments'
+  | 'company-hiring-analytics'
+  | 'company-billing'
+  | 'company-ai-insights'
   | 'company-profile'
   | 'company-create-trial'
   | 'company-manage-trials'
@@ -32,7 +37,6 @@ export type PageRoute =
   | 'company-reports'
   | 'company-notifications'
   | 'company-settings'
-  | 'company-recruiters'
   // Recruiter Portal Routes
   | 'recruiter-dashboard'
   | 'recruiter-pipeline'
@@ -43,11 +47,15 @@ export type PageRoute =
   | 'recruiter-settings'
   // Super Admin Portal Routes
   | 'admin-dashboard'
-  | 'admin-users'
+  | 'admin-organization'
+  | 'admin-subscriptions'
+  | 'admin-ai-analytics'
+  | 'admin-payments'
+  | 'admin-global-analytics'
+  | 'admin-system'
   | 'admin-trials'
-  | 'admin-trust-ai'
-  | 'admin-audit-logs'
-  | 'admin-settings';
+  | 'admin-users'
+  | 'admin-trust-ai';
 
 export type UserRole = 'candidate' | 'recruiter' | 'company' | 'admin';
 
