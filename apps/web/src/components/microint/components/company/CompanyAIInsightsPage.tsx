@@ -174,7 +174,7 @@ export const CompanyAIInsightsPage: React.FC = () => {
             </li>
             <li className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              Deploy 'React Advanced Architecture' Skill Trial to active candidates.
+              Deploy &apos;React Advanced Architecture&apos; Skill Trial to active candidates.
             </li>
             <li className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
