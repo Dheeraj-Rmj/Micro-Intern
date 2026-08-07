@@ -36,7 +36,7 @@ export const Logo: React.FC<LogoProps> = ({
       className={`inline-flex items-center gap-2 cursor-pointer transition-transform hover:scale-[1.02] shrink-0 ${className}`}
     >
       <Image
-        src={darkMode ? "/MI_dark.png" : "/MI.png"}
+        src={darkMode ? "/MI.png" : "/MI_dark.png"}
         alt="MicroIntern Logo"
         width={sizeMap[size]}
         height={sizeMap[size]}

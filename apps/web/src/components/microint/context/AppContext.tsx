@@ -96,7 +96,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [currentRoute, setCurrentRoute] = useState<PageRoute>(() => {
     if (typeof window !== 'undefined') {
-      const savedRoute = localStorage.getItem('microintern_current_route') as PageRoute | null;
+      const savedRoute = sessionStorage.getItem('microintern_current_route') as PageRoute | null;
       if (savedRoute && savedRoute !== 'loading') {
         return savedRoute;
       }
@@ -144,7 +144,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Persist current route across browser refresh
   useEffect(() => {
     if (typeof window !== 'undefined' && currentRoute !== 'loading') {
-      localStorage.setItem('microintern_current_route', currentRoute);
+      sessionStorage.setItem('microintern_current_route', currentRoute);
     }
   }, [currentRoute]);
 
