@@ -55,7 +55,7 @@ interface AppContextType {
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
   toastMessage: ToastInfo | null;
-  showToast: (title: string, desc?: string, type?: 'success' | 'info' | 'warning') => void;
+  showToast: (title: string, desc?: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
   activeWorkspaceTrial: Trial | null;
   setActiveWorkspaceTrial: (trial: Trial | null) => void;
   searchQuery: string;
@@ -143,6 +143,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             matchScore: 90, // mock score
             description: a.description,
             tasks: a.tasks?.map((t: any) => ({ title: t.title, description: t.description })) || [],
+            logo: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
+            stipend: '$0',
+            duration: '48 Hours',
+            deadline: 'Rolling',
+            deliverables: ['Code'],
           }));
           // Merge with mock trials to not break UI if there are no assessments
           setTrials((prev) => {
@@ -198,7 +203,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [userProfile]);
 
-  const showToast = (title: string, desc?: string, type: 'success' | 'info' | 'warning' = 'success') => {
+  const showToast = (title: string, desc?: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     const id = Math.random().toString(36).substring(2, 9);
     setToastMessage({ id, title, desc, type });
     setTimeout(() => {
