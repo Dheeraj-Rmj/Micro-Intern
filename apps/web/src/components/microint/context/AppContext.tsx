@@ -32,7 +32,7 @@ interface ToastInfo {
   id: string;
   title: string;
   desc?: string;
-  type?: 'success' | 'info' | 'warning';
+  type?: 'success' | 'info' | 'warning' | 'error';
 }
 
 interface AppContextType {
@@ -132,7 +132,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             title: a.title,
             company: a.company?.name || 'Company',
             roleTitle: a.roleTitle || 'Role',
-            difficulty: a.complexityScore && a.complexityScore > 7 ? 'Advanced' : (a.complexityScore && a.complexityScore < 4 ? 'Beginner' : 'Intermediate'),
+            difficulty: (a.complexityScore && a.complexityScore > 7 ? 'Advanced' : (a.complexityScore && a.complexityScore < 4 ? 'Beginner' : 'Intermediate')) as 'Beginner' | 'Intermediate' | 'Advanced',
             category: a.category || 'All',
             skillsRequired: a.skillsRequired || [],
             timeCommitment: `${a.durationMinutes || 120} mins`,
