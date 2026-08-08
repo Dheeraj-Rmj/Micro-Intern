@@ -138,7 +138,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             timeCommitment: `${a.durationMinutes || 120} mins`,
             reward: '$0', // default mock
             applicantsCount: 0,
-            status: a.status === 'PUBLISHED' ? 'open' : 'closed',
+            status: (a.status === 'PUBLISHED' ? 'open' : 'closed') as 'open' | 'closed',
             bookmarked: false,
             matchScore: 90, // mock score
             description: a.description,

@@ -12,6 +12,7 @@ export const Toast: React.FC = () => {
     success: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,
     warning: <AlertCircle className="w-5 h-5 text-amber-500" />,
     info: <Info className="w-5 h-5 text-blue-500" />,
+    error: <AlertCircle className="w-5 h-5 text-rose-500" />,
   };
 
   return (
