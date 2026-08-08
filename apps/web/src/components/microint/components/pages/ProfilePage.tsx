@@ -892,7 +892,7 @@ export const ProfilePage: React.FC = () => {
                         style={{ width: `${resumeProgress}%` }}
                       />
                     </div>
-                    <span className="text-[11px] font-mono text-black/50 dark:text-black dark:text-white/50">{resumeProgress}%</span>
+                    <span className="text-[11px] font-mono text-black/50 dark:text-white/50">{resumeProgress}%</span>
                   </div>
                 ) : !resumeName ? (
                   /* Initially show ONLY ONE Upload Resume button */
@@ -964,7 +964,7 @@ export const ProfilePage: React.FC = () => {
             <div className="space-y-6">
               {/* FIELD 0: FULL NAME */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-black dark:text-white/50 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/50 mb-1.5">
                   Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -987,7 +987,7 @@ export const ProfilePage: React.FC = () => {
 
               {/* FIELD 1: HEADLINE */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-black dark:text-white/50 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/50 mb-1.5">
                   Professional Headline <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -1010,7 +1010,7 @@ export const ProfilePage: React.FC = () => {
 
               {/* FIELD 2: BIO */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-black dark:text-white/50 mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/50 mb-1.5">
                   Bio / About Me <span className="text-rose-500">*</span>
                 </label>
                 <textarea
@@ -1034,7 +1034,7 @@ export const ProfilePage: React.FC = () => {
               {/* FIELD 3: SKILLS (Tag input, max 20 skills) */}
               <div className="pt-2 border-t border-black/5 dark:border-white/5 dark:border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-black dark:text-white/50">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/50">
                     Technical Skills (Max 20) <span className="text-rose-500">*</span>
                   </label>
                   <span className="text-xs font-bold text-black dark:text-white dark:text-blue-400">
@@ -1200,7 +1200,7 @@ export const ProfilePage: React.FC = () => {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] font-semibold text-black/50 mb-1">
+                        <label className="block text-[11px] font-semibold text-black/50 dark:text-white/50 mb-1">
                           Certification Title *
                         </label>
                         <input
@@ -1212,7 +1212,7 @@ export const ProfilePage: React.FC = () => {
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-semibold text-black/50 mb-1">
+                        <label className="block text-[11px] font-semibold text-black/50 dark:text-white/50 mb-1">
                           Issuer / Organization *
                         </label>
                         <input
@@ -1225,7 +1225,7 @@ export const ProfilePage: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[11px] font-semibold text-black/50 mb-1">
+                      <label className="block text-[11px] font-semibold text-black/50 dark:text-white/50 mb-1">
                         Credential / Verification URL (Optional)
                       </label>
                       <input
@@ -1372,7 +1372,7 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             {isButtonDisabled && (
-              <p className="text-xs font-medium text-black/50 dark:text-black dark:text-white/50">
+              <p className="text-xs font-medium text-black/50 dark:text-white/50">
                 Please fill all required fields to enable saving.
               </p>
             )}

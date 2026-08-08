@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { companyApi } from '../../../../lib/api/company';
 import {
   Users,
   CheckCircle2,
@@ -33,6 +34,39 @@ export const CompanyApplicationsPage: React.FC = () => {
   const [apps, setApps] = useState<ApplicationRow[]>(INITIAL_APPS);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchSubmissions = async () => {
+      try {
+        const res = await companyApi.getSubmissions();
+        if (res.data?.submissions) {
+          setApps(res.data.submissions);
+        } else {
+          // Fallback to mock data if empty
+          setApps([
+            {
+              id: 'app-1',
+              candidateName: 'Alice Johnson',
+              email: 'alice@example.com',
+              trialTitle: 'Frontend Developer Trial',
+              trustScore: 98,
+              submittedAt: new Date().toISOString(),
+              githubUrl: 'https://github.com/alice',
+              status: 'PENDING',
+              aiRecommendation: 'STRONG_HIRE',
+            },
+          ]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch submissions:', err);
+        showToast('Error', 'Failed to load applications', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSubmissions();
+  }, []);
 
   const filteredApps = apps.filter((a) => {
     const matchesStatus = statusFilter === 'ALL' || a.status === statusFilter;

@@ -39,7 +39,7 @@ export const WordsPullUpMultiStyle: React.FC<WordsPullUpMultiStyleProps> = ({ se
       {flattenedWords.map((item, i) => (
         <motion.div
           key={i}
-          className="overflow-hidden mr-[0.2em]"
+          className="overflow-hidden mr-[0.2em] pb-[0.25em] -mb-[0.25em]"
           initial={{ y: '100%', opacity: 0 }}
           animate={isInView ? { y: 0, opacity: 1 } : { y: '100%', opacity: 0 }}
           transition={{

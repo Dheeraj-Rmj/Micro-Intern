@@ -23,6 +23,7 @@ import {
   GetHiringAnalyticsUseCase,
   GetBillingUseCase,
   GetAIInsightsUseCase,
+  ListCompanySubmissionsUseCase,
 } from '../application/index.js';
 import { PrismaCompanyRepository, registerCompanyEventListeners } from '../infrastructure/index.js';
 
@@ -56,6 +57,7 @@ export function createCompanyRouter(): Router {
     container.register('GetHiringAnalyticsUseCase', () => new GetHiringAnalyticsUseCase(container.get('ICompanyRepository')));
     container.register('GetBillingUseCase', () => new GetBillingUseCase(container.get('ICompanyRepository')));
     container.register('GetAIInsightsUseCase', () => new GetAIInsightsUseCase(container.get('ICompanyRepository')));
+    container.register('ListCompanySubmissionsUseCase', (_infra: InfrastructureDependencies) => new ListCompanySubmissionsUseCase(_infra.db));
     
     container.register('CompanyController', () => new CompanyController(
       container.get('CreateCompanyUseCase'),
@@ -68,7 +70,8 @@ export function createCompanyRouter(): Router {
       container.get('GetDepartmentsUseCase'),
       container.get('GetHiringAnalyticsUseCase'),
       container.get('GetBillingUseCase'),
-      container.get('GetAIInsightsUseCase')
+      container.get('GetAIInsightsUseCase'),
+      container.get('ListCompanySubmissionsUseCase')
     ));
 
     registerCompanyEventListeners();
@@ -135,6 +138,14 @@ export function createCompanyRouter(): Router {
         })
         .catch(next);
     },
+  );
+
+  // GET /api/v1/companies/me/assessments/submissions - List submissions for company
+  router.get(
+    '/me/assessments/submissions',
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
+    (req, res, next) => { controller.listSubmissions(req, res, next).catch(next); },
   );
 
   // GET /api/v1/companies/me/members - List team members (Team Management)

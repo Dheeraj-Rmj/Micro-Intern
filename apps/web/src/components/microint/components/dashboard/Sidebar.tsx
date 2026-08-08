@@ -103,7 +103,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
       <div>
         {/* Brand Header */}
         <div className="flex items-center justify-center pb-6 border-b border-black/5 dark:border-white/10 mb-6">
-          <Logo size="sm" onClick={() => handleNavigate('landing')} />
+          <Logo size="lg" onClick={() => handleNavigate('landing')} />
           {setMobileOpen && (
             <button
               onClick={() => setMobileOpen(false)}

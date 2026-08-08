@@ -192,4 +192,23 @@ export const assessmentApi = {
     }>(`/assessments/${id}/ai`, { action, input });
     return data.data;
   },
+
+  startAssessment: async (id: string): Promise<any> => {
+    const { data } = await apiClient.post(`/assessments/${id}/start`);
+    return data.data;
+  },
+
+  submitAssessment: async (id: string, payload: any): Promise<any> => {
+    // If it's a FormData object
+    if (payload instanceof FormData) {
+      const { data } = await apiClient.post(`/assessments/${id}/submit`, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return data.data;
+    }
+    
+    // Default JSON payload
+    const { data } = await apiClient.post(`/assessments/${id}/submit`, payload);
+    return data.data;
+  }
 };

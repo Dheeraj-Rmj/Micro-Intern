@@ -8,13 +8,12 @@ interface SignInPageProps {
 }
 
 export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candidate' }) => {
-  const { setCurrentRoute, showToast, setUserProfile, setRole } = useApp();
+  const { setCurrentRoute, showToast, setUserProfile, setRole, darkMode, setDarkMode } = useApp();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDark, setIsDark] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
@@ -102,40 +101,26 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
     }
   };
 
-  const handleModalSignIn = async (e: React.FormEvent, type: 'recruiter' | 'company' | 'superadmin') => {
+  const handleModalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!modalEmail || !modalPassword) {
-      showToast('Missing Credentials', 'Please enter work email and password.', 'warning');
-      return;
-    }
-    if (type === 'superadmin' && !modalMfa) {
-      showToast('MFA Token Required', 'Super Admin access requires a valid 6-digit MFA token or hardware security key.', 'warning');
-      return;
-    }
     setModalLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setModalLoading(false);
-
-    setUserProfile((prev: any) => ({
-      ...prev,
-      email: modalEmail.includes('@') ? modalEmail : prev.email,
-      username: !modalEmail.includes('@') ? modalEmail : prev.username,
-    }));
-
-    if (type === 'recruiter') {
-      setRole('company');
-      showToast('Private Recruiter Session', 'Authenticated to Recruiter Workspace via private shortcut.', 'success');
-      setCurrentRoute('company-applications');
-    } else if (type === 'company') {
-      setRole('company');
-      showToast('Private Company Admin Session', 'Authenticated to Organization Workspace via private shortcut.', 'success');
-      setCurrentRoute('company-dashboard');
-    } else if (type === 'superadmin') {
-      setRole('admin');
-      showToast('System-Ops Super Admin Session', 'Authenticated to ops.microintern.com with MFA verification.', 'success');
-      setCurrentRoute('admin-dashboard');
-    }
-    setActiveModal('none');
+    setTimeout(() => {
+      setModalLoading(false);
+      setActiveModal('none');
+      if (activeModal === 'superadmin') {
+        setRole('admin');
+        showToast('Super Admin Identified', 'MFA verified. Navigating to system operations.', 'success');
+        setCurrentRoute('admin-dashboard');
+      } else if (activeModal === 'company') {
+        setRole('company');
+        showToast('Enterprise Tenant Auth', 'Navigating to Company Portal.', 'success');
+        setCurrentRoute('company-dashboard');
+      } else if (activeModal === 'recruiter') {
+        setRole('company');
+        showToast('Recruiter Hub Active', 'Navigating to Recruiter Dashboard.', 'success');
+        setCurrentRoute('company-dashboard');
+      }
+    }, 1000);
   };
 
   const handleSocialAuth = (provider: string) => {
@@ -153,14 +138,14 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
   return (
     <div
       className={`min-h-screen relative overflow-hidden flex items-center justify-center p-4 font-sans select-none transition-colors duration-300 ${
-        isDark ? 'bg-[#0E0E0E] text-white' : 'bg-[#FAFAFA] text-black'
+        darkMode ? 'bg-[#0E0E0E] text-white' : 'bg-[#FAFAFA] text-black'
       }`}
     >
       {/* ── Sparse Ambient Dot Matrix Background (Nothing Style) ────────── */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-300"
         style={{
-          backgroundImage: isDark
+          backgroundImage: darkMode
             ? 'radial-gradient(circle, rgba(255,255,255,0.35) 1.5px, transparent 1.5px)'
             : 'radial-gradient(circle, rgba(0,0,0,0.25) 1.5px, transparent 1.5px)',
           backgroundSize: '100px 100px',
@@ -173,7 +158,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
         type="button"
         onClick={() => setCurrentRoute('landing')}
         className={`absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
-          isDark
+          darkMode
             ? 'bg-white/10 hover:bg-white/15 text-white border border-white/15 shadow-sm'
             : 'bg-black/5 hover:bg-black/10 text-black border border-black/10 shadow-sm'
         }`}
@@ -186,22 +171,22 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
       <div className="absolute top-6 right-6 z-20 flex items-center gap-2">
         <button
           type="button"
-          onClick={() => setIsDark(!isDark)}
+          onClick={() => setDarkMode(!darkMode)}
           className={`p-3 rounded-full transition-all cursor-pointer border ${
-            isDark
+            darkMode
               ? 'bg-white/10 hover:bg-white/15 text-white border-white/15 shadow-sm'
               : 'bg-black/5 hover:bg-black/10 text-black border-black/10 shadow-sm'
           }`}
-          title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
       </div>
 
       {/* ── Main Authentication Card ────────────────────────────────── */}
       <div
         className={`relative z-10 w-full max-w-[420px] rounded-[36px] p-8 sm:p-10 transition-all duration-300 shadow-2xl ${
-          isDark
+          darkMode
             ? 'bg-[#181818] border border-white/10 text-white'
             : 'bg-[#EDEDE7] border border-black/[0.08] text-black'
         }`}
@@ -258,7 +243,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                   : 'Platform Owner Email Address'
               }
               className={`w-full px-4 py-3.5 rounded-2xl text-sm transition-all focus:outline-none border ${
-                isDark
+                darkMode
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
                   : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
@@ -281,7 +266,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               autoCapitalize="off"
               spellCheck="false"
               className={`w-full px-4 py-3.5 pr-14 rounded-2xl text-sm transition-all focus:outline-none border ${
-                isDark
+                darkMode
                   ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
                   : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
               }`}
@@ -290,7 +275,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all cursor-pointer ${
-                isDark
+                darkMode
                   ? 'text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-sm'
                   : 'text-black bg-black/10 hover:bg-black/15 border border-black/10 shadow-sm'
               }`}
@@ -309,7 +294,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                 onChange={(e) => setMfaCode(e.target.value)}
                 placeholder="6-Digit MFA Token / YubiKey Passkey"
                 className={`w-full px-4 py-3 rounded-2xl text-xs font-mono tracking-widest transition-all focus:outline-none border ${
-                  isDark
+                  darkMode
                     ? 'bg-amber-500/10 border-amber-500/40 text-amber-300 placeholder:text-amber-400/50'
                     : 'bg-amber-50 border-amber-600/30 text-amber-900 placeholder:text-amber-700/50'
                 }`}
@@ -323,7 +308,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               type="button"
               onClick={() => setCurrentRoute('forgot-password')}
               className={`text-xs font-semibold hover:underline cursor-pointer ${
-                isDark ? 'text-white/80 hover:text-white' : 'text-black'
+                darkMode ? 'text-white/80 hover:text-white' : 'text-black'
               }`}
             >
               Forgot your password?
@@ -338,10 +323,10 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               disabled={isLoading}
               className={`flex-1 py-3.5 px-6 rounded-full font-semibold text-sm transition-all cursor-pointer flex items-center justify-center gap-2 ${
                 isFormValid
-                  ? isDark
+                  ? darkMode
                     ? 'bg-white hover:bg-gray-100 text-black shadow-md'
                     : 'bg-[#111111] hover:bg-[#2A2A2A] text-white shadow-md'
-                  : isDark
+                  : darkMode
                     ? 'bg-white/15 text-white/40 cursor-not-allowed'
                     : 'bg-black/15 text-black/40 cursor-not-allowed'
               }`}
@@ -437,7 +422,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
         {/* Disclaimer Text */}
         <p
           className={`text-[11px] text-center leading-relaxed my-6 px-4 transition-colors ${
-            isDark ? 'text-white/60' : 'text-[#7A7A7A]'
+            darkMode ? 'text-white/60' : 'text-[#7A7A7A]'
           }`}
         >
           By signing in, you agree to our{' '}
@@ -449,7 +434,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               setShowPrivacyModal(true);
             }}
             className={`font-semibold underline hover:opacity-80 cursor-pointer ${
-              isDark ? 'text-white' : 'text-black'
+              darkMode ? 'text-white' : 'text-black'
             }`}
           >
             Privacy Policy
@@ -463,7 +448,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               setShowAgreementModal(true);
             }}
             className={`font-semibold underline hover:opacity-80 cursor-pointer ${
-              isDark ? 'text-white' : 'text-black'
+              darkMode ? 'text-white' : 'text-black'
             }`}
           >
             User Agreement
@@ -476,7 +461,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
             type="button"
             onClick={() => setCurrentRoute('signup')}
             className={`w-full py-3.5 rounded-full font-semibold text-sm transition-all cursor-pointer block text-center shadow-sm ${
-              isDark
+              darkMode
                 ? 'bg-white hover:bg-gray-100 text-black'
                 : 'bg-[#111111] hover:bg-[#2A2A2A] text-white'
             }`}
@@ -495,7 +480,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
           <div
             className={`relative rounded-[32px] shadow-2xl w-full max-w-[420px] p-8 border ${
-              isDark
+              darkMode
                 ? 'bg-[#181818] text-white border-white/15'
                 : 'bg-white text-black border-black/15'
             }`}
@@ -527,7 +512,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               {activeModal === 'superadmin' && 'ops.microintern.com • Zero-Trust MFA & IP Audit Enforced.'}
             </p>
 
-            <form onSubmit={(e) => handleModalSignIn(e, activeModal)} className="space-y-3">
+            <form onSubmit={handleModalSubmit} className="space-y-3">
               <div>
                 <input
                   type="text"
@@ -539,7 +524,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                       : 'Corporate Work Email (e.g., alex@google.com)'
                   }
                   className={`w-full px-4 py-3 rounded-2xl text-sm transition-all focus:outline-none border ${
-                    isDark
+                    darkMode
                       ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60'
                       : 'bg-white border-black/20 text-black placeholder:text-black/40 focus:border-black'
                   }`}
@@ -553,7 +538,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                   onChange={(e) => setModalPassword(e.target.value)}
                   placeholder="Password"
                   className={`w-full px-4 py-3 pr-12 rounded-2xl text-sm transition-all focus:outline-none border ${
-                    isDark
+                    darkMode
                       ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60'
                       : 'bg-white border-black/20 text-black placeholder:text-black/40 focus:border-black'
                   }`}
@@ -584,7 +569,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                   type="submit"
                   disabled={modalLoading}
                   className={`w-full py-3.5 rounded-full font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2 ${
-                    isDark
+                    darkMode
                       ? 'bg-white hover:bg-gray-100 text-black'
                       : 'bg-[#111111] hover:bg-[#333333] text-white'
                   }`}
@@ -622,17 +607,17 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div
             className={`relative rounded-[32px] shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden border ${
-              isDark ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-black border-black/10'
+              darkMode ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-black border-black/10'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={`flex items-center justify-between px-7 py-5 border-b ${isDark ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
+            <div className={`flex items-center justify-between px-7 py-5 border-b ${darkMode ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
               <h2 className="text-lg font-bold">Privacy Policy</h2>
               <button
                 type="button"
                 onClick={() => setShowPrivacyModal(false)}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
+                  darkMode ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
                 }`}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -655,12 +640,12 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                 </div>
               ))}
             </div>
-            <div className={`px-7 py-4 border-t ${isDark ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
+            <div className={`px-7 py-4 border-t ${darkMode ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
               <button
                 type="button"
                 onClick={() => setShowPrivacyModal(false)}
                 className={`w-full py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
-                  isDark ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#111111] text-white hover:bg-[#333333]'
+                  darkMode ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#111111] text-white hover:bg-[#333333]'
                 }`}
               >
                 Got it
@@ -676,17 +661,17 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div
             className={`relative rounded-[32px] shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden border ${
-              isDark ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-black border-black/10'
+              darkMode ? 'bg-[#1F1F1F] text-white border-white/10' : 'bg-white text-black border-black/10'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={`flex items-center justify-between px-7 py-5 border-b ${isDark ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
+            <div className={`flex items-center justify-between px-7 py-5 border-b ${darkMode ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
               <h2 className="text-lg font-bold">User Agreement & Terms</h2>
               <button
                 type="button"
                 onClick={() => setShowAgreementModal(false)}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
-                  isDark ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
+                  darkMode ? 'hover:bg-white/10 text-white/70 hover:text-white' : 'hover:bg-[#F0F0F0] text-[#6A6A5A] hover:text-black'
                 }`}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -708,12 +693,12 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                 </div>
               ))}
             </div>
-            <div className={`px-7 py-4 border-t ${isDark ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
+            <div className={`px-7 py-4 border-t ${darkMode ? 'border-white/10 bg-white/5' : 'border-[#E8E4D8] bg-black/5'}`}>
               <button
                 type="button"
                 onClick={() => setShowAgreementModal(false)}
                 className={`w-full py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer ${
-                  isDark ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#111111] text-white hover:bg-[#333333]'
+                  darkMode ? 'bg-white text-black hover:bg-gray-100' : 'bg-[#111111] text-white hover:bg-[#333333]'
                 }`}
               >
                 I Understand & Agree

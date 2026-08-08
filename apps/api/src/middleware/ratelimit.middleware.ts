@@ -12,15 +12,17 @@ import type { Request, Response } from 'express';
 
 type RateLimitContext = 'global' | 'auth' | 'ai' | 'upload';
 
+const isDev = config.NODE_ENV === 'development';
+
 const rateLimitConfigs: Record<RateLimitContext, { windowMs: number; max: number; message: string }> = {
   global: {
     windowMs: config.RATE_LIMIT_WINDOW_MS,
-    max: config.RATE_LIMIT_MAX_REQUESTS,
+    max: isDev ? 10000 : config.RATE_LIMIT_MAX_REQUESTS,
     message: 'Too many requests. Please slow down.',
   },
   auth: {
     windowMs: config.RATE_LIMIT_WINDOW_MS,
-    max: config.RATE_LIMIT_AUTH_MAX_REQUESTS,
+    max: isDev ? 10000 : config.RATE_LIMIT_AUTH_MAX_REQUESTS,
     message: 'Too many authentication attempts. Please wait before trying again.',
   },
   ai: {

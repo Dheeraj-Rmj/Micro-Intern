@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useApp } from '../../context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, Twitter, Github, Linkedin, Instagram, Terminal, Cpu, LineChart, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowRight, Check, Twitter, Github, Linkedin, Instagram, Terminal, Cpu, LineChart, ChevronDown, ChevronUp, Sun, Moon } from 'lucide-react';
 import { WordsPullUpMultiStyle } from '../common/animations/WordsPullUpMultiStyle';
 import { AnimatedLetter } from '../common/animations/AnimatedLetter';
 
@@ -18,12 +18,12 @@ const FaqItem = ({ question, answer, delay }: { question: string, answer: string
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay, duration: 0.4 }}
-      className={`border-b ${darkMode ? 'border-slate-200' : 'border-slate-200'}`}
+      className={`border-b ${darkMode ? 'border-white/10' : 'border-slate-200'}`}
     >
       <button 
         type="button"
         onClick={() => setIsOpen(!isOpen)} 
-        className={`w-full py-6 flex items-center justify-between text-left transition-colors cursor-pointer ${darkMode ? 'text-slate-900 hover:text-blue-400' : 'text-slate-900 hover:text-blue-600'}`}
+        className={`w-full py-6 flex items-center justify-between text-left transition-colors cursor-pointer ${darkMode ? 'text-white hover:text-blue-400' : 'text-slate-900 hover:text-blue-600'}`}
       >
         <span className="font-medium text-lg pr-8">{question}</span>
         {isOpen ? <ChevronUp className="w-5 h-5 shrink-0" /> : <ChevronDown className="w-5 h-5 shrink-0" />}
@@ -48,18 +48,18 @@ const FaqItem = ({ question, answer, delay }: { question: string, answer: string
 
 // Main Landing Page Component
 export const LandingPage: React.FC = () => {
-  const { setCurrentRoute, darkMode } = useApp();
+  const { setCurrentRoute, darkMode, setDarkMode } = useApp();
   const [activePolicyModal, setActivePolicyModal] = useState<'terms' | 'privacy' | 'cookie' | null>(null);
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-blue-500/30 transition-colors duration-300 ${darkMode ? 'bg-[#0E0E0E] text-slate-900' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen font-sans selection:bg-blue-500/30 transition-colors duration-300 ${darkMode ? 'bg-[#0E0E0E] text-white' : 'bg-slate-50 text-slate-900'}`}>
       
       {/* SECTION 1: HERO */}
       <section id="hero" className="relative min-h-screen pt-28 pb-20 md:pt-40 md:pb-32 px-4 flex flex-col items-center justify-center overflow-hidden">
         
         {/* Top Floating Navbar */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-5xl px-4 sm:px-6 lg:px-8">
-          <nav className={`mt-4 rounded-full px-4 py-2 md:px-8 flex items-center justify-between shadow-sm border ${darkMode ? 'bg-white border-slate-200' : 'bg-white/90 backdrop-blur-md border-black/5'}`}>
+          <nav className={`mt-4 rounded-full px-4 py-2 md:px-8 flex items-center justify-between shadow-sm border transition-colors ${darkMode ? 'bg-[#101010]/90 backdrop-blur-md border-white/10' : 'bg-white/90 backdrop-blur-md border-black/5'}`}>
             
             {/* Logo */}
             <div role="presentation" className="flex items-center cursor-pointer select-none" 
@@ -69,19 +69,27 @@ export const LandingPage: React.FC = () => {
             </div>
             
             <div className="hidden md:flex items-center gap-6">
-              <a href="#how-it-works" className={`text-xs md:text-sm font-medium transition-colors ${darkMode ? 'text-slate-400 hover:text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>Our Story</a>
-              <a href="#features" className={`text-xs md:text-sm font-medium transition-colors ${darkMode ? 'text-slate-400 hover:text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>Features</a>
-              <a href="#faq" className={`text-xs md:text-sm font-medium transition-colors ${darkMode ? 'text-slate-400 hover:text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>FAQ</a>
+              <a href="#how-it-works" className={`text-xs md:text-sm font-medium transition-colors ${darkMode ? 'text-slate-300 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>Our Story</a>
+              <a href="#features" className={`text-xs md:text-sm font-medium transition-colors ${darkMode ? 'text-slate-300 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>Features</a>
+              <a href="#faq" className={`text-xs md:text-sm font-medium transition-colors ${darkMode ? 'text-slate-300 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>FAQ</a>
             </div>
 
             <div className="flex items-center gap-4">
               <button
+                type="button"
+                onClick={() => setDarkMode(!darkMode)}
+                className={`p-2 rounded-full transition-colors cursor-pointer ${darkMode ? 'text-slate-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'}`}
+                aria-label="Toggle theme"
+              >
+                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+              <button
                 onClick={() => setCurrentRoute('signin')}
-                className="group flex items-center bg-blue-600 rounded-full pl-4 pr-1.5 py-1.5 text-slate-900 font-medium text-xs sm:text-sm transition-all hover:gap-2 cursor-pointer"
+                className={`group flex items-center rounded-full pl-4 pr-1.5 py-1.5 font-medium text-xs sm:text-sm transition-all hover:gap-2 cursor-pointer ${darkMode ? 'bg-amber-500 text-black' : 'bg-amber-400 text-slate-900'}`}
               >
                 <span>Sign In</span>
-                <div className="ml-2 bg-slate-200 rounded-full w-7 h-7 flex items-center justify-center transition-transform group-hover:scale-110">
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-900" />
+                <div className={`ml-2 rounded-full w-7 h-7 flex items-center justify-center transition-transform group-hover:scale-110 ${darkMode ? 'bg-black/10' : 'bg-white/40'}`}>
+                  <ArrowRight className={`w-3.5 h-3.5 ${darkMode ? 'text-black' : 'text-slate-900'}`} />
                 </div>
               </button>
             </div>
@@ -105,7 +113,7 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif tracking-tight leading-[1.05] mb-8 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}
+            className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif tracking-tight leading-[1.05] mb-8 ${darkMode ? 'text-white' : 'text-slate-900'}`}
           >
             Evaluate By Building.<br />
             <span className="italic text-blue-600">Hire</span> By Code.
@@ -128,7 +136,7 @@ export const LandingPage: React.FC = () => {
           >
             <button
               onClick={() => setCurrentRoute('signup')}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-blue-600 text-slate-900 font-semibold text-sm hover:bg-blue-700 hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+              className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold text-sm transition-all cursor-pointer flex items-center justify-center gap-2 ${darkMode ? 'bg-amber-500 hover:bg-amber-400 text-black' : 'bg-amber-400 hover:bg-amber-500 text-slate-900'}`}
             >
               Start Hiring
               <ArrowRight className="w-4 h-4" />
@@ -137,7 +145,7 @@ export const LandingPage: React.FC = () => {
               onClick={() => {
                 document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold text-sm transition-all cursor-pointer border ${darkMode ? 'bg-slate-100 border-slate-200 hover:bg-slate-100 text-slate-900' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-900 shadow-sm'}`}
+              className={`w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold text-sm transition-all cursor-pointer border ${darkMode ? 'bg-transparent border-white/20 hover:bg-white/10 text-white' : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-900 shadow-sm'}`}
             >
               See how it works
             </button>
@@ -152,7 +160,7 @@ export const LandingPage: React.FC = () => {
             AI Skill Trials
           </span>
 
-          <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-4xl mx-auto leading-[0.95] sm:leading-[0.9] mb-12">
+          <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl max-w-4xl mx-auto leading-tight sm:leading-[1.1] mb-12">
             <WordsPullUpMultiStyle 
               segments={[
                 { text: "No whiteboards.", className: "font-normal" },
@@ -183,7 +191,7 @@ export const LandingPage: React.FC = () => {
             <span className="text-blue-600 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-4 block">
               About the Company
             </span>
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-normal leading-tight max-w-3xl mx-auto ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-normal leading-tight max-w-3xl mx-auto ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               MicroIntern is a proud project of{' '}
               <span className="italic text-blue-600 font-serif">RMJ IT Solution</span>
             </h2>
@@ -198,7 +206,7 @@ export const LandingPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center mb-8 shadow-lg">
                   <span className="text-slate-900 font-bold text-xl">R</span>
                 </div>
-                <h3 className={`text-2xl font-medium mb-4 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>RMJ IT Solution</h3>
+                <h3 className={`text-2xl font-medium mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>RMJ IT Solution</h3>
                 <p className={`text-sm sm:text-base leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                   RMJ IT Solution builds software for technical teams and modern organizations. We focus on developer tooling, transparent evaluation pipelines, and practical applications that eliminate hiring friction.
                 </p>
@@ -210,7 +218,7 @@ export const LandingPage: React.FC = () => {
                 whileHover={{ y: -4 }}
                 className={`rounded-3xl p-8 flex-1 transition-all duration-300 border ${darkMode ? 'bg-[#1A1A1A] border-slate-200 hover:border-slate-200' : 'bg-white border-slate-200 hover:border-blue-200 hover:shadow-xl'}`}
               >
-                <h4 className={`font-medium text-lg mb-3 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Our Vision</h4>
+                <h4 className={`font-medium text-lg mb-3 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Our Vision</h4>
                 <p className={`text-sm leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                   Traditional technical hiring relies on resumes and keyword filtering. RMJ IT Solution built MicroIntern to standardize work-sample evaluations—allowing engineering teams to evaluate talent on actual codebases rather than algorithmic puzzles.
                 </p>
@@ -240,7 +248,7 @@ export const LandingPage: React.FC = () => {
       <section id="features" className={`py-24 md:py-32 px-4 md:px-6 border-t ${darkMode ? 'border-white/5 bg-[#141414]' : 'border-slate-200 bg-white'}`}>
         <div className="max-w-6xl mx-auto">
           <div className="mb-16 md:mb-24 text-center">
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-tight mb-4 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-tight mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               Standardized technical evaluations.
             </h2>
             <p className={`text-lg ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Practical tasks. Objective verification.</p>
@@ -267,7 +275,7 @@ export const LandingPage: React.FC = () => {
               <div className="mb-8 w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center">
                 <Terminal className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className={`text-xl font-medium mb-6 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Authentic Coding</h3>
+              <h3 className={`text-xl font-medium mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Authentic Coding</h3>
               <ul className="space-y-4 flex-1">
                 {['Real-world engineering challenges', 'No generic algorithmic puzzles', 'In-browser fully equipped IDE', 'Automated testing & validation'].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -282,7 +290,7 @@ export const LandingPage: React.FC = () => {
               <div className="mb-8 w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center">
                 <Cpu className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className={`text-xl font-medium mb-6 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Smart Grading</h3>
+              <h3 className={`text-xl font-medium mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Smart Grading</h3>
               <ul className="space-y-4 flex-1">
                 {['Instant comprehensive scoring', 'Best practices & style analysis', 'Actionable feedback for candidates', 'Fair & unbiased evaluations'].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -297,7 +305,7 @@ export const LandingPage: React.FC = () => {
               <div className="mb-8 w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center">
                 <LineChart className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className={`text-xl font-medium mb-6 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Actionable Insights</h3>
+              <h3 className={`text-xl font-medium mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Actionable Insights</h3>
               <ul className="space-y-4 flex-1">
                 {['Verified candidate trust scores', 'Detailed benchmark comparisons', 'In-depth performance profiling', 'Streamlined hiring pipelines'].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -319,7 +327,7 @@ export const LandingPage: React.FC = () => {
             <span className="text-blue-600 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-6 block">
               Clear The Ambiguity
             </span>
-            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-tight ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-serif font-normal tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               Frequently Asked Questions
             </h2>
           </div>
@@ -354,7 +362,7 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-20">
           
           <div className="lg:col-span-1">
-            <h3 className={`text-2xl font-black tracking-tight mb-6 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Micro Intern</h3>
+            <h3 className={`text-2xl font-black tracking-tight mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Micro Intern</h3>
             <p className={`text-sm leading-relaxed mb-8 max-w-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               Practical 48-hour work trials. We replace resumes with verified, production-ready code.
             </p>
@@ -368,7 +376,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div className="md:pl-4">
-            <h4 className={`font-medium mb-6 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Platform</h4>
+            <h4 className={`font-medium mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Platform</h4>
             <ul className="space-y-4">
               {['Features', 'Our Story', 'FAQ', 'Pricing'].map(link => (
                 <li key={link}><button type="button" className={`text-sm transition-colors cursor-pointer ${darkMode ? 'text-slate-400 hover:text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>{link}</button></li>
@@ -377,7 +385,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div>
-            <h4 className={`font-medium mb-6 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Resources</h4>
+            <h4 className={`font-medium mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Resources</h4>
             <ul className="space-y-4">
               {['Documentation', 'Blog', 'Community', 'Help Center'].map(link => (
                 <li key={link}><button type="button" className={`text-sm transition-colors cursor-pointer ${darkMode ? 'text-slate-400 hover:text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>{link}</button></li>
@@ -386,7 +394,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <div>
-            <h4 className={`font-medium mb-6 ${darkMode ? 'text-slate-900' : 'text-slate-900'}`}>Stay Updated</h4>
+            <h4 className={`font-medium mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Stay Updated</h4>
             <p className={`text-sm mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Subscribe to our newsletter for the latest platform updates.</p>
             <div className="flex gap-2">
               <input type="email" placeholder="Enter your email" className={`rounded-lg px-4 py-2.5 text-sm w-full focus:outline-none transition-colors border ${darkMode ? 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-500 focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'}`} />
@@ -398,26 +406,26 @@ export const LandingPage: React.FC = () => {
 
         </div>
 
-        <div className="w-full flex justify-center pt-8 pb-4 overflow-hidden border-t border-slate-200/20">
-          <span className={`text-[10vw] font-black tracking-tighter leading-[0.8] select-none pointer-events-none ${darkMode ? 'text-slate-900/10' : 'text-slate-900/40'}`}>
-            MICRO INTERN
+        <div className="w-full flex justify-center pt-8 pb-4 relative overflow-hidden border-t border-slate-200/20">
+          <span className={`text-[10vw] font-black tracking-tighter leading-[0.8] select-none pointer-events-none ${darkMode ? 'text-white/40' : 'text-slate-900/40'}`}>
+            Micro Intern
           </span>
         </div>
 
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 mt-8">
-          <div className="flex flex-col sm:flex-row items-center gap-2">
-            <p className={`text-xs font-medium ${darkMode ? 'text-slate-500' : 'text-slate-500'}`}>Copyright &copy; 2026 Micro Intern Inc. All rights reserved.</p>
-            <span className="hidden sm:inline text-slate-400">&bull;</span>
-            <p className={`text-xs font-medium ${darkMode ? 'text-slate-500' : 'text-slate-500'}`}>
-              A product of <a href="https://rmjit.com" target="_blank" rel="noopener noreferrer" className={`hover:underline font-semibold transition-colors ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>RMJ IT solution</a>
-            </p>
-          </div>
-          <div className="flex gap-6">
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-4 mt-8">
+          <div className="flex flex-wrap justify-center gap-6">
             {['Terms of Service', 'Privacy Policy', 'Cookie Policy'].map(policy => (
               <button key={policy} type="button" onClick={() => setActivePolicyModal(policy === 'Terms of Service' ? 'terms' : policy === 'Privacy Policy' ? 'privacy' : 'cookie')} className={`text-xs hover:underline transition-colors cursor-pointer font-medium ${darkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-500 hover:text-slate-900'}`}>
                 {policy}
               </button>
             ))}
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
+            <p className={`text-xs font-medium ${darkMode ? 'text-slate-500' : 'text-slate-500'}`}>Copyright &copy; 2026 Micro Intern Inc. All rights reserved.</p>
+            <span className="hidden sm:inline text-slate-400">&bull;</span>
+            <p className={`text-xs font-medium ${darkMode ? 'text-slate-500' : 'text-slate-500'}`}>
+              A product of <a href="https://rmjit.com" target="_blank" rel="noopener noreferrer" className={`hover:underline font-semibold transition-colors ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>RMJ IT solution</a>
+            </p>
           </div>
         </div>
       </footer>

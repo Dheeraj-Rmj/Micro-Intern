@@ -1,5 +1,7 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
+import { assessmentApi } from '../../../lib/api/assessment';
 import {
   PageRoute,
   UserRole,
@@ -119,6 +121,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile>(INITIAL_COMPANY_PROFILE);
   const [trials, setTrials] = useState<Trial[]>(MOCK_TRIALS);
+
+  useEffect(() => {
+    const fetchTrials = async () => {
+      try {
+        const { assessments } = await assessmentApi.listPublicAssessments({ status: 'PUBLISHED' });
+        if (assessments && assessments.length > 0) {
+          const apiTrials = assessments.map((a: any) => ({
+            id: a.id,
+            title: a.title,
+            company: a.company?.name || 'Company',
+            roleTitle: a.roleTitle || 'Role',
+            difficulty: a.complexityScore && a.complexityScore > 7 ? 'Advanced' : (a.complexityScore && a.complexityScore < 4 ? 'Beginner' : 'Intermediate'),
+            category: a.category || 'All',
+            skillsRequired: a.skillsRequired || [],
+            timeCommitment: `${a.durationMinutes || 120} mins`,
+            reward: '$0', // default mock
+            applicantsCount: 0,
+            status: a.status === 'PUBLISHED' ? 'open' : 'closed',
+            bookmarked: false,
+            matchScore: 90, // mock score
+            description: a.description,
+            tasks: a.tasks?.map((t: any) => ({ title: t.title, description: t.description })) || [],
+          }));
+          // Merge with mock trials to not break UI if there are no assessments
+          setTrials((prev) => {
+            const apiIds = apiTrials.map((a: any) => a.id);
+            const filteredMocks = prev.filter(m => !apiIds.includes(m.id));
+            return [...apiTrials, ...filteredMocks];
+          });
+        }
+      } catch (e) {
+        console.error('Failed to fetch public trials:', e);
+      }
+    };
+    fetchTrials();
+  }, []);
   const [applications, setApplications] = useState<Application[]>(MOCK_APPLICATIONS);
   const [submissions, setSubmissions] = useState<Submission[]>(MOCK_SUBMISSIONS);
   const [notifications, setNotifications] = useState<AppNotification[]>(MOCK_NOTIFICATIONS);
@@ -126,17 +164,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [interviews, setInterviews] = useState<InterviewSlot[]>(MOCK_INTERVIEWS);
   const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>(MOCK_CANDIDATES_SEARCH_POOL);
 
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('microintern_theme');
-      if (saved !== null) {
-        return saved === 'dark';
-      }
-      // Force light theme by default as requested
-      return false;
-    }
-    return false;
-  });
+  const { theme, setTheme, systemTheme } = useTheme();
+  
+  // Compute resolved theme to maintain compatibility with existing context consumers
+  const [darkMode, setDarkModeState] = useState(false);
+  
+  useEffect(() => {
+    // Determine the active theme based on next-themes resolution
+    const currentTheme = theme === 'system' ? systemTheme : theme;
+    setDarkModeState(currentTheme === 'dark');
+  }, [theme, systemTheme]);
+
+  // Wrapper function to update next-themes while keeping the setDarkMode API intact
+  const setDarkMode = (isDark: boolean) => {
+    setTheme(isDark ? 'dark' : 'light');
+  };
+
   const [toastMessage, setToastMessage] = useState<ToastInfo | null>(null);
   const [activeWorkspaceTrial, setActiveWorkspaceTrial] = useState<Trial | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -154,16 +197,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       localStorage.setItem('microintern_user_profile', JSON.stringify(userProfile));
     }
   }, [userProfile]);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('microintern_theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('microintern_theme', 'light');
-    }
-  }, [darkMode]);
 
   const showToast = (title: string, desc?: string, type: 'success' | 'info' | 'warning' = 'success') => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -190,13 +223,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
-  const applyForTrial = (trialId: string) => {
+  const applyForTrial = async (trialId: string) => {
     const targetTrial = trials.find((t) => t.id === trialId);
     if (!targetTrial) return;
 
     if (targetTrial.status === 'applied' || targetTrial.status === 'in_progress') {
       showToast('Already Applied', `You have an active status for "${targetTrial.title}".`, 'info');
       return;
+    }
+
+    try {
+      if (!targetTrial.id.startsWith('mock')) {
+        await assessmentApi.startAssessment(targetTrial.id);
+      }
+    } catch (err: any) {
+      if (err?.response?.data?.message === 'You have already started this assessment') {
+        // Ignored if already started
+      } else {
+        console.error('Failed to start assessment:', err);
+        showToast('Error', 'Failed to start trial. Please try again.', 'error');
+        return;
+      }
     }
 
     setTrials((prev) =>
@@ -232,10 +279,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Application Submitted!', `Successfully applied to ${targetTrial.company}.`, 'success');
   };
 
-  const submitWorkspaceTask = (trialId: string, solutionText: string, fileNames: string[]) => {
+  const submitWorkspaceTask = async (trialId: string, solutionText: string, fileNames: string[]) => {
     const targetTrial = trials.find((t) => t.id === trialId) || activeWorkspaceTrial;
     const title = targetTrial ? targetTrial.title : 'MicroIntern Trial Task';
     const company = targetTrial ? targetTrial.company : 'Enterprise Partner';
+
+    try {
+      if (targetTrial && !targetTrial.id.startsWith('mock')) {
+        await assessmentApi.submitAssessment(targetTrial.id, {
+          tasks: [
+            {
+              taskId: 'default',
+              output: solutionText
+            }
+          ]
+        });
+      }
+    } catch (err) {
+      console.error('Failed to submit assessment:', err);
+      showToast('Error', 'Failed to submit code. Using local fallback.', 'warning');
+    }
 
     const newSub: Submission = {
       id: `sub-${Date.now()}`,

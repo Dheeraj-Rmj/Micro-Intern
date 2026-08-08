@@ -17,7 +17,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } f
  */
 
 const API_BASE_URL =
-  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3001/api/v1';
+  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:3002/api/v1';
 
 // In-memory access token store
 // This module is a singleton — token persists across component unmounts

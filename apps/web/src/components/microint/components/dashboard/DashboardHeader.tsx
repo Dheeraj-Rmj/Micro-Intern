@@ -41,6 +41,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
 
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -182,11 +183,22 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
             }}
             className="w-11 h-11 rounded-full p-0.5 bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm hover:scale-105 transition-transform overflow-hidden cursor-pointer"
           >
-            {userProfile.avatar ? (
-              <img src={userProfile.avatar} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+            {userProfile.avatar && !imgError ? (
+              <img 
+                src={userProfile.avatar} 
+                alt="Avatar" 
+                className="w-full h-full rounded-full object-cover" 
+                onError={() => setImgError(true)}
+              />
             ) : (
               <div className="w-full h-full rounded-full bg-white text-black font-bold flex items-center justify-center text-sm">
-                {(userProfile.fullName || (isSuperAdminView ? 'Super Admin' : isCompanyView ? 'Enterprise Admin' : 'Candidate')).charAt(0).toUpperCase()}
+                {userProfile.fullName && userProfile.fullName !== 'Avatar'
+                  ? userProfile.fullName.charAt(0).toUpperCase()
+                  : isSuperAdminView
+                  ? 'S'
+                  : isCompanyView
+                  ? 'E'
+                  : 'C'}
               </div>
             )}
           </button>
@@ -195,13 +207,28 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
             <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[24px] shadow-2xl p-3 z-50">
               <div className="p-3 mb-2">
                 <p className="font-bold text-sm text-black dark:text-white">
-                  {userProfile.fullName || (isSuperAdminView ? 'Super Admin' : isCompanyView ? 'Enterprise Admin' : 'Candidate')}
+                  {userProfile.fullName && userProfile.fullName !== 'Avatar'
+                    ? userProfile.fullName
+                    : isSuperAdminView
+                    ? 'Super Admin'
+                    : isCompanyView
+                    ? 'Enterprise Admin'
+                    : 'Candidate'}
                 </p>
                 <p className="text-xs text-black/50 dark:text-white/50">{userProfile.email}</p>
               </div>
               <div className="space-y-1">
                 <button
-                  onClick={() => { setProfileDropdownOpen(false); setCurrentRoute('profile'); }}
+                  onClick={() => {
+                    setProfileDropdownOpen(false);
+                    if (isSuperAdminView || role === 'admin') {
+                      setCurrentRoute('admin-organization');
+                    } else if (isCompanyView || role === 'company') {
+                      setCurrentRoute('company-settings');
+                    } else {
+                      setCurrentRoute('profile');
+                    }
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                 >
                   <User className="w-4 h-4" /> My Profile

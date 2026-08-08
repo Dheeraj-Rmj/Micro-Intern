@@ -13,6 +13,7 @@ import type {
   GetHiringAnalyticsUseCase,
   GetBillingUseCase,
   GetAIInsightsUseCase,
+  ListCompanySubmissionsUseCase,
 } from '../application/index.js';
 import type { CreateCompanyInput, UpdateCompanyInput, InviteTeamMemberInput } from '@microintern/shared';
 import type { Request, Response, NextFunction } from 'express';
@@ -30,6 +31,7 @@ export class CompanyController {
     private readonly getHiringAnalyticsUseCase: GetHiringAnalyticsUseCase,
     private readonly getBillingUseCase: GetBillingUseCase,
     private readonly getAIInsightsUseCase: GetAIInsightsUseCase,
+    private readonly listCompanySubmissionsUseCase: ListCompanySubmissionsUseCase,
   ) {}
 
   private getAuthenticatedUserId(req: Request): string {
@@ -160,6 +162,17 @@ export class CompanyController {
       const company = await this.getContextCompanyUseCase.execute(userId);
       const result = await this.getAIInsightsUseCase.execute(company.id);
       ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listSubmissions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const { submissions, pagination } = await this.listCompanySubmissionsUseCase.execute(company.id, req.query);
+      ResponseFormatter.paginated(res, submissions, pagination);
     } catch (error) {
       next(error);
     }

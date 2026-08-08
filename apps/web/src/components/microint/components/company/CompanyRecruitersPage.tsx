@@ -26,16 +26,44 @@ interface RecruiterSeat {
 }
 
 const INITIAL_RECRUITERS: RecruiterSeat[] = [];
+import { companyApi } from '../../../../lib/api/company';
 
 export const CompanyRecruitersPage: React.FC = () => {
   const { showToast } = useApp();
-  const [recruiters, setRecruiters] = useState<RecruiterSeat[]>(INITIAL_RECRUITERS);
+  const [recruiters, setRecruiters] = useState<RecruiterSeat[]>([]);
   const [fullName, setFullName] = useState('');
   const [handle, setHandle] = useState('');
   const [roleTitle, setRoleTitle] = useState('Technical Recruiter');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleGenerateLogin = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await companyApi.getMembers();
+        if (res.data?.members) {
+          const mapped = res.data.members.map((m: any) => ({
+            id: m.userId,
+            name: m.userDetails?.firstName ? `${m.userDetails.firstName} ${m.userDetails.lastName}` : 'Pending User',
+            email: m.userDetails?.email || `pending-${m.id}@company.microintern`,
+            roleTitle: m.role,
+            assignedTrials: 0,
+            status: m.status || 'ACTIVE',
+            created: new Date(m.joinedAt || m.createdAt).toLocaleDateString(),
+          }));
+          setRecruiters(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to fetch members:', err);
+        showToast('Error', 'Failed to load team members', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMembers();
+  }, []);
+
+  const handleGenerateLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !handle.trim()) {
       showToast('Missing Details', 'Please enter recruiter name and login handle.', 'warning');
@@ -45,32 +73,33 @@ export const CompanyRecruitersPage: React.FC = () => {
     const cleanedHandle = handle.toLowerCase().replace(/\s+/g, '.');
     const newEmail = `${cleanedHandle}@company.microintern`;
 
-    // Check duplicate
-    if (recruiters.some((r) => r.email === newEmail)) {
-      showToast('Duplicate Handle', `A recruiter seat with ${newEmail} already exists.`, 'warning');
-      return;
+    try {
+      const res = await companyApi.inviteMember(newEmail, roleTitle);
+      
+      const newRecruiter: RecruiterSeat = {
+        id: res.data.userId || `REC-${Math.floor(100 + Math.random() * 900)}`,
+        name: fullName,
+        email: newEmail,
+        roleTitle: roleTitle,
+        assignedTrials: 0,
+        status: 'ACTIVE',
+        created: 'Just now',
+      };
+
+      setRecruiters([newRecruiter, ...recruiters]);
+      setFullName('');
+      setHandle('');
+      setRoleTitle('Technical Talent Recruiter');
+
+      showToast(
+        'Recruiter Seat Created!',
+        `Generated corporate credentials: ${newEmail}. Login password ready to copy.`,
+        'success'
+      );
+    } catch (err) {
+      console.error(err);
+      showToast('Error', 'Failed to invite team member', 'error');
     }
-
-    const newRecruiter: RecruiterSeat = {
-      id: `REC-${Math.floor(100 + Math.random() * 900)}`,
-      name: fullName,
-      email: newEmail,
-      roleTitle: roleTitle || 'Technical Talent Recruiter',
-      assignedTrials: 0,
-      status: 'ACTIVE',
-      created: 'Just now',
-    };
-
-    setRecruiters([newRecruiter, ...recruiters]);
-    setFullName('');
-    setHandle('');
-    setRoleTitle('Technical Talent Recruiter');
-
-    showToast(
-      'Recruiter Seat Created!',
-      `Generated corporate credentials: ${newEmail}. Login password ready to copy.`,
-      'success'
-    );
   };
 
   const handleCopyCredentials = (email: string) => {
@@ -81,9 +110,15 @@ export const CompanyRecruitersPage: React.FC = () => {
     setTimeout(() => setCopiedEmail(null), 2500);
   };
 
-  const handleRevokeSeat = (id: string, name: string) => {
-    setRecruiters((prev) => prev.filter((r) => r.id !== id));
-    showToast('Recruiter Seat Revoked', `Access for ${name} (@company.microintern) has been terminated.`, 'info');
+  const handleRevokeSeat = async (id: string, name: string) => {
+    try {
+      await companyApi.removeMember(id);
+      setRecruiters((prev) => prev.filter((r) => r.id !== id));
+      showToast('Recruiter Seat Revoked', `Access for ${name} has been terminated.`, 'info');
+    } catch (err) {
+      console.error(err);
+      showToast('Error', 'Failed to remove team member', 'error');
+    }
   };
 
   return (
