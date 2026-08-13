@@ -246,14 +246,14 @@ export const SettingsPage: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-3">
                     <h3 className="text-2xl font-serif tracking-tight text-black dark:text-white">
-                      Where You're Logged In
+                      Where You&apos;re Logged In
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                       {sessions.filter((s) => s.isActive).length} Active Device{sessions.filter((s) => s.isActive).length > 1 ? 's' : ''}
                     </span>
                   </div>
                   <p className="text-sm text-black/60 dark:text-white/70 mt-1">
-                    Review devices that are currently signed into your MicroIntern account. You can log out of any session you don't recognize.
+                    Review devices that are currently signed into your MicroIntern account. You can log out of any session you don&apos;t recognize.
                   </p>
                 </div>
                 <button
@@ -382,7 +382,7 @@ export const SettingsPage: React.FC = () => {
                 <div className="text-xs text-black/70 dark:text-white/70 space-y-1">
                   <p className="font-bold text-black dark:text-white">Notice an unrecognized session?</p>
                   <p>
-                    If you see a device or location you don't recognize, immediately click <strong>Log Out</strong> on that session and change your password in the Password & 2FA tab.
+                    If you see a device or location you don&apos;t recognize, immediately click <strong>Log Out</strong> on that session and change your password in the Password & 2FA tab.
                   </p>
                 </div>
               </div>
