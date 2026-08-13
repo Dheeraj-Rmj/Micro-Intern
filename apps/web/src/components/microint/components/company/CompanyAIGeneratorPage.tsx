@@ -158,7 +158,7 @@ export const CompanyAIGeneratorPage: React.FC = () => {
                 
                 <div className="mt-8 pt-6 border-t border-emerald-500/20 flex justify-end">
                   <button 
-                    onClick={() => setCurrentRoute('company-trials')}
+                    onClick={() => setCurrentRoute('company-manage-trials')}
                     className="flex items-center gap-2 text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
                     View in Trials <ArrowRight className="w-4 h-4" />
