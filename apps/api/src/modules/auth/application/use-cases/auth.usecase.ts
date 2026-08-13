@@ -6,7 +6,6 @@ import { AuthDomainError } from '@/shared/errors/DomainError.js';
 import {
   UnauthorizedError,
   ConflictError,
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
   NotFoundError,
 } from '@/shared/errors/index.js';
 
@@ -20,6 +19,7 @@ import type {
 import type { IJwtService } from '../interfaces/IJwtService.js';
 import type { IPasswordService } from '../interfaces/IPasswordService.js';
 import type { ISessionService } from '../interfaces/ISessionService.js';
+import type { ParsedDeviceInfo } from '@/shared/utils/device-parser.js';
 
 const log = createModuleLogger('LoginUseCase');
 
@@ -39,7 +39,7 @@ export class LoginUseCase {
     private readonly sessionService: ISessionService,
   ) {}
 
-  async execute(dto: LoginDto): Promise<LoginResponse> {
+  async execute(dto: LoginDto, metadata?: Partial<ParsedDeviceInfo>): Promise<LoginResponse> {
     log.info({ email: dto.email }, 'Login attempt');
 
     // Find user
@@ -82,15 +82,15 @@ export class LoginUseCase {
 
     // Reset login attempts on success
     await this.userRepository.resetLoginAttempts(user.id);
-    await this.userRepository.updateLastLogin(user.id, ''); // IP filled by caller
+    await this.userRepository.updateLastLogin(user.id, metadata?.ipAddress ?? '');
 
-    // Create session
-    const sessionId = await this.sessionService.createSession(user.id);
+    // Create session with full device telemetry
+    const sessionId = await this.sessionService.createSession(user.id, metadata);
 
     // Generate tokens
     const tokens = await this.jwtService.generateTokenPair(user, sessionId);
 
-    log.info({ userId: user.id, sessionId }, 'Login successful');
+    log.info({ userId: user.id, sessionId, browser: metadata?.browser, os: metadata?.os }, 'Login successful');
 
     return {
       user: {
@@ -121,7 +121,7 @@ export class RegisterCandidateUseCase {
     private readonly tokenService: TokenService,
   ) {}
 
-  async execute(dto: RegisterCandidateDto): Promise<LoginResponse> {
+  async execute(dto: RegisterCandidateDto, metadata?: Partial<ParsedDeviceInfo>): Promise<LoginResponse> {
     log.info({ email: dto.email }, 'Candidate registration');
 
     // Check email uniqueness
@@ -161,8 +161,8 @@ export class RegisterCandidateUseCase {
       verificationToken: plainToken,
     });
 
-    // Create session
-    const sessionId = await this.sessionService.createSession(user.id);
+    // Create session with device telemetry
+    const sessionId = await this.sessionService.createSession(user.id, metadata);
 
     // Generate tokens
     const tokens = await this.jwtService.generateTokenPair(user, sessionId);
@@ -195,7 +195,7 @@ export class RefreshTokenUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(refreshToken: string): Promise<{ accessToken: string; expiresIn: number }> {
+  async execute(refreshToken: string, _metadata?: Partial<ParsedDeviceInfo>): Promise<{ accessToken: string; expiresIn: number }> {
     // Verify refresh token
     const payload = await this.jwtService.verifyRefreshToken(refreshToken);
 
@@ -208,6 +208,9 @@ export class RefreshTokenUseCase {
     if (!isSessionValid) {
       throw new UnauthorizedError('Session expired. Please log in again.', 'AUTH_REFRESH_TOKEN_INVALID');
     }
+
+    // Touch session to record activity
+    await this.sessionService.touchSession(payload.sub, payload.sessionId);
 
     // Get current user (role may have changed)
     const user = await this.userRepository.findById(payload.sub);

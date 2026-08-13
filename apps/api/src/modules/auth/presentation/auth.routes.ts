@@ -17,10 +17,11 @@ import {
   ResetPasswordSchema,
   VerifyEmailSchema,
 } from '../application/dtos/auth.dto.js';
-import { LoginUseCase , RefreshTokenUseCase, LogoutUseCase , RegisterCandidateUseCase } from '../application/use-cases/auth.usecase.js';
+import { LoginUseCase, RefreshTokenUseCase, LogoutUseCase, RegisterCandidateUseCase } from '../application/use-cases/auth.usecase.js';
 import { VerifyEmailUseCase, ResendVerificationEmailUseCase } from '../application/use-cases/email-verification.usecase.js';
 import { ForgotPasswordUseCase, ResetPasswordUseCase } from '../application/use-cases/password-reset.usecase.js';
 import { OAuthLoginUseCase } from '../application/use-cases/oauth.usecase.js';
+import { ListSessionsUseCase, RevokeSessionUseCase, RevokeOtherSessionsUseCase } from '../application/use-cases/session.usecase.js';
 import { PrismaUserRepository } from '../infrastructure/repositories/PrismaUserRepository.js';
 import { BcryptPasswordService, RedisSessionService } from '../infrastructure/services/AuthServices.js';
 import { JwtService } from '../infrastructure/services/JwtService.js';
@@ -45,7 +46,7 @@ export function createAuthRouter(): Router {
     container.register('IUserRepository', (_infra: InfrastructureDependencies) => new PrismaUserRepository(_infra.db));
     container.register('IJwtService', () => new JwtService());
     container.register('IPasswordService', () => new BcryptPasswordService());
-    container.register('ISessionService', (_infra: InfrastructureDependencies) => new RedisSessionService());
+    container.register('ISessionService', (_infra: InfrastructureDependencies) => new RedisSessionService(_infra.db));
     container.register('TokenService', () => new TokenService());
     container.register('IEmailAuthService', () => new QueueEmailAuthService());
 
@@ -98,6 +99,17 @@ export function createAuthRouter(): Router {
       container.get('TokenService')
     ));
 
+    // Session Management Use Cases
+    container.register('ListSessionsUseCase', (_infra: InfrastructureDependencies) => new ListSessionsUseCase(
+      container.get('ISessionService')
+    ));
+    container.register('RevokeSessionUseCase', (_infra: InfrastructureDependencies) => new RevokeSessionUseCase(
+      container.get('ISessionService')
+    ));
+    container.register('RevokeOtherSessionsUseCase', (_infra: InfrastructureDependencies) => new RevokeOtherSessionsUseCase(
+      container.get('ISessionService')
+    ));
+
     container.register('AuthController', (_infra: InfrastructureDependencies) => new AuthController(
       container.get('LoginUseCase'),
       container.get('RegisterCandidateUseCase'),
@@ -106,7 +118,10 @@ export function createAuthRouter(): Router {
       container.get('VerifyEmailUseCase'),
       container.get('ResendVerificationEmailUseCase'),
       container.get('ForgotPasswordUseCase'),
-      container.get('ResetPasswordUseCase')
+      container.get('ResetPasswordUseCase'),
+      container.get('ListSessionsUseCase'),
+      container.get('RevokeSessionUseCase'),
+      container.get('RevokeOtherSessionsUseCase')
     ));
   }
   
@@ -194,7 +209,39 @@ export function createAuthRouter(): Router {
     (req, res) => { controller.me(req, res); },
   );
 
+  // ── Device Logins & Session History Routes ────────────────────────────────
+  // GET /auth/sessions
+  router.get(
+    '/sessions',
+    authMiddleware,
+    (req, res, next) => { controller.getSessions(req, res, next).catch(next); },
+  );
 
+  // DELETE /auth/sessions/:sessionId
+  router.delete(
+    '/sessions/:sessionId',
+    authMiddleware,
+    audit(AuditAction.LOGOUT, 'Session'),
+    (req, res, next) => { controller.revokeSession(req, res, next).catch(next); },
+  );
+
+  // POST /auth/sessions/:sessionId/revoke
+  router.post(
+    '/sessions/:sessionId/revoke',
+    authMiddleware,
+    audit(AuditAction.LOGOUT, 'Session'),
+    (req, res, next) => { controller.revokeSession(req, res, next).catch(next); },
+  );
+
+  // POST /auth/sessions/revoke-others
+  router.post(
+    '/sessions/revoke-others',
+    authMiddleware,
+    audit(AuditAction.LOGOUT, 'Session'),
+    (req, res, next) => { controller.revokeOtherSessions(req, res, next).catch(next); },
+  );
+
+  // ── OAuth Routes ──────────────────────────────────────────────────────────
   // GET /auth/linkedin
   router.get(
     '/linkedin',
@@ -222,5 +269,4 @@ export function createAuthRouter(): Router {
   );
 
   return router;
-
 }

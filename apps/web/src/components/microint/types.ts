@@ -126,6 +126,7 @@ export interface AchievementBadge {
 }
 
 export interface UserProfile {
+  id?: string;
   fullName: string;
   username: string;
   email: string;

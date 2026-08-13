@@ -1,4 +1,5 @@
 import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
+import { parseDeviceFromRequest } from '@/shared/utils/device-parser.js';
 
 import {
   LoginSchema,
@@ -24,6 +25,11 @@ import type {
   ForgotPasswordUseCase,
   ResetPasswordUseCase,
 } from '../application/use-cases/password-reset.usecase.js';
+import type {
+  ListSessionsUseCase,
+  RevokeSessionUseCase,
+  RevokeOtherSessionsUseCase,
+} from '../application/use-cases/session.usecase.js';
 import type { Request, Response, NextFunction } from 'express';
 
 const ResendVerificationSchema = z.object({
@@ -35,25 +41,20 @@ const ResendVerificationSchema = z.object({
  *
  * Responsibilities:
  * - Parse and validate HTTP request (delegate to validate middleware)
+ * - Extract client device telemetry
  * - Call the appropriate use case
  * - Format the response
- *
- * Controllers MUST NOT contain business logic.
- * Controllers MUST NOT make direct DB calls.
- * Controllers are thin adapters between HTTP and application layer.
  */
 export class AuthController {
   // OAuth Callbacks
   handleOAuthCallback = (req: Request, res: Response, next: NextFunction): void => {
     try {
-      // The user object here is actually the result of OAuthLoginUseCase from our strategy
       const result = req.user as Record<string, unknown> | undefined;
-      if (result === undefined || result === null || typeof result !== "object") {
+      if (result === undefined || result === null || typeof result !== 'object') {
         res.status(401).json({ success: false, error: { message: 'OAuth failed' } });
         return;
       }
       
-      // Redirect back to frontend with tokens
       res.status(200).json({
         success: true,
         data: result,
@@ -72,11 +73,18 @@ export class AuthController {
     private readonly resendVerificationEmailUseCase: ResendVerificationEmailUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly listSessionsUseCase: ListSessionsUseCase,
+    private readonly revokeSessionUseCase: RevokeSessionUseCase,
+    private readonly revokeOtherSessionsUseCase: RevokeOtherSessionsUseCase,
   ) {}
 
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const result = await this.loginUseCase.execute(req.body as ReturnType<typeof LoginSchema.parse>);
+      const metadata = parseDeviceFromRequest(req);
+      const result = await this.loginUseCase.execute(
+        req.body as ReturnType<typeof LoginSchema.parse>,
+        metadata,
+      );
       ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);
@@ -85,8 +93,10 @@ export class AuthController {
 
   registerCandidate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const metadata = parseDeviceFromRequest(req);
       const result = await this.registerCandidateUseCase.execute(
         req.body as ReturnType<typeof RegisterCandidateSchema.parse>,
+        metadata,
       );
       ResponseFormatter.created(res, result);
     } catch (error) {
@@ -96,8 +106,9 @@ export class AuthController {
 
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const metadata = parseDeviceFromRequest(req);
       const { refreshToken } = req.body as ReturnType<typeof RefreshTokenSchema.parse>;
-      const result = await this.refreshTokenUseCase.execute(refreshToken);
+      const result = await this.refreshTokenUseCase.execute(refreshToken, metadata);
       ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);
@@ -120,6 +131,50 @@ export class AuthController {
   me = (req: Request, res: Response): void => {
     ResponseFormatter.success(res, req.user);
   };
+
+  // ── Device Logins & Session History ──────────────────────────────────────
+
+  getSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        return;
+      }
+      const sessions = await this.listSessionsUseCase.execute(req.user.id, req.user.sessionId);
+      ResponseFormatter.success(res, { sessions });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  revokeSession = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        return;
+      }
+      const { sessionId } = req.params as { sessionId: string };
+      const result = await this.revokeSessionUseCase.execute(req.user.id, sessionId);
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  revokeOtherSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        return;
+      }
+      const result = await this.revokeOtherSessionsUseCase.execute(req.user.id, req.user.sessionId);
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // ── Verification & Password Resets ────────────────────────────────────────
 
   verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

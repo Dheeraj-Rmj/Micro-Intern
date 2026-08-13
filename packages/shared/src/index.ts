@@ -29,6 +29,8 @@ export type {
   AuthenticatedUser,
   JwtAccessPayload,
   JwtRefreshPayload,
+  DeviceSession,
+  RevokeSessionResult,
 } from './types/api.types.js';
 
 export { UuidSchema, IsoDateSchema } from './types/api.types.js';

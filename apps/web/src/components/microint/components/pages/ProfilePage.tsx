@@ -1044,7 +1044,7 @@ export const ProfilePage: React.FC = () => {
 
                 {/* Active Skill Tags */}
                 {currentSkills.length === 0 ? (
-                  <p className="text-xs text-black/40 italic">No skills added yet. Add your key technical skills below.</p>
+                  <p className="text-xs text-black/40 dark:text-white/40 italic">No skills added yet. Add your key technical skills below.</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {currentSkills.map((skill, idx) => (
@@ -1193,7 +1193,7 @@ export const ProfilePage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowAddCertModal(false)}
-                        className="text-black/40 hover:text-black dark:hover:text-white"
+                        className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -1258,16 +1258,16 @@ export const ProfilePage: React.FC = () => {
 
               {/* FIELDS 4, 5, 6: LINKS & PORTFOLIO */}
               <div className="pt-4 border-t border-black/5 dark:border-white/5 space-y-4">
-                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/50">
+                <label className="block text-xs font-bold uppercase tracking-wider text-black/60 dark:text-white/70">
                   Online Profiles & Links
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[11px] font-semibold text-black/50 mb-1">
+                    <label className="block text-[11px] font-semibold text-black/50 dark:text-white/60 mb-1">
                       GitHub URL <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <Github className="w-4 h-4 absolute left-3.5 top-3 text-black/40" />
+                      <Github className="w-4 h-4 absolute left-3.5 top-3 text-black/40 dark:text-white/40" />
                       <input
                         type="url"
                         {...register('githubUrl')}
@@ -1288,11 +1288,11 @@ export const ProfilePage: React.FC = () => {
 
                   {/* LinkedIn URL */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-black/50 mb-1">
+                    <label className="block text-[11px] font-semibold text-black/50 dark:text-white/60 mb-1">
                       LinkedIn URL <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <Linkedin className="w-4 h-4 absolute left-3.5 top-3 text-black/40" />
+                      <Linkedin className="w-4 h-4 absolute left-3.5 top-3 text-black/40 dark:text-white/40" />
                       <input
                         type="url"
                         {...register('linkedinUrl')}
@@ -1313,11 +1313,11 @@ export const ProfilePage: React.FC = () => {
 
                   {/* Portfolio URL */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-black/50 mb-1">
+                    <label className="block text-[11px] font-semibold text-black/50 dark:text-white/60 mb-1">
                       Portfolio URL <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <Globe className="w-4 h-4 absolute left-3.5 top-3 text-black/40" />
+                      <Globe className="w-4 h-4 absolute left-3.5 top-3 text-black/40 dark:text-white/40" />
                       <input
                         type="url"
                         {...register('portfolioUrl')}

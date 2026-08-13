@@ -134,9 +134,15 @@ model OAuthAccount {
 model Session {
   id               String    @id @default(uuid()) @db.Uuid
   userId           String    @map("user_id") @db.Uuid
-  refreshTokenHash String    @map("refresh_token_hash") @db.Text
+  refreshTokenHash String?   @map("refresh_token_hash") @db.Text
   ipAddress        String?   @map("ip_address")
   userAgent        String?   @map("user_agent") @db.Text
+  deviceType       String?   @map("device_type") // desktop, mobile, tablet, unknown
+  browser          String?   @map("browser")     // Chrome, Safari, Firefox, Edge, etc.
+  os               String?   @map("os")          // Windows, macOS, iOS, Android, Linux
+  city             String?   @map("city")
+  country          String?   @map("country")
+  region           String?   @map("region")
   expiresAt        DateTime  @map("expires_at")
   revokedAt        DateTime? @map("revoked_at")
   lastUsedAt       DateTime  @default(now()) @map("last_used_at")
@@ -146,6 +152,7 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+  @@index([revokedAt])
   @@map("sessions")
 }
 

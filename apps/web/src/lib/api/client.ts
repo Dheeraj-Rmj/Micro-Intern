@@ -71,9 +71,9 @@ function createApiClient(): AxiosInstance {
       if (
         error.response?.status === 401 &&
         originalRequest._retried !== true &&
-        // Don't retry refresh/login endpoints — prevents infinite loop
         !(originalRequest.url?.includes('/auth/refresh') ?? false) &&
-        !(originalRequest.url?.includes('/auth/login') ?? false)
+        !(originalRequest.url?.includes('/auth/login') ?? false) &&
+        !(originalRequest as any).skipAuthRefresh
       ) {
         originalRequest._retried = true;
 
@@ -100,7 +100,7 @@ function createApiClient(): AxiosInstance {
           // Refresh failed — clear token and redirect to login
           clearAccessToken();
           if (typeof window !== 'undefined') {
-            localStorage.setItem('microintern_current_route', 'signin');
+            sessionStorage.setItem('microintern_current_route', 'signin');
             window.location.href = '/';
           }
         }

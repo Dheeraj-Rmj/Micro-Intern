@@ -121,6 +121,36 @@ export type JwtRefreshPayload = {
 };
 
 /**
+ * Device Session model for active sessions and login history tracking.
+ */
+export type DeviceSession = {
+  id: string;
+  userId: string;
+  deviceType: 'desktop' | 'mobile' | 'tablet' | 'unknown';
+  browser: string;
+  os: string;
+  ipAddress: string;
+  location: string;
+  city?: string | null;
+  country?: string | null;
+  region?: string | null;
+  userAgent?: string | null;
+  isCurrent: boolean;
+  isActive: boolean;
+  lastActiveAt: string; // ISO 8601 string
+  createdAt: string;    // ISO 8601 string
+  expiresAt: string;    // ISO 8601 string
+  revokedAt: string | null;
+};
+
+export type RevokeSessionResult = {
+  success: boolean;
+  message: string;
+  revokedSessionId?: string;
+  revokedCount?: number;
+};
+
+/**
  * Zod schema for UUID validation — used across all route parameters.
  */
 export const UuidSchema = z.string().uuid({ message: 'Invalid UUID format' });

@@ -4,6 +4,7 @@ import { AuthDomainError } from '@/shared/errors/DomainError.js';
 import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
 import type { IJwtService } from '../interfaces/IJwtService.js';
 import type { ISessionService } from '../interfaces/ISessionService.js';
+import type { ParsedDeviceInfo } from '@/shared/utils/device-parser.js';
 
 const log = createModuleLogger('OAuthLoginUseCase');
 
@@ -25,7 +26,7 @@ export class OAuthLoginUseCase {
     private readonly sessionService: ISessionService
   ) {}
 
-  async execute(profile: OAuthProfile) {
+  async execute(profile: OAuthProfile, metadata?: Partial<ParsedDeviceInfo>) {
     try {
       // 1. Check if OAuth account already exists
       let user = await this.userRepository.findByOAuthAccount(profile.provider, profile.providerAccountId);
@@ -59,21 +60,16 @@ export class OAuthLoginUseCase {
       // 4. Optionally update avatar if we have a new one and user doesn't
       if (profile.avatarUrl !== undefined && profile.avatarUrl !== null && profile.avatarUrl !== '' && (user.avatarUrl === undefined || user.avatarUrl === null || user.avatarUrl === '')) {
         await this.userRepository.updateAvatar(user.id, profile.avatarUrl);
-        // user.updateAvatar(profile.avatarUrl);
       }
 
-      // 5. Create Session & Tokens
-      const sessionId = await this.sessionService.createSession(user.id);
+      // 5. Create Session with device telemetry & Tokens
+      const sessionId = await this.sessionService.createSession(user.id, metadata);
       const { accessToken, refreshToken } = await this.jwtService.generateTokenPair(user, sessionId);
 
-      // We only store the hash of the refresh token
-      // Currently session logic saves "active" so we need to store the hash somewhere if tracking.
-      // We will skip storing the hash for OAuth unless needed (Redis is just using sessionId as key).
-
-      await this.userRepository.updateLastLogin(user.id, 'OAuth');
+      await this.userRepository.updateLastLogin(user.id, metadata?.ipAddress ?? 'OAuth');
       await this.userRepository.resetLoginAttempts(user.id);
 
-      log.info({ userId: user.id, provider: profile.provider }, `OAuth login successful`);
+      log.info({ userId: user.id, provider: profile.provider, browser: metadata?.browser, os: metadata?.os }, `OAuth login successful`);
 
       return {
         accessToken,
