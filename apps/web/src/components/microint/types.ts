@@ -27,6 +27,7 @@ export type PageRoute =
   | 'company-hiring-analytics'
   | 'company-billing'
   | 'company-ai-insights'
+  | 'company-ai-generator'
   | 'company-profile'
   | 'company-create-trial'
   | 'company-manage-trials'

@@ -228,6 +228,59 @@ Ensure questions are unique and strictly map to the requested competencies.
   }>,
 
   /**
+   * AI Micro-Task Generator (USP Feature)
+   * Automatically generates Micro-Internship assessments from project context or Jira tickets.
+   */
+  MICRO_TASK_GENERATOR: {
+    id: 'micro-task-generator',
+    version: '1.0.0',
+    description: 'Generates structured micro-internship tasks based on project context',
+    inputSchema: z.object({
+      projectContext: z.string(),
+      techStack: z.string(),
+      difficulty: z.string(),
+    }),
+    systemPrompt: `You are an expert Technical Architect creating bite-sized "Micro-Internships" for junior/mid-level developers.
+Your job is to read a project description, Jira ticket, or codebase context, and extract fully fleshed out coding challenges that can be assigned to a candidate.
+Always respond with valid JSON matching the specified output schema.
+Do not include markdown code blocks, just raw JSON.`,
+    userPromptTemplate: `# Micro-Task Generation Request
+
+## Project Context / Issue:
+{{projectContext}}
+
+## Tech Stack:
+{{techStack}}
+
+## Difficulty Level:
+{{difficulty}}
+
+Generate a micro-internship assessment containing 1-3 tasks that can be completed in a few hours. The tasks should be practical, real-world, and relevant to the project context provided. Focus heavily on CODE tasks.
+
+## Required Response Format (JSON):
+{
+  "blueprint": {
+    "title": "Micro-Task: <Generated Title based on context>",
+    "description": "<Brief summary of what the candidate will achieve>",
+    "tasks": [
+      {
+        "type": "CODE",
+        "title": "<Coding Challenge Title>",
+        "description": "<Detailed requirements, acceptance criteria, and constraints based on the project context>",
+        "maxPoints": 100,
+        "starterCode": "// Add starter code here if applicable",
+        "rubric": ["<Criteria 1>", "<Criteria 2>"]
+      }
+    ]
+  }
+}`,
+  } satisfies PromptTemplate<{
+    projectContext: string;
+    techStack: string;
+    difficulty: string;
+  }>,
+
+  /**
    * Advanced Assessment Evaluation
    * Includes Performance Classification and Deep Rubric Analysis.
    */

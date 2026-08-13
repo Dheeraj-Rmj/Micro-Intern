@@ -38,6 +38,7 @@ import {
   CompanyHiringAnalyticsPage,
   CompanyBillingPage,
   CompanyAIInsightsPage,
+  CompanyAIGeneratorPage,
 } from './components/company';
 
 const MainRouter: React.FC = () => {
@@ -145,7 +146,8 @@ const MainRouter: React.FC = () => {
         return <CompanyBillingPage />;
       case 'company-ai-insights':
         return <CompanyAIInsightsPage />;
-      
+      case 'company-ai-generator':
+        return <CompanyAIGeneratorPage />;
       // Kept for backward compatibility/internal routing if needed
       case 'company-applications':
       case 'company-evaluations':

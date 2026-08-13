@@ -210,5 +210,14 @@ export const assessmentApi = {
     // Default JSON payload
     const { data } = await apiClient.post(`/assessments/${id}/submit`, payload);
     return data.data;
+  },
+
+  generateMicroTasks: async (payload: {
+    projectContext: string;
+    techStack: string;
+    difficulty: string;
+  }): Promise<{ id: string }> => {
+    const { data } = await apiClient.post<{ data: { id: string } }>('/assessments/generate-micro-tasks', payload);
+    return data.data;
   }
 };

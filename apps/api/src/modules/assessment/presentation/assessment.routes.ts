@@ -26,6 +26,7 @@ import {
   ListTemplatesUseCase,
 } from '../application/use-cases/assessment-templates.usecase.js';
 import { GetAssessmentAnalyticsUseCase } from '../application/use-cases/get-assessment-analytics.usecase.js';
+import { GenerateMicroTasksUseCase } from '../application/use-cases/generate-micro-tasks.usecase.js';
 import { PrismaAssessmentRepository } from '../infrastructure/repositories/PrismaAssessmentRepository.js';
 
 import { AssessmentController } from './assessment.controller.js';
@@ -37,6 +38,7 @@ import {
   RestoreVersionSchema,
   SaveAsTemplateSchema,
   AIJobRequestSchema,
+  GenerateMicroTasksSchema,
 } from './assessment.schemas.js';
 
 import type { InfrastructureDependencies } from '@/core/container.js';
@@ -63,6 +65,10 @@ export function registerAssessmentModuleDependencies(): void {
     container.register('SaveAsTemplateUseCase', () => new SaveAsTemplateUseCase(container.get('IAssessmentRepository')));
     container.register('ListTemplatesUseCase', () => new ListTemplatesUseCase(container.get('IAssessmentRepository')));
     container.register('GetAssessmentAnalyticsUseCase', () => new GetAssessmentAnalyticsUseCase(container.get('IAssessmentRepository')));
+    container.register('GenerateMicroTasksUseCase', () => new GenerateMicroTasksUseCase(
+      container.get('AIFallbackEngine'),
+      container.get('IAssessmentRepository')
+    ));
     container.register('AssessmentController', () => new AssessmentController(
       container.get('CreateAssessmentUseCase'),
       container.get('UpdateAssessmentUseCase'),
@@ -77,7 +83,8 @@ export function registerAssessmentModuleDependencies(): void {
       container.get('RestoreAssessmentVersionUseCase'),
       container.get('SaveAsTemplateUseCase'),
       container.get('ListTemplatesUseCase'),
-      container.get('GetAssessmentAnalyticsUseCase')
+      container.get('GetAssessmentAnalyticsUseCase'),
+      container.get('GenerateMicroTasksUseCase')
     ));
   }
 }
@@ -103,6 +110,16 @@ export function createAssessmentRouter(): Router {
     validate('body', CreateAssessmentSchema),
     audit(AuditAction.CREATE, 'Assessment') as RequestHandler,
     (req, res, next) => { controller.createAssessment(req, res, next).catch(next); }
+  );
+
+  // POST /api/v1/assessments/generate-micro-tasks - Generate Micro-Tasks from AI
+  router.post(
+    '/generate-micro-tasks',
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
+    validate('body', GenerateMicroTasksSchema),
+    audit(AuditAction.CREATE, 'Assessment') as RequestHandler,
+    (req, res, next) => { controller.generateMicroTasks(req, res, next).catch(next); }
   );
 
   // GET /api/v1/assessments - List public open marketplace assessment assessments

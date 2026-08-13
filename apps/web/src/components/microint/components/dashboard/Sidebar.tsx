@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Terminal,
   Key,
+  Bot,
 } from 'lucide-react';
 import { Logo } from '../common/Logo';
 
@@ -77,6 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
     { id: 'company-hiring-analytics' as PageRoute, label: 'Hiring Analytics', icon: Compass },
     { id: 'company-billing' as PageRoute, label: 'Billing & Subscription', icon: FileCheck },
     { id: 'company-ai-insights' as PageRoute, label: 'AI Insights', icon: Code2 },
+    { id: 'company-ai-generator' as PageRoute, label: 'AI Task Generator', icon: Bot },
   ];
 
   const adminMenuItems: MenuItem[] = [

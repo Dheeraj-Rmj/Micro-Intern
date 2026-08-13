@@ -99,4 +99,11 @@ export const AIJobRequestSchema = z.object({
     'GENERATE_EVALUATION_NOTES',
   ]),
   input: z.record(z.unknown()),
+  context: z.string().optional(),
+});
+
+export const GenerateMicroTasksSchema = z.object({
+  projectContext: z.string().min(10),
+  techStack: z.string().min(2),
+  difficulty: z.string().min(2),
 });

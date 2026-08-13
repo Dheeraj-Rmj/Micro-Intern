@@ -6,3 +6,4 @@ export * from './CompanyDepartmentsPage';
 export * from './CompanyHiringAnalyticsPage';
 export * from './CompanyBillingPage';
 export * from './CompanyAIInsightsPage';
+export * from './CompanyAIGeneratorPage';

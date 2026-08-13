@@ -27,6 +27,7 @@ import type {
   ListTemplatesUseCase,
 } from '../application/use-cases/assessment-templates.usecase.js';
 import type { GetAssessmentAnalyticsUseCase } from '../application/use-cases/get-assessment-analytics.usecase.js';
+import type { GenerateMicroTasksUseCase } from '../application/use-cases/generate-micro-tasks.usecase.js';
 import type { Request, Response, NextFunction } from 'express';
 
 export class AssessmentController {
@@ -44,7 +45,8 @@ export class AssessmentController {
     private readonly restoreAssessmentVersionUseCase?: RestoreAssessmentVersionUseCase,
     private readonly saveAsTemplateUseCase?: SaveAsTemplateUseCase,
     private readonly listTemplatesUseCase?: ListTemplatesUseCase,
-    private readonly getAssessmentAnalyticsUseCase?: GetAssessmentAnalyticsUseCase
+    private readonly getAssessmentAnalyticsUseCase?: GetAssessmentAnalyticsUseCase,
+    private readonly generateMicroTasksUseCase?: GenerateMicroTasksUseCase
   ) {}
 
   async createAssessment(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -247,5 +249,18 @@ export class AssessmentController {
     const companyId = req.query['companyId'] as string | undefined;
     const summary = await aiUsageAnalyticsService.getSummary({ assessmentId, companyId });
     ResponseFormatter.success(res, summary);
+  }
+  async generateMicroTasks(req: Request, res: Response, next: NextFunction): Promise<void> {
+    if (!this.generateMicroTasksUseCase) {
+      throw new Error('GenerateMicroTasksUseCase not initialized');
+    }
+    const result = await this.generateMicroTasksUseCase.execute({
+      projectContext: req.body.projectContext,
+      techStack: req.body.techStack,
+      difficulty: req.body.difficulty,
+      companyId: req.user!.companyId!,
+      createdById: req.user!.id,
+    });
+    ResponseFormatter.success(res, result);
   }
 }
