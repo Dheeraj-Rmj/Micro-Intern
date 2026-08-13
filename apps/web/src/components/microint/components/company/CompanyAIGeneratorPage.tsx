@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Bot, Sparkles, Code, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
-import { api } from '../../../api/client';
-import { useApp } from '../../../context/AppContext';
+import { assessmentApi } from '@/lib/api/assessment';
+import { useApp } from '../../context/AppContext';
 
 export const CompanyAIGeneratorPage: React.FC = () => {
   const { setCurrentRoute } = useApp();
@@ -18,7 +18,7 @@ export const CompanyAIGeneratorPage: React.FC = () => {
     setResult(null);
 
     try {
-      const response = await api.assessments.generateMicroTasks({
+      const response = await assessmentApi.generateMicroTasks({
         projectContext,
         techStack,
         difficulty,
