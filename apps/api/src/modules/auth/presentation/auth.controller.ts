@@ -1,3 +1,4 @@
+import { config } from '@/core/config.js';
 import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
 import { parseDeviceFromRequest } from '@/shared/utils/device-parser.js';
 
@@ -49,16 +50,26 @@ export class AuthController {
   // OAuth Callbacks
   handleOAuthCallback = (req: Request, res: Response, next: NextFunction): void => {
     try {
-      const result = req.user as Record<string, unknown> | undefined;
-      if (result === undefined || result === null || typeof result !== 'object') {
-        res.status(401).json({ success: false, error: { message: 'OAuth failed' } });
+      const result = req.user as any;
+      if (!result || !result.tokens) {
+        res.redirect(`${config.FRONTEND_URL}/login?error=OAuthFailed`);
         return;
       }
       
-      res.status(200).json({
-        success: true,
-        data: result,
-      });
+      const { accessToken, refreshToken } = result.tokens;
+
+      // Set httpOnly cookie for refresh token
+      if (refreshToken) {
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          secure: process.env['NODE_ENV'] === 'production',
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+      }
+
+      // Redirect to frontend callback route with access token
+      res.redirect(`${config.FRONTEND_URL}/oauth/callback?token=${accessToken}`);
     } catch (error) {
       next(error);
     }
