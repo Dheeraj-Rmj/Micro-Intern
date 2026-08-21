@@ -85,6 +85,20 @@ export class AuthController {
         req.body as ReturnType<typeof LoginSchema.parse>,
         metadata,
       );
+
+      // Set httpOnly cookie for CSRF and XSS protection
+      if (result.tokens && result.tokens.refreshToken) {
+        res.cookie('refreshToken', result.tokens.refreshToken, {
+          httpOnly: true,
+          secure: process.env['NODE_ENV'] === 'production',
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+        
+        // Remove refreshToken from the payload so it doesn't get stored in JS memory
+        result.tokens.refreshToken = undefined as any;
+      }
+
       ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);
@@ -98,6 +112,18 @@ export class AuthController {
         req.body as ReturnType<typeof RegisterCandidateSchema.parse>,
         metadata,
       );
+
+      // Set httpOnly cookie for CSRF and XSS protection
+      if (result.tokens && result.tokens.refreshToken) {
+        res.cookie('refreshToken', result.tokens.refreshToken, {
+          httpOnly: true,
+          secure: process.env['NODE_ENV'] === 'production',
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+        result.tokens.refreshToken = undefined as any;
+      }
+
       ResponseFormatter.created(res, result);
     } catch (error) {
       next(error);
@@ -107,8 +133,29 @@ export class AuthController {
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const metadata = parseDeviceFromRequest(req);
-      const { refreshToken } = req.body as ReturnType<typeof RefreshTokenSchema.parse>;
-      const result = await this.refreshTokenUseCase.execute(refreshToken, metadata);
+      // Try to get token from body first, then fallback to cookie
+      const tokenFromBody = req.body?.refreshToken;
+      const tokenFromCookie = req.cookies?.['refreshToken'] as string | undefined;
+      const refreshTokenValue = tokenFromBody || tokenFromCookie;
+      
+      if (!refreshTokenValue) {
+        res.status(401).json({ success: false, error: { message: 'Refresh token required' } });
+        return;
+      }
+
+      const result = await this.refreshTokenUseCase.execute(refreshTokenValue, metadata);
+      
+      // Update the httpOnly cookie with the new refresh token if one was issued
+      if ((result as any).refreshToken) {
+        res.cookie('refreshToken', (result as any).refreshToken, {
+          httpOnly: true,
+          secure: process.env['NODE_ENV'] === 'production',
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        (result as any).refreshToken = undefined;
+      }
+
       ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);

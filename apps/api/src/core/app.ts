@@ -1,4 +1,5 @@
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import express, { type Application } from 'express';
 import { pinoHttp } from 'pino-http';
 
@@ -7,7 +8,8 @@ import { createV1Router } from '@/api/v1/index.js';
 import { errorMiddleware } from '@/middleware/error.middleware.js';
 import { createRateLimitMiddleware } from '@/middleware/ratelimit.middleware.js';
 import { applySecurityMiddleware } from '@/middleware/security.middleware.js';
-
+import { strictContentTypeMiddleware } from '@/middleware/content-type.middleware.js';
+import { xssSanitizerMiddleware } from '@/middleware/xss.middleware.js';
 import { logger } from './logger.js';
 
 /**
@@ -37,6 +39,11 @@ export function createApp(): Application {
   // ── Body parsing ─────────────────────────────────────────────────────────
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(cookieParser());
+
+  // ── Advanced Data Security (XXE & XSS) ───────────────────────────────────
+  app.use(strictContentTypeMiddleware);
+  app.use(xssSanitizerMiddleware);
 
   // ── Compression ──────────────────────────────────────────────────────────
   app.use(compression());
