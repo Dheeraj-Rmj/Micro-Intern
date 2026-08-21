@@ -258,7 +258,7 @@ export function createAuthRouter(): Router {
   // GET /auth/microsoft
   router.get(
     '/microsoft',
-    passport.authenticate('microsoft', { session: false }),
+    passport.authenticate('microsoft', { session: false, prompt: 'select_account' }),
   );
 
   // GET /auth/microsoft/callback
@@ -284,7 +284,7 @@ export function createAuthRouter(): Router {
   // GET /auth/google
   router.get(
     '/google',
-    passport.authenticate('google', { session: false, scope: ['profile', 'email'] }),
+    passport.authenticate('google', { session: false, scope: ['profile', 'email'], prompt: 'select_account' }),
   );
 
   // GET /auth/google/callback
