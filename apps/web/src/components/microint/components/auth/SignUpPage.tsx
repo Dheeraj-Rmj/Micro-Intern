@@ -97,8 +97,8 @@ export const SignUpPage: React.FC = () => {
   };
 
   const handleSocialAuth = (provider: string) => {
-    showToast(`Signed up via ${provider}`, 'Welcome to MicroIntern!', 'success');
-    setCurrentRoute('dashboard');
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+    window.location.href = `${API_URL}/auth/${provider.toLowerCase()}`;
   };
 
   const isFormValid =

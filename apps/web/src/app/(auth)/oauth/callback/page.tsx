@@ -37,8 +37,11 @@ export default function OAuthCallbackPage() {
         // 3. Save to global state
         useAuthStore.getState().setAuth(user, token as string);
         
-        // 4. Redirect to the dashboard
-        router.push('/dashboard');
+        // 4. Set legacy mock UI route state to 'dashboard' and redirect to root
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('microintern_current_route', 'dashboard');
+        }
+        router.push('/');
       } catch (err) {
         console.error('OAuth callback error:', err);
         setError('Failed to fetch user profile. Please try logging in again.');

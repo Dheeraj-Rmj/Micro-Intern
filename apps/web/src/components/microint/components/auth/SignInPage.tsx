@@ -128,9 +128,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
       showToast('Unauthorized Access', 'Social OAuth is only permitted on the Candidate Portal (app.microintern.com).', 'warning');
       return;
     }
-    showToast(`Authenticated via ${provider}`, 'Welcome to app.microintern.com (Candidate Portal)!', 'success');
-    setRole('candidate');
-    setCurrentRoute('dashboard');
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+    window.location.href = `${API_URL}/auth/${provider.toLowerCase()}`;
   };
 
   const isFormValid = identifier.trim().length > 0 && password.trim().length > 0;
