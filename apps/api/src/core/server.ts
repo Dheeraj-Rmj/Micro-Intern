@@ -146,6 +146,15 @@ async function bootstrap(): Promise<void> {
       },
       `✅ API server listening`,
     );
+
+    // ── Render Free Tier Keep-Alive ──────────────────────────────────────────
+    // Sends a ping every 30 seconds to prevent the instance from spinning down.
+    setInterval(() => {
+      const url = config.API_BASE_URL ? `${config.API_BASE_URL}/health` : `http://127.0.0.1:${config.API_PORT}/health`;
+      http.get(url).on('error', (err) => {
+        logger.debug({ err: err.message }, 'Keep-alive ping failed (non-critical)');
+      });
+    }, 30_000); // 30 seconds
   });
 
   // ── Graceful shutdown ─────────────────────────────────────────────────────
