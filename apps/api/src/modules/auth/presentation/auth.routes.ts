@@ -268,5 +268,18 @@ export function createAuthRouter(): Router {
     controller.handleOAuthCallback,
   );
 
+  // GET /auth/github
+  router.get(
+    '/github',
+    passport.authenticate('github', { session: false, scope: ['user:email'] }),
+  );
+
+  // GET /auth/github/callback
+  router.get(
+    '/github/callback',
+    passport.authenticate('github', { session: false, failureRedirect: '/login' }),
+    controller.handleOAuthCallback,
+  );
+
   return router;
 }
