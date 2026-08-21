@@ -123,11 +123,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build packages
-        run: pnpm build --filter @microintern/shared --filter @microintern/database
-
       - name: Generate Prisma client
         run: pnpm db:generate
+
+      - name: Build packages
+        run: pnpm build --filter @microintern/shared --filter @microintern/database
 
       - name: Run migrations (test DB)
         env:
