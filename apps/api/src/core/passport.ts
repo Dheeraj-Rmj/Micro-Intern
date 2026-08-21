@@ -1,6 +1,8 @@
 import passport from 'passport';
 import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as GitHubStrategy } from 'passport-github2';
 
 import { config } from './config.js';
 import { getContainer } from './container.js';
@@ -25,7 +27,7 @@ if (config.LINKEDIN_CLIENT_ID !== undefined && config.LINKEDIN_CLIENT_SECRET !==
       {
         clientID: config.LINKEDIN_CLIENT_ID,
         clientSecret: config.LINKEDIN_CLIENT_SECRET,
-        callbackURL: config.LINKEDIN_CALLBACK_URL ?? 'http://localhost:4000/api/v1/auth/linkedin/callback',
+        callbackURL: config.LINKEDIN_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/linkedin/callback`,
         scope: ['r_emailaddress', 'r_liteprofile'],
       },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -67,7 +69,7 @@ if (config.MICROSOFT_CLIENT_ID !== undefined && config.MICROSOFT_CLIENT_SECRET !
       {
         clientID: config.MICROSOFT_CLIENT_ID,
         clientSecret: config.MICROSOFT_CLIENT_SECRET,
-        callbackURL: config.MICROSOFT_CALLBACK_URL ?? 'http://localhost:4000/api/v1/auth/microsoft/callback',
+        callbackURL: config.MICROSOFT_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/microsoft/callback`,
         scope: ['user.read'],
       },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -87,6 +89,90 @@ if (config.MICROSOFT_CLIENT_ID !== undefined && config.MICROSOFT_CLIENT_SECRET !
             email,
             firstName,
             lastName,
+            accessToken,
+            refreshToken,
+          });
+
+          done(null, result);
+        } catch (error) {
+          done(error, false);
+        }
+      }
+    )
+  );
+}
+
+// Setup Google Strategy
+if (config.GOOGLE_CLIENT_ID !== undefined && config.GOOGLE_CLIENT_SECRET !== undefined) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: config.GOOGLE_CLIENT_ID,
+        clientSecret: config.GOOGLE_CLIENT_SECRET,
+        callbackURL: config.GOOGLE_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/google/callback`,
+      },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
+        try {
+          const container = getContainer();
+          const oauthLoginUseCase = container.get<OAuthLoginUseCase>('OAuthLoginUseCase');
+
+          const email = profile.emails?.[0]?.value ?? '';
+          const firstName = profile.name?.givenName ?? '';
+          const lastName = profile.name?.familyName ?? '';
+          const avatarUrl = profile.photos?.[0]?.value ?? '';
+
+          const result = await oauthLoginUseCase.execute({
+            provider: 'GOOGLE',
+            providerAccountId: profile.id,
+            email,
+            firstName,
+            lastName,
+            avatarUrl,
+            accessToken,
+            refreshToken,
+          });
+
+          done(null, result);
+        } catch (error) {
+          done(error, false);
+        }
+      }
+    )
+  );
+}
+
+// Setup GitHub Strategy
+if (config.GITHUB_CLIENT_ID !== undefined && config.GITHUB_CLIENT_SECRET !== undefined) {
+  passport.use(
+    new GitHubStrategy(
+      {
+        clientID: config.GITHUB_CLIENT_ID,
+        clientSecret: config.GITHUB_CLIENT_SECRET,
+        callbackURL: config.GITHUB_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/github/callback`,
+        scope: ['user:email'],
+      },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
+        try {
+          const container = getContainer();
+          const oauthLoginUseCase = container.get<OAuthLoginUseCase>('OAuthLoginUseCase');
+
+          // GitHub emails might be buried or hidden, handle carefully
+          const email = profile.emails?.[0]?.value ?? profile._json?.email ?? '';
+          const fullName = profile.displayName ?? profile.username ?? '';
+          const nameParts = fullName.split(' ');
+          const firstName = nameParts[0];
+          const lastName = nameParts.slice(1).join(' ');
+          const avatarUrl = profile.photos?.[0]?.value ?? '';
+
+          const result = await oauthLoginUseCase.execute({
+            provider: 'GITHUB',
+            providerAccountId: profile.id,
+            email,
+            firstName,
+            lastName,
+            avatarUrl,
             accessToken,
             refreshToken,
           });
