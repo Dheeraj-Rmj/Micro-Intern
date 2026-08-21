@@ -281,5 +281,18 @@ export function createAuthRouter(): Router {
     controller.handleOAuthCallback,
   );
 
+  // GET /auth/google
+  router.get(
+    '/google',
+    passport.authenticate('google', { session: false, scope: ['profile', 'email'] }),
+  );
+
+  // GET /auth/google/callback
+  router.get(
+    '/google/callback',
+    passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+    controller.handleOAuthCallback,
+  );
+
   return router;
 }
