@@ -3,8 +3,11 @@ import path from 'path';
 
 const config: NextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
-  outputFileTracingRoot: path.join(__dirname, '../../'),
+  // Vercel handles serverless tracing natively, standalone is only for Docker
+  ...(process.env.VERCEL ? {} : {
+    output: 'standalone',
+    outputFileTracingRoot: path.join(__dirname, '../../'),
+  }),
   // @ts-expect-error - Next.js 16 typing changes
   eslint: {
     ignoreDuringBuilds: true,
