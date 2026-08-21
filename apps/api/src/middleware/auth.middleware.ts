@@ -44,6 +44,8 @@ export async function authMiddleware(
   next: NextFunction,
 ): Promise<void> {
   try {
+
+
     const token = extractBearerToken(req);
 
     if (token === null) {
@@ -99,6 +101,8 @@ export async function optionalAuthMiddleware(
   _res: Response,
   next: NextFunction,
 ): Promise<void> {
+
+
   const token = extractBearerToken(req);
   if (token === null) {
     next();

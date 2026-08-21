@@ -1,0 +1,50 @@
+{
+  "featureFlags": {
+    "aiReader": true,
+    "aiSearch": true,
+    "zenQuotes": true,
+    "stripeLiveMode": true,
+    "antiCheatDaemon": true,
+    "maintenanceMode": false
+  },
+  "emailTemplates": [
+    {
+      "id": "candidate_onboarding",
+      "name": "Candidate Onboarding Invitation",
+      "subject": "Welcome to MicroIntern - Complete Your eKYC Onboarding",
+      "body": "Hello {{name}},\n\nWelcome to MicroIntern! Please click the link below to verify your account and start your real-world skill trials.\n\nBest regards,\nThe MicroIntern Team"
+    },
+    {
+      "id": "interview_scheduled",
+      "name": "Interview Scheduled Notification",
+      "subject": "Interview Confirmed: {{trialTitle}}",
+      "body": "Hello {{name}},\n\nYour technical panel interview for {{trialTitle}} has been scheduled successfully. Please find details below:\n\nDate/Time: {{dateTime}}\nMeeting Link: {{meetingLink}}"
+    },
+    {
+      "id": "trial_graded",
+      "name": "Assessment Evaluation Graded",
+      "subject": "Your Skill Trial Score is Available for {{trialTitle}}",
+      "body": "Hello {{name}},\n\nCongratulations! Your workspace solution for {{trialTitle}} has been graded. Your total score is {{score}}%.\n\nFeedback:\n{{feedback}}"
+    }
+  ],
+  "apiKeys": [
+    {
+      "id": "openai",
+      "name": "OpenAI Evaluation API Key",
+      "keyMasked": "sk-proj-...8aK9",
+      "status": "HEALTHY"
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe Escrow Connect API Key",
+      "keyMasked": "rk_live_...2A0d",
+      "status": "HEALTHY"
+    },
+    {
+      "id": "tavily",
+      "name": "Tavily Web Search API Key",
+      "keyMasked": "tvly-...fD82",
+      "status": "HEALTHY"
+    }
+  ]
+}

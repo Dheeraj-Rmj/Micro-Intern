@@ -98,6 +98,8 @@ export function createContainer(): ApplicationContainer {
     aiEngine: new AIFallbackEngine(createAIProviders()),
   });
 
+  containerInstance.register('AIFallbackEngine', (infra) => infra.aiEngine);
+
   return containerInstance;
 }
 

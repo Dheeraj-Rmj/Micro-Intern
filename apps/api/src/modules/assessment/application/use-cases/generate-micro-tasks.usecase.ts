@@ -65,7 +65,6 @@ export class GenerateMicroTasksUseCase {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '') + '-' + Date.now();
 
-      // Save to Database
       const assessment = await this.assessmentRepository.create({
         companyId: input.companyId,
         createdById: input.createdById,
@@ -86,16 +85,17 @@ export class GenerateMicroTasksUseCase {
           },
         })),
       });
+      const assessmentId = assessment.id;
 
       log.info(
         {
-          assessmentId: assessment.id,
+          assessmentId,
           taskCount: parsed.blueprint.tasks.length,
         },
-        'Successfully generated and saved micro-tasks',
+        'Successfully generated micro-tasks',
       );
 
-      return { id: assessment.id };
+      return { id: assessmentId };
     } catch (error) {
       log.error({ err: error }, 'Failed to generate micro-tasks');
       throw new Error('Failed to generate micro-tasks using AI');
