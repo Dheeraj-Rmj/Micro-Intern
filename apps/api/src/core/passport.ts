@@ -110,7 +110,7 @@ if (config.GOOGLE_CLIENT_ID !== undefined && config.GOOGLE_CLIENT_SECRET !== und
         clientID: config.GOOGLE_CLIENT_ID,
         clientSecret: config.GOOGLE_CLIENT_SECRET,
         callbackURL: config.GOOGLE_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/google/callback`,
-      },
+      } as any,
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
         try {
@@ -151,7 +151,7 @@ if (config.GITHUB_CLIENT_ID !== undefined && config.GITHUB_CLIENT_SECRET !== und
         clientSecret: config.GITHUB_CLIENT_SECRET,
         callbackURL: config.GITHUB_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/github/callback`,
         scope: ['user:email'],
-      },
+      } as any,
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
         try {
