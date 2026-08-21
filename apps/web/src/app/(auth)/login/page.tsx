@@ -13,8 +13,8 @@ export default function LoginPage() {
       {/* Left side: branding & illustration */}
       <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-indigo-50 to-white border-r border-gray-100 relative overflow-hidden">
         {/* Background blobs for aesthetic */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-        <div className="absolute top-40 -right-20 w-80 h-80 bg-blue-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
+        <div className="absolute top-40 -right-20 w-80 h-80 bg-blue-200/50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
         
         <div className="z-10 relative">
           <Link href="/" className="inline-block">
@@ -35,7 +35,7 @@ export default function LoginPage() {
         
         <div className="z-10 relative">
           <blockquote className="text-gray-700 italic border-l-4 border-indigo-500 pl-4 py-1">
-            "MicroIntern completely changed how we hire. The candidates are pre-vetted with real project evidence."
+            &quot;MicroIntern completely changed how we hire. The candidates are pre-vetted with real project evidence.&quot;
           </blockquote>
           <p className="mt-2 text-sm font-semibold text-gray-900">— Sarah J., Engineering Manager at TechCorp</p>
         </div>

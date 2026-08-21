@@ -78,7 +78,7 @@ export default function OAuthCallbackPage() {
         className="text-center"
       >
         <div className="relative mb-8 inline-block">
-          <div className="absolute inset-0 bg-indigo-500 blur-xl opacity-20 rounded-full animate-pulse"></div>
+          <div className="absolute inset-0 bg-indigo-500 blur-xl opacity-20 rounded-full animate-pulse" />
           <div className="w-20 h-20 bg-white rounded-full shadow-lg border border-gray-100 flex items-center justify-center relative z-10">
             <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
           </div>
