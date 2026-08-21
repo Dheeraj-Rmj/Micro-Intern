@@ -128,7 +128,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
       showToast('Unauthorized Access', 'Social OAuth is only permitted on the Candidate Portal (app.microintern.com).', 'warning');
       return;
     }
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://micro-intern-4stz.onrender.com/api/v1';
+    const API_URL = process.env['NEXT_PUBLIC_API_URL'] || 'https://micro-intern-4stz.onrender.com/api/v1';
     window.location.href = `${API_URL}/auth/${provider.toLowerCase()}`;
   };
 
