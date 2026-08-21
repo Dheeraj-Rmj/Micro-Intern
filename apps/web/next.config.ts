@@ -4,7 +4,7 @@ import path from 'path';
 const config: NextConfig = {
   reactStrictMode: true,
   // Vercel handles serverless tracing natively, standalone is only for Docker
-  ...(process.env.VERCEL ? {} : {
+  ...(process.env['VERCEL'] ? {} : {
     output: 'standalone',
     outputFileTracingRoot: path.join(__dirname, '../../'),
   }),
