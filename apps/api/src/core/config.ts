@@ -20,7 +20,7 @@ const configSchema = z.object({
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
 
   // Server
-  API_PORT: z.string().transform(Number).default('3001'),
+  API_PORT: z.string().transform(Number).default(process.env['PORT'] ?? '3001'),
   API_HOST: z.string().default('0.0.0.0'),
   API_BASE_URL: z.string().url(),
   FRONTEND_URL: z.string().url(),
