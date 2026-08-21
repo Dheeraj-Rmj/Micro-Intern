@@ -1,7 +1,5 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import App from '@/components/microint/App';
-
-export default function CandidateHomePage() {
-  return <App />;
+export default function Home() {
+  redirect('/login');
 }
