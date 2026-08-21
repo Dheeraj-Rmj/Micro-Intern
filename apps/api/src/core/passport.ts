@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { Strategy as LinkedInStrategy } from 'passport-linkedin-oauth2';
+import OAuth2Strategy from 'passport-oauth2';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
@@ -22,14 +22,15 @@ type VerifyCallback = (error: unknown, user?: unknown, info?: unknown) => void;
 
 // Setup LinkedIn Strategy
 if (config.LINKEDIN_CLIENT_ID !== undefined && config.LINKEDIN_CLIENT_SECRET !== undefined && config.LINKEDIN_CLIENT_SECRET !== undefined && config.LINKEDIN_CLIENT_SECRET !== undefined) {
-  passport.use(
-    new LinkedInStrategy(
-      {
-        clientID: config.LINKEDIN_CLIENT_ID,
-        clientSecret: config.LINKEDIN_CLIENT_SECRET,
-        callbackURL: config.LINKEDIN_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/linkedin/callback`,
-        scope: ['r_emailaddress', 'r_liteprofile'],
-      },
+  const linkedInStrategy = new OAuth2Strategy(
+    {
+      authorizationURL: 'https://www.linkedin.com/oauth/v2/authorization',
+      tokenURL: 'https://www.linkedin.com/oauth/v2/accessToken',
+      clientID: config.LINKEDIN_CLIENT_ID,
+      clientSecret: config.LINKEDIN_CLIENT_SECRET,
+      callbackURL: config.LINKEDIN_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/linkedin/callback`,
+      scope: ['openid', 'profile', 'email'],
+    },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (accessToken: string, refreshToken: string, profile: unknown, done: VerifyCallback) => {
         try {
@@ -58,8 +59,30 @@ if (config.LINKEDIN_CLIENT_ID !== undefined && config.LINKEDIN_CLIENT_SECRET !==
           done(error, false);
         }
       }
-    )
-  );
+    );
+
+    linkedInStrategy.name = 'linkedin';
+    linkedInStrategy.userProfile = function (accessToken: string, done: (err?: Error | null, profile?: any) => void) {
+      (this as any)._oauth2.get('https://api.linkedin.com/v2/userinfo', accessToken, (err: Error | null, body: string) => {
+        if (err) {
+          return done(new Error('Failed to fetch user profile from LinkedIn OIDC endpoint'));
+        }
+        try {
+          const json = JSON.parse(body);
+          const profile = {
+            id: json.sub,
+            emails: [{ value: json.email }],
+            name: { givenName: json.given_name, familyName: json.family_name },
+            photos: [{ value: json.picture }]
+          };
+          done(null, profile);
+        } catch (e) {
+          done(e as Error);
+        }
+      });
+    };
+
+    passport.use(linkedInStrategy);
 }
 
 // Setup Microsoft Strategy
