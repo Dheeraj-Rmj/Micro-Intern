@@ -102,15 +102,15 @@ if (config.MICROSOFT_CLIENT_ID !== undefined && config.MICROSOFT_CLIENT_SECRET !
   );
 }
 
-// Setup Google Strategy
+const GoogleAuthStrategy = GoogleStrategy as any;
 if (config.GOOGLE_CLIENT_ID !== undefined && config.GOOGLE_CLIENT_SECRET !== undefined) {
   passport.use(
-    new GoogleStrategy(
+    new GoogleAuthStrategy(
       {
         clientID: config.GOOGLE_CLIENT_ID,
         clientSecret: config.GOOGLE_CLIENT_SECRET,
         callbackURL: config.GOOGLE_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/google/callback`,
-      } as any,
+      },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
         try {
@@ -142,16 +142,16 @@ if (config.GOOGLE_CLIENT_ID !== undefined && config.GOOGLE_CLIENT_SECRET !== und
   );
 }
 
-// Setup GitHub Strategy
+const GitHubAuthStrategy = GitHubStrategy as any;
 if (config.GITHUB_CLIENT_ID !== undefined && config.GITHUB_CLIENT_SECRET !== undefined) {
   passport.use(
-    new GitHubStrategy(
+    new GitHubAuthStrategy(
       {
         clientID: config.GITHUB_CLIENT_ID,
         clientSecret: config.GITHUB_CLIENT_SECRET,
         callbackURL: config.GITHUB_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/github/callback`,
         scope: ['user:email'],
-      } as any,
+      },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
         try {
