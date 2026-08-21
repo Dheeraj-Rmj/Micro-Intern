@@ -19,7 +19,7 @@ export default function OAuthCallbackPage() {
     
     if (!token) {
       setError('Authentication failed. No token received from provider.');
-      setTimeout(() => router.push('/login'), 3000);
+      setTimeout(() => router.push('/'), 3000);
       return;
     }
 
@@ -45,7 +45,7 @@ export default function OAuthCallbackPage() {
       } catch (err) {
         console.error('OAuth callback error:', err);
         setError('Failed to fetch user profile. Please try logging in again.');
-        setTimeout(() => router.push('/login'), 3000);
+        setTimeout(() => router.push('/'), 3000);
       }
     }
 

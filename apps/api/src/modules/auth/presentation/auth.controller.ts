@@ -52,7 +52,7 @@ export class AuthController {
     try {
       const result = req.user as any;
       if (!result || !result.tokens) {
-        res.redirect(`${config.FRONTEND_URL}/login?error=OAuthFailed`);
+        res.redirect(`${config.FRONTEND_URL}/?error=OAuthFailed`);
         return;
       }
       
