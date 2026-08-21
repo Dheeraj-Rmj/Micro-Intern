@@ -72,8 +72,10 @@ export class OAuthLoginUseCase {
       log.info({ userId: user.id, provider: profile.provider, browser: metadata?.browser, os: metadata?.os }, `OAuth login successful`);
 
       return {
-        accessToken,
-        refreshToken,
+        tokens: {
+          accessToken,
+          refreshToken,
+        },
         user: {
           id: user.id,
           email: user.email,
