@@ -5,6 +5,7 @@ const config: NextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../../'),
+  // @ts-expect-error - Next.js 16 typing changes
   eslint: {
     ignoreDuringBuilds: true,
   },
