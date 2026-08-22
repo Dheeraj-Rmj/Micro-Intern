@@ -219,7 +219,7 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
         callbackUrl: '/api/v1/auth/sso/callback',
         entryPoint: config.SAML_ENTRY_POINT,
         issuer: config.SAML_ISSUER,
-        cert: config.SAML_CERT, // The IDP's public certificate
+        idpCert: config.SAML_CERT, // The IDP's public certificate
       } as any,
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (profile: any, done: any) => {
