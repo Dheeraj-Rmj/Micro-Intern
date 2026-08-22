@@ -235,10 +235,37 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
 
           // Extract standard attributes from SAML Assertion
           // Different IDPs use different attribute names, so we check standard OIDs and common names
-          const email = String(p['email'] || p['mail'] || p['nameID'] || '');
-          const firstName = String(p['firstName'] || p['givenName'] || p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] || '');
-          const lastName = String(p['lastName'] || p['surname'] || p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] || '');
-          const providerAccountId = String(p['nameID'] || p['id'] || email);
+          const email = String(
+            p['email'] || 
+            p['mail'] || 
+            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || 
+            p['nameID'] || 
+            ''
+          );
+          
+          const firstName = String(
+            p['firstName'] || 
+            p['givenName'] || 
+            p['given_name'] || 
+            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] || 
+            p['name'] ||
+            'Unknown' // Fallback for name to avoid Zod min(1) errors
+          );
+          
+          const lastName = String(
+            p['lastName'] || 
+            p['surname'] || 
+            p['family_name'] || 
+            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] || 
+            'User' // Fallback for last name to avoid Zod errors
+          );
+          
+          const providerAccountId = String(
+            p['nameID'] || 
+            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || 
+            p['id'] || 
+            email
+          );
 
           const result = await oauthLoginUseCase.execute({
             provider: 'SAML',
