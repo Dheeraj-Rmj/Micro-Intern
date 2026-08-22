@@ -213,15 +213,16 @@ if (config.GITHUB_CLIENT_ID !== undefined && config.GITHUB_CLIENT_SECRET !== und
 // Setup SAML / Enterprise SSO Strategy
 if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
   passport.use(
+    'saml',
     new SamlStrategy(
       {
         path: '/api/v1/auth/sso/callback',
         entryPoint: config.SAML_ENTRY_POINT,
         issuer: config.SAML_ISSUER,
         cert: config.SAML_CERT, // The IDP's public certificate
-      },
+      } as any,
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      async (profile: SamlProfile | null | undefined, done: VerifyCallback) => {
+      async (profile: any, done: any) => {
         try {
           if (!profile) {
             return done(new Error('No profile returned from SAML Provider'), false);
@@ -230,12 +231,14 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
           const container = getContainer();
           const oauthLoginUseCase = container.get<OAuthLoginUseCase>('OAuthLoginUseCase');
 
+          const p = profile as Record<string, unknown>;
+
           // Extract standard attributes from SAML Assertion
           // Different IDPs use different attribute names, so we check standard OIDs and common names
-          const email = profile.email || profile.mail || profile.nameID || '';
-          const firstName = profile.firstName || profile.givenName || profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] || '';
-          const lastName = profile.lastName || profile.surname || profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] || '';
-          const providerAccountId = profile.nameID || profile.id || email;
+          const email = String(p['email'] || p['mail'] || p['nameID'] || '');
+          const firstName = String(p['firstName'] || p['givenName'] || p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] || '');
+          const lastName = String(p['lastName'] || p['surname'] || p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] || '');
+          const providerAccountId = String(p['nameID'] || p['id'] || email);
 
           const result = await oauthLoginUseCase.execute({
             provider: 'SAML',
@@ -252,8 +255,12 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
         } catch (error) {
           done(error, false);
         }
+      },
+      (profile: any, done: any) => {
+        // SAML logout verify callback
+        done(null, profile);
       }
-    )
+    ) as any
   );
 }
 
