@@ -216,7 +216,7 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
     'saml',
     new SamlStrategy(
       {
-        path: '/api/v1/auth/sso/callback',
+        callbackUrl: '/api/v1/auth/sso/callback',
         entryPoint: config.SAML_ENTRY_POINT,
         issuer: config.SAML_ISSUER,
         cert: config.SAML_CERT, // The IDP's public certificate
