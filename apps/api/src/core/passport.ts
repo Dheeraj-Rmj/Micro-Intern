@@ -3,6 +3,7 @@ import OAuth2Strategy from 'passport-oauth2';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
+import { Strategy as SamlStrategy, Profile as SamlProfile } from '@node-saml/passport-saml';
 
 import { config } from './config.js';
 import { getContainer } from './container.js';
@@ -198,6 +199,53 @@ if (config.GITHUB_CLIENT_ID !== undefined && config.GITHUB_CLIENT_SECRET !== und
             avatarUrl,
             accessToken,
             refreshToken,
+          });
+
+          done(null, result);
+        } catch (error) {
+          done(error, false);
+        }
+      }
+    )
+  );
+}
+
+// Setup SAML / Enterprise SSO Strategy
+if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
+  passport.use(
+    new SamlStrategy(
+      {
+        path: '/api/v1/auth/sso/callback',
+        entryPoint: config.SAML_ENTRY_POINT,
+        issuer: config.SAML_ISSUER,
+        cert: config.SAML_CERT, // The IDP's public certificate
+      },
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      async (profile: SamlProfile | null | undefined, done: VerifyCallback) => {
+        try {
+          if (!profile) {
+            return done(new Error('No profile returned from SAML Provider'), false);
+          }
+          
+          const container = getContainer();
+          const oauthLoginUseCase = container.get<OAuthLoginUseCase>('OAuthLoginUseCase');
+
+          // Extract standard attributes from SAML Assertion
+          // Different IDPs use different attribute names, so we check standard OIDs and common names
+          const email = profile.email || profile.mail || profile.nameID || '';
+          const firstName = profile.firstName || profile.givenName || profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] || '';
+          const lastName = profile.lastName || profile.surname || profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] || '';
+          const providerAccountId = profile.nameID || profile.id || email;
+
+          const result = await oauthLoginUseCase.execute({
+            provider: 'SAML',
+            providerAccountId,
+            email,
+            firstName,
+            lastName,
+            avatarUrl: '',
+            accessToken: '', // SAML doesn't typically provide an OAuth-style access token
+            refreshToken: '',
           });
 
           done(null, result);

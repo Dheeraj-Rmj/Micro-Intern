@@ -63,6 +63,11 @@ const configSchema = z.object({
   MICROSOFT_CLIENT_SECRET: z.string().optional(),
   MICROSOFT_CALLBACK_URL: z.string().url().optional(),
 
+  // SAML / Enterprise SSO
+  SAML_ENTRY_POINT: z.string().url().optional(),
+  SAML_ISSUER: z.string().optional(),
+  SAML_CERT: z.string().optional(),
+
   // Storage
   STORAGE_PROVIDER: z.enum(['minio', 's3']).default('minio'),
   MINIO_ENDPOINT: z.string().default('localhost'),

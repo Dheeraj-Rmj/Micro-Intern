@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { apiClient } from '../../../../lib/api/client';
 import { Eye, EyeOff, ArrowLeft, Sun, Moon, ShieldAlert, Lock, Building2, UserCheck } from 'lucide-react';
 
 interface SignInPageProps {
@@ -405,14 +406,12 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
               <button
                 type="button"
                 onClick={() => {
-                  showToast('Enterprise SSO Auth', 'Redirecting to Corporate SAML / Okta Identity Provider.', 'info');
-                  setRole('company');
-                  setCurrentRoute('company-dashboard');
+                  window.location.href = `${apiClient.defaults.baseURL}/auth/sso/login`;
                 }}
-                className="w-full py-3 rounded-2xl font-bold text-xs font-mono uppercase bg-purple-500/15 border border-purple-500/40 hover:bg-purple-500/25 text-purple-600 dark:text-purple-300 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-2xl font-bold text-xs font-mono uppercase bg-amber-500/15 border border-amber-500/40 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>🔑</span>
-                <span>Login via Enterprise SSO (SAML / Okta / Entra)</span>
+                <span>Login via Enterprise SSO</span>
               </button>
             </div>
           )}
@@ -581,14 +580,12 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                 <button
                   type="button"
                   onClick={() => {
-                    showToast('Enterprise SSO Auth', 'Redirecting to Corporate Identity Provider (SAML/Okta)...', 'info');
-                    setRole('company');
-                    setCurrentRoute(activeModal === 'recruiter' ? 'company-applications' : 'company-dashboard');
-                    setActiveModal('none');
+                    window.location.href = `${apiClient.defaults.baseURL}/auth/sso/login`;
                   }}
-                  className="w-full py-2.5 rounded-2xl font-bold text-xs font-mono uppercase bg-purple-500/15 border border-purple-500/40 hover:bg-purple-500/25 text-purple-600 dark:text-purple-300 transition-all cursor-pointer block text-center"
+                  className="w-full py-2.5 rounded-2xl font-bold text-xs font-mono uppercase bg-amber-500/15 border border-amber-500/40 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 transition-all cursor-pointer block text-center flex items-center justify-center gap-2"
                 >
-                  🔑 Login via Enterprise SSO
+                  <span>🔑</span>
+                  <span>Login via Enterprise SSO</span>
                 </button>
               )}
             </form>
