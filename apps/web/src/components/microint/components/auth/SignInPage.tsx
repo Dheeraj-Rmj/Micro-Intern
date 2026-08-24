@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { apiClient } from '../../../../lib/api/client';
+import { apiClient, setAccessToken } from '../../../../lib/api/client';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { Eye, EyeOff, ArrowLeft, Sun, Moon, ShieldAlert, Lock, Building2, UserCheck, Fingerprint } from 'lucide-react';
 
@@ -114,6 +114,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
 
         // Setup real session context
         const user = response.data.data.user;
+        const accessToken = response.data.data.tokens?.accessToken;
+        if (accessToken) setAccessToken(accessToken);
         setUserProfile(user);
         setRole('admin');
         showToast('Super Admin Authenticated', 'MFA Verification successful.', 'success');
@@ -160,9 +162,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
     setIsLoading(true);
     try {
       // 1. Get login options
-      const optionsResponse = await apiClient.post('/auth/webauthn/login/generate', {
-        userId: identifier, // Wait, we don't have user ID here. The backend uses req.user.id from the mfaToken!
-      }, {
+      const optionsResponse = await apiClient.post('/auth/webauthn/login/generate', {}, {
         headers: { Authorization: `Bearer ${mfaToken}` }
       });
       const options = optionsResponse.data.data;
@@ -176,6 +176,9 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
       });
 
       const user = verifyResponse.data.data.user;
+      const accessToken = verifyResponse.data.data.accessToken;
+      if (accessToken) setAccessToken(accessToken);
+      
       setUserProfile(user);
       setRole('admin');
       showToast('Passkey Authenticated', 'Secure WebAuthn login successful.', 'success');

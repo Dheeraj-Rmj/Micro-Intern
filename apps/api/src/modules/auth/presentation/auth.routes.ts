@@ -6,6 +6,7 @@ import { getContainer, type InfrastructureDependencies } from '@/core/container.
 import { passport } from '@/core/passport.js';
 import { audit } from '@/middleware/audit.middleware.js';
 import { authMiddleware } from '@/middleware/auth.middleware.js';
+import { requireMfaToken } from '@/middleware/mfa.middleware.js';
 import { authRateLimiter } from '@/middleware/ratelimit.middleware.js';
 import { validate } from '@/middleware/validate.middleware.js';
 
@@ -239,12 +240,14 @@ export function createAuthRouter(): Router {
   router.post(
     '/webauthn/login/generate',
     authRateLimiter,
+    requireMfaToken,
     (req, res, next) => { webauthnController.generateLoginOptions(req, res, next).catch(next); },
   );
 
   router.post(
     '/webauthn/login/verify',
     authRateLimiter,
+    requireMfaToken,
     (req, res, next) => { webauthnController.verifyLoginResponse(req, res, next).catch(next); },
   );
 

@@ -146,6 +146,21 @@ export const adminApi = {
     }
   },
 
+  generateOnboardingLink: async (): Promise<any> => {
+    const { data } = await apiClient.post<any>('/onboarding/admin/generate');
+    return data;
+  },
+
+  getOnboardings: async (): Promise<any[]> => {
+    try {
+      const { data } = await apiClient.get<{data: any[]}>('/onboarding/admin/all');
+      return data.data;
+    } catch (error) {
+      console.warn('Backend unavailable, using mock onboardings', error);
+      return [];
+    }
+  },
+
   getSettings: async (): Promise<any> => {
     try {
       const { data } = await apiClient.get<any>('/admin/settings');

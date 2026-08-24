@@ -44,8 +44,8 @@ export class WebAuthnController {
 
   generateLoginOptions = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Look at req.user (from requireMfaToken) or req.body (fallback)
-      const userId = req.user?.id || req.body.userId;
+      // Look at req.user (from requireMfaToken)
+      const userId = req.user?.id;
       if (!userId) {
         throw new UnauthorizedError('User identification missing for WebAuthn login');
       }
@@ -59,7 +59,7 @@ export class WebAuthnController {
 
   verifyLoginResponse = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user?.id || req.body.userId;
+      const userId = req.user?.id;
       if (!userId) {
         throw new UnauthorizedError('User identification missing for WebAuthn login');
       }

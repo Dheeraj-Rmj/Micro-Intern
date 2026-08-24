@@ -373,6 +373,35 @@ model CandidatePreference {
 // COMPANY DOMAIN
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+model CompanyOnboarding {
+  id                   String           @id @default(uuid()) @db.Uuid
+  token                String           @unique @db.VarChar(100)
+  status               OnboardingStatus @default(PENDING)
+  superAdminId         String           @map("super_admin_id") @db.Uuid
+
+  companyName          String?          @map("company_name") @db.VarChar(255)
+  size                 String?          @db.VarChar(50)
+  division             String?          @db.VarChar(100)
+  location             String?          @db.VarChar(255)
+  
+  adminName            String?          @map("admin_name") @db.VarChar(255)
+  adminEmail           String?          @map("admin_email") @db.VarChar(255)
+  
+  logoUrl              String?          @map("logo_url")
+  govDocUrls           Json?            @map("gov_doc_urls")
+  docVerificationScore Json?            @map("doc_verification_score")
+  faceScanData         Json?            @map("face_scan_data")
+  signatureUrl         String?          @map("signature_url")
+  mouUrl               String?          @map("mou_url")
+
+  createdAt            DateTime         @default(now()) @map("created_at")
+  updatedAt            DateTime         @updatedAt @map("updated_at")
+
+  @@index([token])
+  @@index([status])
+  @@map("company_onboardings")
+}
+
 model Company {
   id     String       @id @default(uuid()) @db.Uuid
   name   String       @db.VarChar(255)
@@ -901,6 +930,14 @@ enum EkycStatus {
   PENDING_MANUAL_REVIEW
   VERIFIED_STRIPE
   VERIFIED_MANUAL
+  REJECTED
+}
+
+enum OnboardingStatus {
+  PENDING
+  SUBMITTED
+  AUTO_VERIFIED
+  APPROVED
   REJECTED
 }
 

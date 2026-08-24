@@ -130,9 +130,9 @@ export async function optionalAuthMiddleware(
   next();
 }
 
-function extractBearerToken(req: Request): string | null {
+export function extractBearerToken(req: Request): string | null {
   const authHeader = req.headers.authorization;
-// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (!authHeader?.startsWith('Bearer ')) {
     return null;
   }
