@@ -38,7 +38,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     // Validate Token
-    apiClient.get(`/onboarding/${token}`)
+    apiClient.get(`/ekyc/${token}`)
       .then(res => {
         if (res.data.data.status !== 'PENDING') {
           setError('This onboarding link is no longer valid or has already been submitted.');
@@ -152,7 +152,7 @@ export default function OnboardingPage() {
       setSignatureUrl(sig);
       setSubmitting(true);
       try {
-        await apiClient.post(`/onboarding/${token}/submit`, {
+        await apiClient.post(`/ekyc/${token}/submit`, {
           ...formData,
           logoUrl,
           govDocUrls,

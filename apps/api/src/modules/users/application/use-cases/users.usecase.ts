@@ -28,7 +28,7 @@ export class UsersUseCase {
 
       return {
         token,
-        url: `http://localhost:3000/onboarding/${token}`
+        url: `http://localhost:3000/users/ekyc/${token}`
       };
     } catch (error: any) {
       throw new InternalServerError('Failed to generate secure onboarding token', error);

@@ -25,6 +25,13 @@ export function createEkycRouter(): Router {
     ekycController.handleStripeWebhook.bind(ekycController)
   );
 
+  // ---------------------------------------------------------
+  // Public Onboarding eKYC Workflow Integration
+  // ---------------------------------------------------------
+  const strictLimiter = createRateLimitMiddleware('auth'); 
+  router.get('/:token', ekycController.validateToken.bind(ekycController));
+  router.post('/:token/submit', strictLimiter, ekycController.submitData.bind(ekycController));
+
   // Authenticated endpoints
   router.use(authMiddleware);
 
@@ -42,15 +49,6 @@ export function createEkycRouter(): Router {
     '/manual/approve/:companyId',
     ekycController.approveManualVerification.bind(ekycController)
   );
-
-  // ---------------------------------------------------------
-  // Onboarding eKYC Workflow Integration
-  // ---------------------------------------------------------
-  const strictLimiter = createRateLimitMiddleware('auth'); 
-
-  // Public/Semi-public routes (Company Admin doing onboarding)
-  router.get('/:token', ekycController.validateToken.bind(ekycController));
-  router.post('/:token/submit', strictLimiter, ekycController.submitData.bind(ekycController));
 
   // Admin routes for eKYC onboarding
   router.post(
