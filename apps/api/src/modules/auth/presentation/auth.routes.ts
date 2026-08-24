@@ -294,20 +294,5 @@ export function createAuthRouter(): Router {
     controller.handleOAuthCallback,
   );
 
-  // ── Enterprise SSO (SAML) Routes ──────────────────────────────────────────
-  // GET /auth/sso/login
-  router.get(
-    '/sso/login',
-    passport.authenticate('saml', { session: false, failureRedirect: '/login' }),
-  );
-
-  // POST /auth/sso/callback
-  // Note: SAML posts the assertion, so this is a POST route unlike OAuth GET callbacks
-  router.post(
-    '/sso/callback',
-    passport.authenticate('saml', { session: false, failureRedirect: '/login' }),
-    controller.handleOAuthCallback,
-  );
-
   return router;
 }

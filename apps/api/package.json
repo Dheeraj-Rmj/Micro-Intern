@@ -25,7 +25,6 @@
     "@huggingface/inference": "^2.8.1",
     "@microintern/database": "workspace:*",
     "@microintern/shared": "workspace:*",
-    "@node-saml/passport-saml": "^5.1.0",
     "@prisma/client": "^5.21.1",
     "bcryptjs": "^2.4.3",
     "bullmq": "^5.19.1",

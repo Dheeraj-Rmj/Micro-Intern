@@ -3,7 +3,6 @@ import OAuth2Strategy from 'passport-oauth2';
 import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
-import { Strategy as SamlStrategy, Profile as SamlProfile } from '@node-saml/passport-saml';
 
 import { config } from './config.js';
 import { getContainer } from './container.js';
@@ -210,106 +209,6 @@ if (config.GITHUB_CLIENT_ID !== undefined && config.GITHUB_CLIENT_SECRET !== und
   );
 }
 
-// Setup SAML / Enterprise SSO Strategy
-if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
-  passport.use(
-    'saml',
-    new SamlStrategy(
-      {
-        callbackUrl: '/api/v1/auth/sso/callback',
-        entryPoint: config.SAML_ENTRY_POINT,
-        issuer: config.SAML_ISSUER,
-        idpCert: `-----BEGIN CERTIFICATE-----
-MIIDHTCCAgWgAwIBAgIJaiXhU65taTIFMA0GCSqGSIb3DQEBCwUAMCwxKjAoBgNV
-BAMTIWRldi1lbHNzcHg1OHR3N2RqcHJvLnVzLmF1dGgwLmNvbTAeFw0yNjA4MjIx
-ODI4MjdaFw00MDA0MzAxODI4MjdaMCwxKjAoBgNVBAMTIWRldi1lbHNzcHg1OHR3
-N2RqcHJvLnVzLmF1dGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
-ggEBANLpkik+5xI9+8o8ypupChxS33GzIWKICEZs5TUAnWoWmQzi6oaxyEz7zRz3
-Z/LmNb9AhS5vC95ya2LW+B55FXGmywG2ofiURIdNnk3DQd1LW884HbAvQuCO39R3
-xR6aIbn8PevAHA4hn6t/rD/iU2/az1NIDpCy4bd32U70rie6DtsNq3f8PPjgoPxd
-xe8dE9s2SaNkdf4UQD3LVwLeuxvbEKkH/CXPlQokEOKPD2rlEOjzQ62e+OKEr1Bw
-j0mji5focK0bN6Qpyv5DD/kBZ0HXAd+tMJp+mEGQ06MKhYPnhy5l4HpopLFEfYCP
-uBj6zX131kAq9wKg+wNmPFothX8CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAd
-BgNVHQ4EFgQUDOVa6v/nFD9vbVHOTzT8aiF2/XgwDgYDVR0PAQH/BAQDAgKEMA0G
-CSqGSIb3DQEBCwUAA4IBAQAg+/SFRkH75xNTrrYTdscowOL3xtRAmSYOhX7fwkiL
-NYPF5OdjJotE+jJmr1aqxx7DF0cCjn8esGD0IdUvjopDfJhGORq5ygPmYbuyMZp7
-TfqHMS2mVJF8VhfpWVog7AQPhakTUr3u9Tcg7cs6MdKssTjpbwBZmEM4BeJKwIaJ
-/OyDLRSUHKEPYvwsESo2pNShoG4s6xP1e5OKGV72ofZ2xZFP99HD17MnFYTZ1m0f
-AGlQ5lDBGSLJHAo1U9Xdn8HEozKRFE+fGlX44xnGrPe0laX9/jtRl6U4o8TjTWyi
-+HxsLCoRjheSP8Ptk35U6Z0g7eLcssjHfTmRESUrN1Ug
------END CERTIFICATE-----`, // The IDP's public certificate hardcoded for testing
-        // TEMPORARY BYPASS to test if it's an XML canonicalization bug
-        wantAssertionsSigned: false,
-        wantAuthnResponseSigned: false,
-      } as any,
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      async (profile: any, done: any) => {
-        try {
-          if (!profile) {
-            return done(new Error('No profile returned from SAML Provider'), false);
-          }
-          
-          const container = getContainer();
-          const oauthLoginUseCase = container.get<OAuthLoginUseCase>('OAuthLoginUseCase');
 
-          const p = profile as Record<string, unknown>;
-
-          // Extract standard attributes from SAML Assertion
-          // Different IDPs use different attribute names, so we check standard OIDs and common names
-          const email = String(
-            p['email'] || 
-            p['mail'] || 
-            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || 
-            p['nameID'] || 
-            ''
-          );
-          
-          const firstName = String(
-            p['firstName'] || 
-            p['givenName'] || 
-            p['given_name'] || 
-            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] || 
-            p['name'] ||
-            'Unknown' // Fallback for name to avoid Zod min(1) errors
-          );
-          
-          const lastName = String(
-            p['lastName'] || 
-            p['surname'] || 
-            p['family_name'] || 
-            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] || 
-            'User' // Fallback for last name to avoid Zod errors
-          );
-          
-          const providerAccountId = String(
-            p['nameID'] || 
-            p['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || 
-            p['id'] || 
-            email
-          );
-
-          const result = await oauthLoginUseCase.execute({
-            provider: 'SAML',
-            providerAccountId,
-            email,
-            firstName,
-            lastName,
-            avatarUrl: '',
-            accessToken: '', // SAML doesn't typically provide an OAuth-style access token
-            refreshToken: '',
-          });
-
-          done(null, result);
-        } catch (error) {
-          done(error, false);
-        }
-      },
-      (profile: any, done: any) => {
-        // SAML logout verify callback
-        done(null, profile);
-      }
-    ) as any
-  );
-}
 
 export { passport };
