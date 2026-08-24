@@ -43,20 +43,7 @@ export const CompanyApplicationsPage: React.FC = () => {
         if (res.data?.submissions) {
           setApps(res.data.submissions);
         } else {
-          // Fallback to mock data if empty
-          setApps([
-            {
-              id: 'app-1',
-              candidateName: 'Alice Johnson',
-              email: 'alice@example.com',
-              trialTitle: 'Frontend Developer Trial',
-              trustScore: 98,
-              submittedAt: new Date().toISOString(),
-              githubUrl: 'https://github.com/alice',
-              status: 'PENDING',
-              aiRecommendation: 'STRONG_HIRE',
-            },
-          ]);
+          setApps([]);
         }
       } catch (err) {
         console.error('Failed to fetch submissions:', err);

@@ -16,30 +16,11 @@ export const CompanyBillingPage: React.FC = () => {
         if (res.data) {
           setBilling(res.data);
         } else {
-          // Fallback to mock data if empty
-          setBilling({
-            planName: 'Enterprise Plus Plan',
-            renewalDate: '2026-10-01T00:00:00Z',
-            recruiterSeatsUsed: 25,
-            recruiterSeatsMax: 50,
-            aiCreditsUsed: 8400,
-            aiCreditsMax: 10000,
-            storageUsedBytes: 483183820800, // ~450 GB
-            storageMaxBytes: 2199023255552, // 2 TB
-          });
+          setBilling(null);
         }
       } catch (err) {
         console.error('Failed to fetch billing:', err);
-        setBilling({
-            planName: 'Enterprise Plus Plan',
-            renewalDate: '2026-10-01T00:00:00Z',
-            recruiterSeatsUsed: 25,
-            recruiterSeatsMax: 50,
-            aiCreditsUsed: 8400,
-            aiCreditsMax: 10000,
-            storageUsedBytes: 483183820800,
-            storageMaxBytes: 2199023255552,
-        });
+        setBilling(null);
       } finally {
         setLoading(false);
       }

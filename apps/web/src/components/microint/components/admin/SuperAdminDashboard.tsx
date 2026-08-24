@@ -95,9 +95,9 @@ export const SuperAdminDashboard: React.FC = () => {
           companiesData.slice(0, 4).map((c) => ({
             name: c.name,
             logo: c.name.charAt(0),
-            activeTrials: 2,
+            activeTrials: c.activeTrials || 0,
             status: c.status === 'active' ? 'eKYC Approved' : 'Pending',
-            escrowLocked: '$25,000',
+            escrowLocked: c.escrowLocked ? `$${c.escrowLocked}` : '$0',
           }))
         );
       } catch (err: any) {

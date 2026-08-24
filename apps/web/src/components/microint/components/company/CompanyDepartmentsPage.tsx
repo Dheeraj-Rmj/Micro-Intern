@@ -16,24 +16,11 @@ export const CompanyDepartmentsPage: React.FC = () => {
         if (res.data && res.data.length > 0) {
           setDepartments(res.data);
         } else {
-          // Fallback to mock data if backend DB is empty
-          setDepartments([
-            { name: 'Engineering', headcount: 124, budget: '$4.2M', status: 'Active' },
-            { name: 'Human Resources', headcount: 12, budget: '$450K', status: 'Active' },
-            { name: 'Product Management', headcount: 34, budget: '$1.8M', status: 'Hiring' },
-            { name: 'Marketing', headcount: 45, budget: '$2.1M', status: 'Active' },
-            { name: 'Sales', headcount: 89, budget: '$3.5M', status: 'Hiring' },
-            { name: 'Finance', headcount: 18, budget: '$800K', status: 'Active' },
-          ]);
+          setDepartments([]);
         }
       } catch (err) {
         console.error('Failed to fetch departments:', err);
-        // Fallback to mock data on error so UI doesn't break while backend is still being finalized
-        setDepartments([
-          { name: 'Engineering', headcount: 124, budget: '$4.2M', status: 'Active' },
-          { name: 'Human Resources', headcount: 12, budget: '$450K', status: 'Active' },
-          { name: 'Product Management', headcount: 34, budget: '$1.8M', status: 'Hiring' },
-        ]);
+        setDepartments([]);
       } finally {
         setLoading(false);
       }

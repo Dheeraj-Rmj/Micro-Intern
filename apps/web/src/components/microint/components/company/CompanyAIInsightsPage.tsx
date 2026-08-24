@@ -17,19 +17,11 @@ export const CompanyAIInsightsPage: React.FC = () => {
         if (res.data && res.data.length > 0) {
           setInsights(res.data);
         } else {
-          setInsights([
-            { id: '1', type: 'skill_gap', title: 'React Native', description: 'Impact: Mobile App Delivery Q4', severity: 'High' },
-            { id: '2', type: 'skill_gap', title: 'Kubernetes', description: 'Impact: Infrastructure Scaling', severity: 'Critical' },
-            { id: '3', type: 'skill_gap', title: 'GraphQL', description: 'Impact: API Optimization', severity: 'Medium' },
-          ]);
+          setInsights([]);
         }
       } catch (err) {
         console.error('Failed to fetch insights:', err);
-        setInsights([
-            { id: '1', type: 'skill_gap', title: 'React Native', description: 'Impact: Mobile App Delivery Q4', severity: 'High' },
-            { id: '2', type: 'skill_gap', title: 'Kubernetes', description: 'Impact: Infrastructure Scaling', severity: 'Critical' },
-            { id: '3', type: 'skill_gap', title: 'GraphQL', description: 'Impact: API Optimization', severity: 'Medium' },
-        ]);
+        setInsights([]);
       } finally {
         setLoading(false);
       }
