@@ -53,8 +53,15 @@ export const errorMiddleware: ErrorRequestHandler = (
     appError = new ValidationError('Invalid database query parameters');
   } else {
     // Unknown error — bug or library error
+    let message = error instanceof Error ? error.message : 'An unexpected error occurred';
+
+    // Extract SAMLResponse for debugging signature issues
+    if (message.includes('Invalid document signature') && req.body && req.body.SAMLResponse) {
+      message = `Invalid document signature. RAW_SAML: ${req.body.SAMLResponse}`;
+    }
+
     appError = new InternalServerError(
-      error instanceof Error ? error.message : 'An unexpected error occurred',
+      message,
       error instanceof Error ? error : undefined,
     );
   }
