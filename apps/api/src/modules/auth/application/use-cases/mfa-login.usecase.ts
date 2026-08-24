@@ -1,4 +1,4 @@
-import { verify } from 'otplib';
+import { authenticator } from 'otplib';
 import { createModuleLogger } from '@/core/logger.js';
 import { UnauthorizedError, AuthDomainError } from '@/shared/errors/index.js';
 
@@ -33,8 +33,8 @@ export class MfaLoginUseCase {
     }
 
     // 3. Verify the 6-digit TOTP code
-    const result = await verify({ token: code, secret: user.totpSecret });
-    if (!result.valid) {
+    const isValid = authenticator.verify({ token: code, secret: user.totpSecret });
+    if (!isValid) {
       await this.userRepository.incrementLoginAttempts(user.id);
       throw new UnauthorizedError('Invalid TOTP token', 'AUTH_MFA_TOKEN_INVALID');
     }

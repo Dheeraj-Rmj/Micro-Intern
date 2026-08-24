@@ -1,4 +1,4 @@
-import { generateSecret, verify, generateURI } from 'otplib';
+import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
 import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
 import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
@@ -12,12 +12,8 @@ export class SetupTotpUseCase {
     const user = await this.userRepository.findById(userId);
     if (!user) throw new UnauthorizedError('User not found');
 
-    const secret = generateSecret();
-    const otpauth = generateURI({
-      issuer: 'MicroIntern (SuperAdmin)',
-      label: user.email,
-      secret,
-    });
+    const secret = authenticator.generateSecret();
+    const otpauth = authenticator.keyuri(user.email, 'Micro-Intern (SuperAdmin)', secret);
     const qrCodeUrl = await QRCode.toDataURL(otpauth);
 
     await this.userRepository.updateMfaSettings(userId, false, secret);
@@ -34,8 +30,8 @@ export class VerifyTotpUseCase {
     if (!user) throw new UnauthorizedError('User not found');
     if (!user.totpSecret) throw new ValidationError('TOTP not setup');
 
-    const result = await verify({ token, secret: user.totpSecret });
-    if (!result.valid) throw new UnauthorizedError('Invalid TOTP token', 'AUTH_MFA_TOKEN_INVALID');
+    const isValid = authenticator.verify({ token, secret: user.totpSecret });
+    if (!isValid) throw new UnauthorizedError('Invalid TOTP token', 'AUTH_MFA_TOKEN_INVALID');
 
     await this.userRepository.updateMfaSettings(userId, true);
   }
