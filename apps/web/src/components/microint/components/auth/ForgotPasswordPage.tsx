@@ -16,11 +16,19 @@ export const ForgotPasswordPage: React.FC = () => {
       showToast("Invalid Email", "Please provide a valid account email.", "warning");
       return;
     }
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setIsLoading(false);
-    setIsSent(true);
-    showToast("Reset Link Sent", "Check your inbox for password recovery instructions.", "success");
+    try {
+      setIsLoading(true);
+      
+      const { apiClient } = await import("../../../../lib/api/client");
+      await apiClient.post("/auth/forgot-password", { email });
+      
+      setIsSent(true);
+      showToast("Reset Link Sent", "Check your inbox for password recovery instructions.", "success");
+    } catch (err: any) {
+      showToast("Error", err.message || "Failed to send reset link.", "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const isFormValid = email.trim().length > 0 && email.includes("@");

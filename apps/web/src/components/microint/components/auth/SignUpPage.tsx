@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import { apiClient, setAccessToken } from "../../../../lib/api/client";
+
 import { useApp } from "../../context/AppContext";
 import { Eye, EyeOff, AlertCircle, ArrowLeft, Sun, Moon } from "lucide-react";
 
@@ -81,19 +83,37 @@ export const SignUpPage: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
 
-    setUserProfile((prev: any) => ({
-      ...prev,
-      name: formData.fullName,
-      email: formData.email,
-      username: formData.username,
-    }));
+      const response = await apiClient.post("/auth/register-candidate", {
+        firstName: formData.fullName.split(' ')[0] || formData.fullName,
+        lastName: formData.fullName.split(' ').slice(1).join(' ') || '',
+        email: formData.email,
+        password: formData.password,
+      });
 
-    showToast("Account Created! 🎉", "Welcome to MicroIntern. Let’s get you verified.", "success");
-    setCurrentRoute("dashboard");
+      const data = response.data.data;
+      const user = data.user;
+      const accessToken = data.tokens?.accessToken;
+      
+      // We import setAccessToken from client to ensure axios bears the token
+      if (accessToken) setAccessToken(accessToken);
+
+      setUserProfile(user);
+      setRole("candidate");
+
+      showToast("Account Created! 🎉", "Welcome to MicroIntern. Let’s get you verified.", "success");
+      setCurrentRoute("dashboard");
+    } catch (err: any) {
+      showToast(
+        "Registration Failed",
+        err.message || "Could not create your account.",
+        "error",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSocialAuth = (provider: string) => {

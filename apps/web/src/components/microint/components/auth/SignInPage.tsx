@@ -88,52 +88,10 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // For Candidate and Enterprise, keep the dummy auth experience for the mockup
-    if (initialPortal !== "ops") {
-      if (!identifier || !password) {
-        showToast("Missing Credentials", "Please enter your email and password.", "warning");
-        return;
-      }
-
-      setIsLoading(true);
-      await new Promise((r) => setTimeout(r, 800));
-      setIsLoading(false);
-
-      setUserProfile((prev: any) => ({
-        ...prev,
-        email: identifier.includes("@") ? identifier : prev.email,
-        username: !identifier.includes("@") ? identifier : prev.username,
-      }));
-
-      if (identifier === "admin" || identifier === "admin@microintern.com") {
-        setRole("admin");
-        showToast("Admin Session Active", "Authenticated as Admin.", "success");
-        setCurrentRoute("admin-dashboard");
-      } else if (initialPortal === "candidate") {
-        setRole("candidate");
-        showToast(
-          "Candidate Session Active",
-          "Authenticated to app.microintern.com (Candidate Portal).",
-          "success",
-        );
-        setCurrentRoute("dashboard");
-      } else if (initialPortal === "enterprise") {
-        setRole("company");
-        showToast(
-          "Enterprise Session Active",
-          "Authenticated to enterprise.microintern.com (Enterprise Tenant).",
-          "success",
-        );
-        setCurrentRoute("company-dashboard");
-      }
-      return;
-    }
-
-    // Real API integration for Super Admin (ops portal)
     try {
       setIsLoading(true);
 
-      // Step 2: Handle MFA Token Submission
+      // Step 2: Handle MFA Token Submission (Super Admin Ops typically)
       if (mfaRequired) {
         if (!mfaCode) {
           showToast("Missing MFA Code", "Please enter the 6-digit MFA token.", "warning");
@@ -150,9 +108,9 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         const accessToken = response.data.data.tokens?.accessToken;
         if (accessToken) setAccessToken(accessToken);
         setUserProfile(user);
-        setRole("admin");
-        showToast("Super Admin Authenticated", "MFA Verification successful.", "success");
-        setCurrentRoute("admin-dashboard");
+        setRole(user.role.toLowerCase());
+        showToast("Authenticated", "MFA Verification successful.", "success");
+        setCurrentRoute(user.role === "SUPER_ADMIN" || user.role === "ADMIN" ? "admin-dashboard" : user.role === "COMPANY_OWNER" || user.role === "RECRUITER" ? "company-dashboard" : "dashboard");
         return;
       }
 
@@ -181,12 +139,28 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         return; // Wait for user to input MFA code
       }
 
-      // If no MFA required (not fully setup yet), proceed directly
+      // If no MFA required, proceed directly
       const user = data.user;
+      const accessToken = data.tokens?.accessToken;
+      if (accessToken) setAccessToken(accessToken);
+      
       setUserProfile(user);
-      setRole("admin");
-      showToast("Super Admin Session Active", "Authenticated to ops.microintern.com", "success");
-      setCurrentRoute("admin-dashboard");
+      
+      // Navigate to correct portal based on role
+      const userRole = user.role;
+      if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
+        setRole("admin");
+        showToast("Super Admin Session Active", "Authenticated to ops.microintern.com", "success");
+        setCurrentRoute("admin-dashboard");
+      } else if (userRole === "COMPANY_OWNER" || userRole === "RECRUITER") {
+        setRole("company");
+        showToast("Enterprise Session Active", "Authenticated to enterprise.microintern.com", "success");
+        setCurrentRoute("company-dashboard");
+      } else {
+        setRole("candidate");
+        showToast("Candidate Session Active", "Authenticated to app.microintern.com", "success");
+        setCurrentRoute("dashboard");
+      }
     } catch (err: any) {
       showToast(
         "Authentication Failed",
@@ -242,30 +216,60 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     }
   };
 
-  const handleModalSubmit = (e: React.FormEvent) => {
+  const handleModalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setModalLoading(true);
-    setTimeout(() => {
-      setModalLoading(false);
-      setActiveModal("none");
-      if (activeModal === "superadmin") {
-        setRole("admin");
-        showToast(
-          "Super Admin Identified",
-          "MFA verified. Navigating to system operations.",
-          "success",
-        );
-        setCurrentRoute("admin-dashboard");
-      } else if (activeModal === "company") {
-        setRole("company");
-        showToast("Enterprise Tenant Auth", "Navigating to Company Portal.", "success");
-        setCurrentRoute("company-dashboard");
-      } else if (activeModal === "recruiter") {
-        setRole("company");
-        showToast("Recruiter Hub Active", "Navigating to Recruiter Dashboard.", "success");
-        setCurrentRoute("company-dashboard");
+    if (!modalEmail || !modalPassword) return;
+
+    try {
+      setModalLoading(true);
+
+      // Handle MFA if Super Admin
+      if (activeModal === "superadmin" && modalMfa) {
+         // for simplicity in shortcut, if they provide mfa we assume they have the token from a previous failed attempt
+         // In a real app we'd split it like the main form.
       }
-    }, 1000);
+
+      const response = await apiClient.post("/auth/login", {
+        email: modalEmail,
+        password: modalPassword,
+      });
+
+      const data = response.data.data;
+      if (data.mfaRequired) {
+         showToast("MFA Required", "This shortcut does not support 2FA flow yet. Please use main form.", "warning");
+         return;
+      }
+
+      const user = data.user;
+      const accessToken = data.tokens?.accessToken;
+      if (accessToken) setAccessToken(accessToken);
+      
+      setUserProfile(user);
+      setActiveModal("none");
+      
+      const userRole = user.role;
+      if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
+        setRole("admin");
+        showToast("Super Admin Session Active", "Authenticated to ops.microintern.com", "success");
+        setCurrentRoute("admin-dashboard");
+      } else if (userRole === "COMPANY_OWNER" || userRole === "RECRUITER") {
+        setRole("company");
+        showToast("Enterprise Session Active", "Authenticated to enterprise.microintern.com", "success");
+        setCurrentRoute("company-dashboard");
+      } else {
+        setRole("candidate");
+        showToast("Candidate Session Active", "Authenticated to app.microintern.com", "success");
+        setCurrentRoute("dashboard");
+      }
+    } catch (err: any) {
+      showToast(
+        "Authentication Failed",
+        err.message || "Invalid credentials or network error.",
+        "error",
+      );
+    } finally {
+      setModalLoading(false);
+    }
   };
 
   const handleSocialAuth = (provider: string) => {
