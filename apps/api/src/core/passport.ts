@@ -219,7 +219,25 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
         callbackUrl: '/api/v1/auth/sso/callback',
         entryPoint: config.SAML_ENTRY_POINT,
         issuer: config.SAML_ISSUER,
-        idpCert: config.SAML_CERT, // The IDP's public certificate
+        idpCert: `-----BEGIN CERTIFICATE-----
+MIIDHTCCAgWgAwIBAgIJaiXhU65taTIFMA0GCSqGSIb3DQEBCwUAMCwxKjAoBgNV
+BAMTIWRldi1lbHNzcHg1OHR3N2RqcHJvLnVzLmF1dGgwLmNvbTAeFw0yNjA4MjIx
+ODI4MjdaFw00MDA0MzAxODI4MjdaMCwxKjAoBgNVBAMTIWRldi1lbHNzcHg1OHR3
+N2RqcHJvLnVzLmF1dGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBANLpkik+5xI9+8o8ypupChxS33GzIWKICEZs5TUAnWoWmQzi6oaxyEz7zRz3
+Z/LmNb9AhS5vC95ya2LW+B55FXGmywG2ofiURIdNnk3DQd1LW884HbAvQuCO39R3
+xR6aIbn8PevAHA4hn6t/rD/iU2/az1NIDpCy4bd32U70rie6DtsNq3f8PPjgoPxd
+xe8dE9s2SaNkdf4UQD3LVwLeuxvbEKkH/CXPlQokEOKPD2rlEOjzQ62e+OKEr1Bw
+j0mji5focK0bN6Qpyv5DD/kBZ0HXAd+tMJp+mEGQ06MKhYPnhy5l4HpopLFEfYCP
+uBj6zX131kAq9wKg+wNmPFothX8CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAd
+BgNVHQ4EFgQUDOVa6v/nFD9vbVHOTzT8aiF2/XgwDgYDVR0PAQH/BAQDAgKEMA0G
+CSqGSIb3DQEBCwUAA4IBAQAg+/SFRkH75xNTrrYTdscowOL3xtRAmSYOhX7fwkiL
+NYPF5OdjJotE+jJmr1aqxx7DF0cCjn8esGD0IdUvjopDfJhGORq5ygPmYbuyMZp7
+TfqHMS2mVJF8VhfpWVog7AQPhakTUr3u9Tcg7cs6MdKssTjpbwBZmEM4BeJKwIaJ
+/OyDLRSUHKEPYvwsESo2pNShoG4s6xP1e5OKGV72ofZ2xZFP99HD17MnFYTZ1m0f
+AGlQ5lDBGSLJHAo1U9Xdn8HEozKRFE+fGlX44xnGrPe0laX9/jtRl6U4o8TjTWyi
++HxsLCoRjheSP8Ptk35U6Z0g7eLcssjHfTmRESUrN1Ug
+-----END CERTIFICATE-----`, // The IDP's public certificate hardcoded for testing
         signatureAlgorithm: 'sha256', 
         digestAlgorithm: 'sha256',
       } as any,
