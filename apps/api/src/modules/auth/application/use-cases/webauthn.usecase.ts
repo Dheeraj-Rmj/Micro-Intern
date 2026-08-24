@@ -18,8 +18,8 @@ import { config } from '@/core/config.js';
 
 // Determine the Relying Party (RP) info based on the environment
 const rpName = 'Micro-Intern Ops';
-const rpID = config.env === 'production' ? 'microintern.com' : 'localhost';
-const expectedOrigin = config.env === 'production' ? ['https://ops.microintern.com', 'https://micro-intern.vercel.app'] : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
+const rpID = config.NODE_ENV === 'production' ? 'microintern.com' : 'localhost';
+const expectedOrigin = config.NODE_ENV === 'production' ? ['https://ops.microintern.com', 'https://micro-intern.vercel.app'] : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
 
 export class GenerateWebAuthnRegistrationUseCase {
   constructor(private userRepository: IUserRepository) {}
@@ -38,7 +38,7 @@ export class GenerateWebAuthnRegistrationUseCase {
       timeout: 60000,
       attestationType: 'none',
       excludeCredentials: userWebAuthnCredentials.map((cred) => ({
-        id: new Uint8Array(cred.publicKey),
+        id: cred.id,
         type: 'public-key',
         transports: cred.transports as AuthenticatorTransport[],
       })),
@@ -79,16 +79,16 @@ export class VerifyWebAuthnRegistrationUseCase {
       };
       verification = await verifyRegistrationResponse(opts);
     } catch (error: any) {
-      throw new AuthDomainError(`WebAuthn verification failed: ${error.message}`);
+      throw new AuthDomainError('AUTH_MFA_TOKEN_INVALID', `WebAuthn verification failed: ${error.message}`);
     }
 
     if (verification && verification.verified && verification.registrationInfo) {
       const { registrationInfo } = verification;
       
       const newCredential = {
-        id: isoBase64URL.fromBuffer(registrationInfo.credentialID),
-        publicKey: Buffer.from(registrationInfo.credentialPublicKey),
-        counter: BigInt(registrationInfo.counter),
+        id: registrationInfo.credential.id,
+        publicKey: Buffer.from(registrationInfo.credential.publicKey),
+        counter: BigInt(registrationInfo.credential.counter),
         deviceType: registrationInfo.credentialDeviceType,
         backedUp: registrationInfo.credentialBackedUp,
         transports: body.response.transports || [],
@@ -101,7 +101,7 @@ export class VerifyWebAuthnRegistrationUseCase {
       return { verified: true };
     }
 
-    throw new AuthDomainError('Verification failed to produce credential info.');
+    throw new AuthDomainError('AUTH_MFA_TOKEN_INVALID', 'Verification failed to produce credential info.');
   }
 }
 
@@ -121,7 +121,7 @@ export class GenerateWebAuthnLoginUseCase {
       rpID,
       timeout: 60000,
       allowCredentials: userWebAuthnCredentials.map((cred) => ({
-        id: new Uint8Array(cred.publicKey),
+        id: cred.id,
         type: 'public-key',
         transports: cred.transports as AuthenticatorTransport[],
       })),
@@ -174,7 +174,7 @@ export class VerifyWebAuthnLoginUseCase {
         expectedOrigin: expectedOrigin,
         expectedRPID: rpID,
         credential: {
-          id: bodyCredIDBuffer,
+          id: authenticator.id,
           publicKey: new Uint8Array(authenticator.publicKey),
           counter: Number(authenticator.counter),
           transports: authenticator.transports as AuthenticatorTransport[],
@@ -183,7 +183,7 @@ export class VerifyWebAuthnLoginUseCase {
 
       verification = await verifyAuthenticationResponse(opts);
     } catch (error: any) {
-      throw new AuthDomainError(`WebAuthn verification failed: ${error.message}`);
+      throw new AuthDomainError('AUTH_MFA_TOKEN_INVALID', `WebAuthn verification failed: ${error.message}`);
     }
 
     if (verification && verification.verified) {
@@ -201,17 +201,11 @@ export class VerifyWebAuthnLoginUseCase {
 
       await this.userRepository.updateWebAuthnCurrentChallenge(userId, null);
       
-      // Generate tokens
-      const accessToken = this.jwtService.generateAccessToken({ id: user.id, role: user.role });
-      const refreshToken = this.jwtService.generateRefreshToken({ id: user.id, role: user.role });
-
-      await this.sessionService.createSession({
-        userId: user.id,
-        token: refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-        ipAddress: ip,
-        userAgent,
-      });
+      const sessionId = await this.sessionService.createSession(user.id);
+      const { accessToken, refreshToken } = await this.jwtService.generateTokenPair(
+        { id: user.id, email: user.email, role: user.role, companyId: null },
+        sessionId
+      );
 
       return {
         accessToken,
@@ -224,6 +218,6 @@ export class VerifyWebAuthnLoginUseCase {
       };
     }
 
-    throw new AuthDomainError('Verification failed');
+    throw new AuthDomainError('AUTH_MFA_TOKEN_INVALID', 'Verification failed');
   }
 }
