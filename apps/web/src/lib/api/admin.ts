@@ -27,6 +27,8 @@ export interface AdminUser {
   trustScore: number;
   joined: string;
   details: string;
+  activeTrials?: number;
+  escrowLocked?: number;
 }
 
 export interface AdminTrial {

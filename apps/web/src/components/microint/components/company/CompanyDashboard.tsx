@@ -59,7 +59,7 @@ const FALLBACK_LEADERSHIP_QUOTES: MotivationalQuote[] = [
 const INITIAL_APPLICATIONS: CandidateApplication[] = [];
 
 export const CompanyDashboard: React.FC = () => {
-  const { setCurrentRoute, showToast, trials } = useApp();
+  const { setCurrentRoute, showToast, trials, companyProfile } = useApp();
   const [applications, setApplications] = useState<CandidateApplication[]>(INITIAL_APPLICATIONS);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [activeTabFilter, setActiveTabFilter] = useState<'all' | 'pending' | 'approved'>('all');
@@ -202,7 +202,9 @@ export const CompanyDashboard: React.FC = () => {
           style={{
             clipPath: 'inset(0 round 40px)',
             background:
-              'radial-gradient(circle 320px at 90% 10%, rgba(245, 158, 11, 0.08) 0%, transparent 70%), radial-gradient(circle 280px at 10% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 70%)',
+              companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
+                ? 'radial-gradient(circle 320px at 90% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 70%), radial-gradient(circle 280px at 10% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 70%)'
+                : 'radial-gradient(circle 320px at 90% 10%, rgba(245, 158, 11, 0.08) 0%, transparent 70%), radial-gradient(circle 280px at 10% 90%, rgba(239, 68, 68, 0.05) 0%, transparent 70%)',
           }}
         >
           <div className="relative z-10 flex justify-between items-start">
@@ -211,13 +213,31 @@ export const CompanyDashboard: React.FC = () => {
                 Enterprise Trust
               </h3>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                    companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
+                      ? 'bg-emerald-500'
+                      : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
+                      ? 'bg-amber-500'
+                      : 'bg-red-500'
+                  }`}
+                />
                 <span className="text-[10px] text-black/60 dark:text-white/70 font-mono uppercase tracking-wider">
-                  eKYC & GST VERIFIED
+                  {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
+                    ? 'eKYC VERIFIED'
+                    : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
+                    ? 'PENDING REVIEW'
+                    : 'UNVERIFIED'}
                 </span>
               </div>
             </div>
-            <div className="w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center text-amber-500">
+            <div
+              className={`w-8 h-8 rounded-full border flex items-center justify-center ${
+                companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
+                  ? 'border-emerald-500/20 text-emerald-500'
+                  : 'border-red-500/20 text-red-500'
+              }`}
+            >
               <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
@@ -225,7 +245,11 @@ export const CompanyDashboard: React.FC = () => {
           <div className="relative my-auto py-6">
             <div className="flex items-baseline gap-2 mb-3">
               <span className="text-6xl sm:text-7xl font-serif font-light tracking-tighter text-black dark:text-white">
-                99
+                {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
+                  ? '99'
+                  : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
+                  ? '50'
+                  : '10'}
               </span>
               <span className="text-xl font-mono text-black/40 dark:text-white/40 font-light">
                 / 100
@@ -233,26 +257,72 @@ export const CompanyDashboard: React.FC = () => {
             </div>
 
             <div className="w-full h-2 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden mb-3">
-              <div className="h-full w-[99%] rounded-full bg-gradient-to-r from-amber-500 via-emerald-500 to-indigo-500" />
+              <div
+                className={`h-full rounded-full transition-all duration-1000 ${
+                  companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
+                    ? 'w-[99%] bg-gradient-to-r from-emerald-500 to-indigo-500'
+                    : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
+                    ? 'w-[50%] bg-gradient-to-r from-amber-500 to-amber-400'
+                    : 'w-[10%] bg-gradient-to-r from-red-500 to-orange-500'
+                }`}
+              />
             </div>
 
             <p className="text-xs text-black/50 dark:text-white/50 leading-relaxed">
-              Stripe Connect escrow status verified. Full corporate eKYC compliance & active AI evaluation nodes.
+              {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
+                ? 'Corporate eKYC compliance & active AI evaluation nodes verified.'
+                : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
+                ? 'Your uploaded documents are currently under manual review by our team.'
+                : 'Action required: Complete eKYC verification to access full enterprise features.'}
             </p>
           </div>
 
           <div className="relative z-10 space-y-3 pt-4 border-t border-black/5 dark:border-white/10">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-black/50 dark:text-white/50 font-mono">Domain Registration</span>
-              <span className="font-mono font-bold text-amber-600 dark:text-amber-400">@company.microintern</span>
-            </div>
-            <button
-              onClick={() => setCurrentRoute('company-manage-trials' as any)}
-              className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 font-semibold text-xs text-black dark:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <span>View Escrow Ledger</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+            {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL' ? (
+              <>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-black/50 dark:text-white/50 font-mono">Domain Registration</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">VERIFIED</span>
+                </div>
+                <button
+                  onClick={() => setCurrentRoute('company-manage-trials' as any)}
+                  className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 font-semibold text-xs text-black dark:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>View Escrow Ledger</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={async () => {
+                    try {
+                      const { ekycApi } = await import('@/lib/api/ekyc');
+                      const { data } = await ekycApi.createStripeSession();
+                      if (data?.clientSecret) {
+                        // In a real app, we'd initialize Stripe.js and call stripe.verifyIdentity(clientSecret)
+                        showToast('Stripe Identity Initiated', 'Redirecting to verification flow...', 'info');
+                      }
+                    } catch (e: any) {
+                      showToast('Verification Error', e.message || 'Failed to start Stripe verification.', 'error');
+                    }
+                  }}
+                  className="w-full py-2.5 rounded-2xl bg-[#635BFF] hover:bg-[#5249E5] text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Verify Instantly (Stripe)</span>
+                </button>
+                <button
+                  onClick={() => {
+                    // Logic to open manual upload modal
+                    showToast('Manual Upload', 'Please upload your business registration documents.', 'info');
+                  }}
+                  className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-black/10 dark:border-white/10"
+                >
+                  <span>Upload Documents (Manual)</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

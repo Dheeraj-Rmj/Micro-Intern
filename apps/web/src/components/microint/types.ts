@@ -160,6 +160,7 @@ export interface CompanyProfile {
   linkedinUrl: string;
   twitterUrl: string;
   githubUrl: string;
+  ekycStatus?: 'UNVERIFIED' | 'PENDING_MANUAL_REVIEW' | 'VERIFIED_STRIPE' | 'VERIFIED_MANUAL' | 'REJECTED';
 }
 
 export interface CandidateSearchResult {

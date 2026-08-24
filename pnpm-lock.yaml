@@ -152,6 +152,9 @@ importers:
       sharp:
         specifier: ^0.35.3
         version: 0.35.3(@types/node@22.20.1)
+      stripe:
+        specifier: ^22.5.0
+        version: 22.5.0(@types/node@22.20.1)
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
@@ -5510,6 +5513,15 @@ packages:
 
   strip-literal@3.1.0:
     resolution: {integrity: sha512-8r3mkIM/2+PpjHoOtiAW8Rg3jJLHaV7xPwG+YRGrv6FP0wwk/toTpATxWYOW0BKdWwl82VT2tFYi5DlROa0Mxg==}
+
+  stripe@22.5.0:
+    resolution: {integrity: sha512-QVwMwriC0bbySx6R4dpsvJ0W//GojC1kwWVS6rPSoVqDUIZX4Hy3TaUrd2AZeXEAaKbfWIjQjvo3vKAReHZ0vQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   strnum@2.4.1:
     resolution: {integrity: sha512-M9eUSMT2dCB2cTNPG7UYj6KuK7RJR2SN2+yCV/fTW3xzTCS6EaGZ5pSMgDIjB7r8zSfTGk+dvvn9rTjpVS9Mwg==}
@@ -11432,6 +11444,10 @@ snapshots:
   strip-literal@3.1.0:
     dependencies:
       js-tokens: 9.0.1
+
+  stripe@22.5.0(@types/node@22.20.1):
+    optionalDependencies:
+      '@types/node': 22.20.1
 
   strnum@2.4.1:
     dependencies:

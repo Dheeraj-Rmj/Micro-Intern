@@ -58,6 +58,10 @@ const configSchema = z.object({
   LINKEDIN_CLIENT_SECRET: z.string().optional(),
   LINKEDIN_CALLBACK_URL: z.string().url().optional(),
 
+  // Stripe
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+
   // OAuth — Microsoft
   MICROSOFT_CLIENT_ID: z.string().optional(),
   MICROSOFT_CLIENT_SECRET: z.string().optional(),

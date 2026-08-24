@@ -22,6 +22,7 @@ import { createLearningRoutes } from '@/modules/learning/presentation/learning.r
 import { createCandidateJourneyRoutes } from '@/modules/candidate-journey/presentation/candidate-journey.routes.js';
 import { createSearchRoutes } from '@/modules/search/presentation/search.routes.js';
 import { createDocsRoutes } from '@/api/docs/openapi.js';
+import { createEkycRouter } from '@/modules/ekyc/presentation/ekyc.routes.js';
 
 // ── Phase 10: High & Medium Value Features ────────────────────────────────────
 import { createInterviewRoutes } from '@/modules/interview/presentation/interview.routes.js';
@@ -50,6 +51,7 @@ export function createV1Router(): Router {
   v1Router.use('/submissions', createEvaluationRouter());
   v1Router.use('/admin', createAdminRouter());
   v1Router.use('/notifications', createNotificationRouter());
+  v1Router.use('/ekyc', createEkycRouter());
 
   // ── Skill-Based Hiring Platform ────────────────────────────────────────────
   v1Router.use('/skills', createSkillRoutes());

@@ -31,6 +31,7 @@ export const INITIAL_COMPANY_PROFILE: CompanyProfile = {
   linkedinUrl: '',
   twitterUrl: '',
   githubUrl: '',
+  ekycStatus: 'UNVERIFIED',
 };
 
 export const MOCK_TRIALS: Trial[] = [];
