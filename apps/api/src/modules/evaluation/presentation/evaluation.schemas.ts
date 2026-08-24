@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const AssessmentParamSchema = z.object({
-  id: z.string().min(1, 'Assessment identifier is required'),
+  id: z.string().min(1, "Assessment identifier is required"),
 });
 
 export const SubmissionParamSchema = z.object({
-  id: z.string().min(1, 'Submission ID is required'),
+  id: z.string().min(1, "Submission ID is required"),
 });
 
 export const PaginationQuerySchema = z.object({
@@ -14,23 +14,26 @@ export const PaginationQuerySchema = z.object({
 });
 
 const AnswerItemSchema = z.object({
-  taskId: z.string().min(1, 'Task ID is required'),
+  taskId: z.string().min(1, "Task ID is required"),
   answerText: z.string().optional(),
   answerData: z.record(z.unknown()).optional(),
   fileIndex: z.coerce.number().int().min(0).optional(),
 });
 
 export const SubmitAssessmentBodySchema = z.object({
-  answers: z.preprocess((val) => {
-    if (typeof val === 'string') {
-      try {
-        return JSON.parse(val);
-      } catch {
-        return val;
+  answers: z.preprocess(
+    (val) => {
+      if (typeof val === "string") {
+        try {
+          return JSON.parse(val);
+        } catch {
+          return val;
+        }
       }
-    }
-    return val;
-  }, z.array(AnswerItemSchema).min(1, 'At least one answer must be provided')),
+      return val;
+    },
+    z.array(AnswerItemSchema).min(1, "At least one answer must be provided"),
+  ),
 });
 
 export type AssessmentParamDto = z.infer<typeof AssessmentParamSchema>;

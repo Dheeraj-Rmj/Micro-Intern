@@ -1,9 +1,14 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { compilePrompt, PROMPTS } from '@/infrastructure/ai/PromptManager.js';
-import type { PrismaClient, Prisma, InterviewSession, InterviewAnswer } from '@microintern/database';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { compilePrompt, PROMPTS } from "@/infrastructure/ai/PromptManager.js";
+import type {
+  PrismaClient,
+  Prisma,
+  InterviewSession,
+  InterviewAnswer,
+} from "@microintern/database";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('InterviewService');
+const log = createModuleLogger("InterviewService");
 
 export type CreateInterviewDTO = {
   companyId: string;
@@ -34,7 +39,7 @@ export class InterviewService {
   ) {}
 
   async createInterview(dto: CreateInterviewDTO) {
-    log.info({ companyId: dto.companyId }, 'Creating interview');
+    log.info({ companyId: dto.companyId }, "Creating interview");
     return this.db.interview.create({
       data: {
         companyId: dto.companyId,
@@ -61,14 +66,14 @@ export class InterviewService {
   async publishInterview(interviewId: string) {
     return this.db.interview.update({
       where: { id: interviewId },
-      data: { status: 'PUBLISHED' },
+      data: { status: "PUBLISHED" },
     });
   }
 
   async getInterview(interviewId: string) {
     return this.db.interview.findUniqueOrThrow({
       where: { id: interviewId },
-      include: { questions: { orderBy: { sortOrder: 'asc' } } },
+      include: { questions: { orderBy: { sortOrder: "asc" } } },
     });
   }
 
@@ -76,14 +81,14 @@ export class InterviewService {
     return this.db.interview.findMany({
       where: { companyId },
       include: { _count: { select: { sessions: true } } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
   async inviteCandidate(interviewId: string, candidateId: string, journeyId?: string) {
     const interview = await this.db.interview.findUniqueOrThrow({ where: { id: interviewId } });
-    if (interview.status !== 'PUBLISHED') {
-      throw new Error('Interview must be published before inviting candidates');
+    if (interview.status !== "PUBLISHED") {
+      throw new Error("Interview must be published before inviting candidates");
     }
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
     return this.db.interviewSession.create({
@@ -94,9 +99,9 @@ export class InterviewService {
   async startSession(sessionId: string) {
     return this.db.interviewSession.update({
       where: { id: sessionId },
-      data: { status: 'STARTED', startedAt: new Date() },
+      data: { status: "STARTED", startedAt: new Date() },
       include: {
-        interview: { include: { questions: { orderBy: { sortOrder: 'asc' } } } },
+        interview: { include: { questions: { orderBy: { sortOrder: "asc" } } } },
       },
     });
   }
@@ -116,17 +121,17 @@ export class InterviewService {
   async submitSession(sessionId: string) {
     const session = await this.db.interviewSession.update({
       where: { id: sessionId },
-      data: { status: 'SUBMITTED', submittedAt: new Date() },
+      data: { status: "SUBMITTED", submittedAt: new Date() },
     });
     // Trigger async AI evaluation (fire and forget with logging)
     this.evaluateSession(sessionId).catch((err) =>
-      log.error({ err, sessionId }, 'Async session evaluation failed'),
+      log.error({ err, sessionId }, "Async session evaluation failed"),
     );
     return session;
   }
 
   async evaluateSession(sessionId: string) {
-    log.info({ sessionId }, 'Evaluating interview session via AI');
+    log.info({ sessionId }, "Evaluating interview session via AI");
     const session = await this.db.interviewSession.findUniqueOrThrow({
       where: { id: sessionId },
       include: {
@@ -153,34 +158,34 @@ export class InterviewService {
         questionResults.push({
           questionId: question.id,
           question: question.text,
-          answer: 'No answer provided',
+          answer: "No answer provided",
           score: 0,
           maxPoints: question.maxPoints,
-          feedback: 'No answer was provided for this question.',
+          feedback: "No answer was provided for this question.",
         });
         continue;
       }
 
       const { systemMessage, userMessage } = compilePrompt(PROMPTS.INTERVIEW_ANSWER_EVALUATOR, {
         questionText: question.text,
-        rubric: question.rubric ?? 'Evaluate based on clarity, accuracy, and depth.',
+        rubric: question.rubric ?? "Evaluate based on clarity, accuracy, and depth.",
         answerText: answer.answerText,
         maxPoints: question.maxPoints,
       });
 
-      let scoreResult = { score: 0, feedback: 'Unable to evaluate.' };
+      let scoreResult = { score: 0, feedback: "Unable to evaluate." };
       try {
         const aiResponse = await this.aiEngine.complete({
           messages: [
-            { role: 'system', content: systemMessage },
-            { role: 'user', content: userMessage },
+            { role: "system", content: systemMessage },
+            { role: "user", content: userMessage },
           ],
-          responseFormat: { type: 'json_object' } as const,
+          responseFormat: { type: "json_object" } as const,
           temperature: 0.2,
         });
         scoreResult = JSON.parse(aiResponse.content) as { score: number; feedback: string };
       } catch {
-        log.warn({ questionId: question.id }, 'AI evaluation failed for question');
+        log.warn({ questionId: question.id }, "AI evaluation failed for question");
       }
 
       const clampedScore = Math.min(scoreResult.score, question.maxPoints);
@@ -208,14 +213,14 @@ export class InterviewService {
       maxScore,
       percentageScore: Math.round(percentageScore * 10) / 10,
       isPassed,
-      recommendation: isPassed ? 'PROCEED' : 'REJECT',
+      recommendation: isPassed ? "PROCEED" : "REJECT",
       questionResults,
     };
 
     return this.db.interviewSession.update({
       where: { id: sessionId },
       data: {
-        status: 'EVALUATED',
+        status: "EVALUATED",
         totalScore: percentageScore,
         isPassed,
         aiReport,
@@ -227,7 +232,7 @@ export class InterviewService {
     return this.db.interviewSession.findUniqueOrThrow({
       where: { id: sessionId },
       include: {
-        interview: { include: { questions: { orderBy: { sortOrder: 'asc' } } } },
+        interview: { include: { questions: { orderBy: { sortOrder: "asc" } } } },
         answers: true,
       },
     });
@@ -237,7 +242,7 @@ export class InterviewService {
     return this.db.interviewSession.findMany({
       where: { candidateId },
       include: { interview: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 

@@ -1,18 +1,18 @@
-'use client';
-import React, { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useApp } from '../../context/AppContext';
-import { AvatarCropper } from '../common/AvatarCropper';
+"use client";
+import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useApp } from "../../context/AppContext";
+import { AvatarCropper } from "../common/AvatarCropper";
 
 declare global {
   interface Window {
     pdfjsLib: any;
   }
 }
-import { Breadcrumbs } from '../common/Breadcrumbs';
+import { Breadcrumbs } from "../common/Breadcrumbs";
 import {
   User,
   Upload,
@@ -32,50 +32,45 @@ import {
   Edit3,
   Award,
   ShieldCheck,
-} from 'lucide-react';
-import { TechSkillIcon } from '../common/TechSkillIcon';
+} from "lucide-react";
+import { TechSkillIcon } from "../common/TechSkillIcon";
 
 // Zod validation schema with ALL 7 text/list fields marked mandatory
 const profileSchema = z.object({
   fullName: z
     .string()
-    .min(1, 'This field is required.')
-    .max(100, 'Full name must be under 100 characters'),
+    .min(1, "This field is required.")
+    .max(100, "Full name must be under 100 characters"),
   headline: z
     .string()
-    .min(1, 'This field is required.')
-    .max(120, 'Headline must be under 120 characters'),
-  bio: z
-    .string()
-    .min(1, 'This field is required.')
-    .max(1000, 'Bio must be under 1000 characters'),
+    .min(1, "This field is required.")
+    .max(120, "Headline must be under 120 characters"),
+  bio: z.string().min(1, "This field is required.").max(1000, "Bio must be under 1000 characters"),
   skills: z
     .array(z.string())
-    .min(1, 'This field is required.')
-    .max(20, 'You can add up to 20 skills maximum'),
+    .min(1, "This field is required.")
+    .max(20, "You can add up to 20 skills maximum"),
   githubUrl: z
     .string()
-    .min(1, 'This field is required.')
-    .refine(
-      (val) => /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9_-]+\/?$/i.test(val),
-      { message: 'Please enter a valid GitHub profile URL (e.g. https://github.com/username)' }
-    ),
+    .min(1, "This field is required.")
+    .refine((val) => /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9_-]+\/?$/i.test(val), {
+      message: "Please enter a valid GitHub profile URL (e.g. https://github.com/username)",
+    }),
   linkedinUrl: z
     .string()
-    .min(1, 'This field is required.')
-    .refine(
-      (val) => /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/i.test(val),
-      { message: 'Please enter a valid LinkedIn profile URL (e.g. https://linkedin.com/in/username)' }
-    ),
+    .min(1, "This field is required.")
+    .refine((val) => /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/i.test(val), {
+      message: "Please enter a valid LinkedIn profile URL (e.g. https://linkedin.com/in/username)",
+    }),
   portfolioUrl: z
     .string()
-    .min(1, 'This field is required.')
-    .url('Please enter a valid URL (e.g. https://yourportfolio.com)'),
+    .min(1, "This field is required.")
+    .url("Please enter a valid URL (e.g. https://yourportfolio.com)"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-const LOCAL_STORAGE_PROFILE_KEY = 'microintern_user_profile';
+const LOCAL_STORAGE_PROFILE_KEY = "microintern_user_profile";
 
 export const ProfilePage: React.FC = () => {
   const { userProfile, setUserProfile, showToast } = useApp();
@@ -85,68 +80,84 @@ export const ProfilePage: React.FC = () => {
   const [isEditedAfterSave, setIsEditedAfterSave] = useState<boolean>(false);
 
   // File states (initially empty or loaded from persistent state/localStorage)
-  const [avatarPreview, setAvatarPreview] = useState<string>(userProfile.avatar || '');
-  const [resumeName, setResumeName] = useState<string>(userProfile.resumeFileName || '');
-  const [bannerPreview, setBannerPreview] = useState<string>(userProfile.bannerUrl || '');
+  const [avatarPreview, setAvatarPreview] = useState<string>(userProfile.avatar || "");
+  const [resumeName, setResumeName] = useState<string>(userProfile.resumeFileName || "");
+  const [bannerPreview, setBannerPreview] = useState<string>(userProfile.bannerUrl || "");
   const [cropperOpen, setCropperOpen] = useState(false);
-  const [tempAvatarSrc, setTempAvatarSrc] = useState('');
+  const [tempAvatarSrc, setTempAvatarSrc] = useState("");
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
   // Resume Analyzing Loading Animation state
   const [isAnalyzingResume, setIsAnalyzingResume] = useState<boolean>(false);
   const [resumeProgress, setResumeProgress] = useState<number>(0);
 
-  const [newSkillInput, setNewSkillInput] = useState<string>('');
+  const [newSkillInput, setNewSkillInput] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [resumeError, setResumeError] = useState<string | null>(null);
 
   // Certifications & AI Verification state
-  const [certifications, setCertifications] = useState<Array<{
-    id: string;
-    title: string;
-    issuer: string;
-    url: string;
-    aiVerified: boolean;
-    score?: number;
-    verifying?: boolean;
-  }>>([]);
-  const [newCertTitle, setNewCertTitle] = useState('');
-  const [newCertIssuer, setNewCertIssuer] = useState('');
-  const [newCertUrl, setNewCertUrl] = useState('');
+  const [certifications, setCertifications] = useState<
+    Array<{
+      id: string;
+      title: string;
+      issuer: string;
+      url: string;
+      aiVerified: boolean;
+      score?: number;
+      verifying?: boolean;
+    }>
+  >([]);
+  const [newCertTitle, setNewCertTitle] = useState("");
+  const [newCertIssuer, setNewCertIssuer] = useState("");
+  const [newCertUrl, setNewCertUrl] = useState("");
   const [showAddCertModal, setShowAddCertModal] = useState(false);
 
   const handleValidateCertification = (id: string) => {
-    setCertifications(prev => prev.map(c => c.id === id ? { ...c, verifying: true } : c));
+    setCertifications((prev) => prev.map((c) => (c.id === id ? { ...c, verifying: true } : c)));
     setTimeout(() => {
-      setCertifications(prev => prev.map(c => c.id === id ? {
-        ...c,
-        verifying: false,
-        aiVerified: true,
-        score: Math.floor(92 + Math.random() * 7),
-      } : c));
-      showToast('AI Validation Success ✨', 'Certification cryptographically verified against issuer registry. Trust score boosted by +15 pts!', 'success');
+      setCertifications((prev) =>
+        prev.map((c) =>
+          c.id === id
+            ? {
+                ...c,
+                verifying: false,
+                aiVerified: true,
+                score: Math.floor(92 + Math.random() * 7),
+              }
+            : c,
+        ),
+      );
+      showToast(
+        "AI Validation Success ✨",
+        "Certification cryptographically verified against issuer registry. Trust score boosted by +15 pts!",
+        "success",
+      );
     }, 1200);
   };
 
   const handleAddCertification = () => {
     if (!newCertTitle.trim() || !newCertIssuer.trim()) {
-      showToast('Missing Fields', 'Please enter Certification Title and Issuer.', 'warning');
+      showToast("Missing Fields", "Please enter Certification Title and Issuer.", "warning");
       return;
     }
     const newCert = {
       id: `cert-${Date.now()}`,
       title: newCertTitle.trim(),
       issuer: newCertIssuer.trim(),
-      url: newCertUrl.trim() || 'https://verify.microintern.ai/credential',
+      url: newCertUrl.trim() || "https://verify.microintern.ai/credential",
       aiVerified: false,
     };
-    setCertifications(prev => [newCert, ...prev]);
-    setNewCertTitle('');
-    setNewCertIssuer('');
-    setNewCertUrl('');
+    setCertifications((prev) => [newCert, ...prev]);
+    setNewCertTitle("");
+    setNewCertIssuer("");
+    setNewCertUrl("");
     setShowAddCertModal(false);
-    showToast('Certification Added', 'Click ✨ Validate with AI to verify this credential.', 'info');
+    showToast(
+      "Certification Added",
+      "Click ✨ Validate with AI to verify this credential.",
+      "info",
+    );
   };
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -163,22 +174,22 @@ export const ProfilePage: React.FC = () => {
     formState: { errors, isValid, isSubmitted },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
-      fullName: '',
-      headline: '',
-      bio: '',
+      fullName: "",
+      headline: "",
+      bio: "",
       skills: [],
-      githubUrl: '',
-      linkedinUrl: '',
-      portfolioUrl: '',
+      githubUrl: "",
+      linkedinUrl: "",
+      portfolioUrl: "",
     },
   });
 
   // On mount, load saved profile from userProfile or localStorage
   useEffect(() => {
     let savedData: Partial<typeof userProfile> = userProfile;
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const stored = localStorage.getItem(LOCAL_STORAGE_PROFILE_KEY);
       if (stored) {
         try {
@@ -190,20 +201,15 @@ export const ProfilePage: React.FC = () => {
       }
     }
 
-    if (
-      savedData.fullName ||
-      savedData.headline ||
-      savedData.avatar ||
-      savedData.resumeFileName
-    ) {
+    if (savedData.fullName || savedData.headline || savedData.avatar || savedData.resumeFileName) {
       reset({
-        fullName: savedData.fullName || '',
-        headline: savedData.headline || '',
-        bio: savedData.bio || savedData.aboutMe || '',
+        fullName: savedData.fullName || "",
+        headline: savedData.headline || "",
+        bio: savedData.bio || savedData.aboutMe || "",
         skills: savedData.skills || [],
-        githubUrl: savedData.githubUrl || '',
-        linkedinUrl: savedData.linkedinUrl || '',
-        portfolioUrl: savedData.portfolioUrl || '',
+        githubUrl: savedData.githubUrl || "",
+        linkedinUrl: savedData.linkedinUrl || "",
+        portfolioUrl: savedData.portfolioUrl || "",
       });
 
       if (savedData.avatar) setAvatarPreview(savedData.avatar);
@@ -228,13 +234,13 @@ export const ProfilePage: React.FC = () => {
     }
   }, [reset]);
 
-  const currentSkills = watch('skills') || [];
-  const watchedFullName = watch('fullName') || '';
-  const watchedHeadline = watch('headline') || '';
-  const watchedBio = watch('bio') || '';
-  const watchedGithub = watch('githubUrl') || '';
-  const watchedLinkedin = watch('linkedinUrl') || '';
-  const watchedPortfolio = watch('portfolioUrl') || '';
+  const currentSkills = watch("skills") || [];
+  const watchedFullName = watch("fullName") || "";
+  const watchedHeadline = watch("headline") || "";
+  const watchedBio = watch("bio") || "";
+  const watchedGithub = watch("githubUrl") || "";
+  const watchedLinkedin = watch("linkedinUrl") || "";
+  const watchedPortfolio = watch("portfolioUrl") || "";
 
   // Track edits after initial successful save
   useEffect(() => {
@@ -264,21 +270,21 @@ export const ProfilePage: React.FC = () => {
     watchedPortfolio.trim() &&
     avatarPreview &&
     resumeName &&
-    isValid
+    isValid,
   );
 
   // Button State & Text Determination
-  let buttonText = 'Save Profile';
+  let buttonText = "Save Profile";
   let isButtonDisabled = false;
 
   if (!isSaved) {
-    buttonText = 'Save Profile';
+    buttonText = "Save Profile";
     isButtonDisabled = !allRequiredFieldsFilled || isSaving;
   } else if (!isEditedAfterSave) {
-    buttonText = 'Edit Profile';
+    buttonText = "Edit Profile";
     isButtonDisabled = false;
   } else {
-    buttonText = 'Save Changes';
+    buttonText = "Save Changes";
     isButtonDisabled = !allRequiredFieldsFilled || isSaving;
   }
 
@@ -286,12 +292,12 @@ export const ProfilePage: React.FC = () => {
   const handleBannerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      showToast('Banner Error', 'Invalid file format. Please upload an image.', 'warning');
+    if (!file.type.startsWith("image/")) {
+      showToast("Banner Error", "Invalid file format. Please upload an image.", "warning");
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      showToast('Banner Error', 'File size exceeds 5MB limit.', 'warning');
+      showToast("Banner Error", "File size exceeds 5MB limit.", "warning");
       return;
     }
     const reader = new FileReader();
@@ -300,40 +306,43 @@ export const ProfilePage: React.FC = () => {
       setBannerPreview(base64String);
       const updated = { ...userProfile, bannerUrl: base64String };
       setUserProfile(updated);
-      if (typeof window !== 'undefined') localStorage.setItem('microintern_user_profile', JSON.stringify(updated));
-      showToast('Banner Uploaded', 'Cover photo updated.', 'info');
+      if (typeof window !== "undefined")
+        localStorage.setItem("microintern_user_profile", JSON.stringify(updated));
+      showToast("Banner Uploaded", "Cover photo updated.", "info");
     };
     reader.readAsDataURL(file);
   };
 
   const removeBanner = () => {
-    setBannerPreview('');
-    const updated = { ...userProfile, bannerUrl: '' };
+    setBannerPreview("");
+    const updated = { ...userProfile, bannerUrl: "" };
     setUserProfile(updated);
-    if (typeof window !== 'undefined') localStorage.setItem('microintern_user_profile', JSON.stringify(updated));
+    if (typeof window !== "undefined")
+      localStorage.setItem("microintern_user_profile", JSON.stringify(updated));
   };
 
   const removeAvatar = () => {
-    setAvatarPreview('');
-    const updated = { ...userProfile, avatar: '' };
+    setAvatarPreview("");
+    const updated = { ...userProfile, avatar: "" };
     setUserProfile(updated);
-    if (typeof window !== 'undefined') localStorage.setItem('microintern_user_profile', JSON.stringify(updated));
+    if (typeof window !== "undefined")
+      localStorage.setItem("microintern_user_profile", JSON.stringify(updated));
   };
 
   // Handle Avatar validation & upload
   const validateAndProcessAvatar = (file: File) => {
     setAvatarError(null);
-    if (!file.type.startsWith('image/')) {
-      const err = 'Invalid file format. Please upload an image file (JPG, PNG, WebP, GIF).';
+    if (!file.type.startsWith("image/")) {
+      const err = "Invalid file format. Please upload an image file (JPG, PNG, WebP, GIF).";
       setAvatarError(err);
-      showToast('Avatar Error', err, 'warning');
+      showToast("Avatar Error", err, "warning");
       return;
     }
     const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
     if (file.size > MAX_AVATAR_SIZE) {
       const err = `File size exceeds 5MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`;
       setAvatarError(err);
-      showToast('Avatar Error', err, 'warning');
+      showToast("Avatar Error", err, "warning");
       return;
     }
 
@@ -342,7 +351,7 @@ export const ProfilePage: React.FC = () => {
       setTempAvatarSrc(reader.result as string);
       setCropperOpen(true);
       // Reset input value so same file can be selected again
-      if (avatarInputRef.current) avatarInputRef.current.value = '';
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
     };
     reader.readAsDataURL(file);
   };
@@ -351,10 +360,10 @@ export const ProfilePage: React.FC = () => {
     setAvatarPreview(croppedBase64);
     const updated = { ...userProfile, avatar: croppedBase64 };
     setUserProfile(updated);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('microintern_user_profile', JSON.stringify(updated));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("microintern_user_profile", JSON.stringify(updated));
     }
-    showToast('Avatar Updated', 'Your profile picture has been saved.', 'success');
+    showToast("Avatar Updated", "Your profile picture has been saved.", "success");
   };
 
   const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -367,18 +376,18 @@ export const ProfilePage: React.FC = () => {
   // Handle Resume validation, loading animation progress bar & notification
   const validateAndProcessResume = (file: File) => {
     setResumeError(null);
-    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
     if (!isPdf) {
-      const err = 'Invalid file format. Only PDF (.pdf) documents are accepted.';
+      const err = "Invalid file format. Only PDF (.pdf) documents are accepted.";
       setResumeError(err);
-      showToast('Resume Error', err, 'warning');
+      showToast("Resume Error", err, "warning");
       return;
     }
     const MAX_RESUME_SIZE = 10 * 1024 * 1024; // 10MB
     if (file.size > MAX_RESUME_SIZE) {
       const err = `Resume size exceeds 10MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB).`;
       setResumeError(err);
-      showToast('Resume Error', err, 'warning');
+      showToast("Resume Error", err, "warning");
       return;
     }
 
@@ -397,20 +406,21 @@ export const ProfilePage: React.FC = () => {
 
           // Dynamic import of PDF.js from CDN to bypass package manager issues
           const loadPDFJS = async () => {
-            const getLib = () => window.pdfjsLib || (window as any)['pdfjs-dist/build/pdf'];
+            const getLib = () => window.pdfjsLib || (window as any)["pdfjs-dist/build/pdf"];
             if (getLib()) return getLib();
             return new Promise((resolve, reject) => {
-              const script = document.createElement('script');
-              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+              const script = document.createElement("script");
+              script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
               script.onload = () => {
                 const lib = getLib();
                 if (!lib) {
-                  reject(new Error('pdfjsLib not found after script load'));
+                  reject(new Error("pdfjsLib not found after script load"));
                   return;
                 }
                 // Ensure it's globally available as pdfjsLib
                 window.pdfjsLib = lib;
-                lib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                lib.GlobalWorkerOptions.workerSrc =
+                  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
                 resolve(lib);
               };
               script.onerror = reject;
@@ -422,125 +432,201 @@ export const ProfilePage: React.FC = () => {
             const pdfjsLib = await loadPDFJS();
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-            
-            let fullText = '';
+
+            let fullText = "";
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const textContent = await page.getTextContent();
-              fullText += textContent.items.map((item: any) => item.str).join(' ') + ' ';
+              fullText += textContent.items.map((item: any) => item.str).join(" ") + " ";
             }
 
             // --- Resume Validation ---
             if (fullText.length < 50) {
-              setResumeError('Could not read text from PDF.');
-              showToast('Invalid Document', 'Could not read any text from the PDF. Make sure it is not just an image.', 'warning');
+              setResumeError("Could not read text from PDF.");
+              showToast(
+                "Invalid Document",
+                "Could not read any text from the PDF. Make sure it is not just an image.",
+                "warning",
+              );
               return;
             }
 
-            const resumeKeywords = ['education', 'experience', 'skills', 'projects', 'university', 'college', 'degree', 'work', 'employment', 'profile', 'summary'];
+            const resumeKeywords = [
+              "education",
+              "experience",
+              "skills",
+              "projects",
+              "university",
+              "college",
+              "degree",
+              "work",
+              "employment",
+              "profile",
+              "summary",
+            ];
             const lowerText = fullText.toLowerCase();
-            const keywordCount = resumeKeywords.filter(kw => lowerText.includes(kw)).length;
-            
+            const keywordCount = resumeKeywords.filter((kw) => lowerText.includes(kw)).length;
+
             if (keywordCount < 2) {
-              setResumeError('Upload a real resume');
-              showToast('Nice Try', 'bro do you think im dumb like that 💀 Upload a real resume!', 'warning');
+              setResumeError("Upload a real resume");
+              showToast(
+                "Nice Try",
+                "bro do you think im dumb like that 💀 Upload a real resume!",
+                "warning",
+              );
               return;
             }
 
             // --- Smart Regex Extraction ---
-            
+
             // Extract Email
             const emailMatch = fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-            const email = emailMatch ? emailMatch[0] : '';
+            const email = emailMatch ? emailMatch[0] : "";
 
             // Extract Links
             const urls = fullText.match(/https?:\/\/[^\s]+/g) || [];
-            let linkedin = '', github = '', portfolio = '';
-            urls.forEach(url => {
-              if (url.includes('linkedin.com')) linkedin = url;
-              else if (url.includes('github.com')) github = url;
+            let linkedin = "",
+              github = "",
+              portfolio = "";
+            urls.forEach((url) => {
+              if (url.includes("linkedin.com")) linkedin = url;
+              else if (url.includes("github.com")) github = url;
               else if (!portfolio) portfolio = url; // first other url as portfolio
             });
 
             // Extract Skills (Basic Keyword Matching)
-            const techKeywords = ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Next.js', 'Python', 'Java', 'C++', 'SQL', 'NoSQL', 'MongoDB', 'PostgreSQL', 'AWS', 'Docker', 'Kubernetes', 'GraphQL', 'REST', 'HTML', 'CSS', 'Tailwind', 'Git'];
-            const foundSkills = techKeywords.filter(skill => {
-              const escapedSkill = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-              return new RegExp(`\\b${escapedSkill}\\b`, 'i').test(fullText);
+            const techKeywords = [
+              "JavaScript",
+              "TypeScript",
+              "React",
+              "Node.js",
+              "Next.js",
+              "Python",
+              "Java",
+              "C++",
+              "SQL",
+              "NoSQL",
+              "MongoDB",
+              "PostgreSQL",
+              "AWS",
+              "Docker",
+              "Kubernetes",
+              "GraphQL",
+              "REST",
+              "HTML",
+              "CSS",
+              "Tailwind",
+              "Git",
+            ];
+            const foundSkills = techKeywords.filter((skill) => {
+              const escapedSkill = skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              return new RegExp(`\\b${escapedSkill}\\b`, "i").test(fullText);
             });
 
             // 1. Extract Name
-            const cleanFullText = fullText.replace(/\\s+/g, ' ').trim();
-            let extractedName = '';
+            const cleanFullText = fullText.replace(/\\s+/g, " ").trim();
+            let extractedName = "";
             const nameMatch = cleanFullText.match(/^([A-Z][a-z]+(?:\\s+[A-Z][a-z]+){1,2})/);
             if (nameMatch && nameMatch[1] && nameMatch[1].length < 40) {
               extractedName = nameMatch[1];
             } else {
-              const words = cleanFullText.split(' ').filter(w => /^[A-Za-z]+$/.test(w));
+              const words = cleanFullText.split(" ").filter((w) => /^[A-Za-z]+$/.test(w));
               if (words.length >= 2) {
-                extractedName = words[0] + ' ' + words[1];
+                extractedName = words[0] + " " + words[1];
               }
             }
 
             // 2. Extract Bio / Summary
-            let extractedBio = '';
-            const summaryMatch = cleanFullText.match(/(?:Summary|Profile|Objective|About Me)\\s*(.*?)(?:Experience|Education|Skills|Work History|Employment|Projects)/i);
-            
+            let extractedBio = "";
+            const summaryMatch = cleanFullText.match(
+              /(?:Summary|Profile|Objective|About Me)\\s*(.*?)(?:Experience|Education|Skills|Work History|Employment|Projects)/i,
+            );
+
             if (summaryMatch && summaryMatch[1]) {
               extractedBio = summaryMatch[1].trim().substring(0, 500);
             }
-            
+
             // Clear bio if it accidentally grabbed contact info or is too short
-            if (extractedBio.includes('@') || /\\+?[0-9]{10}/.test(extractedBio) || extractedBio.length < 20) {
-              extractedBio = '';
+            if (
+              extractedBio.includes("@") ||
+              /\\+?[0-9]{10}/.test(extractedBio) ||
+              extractedBio.length < 20
+            ) {
+              extractedBio = "";
             }
 
             // 3. Extract Headline
-            let extractedHeadline = '';
-            const commonTitles = ['Software Developer', 'Software Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Data Scientist', 'Product Manager', 'Designer', 'Engineer', 'Developer', 'Analyst'];
+            let extractedHeadline = "";
+            const commonTitles = [
+              "Software Developer",
+              "Software Engineer",
+              "Frontend Developer",
+              "Backend Developer",
+              "Full Stack Developer",
+              "Data Scientist",
+              "Product Manager",
+              "Designer",
+              "Engineer",
+              "Developer",
+              "Analyst",
+            ];
             const introText = cleanFullText.substring(0, 500);
             for (const title of commonTitles) {
-              if (new RegExp(`\\\\b${title}\\\\b`, 'i').test(introText)) {
+              if (new RegExp(`\\\\b${title}\\\\b`, "i").test(introText)) {
                 extractedHeadline = title;
                 break;
               }
             }
 
             // Clean URLs
-            let cleanLinkedin = linkedin.replace(/[^a-zA-Z0-9-.:/?=]/g, '');
-            let cleanGithub = github.replace(/[^a-zA-Z0-9-.:/?=]/g, '');
-            let cleanPortfolio = portfolio.replace(/[^a-zA-Z0-9-.:/?=]/g, '');
+            let cleanLinkedin = linkedin.replace(/[^a-zA-Z0-9-.:/?=]/g, "");
+            let cleanGithub = github.replace(/[^a-zA-Z0-9-.:/?=]/g, "");
+            let cleanPortfolio = portfolio.replace(/[^a-zA-Z0-9-.:/?=]/g, "");
 
             // Set form values
-            setValue('fullName', extractedName, { shouldValidate: true, shouldDirty: true });
-            setValue('headline', extractedHeadline, { shouldValidate: true, shouldDirty: true });
-            setValue('bio', extractedBio, { shouldValidate: true, shouldDirty: true });
-            
+            setValue("fullName", extractedName, { shouldValidate: true, shouldDirty: true });
+            setValue("headline", extractedHeadline, { shouldValidate: true, shouldDirty: true });
+            setValue("bio", extractedBio, { shouldValidate: true, shouldDirty: true });
+
             if (foundSkills.length > 0) {
-              setValue('skills', foundSkills.slice(0, 7), { shouldValidate: true, shouldDirty: true });
+              setValue("skills", foundSkills.slice(0, 7), {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
             } else {
-              setValue('skills', ['JavaScript', 'React'], { shouldValidate: true, shouldDirty: true });
+              setValue("skills", ["JavaScript", "React"], {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
             }
 
             // Fallback for URLs
-            const fallbackStr = extractedName.replace(/\s/g, '').toLowerCase() || 'candidate';
+            const fallbackStr = extractedName.replace(/\s/g, "").toLowerCase() || "candidate";
 
             // Validate Link Helper
-            const validateLink = async (url: string, type: 'github' | 'linkedin' | 'portfolio', expectedName: string) => {
-              if (!url) return '';
+            const validateLink = async (
+              url: string,
+              type: "github" | "linkedin" | "portfolio",
+              expectedName: string,
+            ) => {
+              if (!url) return "";
               try {
-                const res = await fetch('/api/validate-link', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ url, type, expectedName })
+                const res = await fetch("/api/validate-link", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ url, type, expectedName }),
                 });
                 if (!res.ok) return url; // Fallback to returning URL if API crashes
                 const data = await res.json();
                 if (data.isValid) return url;
-                
+
                 // Show a small warning toast if link is fake
-                showToast('Link Validation Failed', `${type} URL was found to be invalid or fake: ${data.reason}`, 'warning');
-                return '';
+                showToast(
+                  "Link Validation Failed",
+                  `${type} URL was found to be invalid or fake: ${data.reason}`,
+                  "warning",
+                );
+                return "";
               } catch (e) {
                 return url; // fallback to URL if network error
               }
@@ -548,31 +634,45 @@ export const ProfilePage: React.FC = () => {
 
             // Run validations concurrently for speed
             const [validGithub, validLinkedin, validPortfolio] = await Promise.all([
-              validateLink(cleanGithub || `https://github.com/${fallbackStr}`, 'github', extractedName),
-              validateLink(cleanLinkedin || `https://linkedin.com/in/${fallbackStr}`, 'linkedin', extractedName),
-              validateLink(cleanPortfolio || `https://${fallbackStr}.dev`, 'portfolio', extractedName)
+              validateLink(
+                cleanGithub || `https://github.com/${fallbackStr}`,
+                "github",
+                extractedName,
+              ),
+              validateLink(
+                cleanLinkedin || `https://linkedin.com/in/${fallbackStr}`,
+                "linkedin",
+                extractedName,
+              ),
+              validateLink(
+                cleanPortfolio || `https://${fallbackStr}.dev`,
+                "portfolio",
+                extractedName,
+              ),
             ]);
 
-            if (validGithub) setValue('githubUrl', validGithub, { shouldValidate: true, shouldDirty: true });
-            if (validLinkedin) setValue('linkedinUrl', validLinkedin, { shouldValidate: true, shouldDirty: true });
-            if (validPortfolio) setValue('portfolioUrl', validPortfolio, { shouldValidate: true, shouldDirty: true });
-
+            if (validGithub)
+              setValue("githubUrl", validGithub, { shouldValidate: true, shouldDirty: true });
+            if (validLinkedin)
+              setValue("linkedinUrl", validLinkedin, { shouldValidate: true, shouldDirty: true });
+            if (validPortfolio)
+              setValue("portfolioUrl", validPortfolio, { shouldValidate: true, shouldDirty: true });
 
             // Save resume name immediately to userProfile & localStorage
             const updated = { ...userProfile, resumeFileName: file.name };
             setUserProfile(updated);
-            if (typeof window !== 'undefined') {
+            if (typeof window !== "undefined") {
               localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updated));
             }
 
             showToast(
-              'PDF Extraction Complete 📄',
-              'Successfully analyzed your resume and extracted your details!',
-              'success'
+              "PDF Extraction Complete 📄",
+              "Successfully analyzed your resume and extracted your details!",
+              "success",
             );
           } catch (error) {
             console.error("PDF Parsing Error:", error);
-            showToast('Extraction Failed', 'Could not parse the PDF file.', 'warning');
+            showToast("Extraction Failed", "Could not parse the PDF file.", "warning");
           }
         }, 200);
       }
@@ -592,34 +692,34 @@ export const ProfilePage: React.FC = () => {
     if (!trimmed) return;
 
     if (currentSkills.includes(trimmed)) {
-      showToast('Duplicate Skill', `"${trimmed}" is already in your skills list.`, 'warning');
+      showToast("Duplicate Skill", `"${trimmed}" is already in your skills list.`, "warning");
       return;
     }
 
     if (currentSkills.length >= 20) {
-      showToast('Limit Reached', 'You can add up to 20 skills maximum.', 'warning');
+      showToast("Limit Reached", "You can add up to 20 skills maximum.", "warning");
       return;
     }
 
     const updated = [...currentSkills, trimmed];
-    setValue('skills', updated, { shouldValidate: true });
-    setNewSkillInput('');
-    trigger('skills');
+    setValue("skills", updated, { shouldValidate: true });
+    setNewSkillInput("");
+    trigger("skills");
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
     const updated = currentSkills.filter((s) => s !== skillToRemove);
-    setValue('skills', updated, { shouldValidate: true });
-    trigger('skills');
+    setValue("skills", updated, { shouldValidate: true });
+    trigger("skills");
   };
 
   // Form Submission
   const onSaveProfile = (data: ProfileFormValues) => {
     if (!avatarPreview) {
-      setAvatarError('This field is required.');
+      setAvatarError("This field is required.");
     }
     if (!resumeName) {
-      setResumeError('This field is required.');
+      setResumeError("This field is required.");
     }
 
     if (!allRequiredFieldsFilled) {
@@ -645,37 +745,37 @@ export const ProfilePage: React.FC = () => {
       };
 
       setUserProfile(updatedProfile);
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updatedProfile));
       }
 
       setIsSaving(false);
       setIsSaved(true);
       setIsEditedAfterSave(false);
-      showToast('Profile Saved', 'Profile saved successfully.', 'success');
+      showToast("Profile Saved", "Profile saved successfully.", "success");
     }, 400);
   };
 
   const handleReset = () => {
     reset({
-      fullName: '',
-      headline: '',
-      bio: '',
+      fullName: "",
+      headline: "",
+      bio: "",
       skills: [],
-      githubUrl: '',
-      linkedinUrl: '',
-      portfolioUrl: '',
+      githubUrl: "",
+      linkedinUrl: "",
+      portfolioUrl: "",
     });
-    setAvatarPreview('');
-    setResumeName('');
+    setAvatarPreview("");
+    setResumeName("");
     setAvatarError(null);
     setResumeError(null);
     setIsSaved(false);
     setIsEditedAfterSave(false);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.removeItem(LOCAL_STORAGE_PROFILE_KEY);
     }
-    showToast('Form Reset', 'Cleared all candidate profile fields.', 'info');
+    showToast("Form Reset", "Cleared all candidate profile fields.", "info");
   };
 
   return (
@@ -688,39 +788,65 @@ export const ProfilePage: React.FC = () => {
           {/* Banner Area */}
           <div className="relative h-48 sm:h-64 w-full bg-black/5 dark:bg-white/5 overflow-hidden group">
             {bannerPreview ? (
-              <Image src={bannerPreview} alt="Profile Banner" className="w-full h-full object-cover" fill unoptimized />
+              <Image
+                src={bannerPreview}
+                alt="Profile Banner"
+                className="w-full h-full object-cover"
+                fill
+                unoptimized
+              />
             ) : (
               <div className="absolute inset-0 bg-black/5 dark:bg-gradient-to-b dark:from-white/[0.03] dark:to-transparent border-b border-black/10 dark:border-white/[0.05] flex items-center justify-center">
                 <div className="absolute inset-0 opacity-10 dark:opacity-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
               </div>
             )}
-            
+
             {/* Banner Hover Edit Button */}
             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
               {bannerPreview && (
-                <button onClick={removeBanner} className="p-2.5 rounded-full bg-black/50 hover:bg-red-500/80 text-white backdrop-blur-md transition-all shadow-sm">
+                <button
+                  onClick={removeBanner}
+                  className="p-2.5 rounded-full bg-black/50 hover:bg-red-500/80 text-white backdrop-blur-md transition-all shadow-sm"
+                >
                   <X className="w-4 h-4" />
                 </button>
               )}
-              <button onClick={() => bannerInputRef.current?.click()} className="px-4 py-2.5 rounded-full bg-black/50 hover:bg-black/70 text-white text-xs font-bold backdrop-blur-md transition-all flex items-center gap-2 shadow-sm">
+              <button
+                onClick={() => bannerInputRef.current?.click()}
+                className="px-4 py-2.5 rounded-full bg-black/50 hover:bg-black/70 text-white text-xs font-bold backdrop-blur-md transition-all flex items-center gap-2 shadow-sm"
+              >
                 <Upload className="w-4 h-4" />
-                <span>{bannerPreview ? 'Change Cover' : 'Add Cover Photo'}</span>
+                <span>{bannerPreview ? "Change Cover" : "Add Cover Photo"}</span>
               </button>
             </div>
-            <input ref={bannerInputRef} type="file" accept="image/*" onChange={handleBannerFileChange} className="hidden" />
+            <input
+              ref={bannerInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleBannerFileChange}
+              className="hidden"
+            />
           </div>
 
           <div className="relative z-10 px-6 sm:px-8 pb-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 -mt-16 sm:-mt-20">
             {/* Avatar Preview */}
             <div className="relative group shrink-0">
               <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full ring-4 ring-white dark:ring-[#101010] overflow-hidden bg-black/90 dark:bg-white/90 flex items-center justify-center shadow-lg">
-                {userProfile.avatar && userProfile.avatar.startsWith('blob:') ? (
-                  <div className="w-full h-full flex items-center justify-center bg-black/10 dark:bg-white/10 text-xs text-center p-2">Invalid Session Image. Please Re-upload.</div>
+                {userProfile.avatar && userProfile.avatar.startsWith("blob:") ? (
+                  <div className="w-full h-full flex items-center justify-center bg-black/10 dark:bg-white/10 text-xs text-center p-2">
+                    Invalid Session Image. Please Re-upload.
+                  </div>
                 ) : userProfile.avatar ? (
-                  <Image src={userProfile.avatar} alt="Candidate Avatar" className="w-full h-full object-cover" fill unoptimized />
+                  <Image
+                    src={userProfile.avatar}
+                    alt="Candidate Avatar"
+                    className="w-full h-full object-cover"
+                    fill
+                    unoptimized
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-[#111111] dark:bg-white text-white dark:text-black text-4xl font-black">
-                    {(userProfile.fullName || 'C').charAt(0).toUpperCase()}
+                    {(userProfile.fullName || "C").charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
@@ -732,7 +858,7 @@ export const ProfilePage: React.FC = () => {
                 className="absolute inset-0 rounded-full bg-slate-950/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs font-bold transition-opacity cursor-pointer"
               >
                 <Upload className="w-6 h-6 mb-1 text-white" />
-                <span>{avatarPreview ? 'Edit Avatar' : 'Upload Avatar'}</span>
+                <span>{avatarPreview ? "Edit Avatar" : "Upload Avatar"}</span>
               </button>
             </div>
 
@@ -741,11 +867,11 @@ export const ProfilePage: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-black dark:text-white">
-                    {watchedFullName || 'Candidate Profile'}
+                    {watchedFullName || "Candidate Profile"}
                   </h1>
                   <p className="text-sm font-semibold text-black dark:text-white flex items-center justify-center sm:justify-start gap-1.5 mt-0.5">
                     <Sparkles className="w-4 h-4 text-black dark:text-white" />
-                    <span>{watchedHeadline || 'Unspecified Headline'}</span>
+                    <span>{watchedHeadline || "Unspecified Headline"}</span>
                   </p>
                 </div>
 
@@ -767,19 +893,21 @@ export const ProfilePage: React.FC = () => {
 
         {/* ================= 2. EDIT PROFILE FORM ================= */}
         <form onSubmit={handleSubmit(onSaveProfile)} className="space-y-8">
-          
           {/* UPLOAD CARDS SECTION */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
             {/* AVATAR UPLOAD CARD (Single button, hides upload area after upload, shows Edit Avatar) */}
             <div className="p-6 rounded-[40px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white flex items-center gap-2">
                     <ImageIcon className="w-4 h-4 text-black dark:text-white" />
-                    <span>Avatar Upload <span className="text-rose-500">*</span></span>
+                    <span>
+                      Avatar Upload <span className="text-rose-500">*</span>
+                    </span>
                   </h3>
-                  <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">Max 5MB (Image)</span>
+                  <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
+                    Max 5MB (Image)
+                  </span>
                 </div>
                 <p className="text-xs text-black/50 dark:text-white/50 mb-4">
                   Upload a professional profile image (PNG, JPG, WebP).
@@ -804,7 +932,7 @@ export const ProfilePage: React.FC = () => {
                       <Upload className="w-4 h-4" />
                       <span>Upload Avatar</span>
                     </button>
-                    {(!avatarPreview && (avatarError || isSubmitted)) && (
+                    {!avatarPreview && (avatarError || isSubmitted) && (
                       <p className="text-xs text-rose-500 font-semibold flex items-center gap-1.5 mt-1">
                         <AlertCircle className="w-3.5 h-3.5" />
                         <span>This field is required.</span>
@@ -815,8 +943,12 @@ export const ProfilePage: React.FC = () => {
                   /* Uploaded state: Hide upload area, display avatar preview & Edit Avatar button */
                   <div className="p-4 rounded-[24px] bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-3 w-full sm:w-auto">
-                      {avatarPreview.startsWith('blob:') ? (
-                        <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-[10px] text-white text-center leading-tight">Broken<br/>Reload</div>
+                      {avatarPreview.startsWith("blob:") ? (
+                        <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-[10px] text-white text-center leading-tight">
+                          Broken
+                          <br />
+                          Reload
+                        </div>
                       ) : (
                         <img
                           src={avatarPreview}
@@ -825,7 +957,9 @@ export const ProfilePage: React.FC = () => {
                         />
                       )}
                       <div>
-                        <span className="text-xs font-bold text-black dark:text-white block">Avatar Uploaded</span>
+                        <span className="text-xs font-bold text-black dark:text-white block">
+                          Avatar Uploaded
+                        </span>
                         <span className="text-[10px] text-black dark:text-white font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" /> Image Ready
                         </span>
@@ -854,16 +988,19 @@ export const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-
             {/* RESUME UPLOAD CARD (Single button, hides upload area after upload, shows Replace Resume) */}
             <div className="p-6 rounded-[40px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white flex items-center gap-2">
                     <FileText className="w-4 h-4 text-black dark:text-white" />
-                    <span>Resume Upload <span className="text-rose-500">*</span></span>
+                    <span>
+                      Resume Upload <span className="text-rose-500">*</span>
+                    </span>
                   </h3>
-                  <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">Max 10MB (PDF Only)</span>
+                  <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
+                    Max 10MB (PDF Only)
+                  </span>
                 </div>
                 <p className="text-xs text-black/50 dark:text-white/50 mb-4">
                   Upload your PDF resume document (.pdf).
@@ -892,7 +1029,9 @@ export const ProfilePage: React.FC = () => {
                         style={{ width: `${resumeProgress}%` }}
                       />
                     </div>
-                    <span className="text-[11px] font-mono text-black/50 dark:text-white/50">{resumeProgress}%</span>
+                    <span className="text-[11px] font-mono text-black/50 dark:text-white/50">
+                      {resumeProgress}%
+                    </span>
                   </div>
                 ) : !resumeName ? (
                   /* Initially show ONLY ONE Upload Resume button */
@@ -905,7 +1044,7 @@ export const ProfilePage: React.FC = () => {
                       <Upload className="w-4 h-4" />
                       <span>Upload Resume</span>
                     </button>
-                    {(!resumeName && (resumeError || isSubmitted)) && (
+                    {!resumeName && (resumeError || isSubmitted) && (
                       <p className="text-xs text-rose-500 font-semibold flex items-center gap-1.5 mt-1">
                         <AlertCircle className="w-3.5 h-3.5" />
                         <span>This field is required.</span>
@@ -941,13 +1080,13 @@ export const ProfilePage: React.FC = () => {
                     </div>
 
                     <p className="text-[11px] text-black/60 dark:text-black/30 dark:text-white/30 font-medium leading-relaxed border-t border-emerald-200/60 dark:border-emerald-800/60 pt-2">
-                      Resume uploaded successfully. Automatic AI profile extraction will be available when the backend API is connected.
+                      Resume uploaded successfully. Automatic AI profile extraction will be
+                      available when the backend API is connected.
                     </p>
                   </div>
                 )}
               </div>
             </div>
-
           </div>
 
           {/* FORM FIELDS CARD */}
@@ -957,8 +1096,6 @@ export const ProfilePage: React.FC = () => {
                 <User className="w-5 h-5 text-black dark:text-white" />
                 <span>Profile Details & Portfolio</span>
               </h3>
-
-
             </div>
 
             <div className="space-y-6">
@@ -969,12 +1106,12 @@ export const ProfilePage: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  {...register('fullName')}
+                  {...register("fullName")}
                   placeholder="e.g. Alex Vance"
                   className={`w-full px-4 py-3 rounded-xl border bg-black/5 dark:bg-white/5 text-sm focus:outline-none focus:ring-2 transition-all ${
                     errors.fullName
-                      ? 'border-rose-500 focus:ring-rose-500'
-                      : 'border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
+                      ? "border-rose-500 focus:ring-rose-500"
+                      : "border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20"
                   }`}
                 />
                 {errors.fullName && (
@@ -992,12 +1129,12 @@ export const ProfilePage: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  {...register('headline')}
+                  {...register("headline")}
                   placeholder="e.g. Full Stack Developer"
                   className={`w-full px-4 py-3 rounded-xl border bg-black/5 dark:bg-white/5 text-sm focus:outline-none focus:ring-2 transition-all ${
                     errors.headline
-                      ? 'border-rose-500 focus:ring-rose-500'
-                      : 'border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
+                      ? "border-rose-500 focus:ring-rose-500"
+                      : "border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20"
                   }`}
                 />
                 {errors.headline && (
@@ -1015,12 +1152,12 @@ export const ProfilePage: React.FC = () => {
                 </label>
                 <textarea
                   rows={4}
-                  {...register('bio')}
+                  {...register("bio")}
                   placeholder="Tell recruiters about your experience, achievements, and technical background..."
                   className={`w-full p-4 rounded-xl border bg-black/5 dark:bg-white/5 text-sm focus:outline-none focus:ring-2 transition-all ${
                     errors.bio
-                      ? 'border-rose-500 focus:ring-rose-500'
-                      : 'border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
+                      ? "border-rose-500 focus:ring-rose-500"
+                      : "border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20"
                   }`}
                 />
                 {errors.bio && (
@@ -1044,7 +1181,9 @@ export const ProfilePage: React.FC = () => {
 
                 {/* Active Skill Tags */}
                 {currentSkills.length === 0 ? (
-                  <p className="text-xs text-black/40 dark:text-white/40 italic">No skills added yet. Add your key technical skills below.</p>
+                  <p className="text-xs text-black/40 dark:text-white/40 italic">
+                    No skills added yet. Add your key technical skills below.
+                  </p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {currentSkills.map((skill, idx) => (
@@ -1074,7 +1213,7 @@ export const ProfilePage: React.FC = () => {
                     value={newSkillInput}
                     onChange={(e) => setNewSkillInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         handleAddSkill();
                       }
@@ -1082,13 +1221,13 @@ export const ProfilePage: React.FC = () => {
                     disabled={currentSkills.length >= 20}
                     placeholder={
                       currentSkills.length >= 20
-                        ? '20 skills maximum reached'
-                        : 'Type skill (e.g. Next.js, OpenAI, Python) & press Enter'
+                        ? "20 skills maximum reached"
+                        : "Type skill (e.g. Next.js, OpenAI, Python) & press Enter"
                     }
                     className={`flex-1 px-4 py-2.5 rounded-xl border bg-black/5 dark:bg-white/5 text-xs focus:outline-none focus:ring-2 ${
                       errors.skills
-                        ? 'border-rose-500 focus:ring-rose-500'
-                        : 'border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
+                        ? "border-rose-500 focus:ring-rose-500"
+                        : "border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20"
                     }`}
                   />
                   <button
@@ -1119,7 +1258,8 @@ export const ProfilePage: React.FC = () => {
                       Verified Certifications & AI Validator
                     </label>
                     <p className="text-[11px] text-black/50 dark:text-white/60 mt-0.5">
-                      Add certifications and validate them with AI to boost your verified trust score.
+                      Add certifications and validate them with AI to boost your verified trust
+                      score.
                     </p>
                   </div>
                   <button
@@ -1177,7 +1317,7 @@ export const ProfilePage: React.FC = () => {
                             className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-50"
                           >
                             <Sparkles className="w-3.5 h-3.5 animate-spin" />
-                            {cert.verifying ? 'AI Validating...' : '✨ Validate with AI'}
+                            {cert.verifying ? "AI Validating..." : "✨ Validate with AI"}
                           </button>
                         )}
                       </div>
@@ -1189,7 +1329,9 @@ export const ProfilePage: React.FC = () => {
                 {showAddCertModal && (
                   <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-black dark:text-white">Add New Certification</span>
+                      <span className="text-xs font-bold text-black dark:text-white">
+                        Add New Certification
+                      </span>
                       <button
                         type="button"
                         onClick={() => setShowAddCertModal(false)}
@@ -1270,12 +1412,12 @@ export const ProfilePage: React.FC = () => {
                       <Github className="w-4 h-4 absolute left-3.5 top-3 text-black/40 dark:text-white/40" />
                       <input
                         type="url"
-                        {...register('githubUrl')}
+                        {...register("githubUrl")}
                         placeholder="https://github.com/username"
                         className={`w-full pl-10 pr-3 py-2.5 rounded-xl border bg-black/5 dark:bg-white/5 text-xs focus:outline-none focus:ring-2 ${
                           errors.githubUrl
-                            ? 'border-rose-500 focus:ring-rose-500'
-                            : 'border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
+                            ? "border-rose-500 focus:ring-rose-500"
+                            : "border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20"
                         }`}
                       />
                     </div>
@@ -1295,12 +1437,12 @@ export const ProfilePage: React.FC = () => {
                       <Linkedin className="w-4 h-4 absolute left-3.5 top-3 text-black/40 dark:text-white/40" />
                       <input
                         type="url"
-                        {...register('linkedinUrl')}
+                        {...register("linkedinUrl")}
                         placeholder="https://linkedin.com/in/username"
                         className={`w-full pl-10 pr-3 py-2.5 rounded-xl border bg-black/5 dark:bg-white/5 text-xs focus:outline-none focus:ring-2 ${
                           errors.linkedinUrl
-                            ? 'border-rose-500 focus:ring-rose-500'
-                            : 'border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
+                            ? "border-rose-500 focus:ring-rose-500"
+                            : "border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20"
                         }`}
                       />
                     </div>
@@ -1320,12 +1462,12 @@ export const ProfilePage: React.FC = () => {
                       <Globe className="w-4 h-4 absolute left-3.5 top-3 text-black/40 dark:text-white/40" />
                       <input
                         type="url"
-                        {...register('portfolioUrl')}
+                        {...register("portfolioUrl")}
                         placeholder="https://yourportfolio.com"
                         className={`w-full pl-10 pr-3 py-2.5 rounded-xl border bg-black/5 dark:bg-white/5 text-xs focus:outline-none focus:ring-2 ${
                           errors.portfolioUrl
-                            ? 'border-rose-500 focus:ring-rose-500'
-                            : 'border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
+                            ? "border-rose-500 focus:ring-rose-500"
+                            : "border-black/5 dark:border-white/20 focus:ring-black/20 dark:focus:ring-white/20"
                         }`}
                       />
                     </div>
@@ -1337,7 +1479,6 @@ export const ProfilePage: React.FC = () => {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -1358,8 +1499,8 @@ export const ProfilePage: React.FC = () => {
                 disabled={isButtonDisabled}
                 className={`px-8 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 ${
                   isButtonDisabled
-                    ? 'bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 cursor-not-allowed border border-black/10 dark:border-white/10 shadow-none'
-                    : 'bg-black dark:bg-white hover:opacity-90 text-white dark:text-black shadow-sm cursor-pointer'
+                    ? "bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 cursor-not-allowed border border-black/10 dark:border-white/10 shadow-none"
+                    : "bg-black dark:bg-white hover:opacity-90 text-white dark:text-black shadow-sm cursor-pointer"
                 }`}
               >
                 {isSaved && !isEditedAfterSave ? (
@@ -1367,7 +1508,7 @@ export const ProfilePage: React.FC = () => {
                 ) : (
                   <Save className="w-4 h-4" />
                 )}
-                <span>{isSaving ? 'Saving...' : buttonText}</span>
+                <span>{isSaving ? "Saving..." : buttonText}</span>
               </button>
             </div>
 
@@ -1377,14 +1518,13 @@ export const ProfilePage: React.FC = () => {
               </p>
             )}
           </div>
-
         </form>
       </div>
-      <AvatarCropper 
-        isOpen={cropperOpen} 
-        onClose={() => setCropperOpen(false)} 
-        imageSrc={tempAvatarSrc} 
-        onCropComplete={handleCropComplete} 
+      <AvatarCropper
+        isOpen={cropperOpen}
+        onClose={() => setCropperOpen(false)}
+        imageSrc={tempAvatarSrc}
+        onCropComplete={handleCropComplete}
       />
     </div>
   );

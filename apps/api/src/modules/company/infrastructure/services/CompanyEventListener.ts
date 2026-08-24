@@ -1,11 +1,11 @@
-import { corsOrigins } from '@/core/config.js';
-import { createModuleLogger } from '@/core/logger.js';
-import { getEmailService } from '@/infrastructure/email/EmailService.js';
-import { eventBus, DOMAIN_EVENTS } from '@/shared/events/EventBus.js';
+import { corsOrigins } from "@/core/config.js";
+import { createModuleLogger } from "@/core/logger.js";
+import { getEmailService } from "@/infrastructure/email/EmailService.js";
+import { eventBus, DOMAIN_EVENTS } from "@/shared/events/EventBus.js";
 
-import type { DomainEvent } from '@/shared/events/EventBus.js';
+import type { DomainEvent } from "@/shared/events/EventBus.js";
 
-const log = createModuleLogger('CompanyEventListener');
+const log = createModuleLogger("CompanyEventListener");
 
 interface CompanyMemberInvitedPayload {
   companyId: string;
@@ -23,10 +23,13 @@ interface CompanyMemberInvitedPayload {
 export function registerCompanyEventListeners(): void {
   eventBus.on(DOMAIN_EVENTS.COMPANY_MEMBER_INVITED, async (event: DomainEvent<unknown>) => {
     const payload = event.payload as CompanyMemberInvitedPayload;
-    log.info({ email: payload.email, companyName: payload.companyName }, 'Received COMPANY_MEMBER_INVITED event, sending email');
+    log.info(
+      { email: payload.email, companyName: payload.companyName },
+      "Received COMPANY_MEMBER_INVITED event, sending email",
+    );
     try {
       const emailService = getEmailService();
-      const clientUrl = corsOrigins[0] ?? 'http://localhost:3000';
+      const clientUrl = corsOrigins[0] ?? "http://localhost:3000";
       const inviteUrl = `${clientUrl}/auth/register?invite=${payload.memberId}&email=${encodeURIComponent(payload.email)}`;
 
       const html = `
@@ -51,11 +54,11 @@ export function registerCompanyEventListeners(): void {
         html,
       });
 
-      log.info({ email: payload.email }, 'Invitation email sent successfully');
+      log.info({ email: payload.email }, "Invitation email sent successfully");
     } catch (err) {
-      log.error({ err, email: payload.email }, 'Failed to send invitation email');
+      log.error({ err, email: payload.email }, "Failed to send invitation email");
     }
   });
 
-  log.info('Company event listeners registered successfully');
+  log.info("Company event listeners registered successfully");
 }

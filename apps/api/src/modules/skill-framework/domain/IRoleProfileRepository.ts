@@ -1,4 +1,9 @@
-import type { RoleProfile, RequiredSkill, RequiredCompetency, HiringBenchmark } from '@microintern/database';
+import type {
+  RoleProfile,
+  RequiredSkill,
+  RequiredCompetency,
+  HiringBenchmark,
+} from "@microintern/database";
 
 export interface CreateRoleProfileDTO {
   companyId: string;

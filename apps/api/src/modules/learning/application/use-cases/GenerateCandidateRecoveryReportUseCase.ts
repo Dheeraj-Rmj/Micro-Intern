@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { PROMPTS, compilePrompt } from '@/infrastructure/ai/PromptManager.js';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { PROMPTS, compilePrompt } from "@/infrastructure/ai/PromptManager.js";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('GenerateCandidateRecoveryReportUseCase');
+const log = createModuleLogger("GenerateCandidateRecoveryReportUseCase");
 
 export type GenerateCandidateRecoveryReportInput = {
   candidateId: string;
@@ -31,8 +31,10 @@ export type GenerateCandidateRecoveryReportOutput = {
 export class GenerateCandidateRecoveryReportUseCase {
   constructor(private readonly aiEngine: AIFallbackEngine) {}
 
-  async execute(input: GenerateCandidateRecoveryReportInput): Promise<GenerateCandidateRecoveryReportOutput> {
-    log.info({ candidateId: input.candidateId }, 'Generating Candidate Recovery Report');
+  async execute(
+    input: GenerateCandidateRecoveryReportInput,
+  ): Promise<GenerateCandidateRecoveryReportOutput> {
+    log.info({ candidateId: input.candidateId }, "Generating Candidate Recovery Report");
 
     try {
       const prompt = compilePrompt(PROMPTS.CANDIDATE_RECOVERY_REPORT, {
@@ -42,23 +44,23 @@ export class GenerateCandidateRecoveryReportUseCase {
 
       const response = await this.aiEngine.complete({
         messages: [
-          { role: 'system', content: prompt.systemMessage },
-          { role: 'user', content: prompt.userMessage },
+          { role: "system", content: prompt.systemMessage },
+          { role: "user", content: prompt.userMessage },
         ],
-        responseFormat: { type: 'json_object' },
+        responseFormat: { type: "json_object" },
       });
 
       const parsed = JSON.parse(response.content) as GenerateCandidateRecoveryReportOutput;
 
-      if (typeof parsed.readinessScore !== 'number') {
-        throw new Error('AI returned invalid JSON structure for Candidate Recovery Report');
+      if (typeof parsed.readinessScore !== "number") {
+        throw new Error("AI returned invalid JSON structure for Candidate Recovery Report");
       }
 
-      log.info('Successfully generated Recovery Report');
+      log.info("Successfully generated Recovery Report");
       return parsed;
     } catch (error) {
-      log.error({ err: error }, 'Failed to generate Recovery Report');
-      throw new Error('Failed to generate Recovery Report using AI');
+      log.error({ err: error }, "Failed to generate Recovery Report");
+      throw new Error("Failed to generate Recovery Report using AI");
     }
   }
 }

@@ -11,11 +11,11 @@
  * The role hierarchy matters for permission inheritance — see RBAC permission map.
  */
 export enum Role {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  COMPANY_OWNER = 'COMPANY_OWNER',
-  RECRUITER = 'RECRUITER',
-  CANDIDATE = 'CANDIDATE',
+  SUPER_ADMIN = "SUPER_ADMIN",
+  ADMIN = "ADMIN",
+  COMPANY_OWNER = "COMPANY_OWNER",
+  RECRUITER = "RECRUITER",
+  CANDIDATE = "CANDIDATE",
 }
 
 /**

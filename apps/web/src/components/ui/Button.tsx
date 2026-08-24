@@ -1,6 +1,6 @@
-import { type VariantProps, cva } from 'class-variance-authority';
+import { type VariantProps, cva } from "class-variance-authority";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 /**
  * Button component — the most-used UI primitive.
@@ -15,52 +15,49 @@ import { cn } from '@/lib/utils';
 const buttonVariants = cva(
   // Base styles — applied to every button
   [
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg',
-    'text-sm font-semibold transition-all duration-200',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-ring] focus-visible:ring-offset-2',
-    'disabled:pointer-events-none disabled:opacity-50',
-    'select-none',
-  ].join(' '),
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg",
+    "text-sm font-semibold transition-all duration-200",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-ring] focus-visible:ring-offset-2",
+    "disabled:pointer-events-none disabled:opacity-50",
+    "select-none",
+  ].join(" "),
   {
     variants: {
       variant: {
         default: [
-          'gradient-brand text-white shadow-[--shadow-sm]',
-          'hover:opacity-90 hover:shadow-[--shadow-glow]',
-          'active:scale-[0.98]',
-        ].join(' '),
+          "gradient-brand text-white shadow-[--shadow-sm]",
+          "hover:opacity-90 hover:shadow-[--shadow-glow]",
+          "active:scale-[0.98]",
+        ].join(" "),
         secondary: [
-          'bg-[--color-muted] text-[--color-foreground-default]',
-          'hover:bg-[--color-border]',
-        ].join(' '),
+          "bg-[--color-muted] text-[--color-foreground-default]",
+          "hover:bg-[--color-border]",
+        ].join(" "),
         outline: [
-          'border border-[--color-border] bg-transparent text-[--color-foreground-default]',
-          'hover:bg-[--color-muted]',
-        ].join(' '),
-        ghost: [
-          'text-[--color-foreground-default]',
-          'hover:bg-[--color-muted]',
-        ].join(' '),
+          "border border-[--color-border] bg-transparent text-[--color-foreground-default]",
+          "hover:bg-[--color-muted]",
+        ].join(" "),
+        ghost: ["text-[--color-foreground-default]", "hover:bg-[--color-muted]"].join(" "),
         destructive: [
-          'bg-[--color-error-500] text-white shadow-[--shadow-sm]',
-          'hover:bg-[--color-error-700]',
-        ].join(' '),
+          "bg-[--color-error-500] text-white shadow-[--shadow-sm]",
+          "hover:bg-[--color-error-700]",
+        ].join(" "),
         link: [
-          'text-[oklch(0.55_0.24_264)] underline-offset-4',
-          'hover:underline',
-          'h-auto p-0',
-        ].join(' '),
+          "text-[oklch(0.55_0.24_264)] underline-offset-4",
+          "hover:underline",
+          "h-auto p-0",
+        ].join(" "),
       },
       size: {
-        sm: 'h-8 px-3 text-xs rounded-md',
-        md: 'h-10 px-4',
-        lg: 'h-12 px-8 text-base rounded-xl',
-        icon: 'h-10 w-10',
+        sm: "h-8 px-3 text-xs rounded-md",
+        md: "h-10 px-4",
+        lg: "h-12 px-8 text-base rounded-xl",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'md',
+      variant: "default",
+      size: "md",
     },
   },
 );

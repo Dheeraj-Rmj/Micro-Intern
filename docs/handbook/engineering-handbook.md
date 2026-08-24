@@ -9,12 +9,14 @@ Welcome to the MicroIntern engineering team! This handbook outlines how we build
 We use a lightweight trunk-based development approach with short-lived feature branches.
 
 ### Branching Strategy
+
 - **`main`**: Production-ready code. Commits here automatically trigger staging deployments.
 - **Feature Branches**: `feat/<module>/<feature-name>` (e.g., `feat/auth/oauth-login`)
 - **Bugfix Branches**: `fix/<module>/<bug-name>` (e.g., `fix/trials/double-submission`)
 - **Chore Branches**: `chore/<description>` (e.g., `chore/deps/update-prisma`)
 
 ### The Daily Flow
+
 1. Sync your local `main` branch.
 2. Create a new branch: `git checkout -b feat/company/create-profile`.
 3. Write code, following the **Architecture Compliance Guide**.
@@ -30,6 +32,7 @@ We use a lightweight trunk-based development approach with short-lived feature b
 We enforce [Conventional Commits](https://www.conventionalcommits.org/) via Husky and Commitlint. This ensures our commit history is readable and changelogs can be auto-generated.
 
 **Format:**
+
 ```
 <type>(<scope>): <subject>
 
@@ -39,6 +42,7 @@ We enforce [Conventional Commits](https://www.conventionalcommits.org/) via Husk
 ```
 
 **Types:**
+
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
@@ -49,6 +53,7 @@ We enforce [Conventional Commits](https://www.conventionalcommits.org/) via Husk
 - `chore`: Changes to the build process or auxiliary tools and libraries
 
 **Example:**
+
 ```
 feat(evaluation): add AI safety layer to groq provider
 
@@ -61,17 +66,20 @@ Resolves #142
 ## 3. Pull Request & Code Review Process
 
 ### Creating a PR
+
 - Keep PRs small and focused (under 400 lines of code changed is ideal).
 - Fill out the PR template completely.
 - Ensure all CI checks pass (Lint, Type Check, Unit Tests, Integration Tests).
 - If your PR involves UI changes, attach screenshots or a short screen recording.
 
 ### Code Review Expectations
+
 - **Reviewers**: Aim to review PRs within 24 hours. Be constructive and kind.
 - **Authors**: Be responsive to feedback. Do not take feedback personally.
 - **Approval**: At least 1 approval from a core team member is required before merging.
 
 ### Review Checklist
+
 - Does this follow the Clean Architecture boundaries?
 - Are there appropriate tests?
 - Are error cases handled gracefully (using `AppError`)?
@@ -89,6 +97,7 @@ Quality is everyone's responsibility, but Padmashree leads our testing strategy.
 - **E2E Tests**: Located in `tests/e2e/`. Tests the entire flow from the browser to the database. (Playwright).
 
 **Rule of Thumb:**
+
 - Write a unit test for every Use Case and Domain Entity.
 - Write an integration test for every major API endpoint.
 

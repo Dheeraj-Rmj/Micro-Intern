@@ -1,14 +1,19 @@
-import { AIProvider } from '@microintern/shared';
-import Groq from 'groq-sdk';
+import { AIProvider } from "@microintern/shared";
+import Groq from "groq-sdk";
 
-import { config } from '@/core/config.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { config } from "@/core/config.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-import { AIProviderError } from '../interfaces/IAIProvider.js';
+import { AIProviderError } from "../interfaces/IAIProvider.js";
 
-import type { IAIProvider, AICompletionRequest, AICompletionResponse, AIProviderHealth } from '../interfaces/IAIProvider.js';
+import type {
+  IAIProvider,
+  AICompletionRequest,
+  AICompletionResponse,
+  AIProviderHealth,
+} from "../interfaces/IAIProvider.js";
 
-const log = createModuleLogger('GroqProvider');
+const log = createModuleLogger("GroqProvider");
 
 /**
  * Groq AI Provider — primary inference provider.
@@ -41,7 +46,7 @@ export class GroqProvider implements IAIProvider {
 
   async complete(request: AICompletionRequest): Promise<AICompletionResponse> {
     if (this.client === null) {
-      throw new AIProviderError(AIProvider.GROQ, 'Groq API key not configured', false);
+      throw new AIProviderError(AIProvider.GROQ, "Groq API key not configured", false);
     }
 
     const start = Date.now();
@@ -59,11 +64,11 @@ export class GroqProvider implements IAIProvider {
 
       const choice = response.choices[0];
       if (choice === undefined) {
-        throw new AIProviderError(AIProvider.GROQ, 'No completion choices returned', true);
+        throw new AIProviderError(AIProvider.GROQ, "No completion choices returned", true);
       }
 
       return {
-        content: choice.message.content ?? '',
+        content: choice.message.content ?? "",
         model: response.model,
         provider: AIProvider.GROQ,
         usage: {
@@ -72,7 +77,7 @@ export class GroqProvider implements IAIProvider {
           totalTokens: response.usage?.total_tokens ?? 0,
         },
         latencyMs: Date.now() - start,
-        finishReason: (choice.finish_reason as AICompletionResponse['finishReason']) ?? 'stop',
+        finishReason: (choice.finish_reason as AICompletionResponse["finishReason"]) ?? "stop",
       };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
@@ -80,14 +85,11 @@ export class GroqProvider implements IAIProvider {
       const isRateLimit = error instanceof Groq.RateLimitError;
       const isTimeout = error instanceof Groq.APIConnectionTimeoutError;
 
-      log.warn(
-        { err: error, provider: AIProvider.GROQ, isRateLimit, isTimeout },
-        'Groq API error',
-      );
+      log.warn({ err: error, provider: AIProvider.GROQ, isRateLimit, isTimeout }, "Groq API error");
 
       throw new AIProviderError(
         AIProvider.GROQ,
-        error instanceof Error ? error.message : 'Groq request failed',
+        error instanceof Error ? error.message : "Groq request failed",
         true, // All Groq errors are retryable (will fallback)
         error instanceof Error ? error : undefined,
       );
@@ -99,29 +101,29 @@ export class GroqProvider implements IAIProvider {
     if (!this.isConfigured()) {
       return {
         provider: AIProvider.GROQ,
-        status: 'unavailable',
-        error: 'Not configured',
+        status: "unavailable",
+        error: "Not configured",
         checkedAt: new Date(),
       };
     }
 
     try {
       await this.complete({
-        messages: [{ role: 'user', content: 'Reply with just the word "ok"' }],
+        messages: [{ role: "user", content: 'Reply with just the word "ok"' }],
         maxTokens: 5,
       });
       return {
         provider: AIProvider.GROQ,
-        status: 'available',
+        status: "available",
         latencyMs: Date.now() - start,
         checkedAt: new Date(),
       };
     } catch {
       return {
         provider: AIProvider.GROQ,
-        status: 'unavailable',
+        status: "unavailable",
         latencyMs: Date.now() - start,
-        error: 'Health check failed',
+        error: "Health check failed",
         checkedAt: new Date(),
       };
     }

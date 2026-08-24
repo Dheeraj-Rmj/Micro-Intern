@@ -1,11 +1,11 @@
-import { AssessmentStatus } from '@microintern/database';
-import type { Assessment } from '../entities/Assessment.entity.js';
-import type { AssessmentTask } from '../entities/AssessmentTask.entity.js';
+import { AssessmentStatus } from "@microintern/database";
+import type { Assessment } from "../entities/Assessment.entity.js";
+import type { AssessmentTask } from "../entities/AssessmentTask.entity.js";
 
 export interface ValidationIssue {
   field: string;
   message: string;
-  severity: 'ERROR' | 'WARNING';
+  severity: "ERROR" | "WARNING";
 }
 
 export interface AssessmentValidationResult {
@@ -40,36 +40,36 @@ export class AssessmentValidationEngine {
     // 1. Title Validation
     if (!assessment.title || assessment.title.trim().length < 3) {
       errors.push({
-        field: 'title',
-        message: 'Assessment title must be at least 3 characters long.',
-        severity: 'ERROR',
+        field: "title",
+        message: "Assessment title must be at least 3 characters long.",
+        severity: "ERROR",
       });
     }
 
     // 2. Description Validation
     if (!assessment.description || assessment.description.trim().length < 10) {
       errors.push({
-        field: 'description',
-        message: 'Assessment description must be at least 10 characters long.',
-        severity: 'ERROR',
+        field: "description",
+        message: "Assessment description must be at least 10 characters long.",
+        severity: "ERROR",
       });
     }
 
     // 3. Instructions Validation
     if (!assessment.instructions || assessment.instructions.trim().length < 10) {
       errors.push({
-        field: 'instructions',
-        message: 'Assessment instructions must be at least 10 characters long.',
-        severity: 'ERROR',
+        field: "instructions",
+        message: "Assessment instructions must be at least 10 characters long.",
+        severity: "ERROR",
       });
     }
 
     // 4. Tasks & Rubric Validation
     if (!assessment.tasks || assessment.tasks.length === 0) {
       errors.push({
-        field: 'tasks',
-        message: 'Assessment must have at least one evaluation task configured.',
-        severity: 'ERROR',
+        field: "tasks",
+        message: "Assessment must have at least one evaluation task configured.",
+        severity: "ERROR",
       });
     } else {
       let totalPoints = 0;
@@ -78,14 +78,14 @@ export class AssessmentValidationEngine {
           errors.push({
             field: `tasks[${idx}].title`,
             message: `Task #${idx + 1} is missing a title.`,
-            severity: 'ERROR',
+            severity: "ERROR",
           });
         }
         if (task.maxPoints <= 0) {
           errors.push({
             field: `tasks[${idx}].maxPoints`,
             message: `Task #${idx + 1} must have a positive maxPoints value.`,
-            severity: 'ERROR',
+            severity: "ERROR",
           });
         }
         totalPoints += task.maxPoints || 0;
@@ -93,9 +93,9 @@ export class AssessmentValidationEngine {
 
       if (totalPoints === 0) {
         errors.push({
-          field: 'tasks.rubric',
-          message: 'Total points across all tasks must be greater than zero.',
-          severity: 'ERROR',
+          field: "tasks.rubric",
+          message: "Total points across all tasks must be greater than zero.",
+          severity: "ERROR",
         });
       }
     }
@@ -108,9 +108,9 @@ export class AssessmentValidationEngine {
       assessment.passingScore > 100
     ) {
       errors.push({
-        field: 'passingScore',
-        message: 'Passing score must be between 50 and 100.',
-        severity: 'ERROR',
+        field: "passingScore",
+        message: "Passing score must be between 50 and 100.",
+        severity: "ERROR",
       });
     }
 
@@ -122,36 +122,39 @@ export class AssessmentValidationEngine {
       assessment.durationMinutes > 600
     ) {
       errors.push({
-        field: 'durationMinutes',
-        message: 'Duration must be between 15 and 600 minutes.',
-        severity: 'ERROR',
+        field: "durationMinutes",
+        message: "Duration must be between 15 and 600 minutes.",
+        severity: "ERROR",
       });
     }
 
     // 7. Skills Required Validation
     if (!assessment.skillsRequired || assessment.skillsRequired.length === 0) {
       errors.push({
-        field: 'skillsRequired',
-        message: 'At least one skill tag must be specified.',
-        severity: 'ERROR',
+        field: "skillsRequired",
+        message: "At least one skill tag must be specified.",
+        severity: "ERROR",
       });
     }
 
     // 8. Deliverables Warning
     if (!assessment.deliverables || assessment.deliverables.length === 0) {
       warnings.push({
-        field: 'deliverables',
-        message: 'No deliverables specified. Candidates will only submit standard task responses.',
-        severity: 'WARNING',
+        field: "deliverables",
+        message: "No deliverables specified. Candidates will only submit standard task responses.",
+        severity: "WARNING",
       });
     }
 
     // 9. Visibility / Role Title Check
-    if (assessment.isPublic && (!assessment.roleTitle || assessment.roleTitle.trim().length === 0)) {
+    if (
+      assessment.isPublic &&
+      (!assessment.roleTitle || assessment.roleTitle.trim().length === 0)
+    ) {
       warnings.push({
-        field: 'roleTitle',
-        message: 'Public assessments should include a target Role Title for candidate discovery.',
-        severity: 'WARNING',
+        field: "roleTitle",
+        message: "Public assessments should include a target Role Title for candidate discovery.",
+        severity: "WARNING",
       });
     }
 
@@ -162,9 +165,9 @@ export class AssessmentValidationEngine {
       (assessment.complexityScore < 1 || assessment.complexityScore > 100)
     ) {
       errors.push({
-        field: 'complexityScore',
-        message: 'Complexity score must be between 1 and 100.',
-        severity: 'ERROR',
+        field: "complexityScore",
+        message: "Complexity score must be between 1 and 100.",
+        severity: "ERROR",
       });
     }
 
@@ -185,7 +188,7 @@ export class AssessmentValidationEngine {
   static assertCanPublish(assessment: any): void {
     const result = this.validate(assessment);
     if (!result.canPublish) {
-      const errorMsg = result.errors.map((e) => `${e.field}: ${e.message}`).join('; ');
+      const errorMsg = result.errors.map((e) => `${e.field}: ${e.message}`).join("; ");
       throw new Error(`Assessment validation failed for publishing: ${errorMsg}`);
     }
   }

@@ -1,38 +1,31 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
-import { Breadcrumbs } from '../common/Breadcrumbs';
-import {
-  Bell,
-  CheckCircle2,
-  Sparkles,
-  Send,
-  Info,
-  CheckCheck,
-} from 'lucide-react';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
+import { Breadcrumbs } from "../common/Breadcrumbs";
+import { Bell, CheckCircle2, Sparkles, Send, Info, CheckCheck } from "lucide-react";
 
 export const NotificationsPage: React.FC = () => {
   const { notifications, markNotificationRead, unreadNotificationsCount, showToast } = useApp();
-  const [filter, setFilter] = useState<string>('All');
+  const [filter, setFilter] = useState<string>("All");
 
   const filteredNotifs = notifications.filter((n) => {
-    if (filter === 'All') return true;
-    if (filter === 'Unread') return !n.read;
+    if (filter === "All") return true;
+    if (filter === "Unread") return !n.read;
     return n.category === filter.toLowerCase();
   });
 
   const handleMarkAllRead = () => {
     notifications.forEach((n) => markNotificationRead(n.id));
-    showToast('Notifications Read', 'All notifications marked as read.', 'info');
+    showToast("Notifications Read", "All notifications marked as read.", "info");
   };
 
   const getNotifIcon = (category: string) => {
     switch (category) {
-      case 'trial':
+      case "trial":
         return <Sparkles className="w-4 h-4 text-black dark:text-white" />;
-      case 'achievement':
+      case "achievement":
         return <CheckCircle2 className="w-4 h-4 text-black dark:text-white" />;
-      case 'application':
+      case "application":
         return <Send className="w-4 h-4 text-black dark:text-white" />;
       default:
         return <Info className="w-4 h-4 text-black dark:text-white" />;
@@ -69,14 +62,14 @@ export const NotificationsPage: React.FC = () => {
 
       {/* Filters Bar */}
       <div className="flex items-center gap-2 mb-8 p-1.5 bg-black/5 dark:bg-[#0A0A0A] rounded-full overflow-x-auto border border-black/5 dark:border-white/10 shadow-sm">
-        {['All', 'Unread', 'Trial', 'Application', 'Achievement', 'System'].map((f) => (
+        {["All", "Unread", "Trial", "Application", "Achievement", "System"].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               filter === f
-                ? 'bg-[#111111] text-white dark:bg-white dark:text-black shadow-sm'
-                : 'text-black/40 dark:text-white/50 hover:text-black dark:hover:text-white'
+                ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-sm"
+                : "text-black/40 dark:text-white/50 hover:text-black dark:hover:text-white"
             }`}
           >
             {f}
@@ -101,15 +94,13 @@ export const NotificationsPage: React.FC = () => {
               onClick={() => markNotificationRead(notif.id)}
               className={`p-6 rounded-[32px] border transition-all cursor-pointer flex items-start gap-4 ${
                 notif.read
-                  ? 'bg-white/60 dark:bg-[#0A0A0A]/60 border-black/5 dark:border-white/5 opacity-70'
-                  : 'bg-white dark:bg-[#0A0A0A] border-black/10 dark:border-white/15 shadow-md'
+                  ? "bg-white/60 dark:bg-[#0A0A0A]/60 border-black/5 dark:border-white/5 opacity-70"
+                  : "bg-white dark:bg-[#0A0A0A] border-black/10 dark:border-white/15 shadow-md"
               }`}
             >
               <div
                 className={`p-3 rounded-2xl flex items-center justify-center shrink-0 ${
-                  notif.read
-                    ? 'bg-black/5 dark:bg-white/5'
-                    : 'bg-[#111111]/10 dark:bg-white/15'
+                  notif.read ? "bg-black/5 dark:bg-white/5" : "bg-[#111111]/10 dark:bg-white/15"
                 }`}
               >
                 {getNotifIcon(notif.category)}
@@ -122,7 +113,9 @@ export const NotificationsPage: React.FC = () => {
                     {notif.timestamp}
                   </span>
                 </div>
-                <p className="text-sm text-black/70 dark:text-white/75 leading-relaxed">{notif.message}</p>
+                <p className="text-sm text-black/70 dark:text-white/75 leading-relaxed">
+                  {notif.message}
+                </p>
               </div>
 
               {!notif.read && (

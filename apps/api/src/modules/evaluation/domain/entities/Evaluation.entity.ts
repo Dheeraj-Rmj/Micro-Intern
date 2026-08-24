@@ -1,4 +1,4 @@
-import { EvaluationStatus } from '@microintern/database';
+import { EvaluationStatus } from "@microintern/database";
 
 export class Evaluation {
   constructor(
@@ -23,11 +23,14 @@ export class Evaluation {
     public readonly completedAt: Date | null,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
-    public readonly deletedAt: Date | null
+    public readonly deletedAt: Date | null,
   ) {}
 
   isFinished(): boolean {
-    return this.status === EvaluationStatus.COMPLETED || this.status === EvaluationStatus.REQUIRES_HUMAN_REVIEW;
+    return (
+      this.status === EvaluationStatus.COMPLETED ||
+      this.status === EvaluationStatus.REQUIRES_HUMAN_REVIEW
+    );
   }
 
   static fromPrisma(record: any): Evaluation {
@@ -53,7 +56,7 @@ export class Evaluation {
       record.completedAt ?? null,
       record.createdAt,
       record.updatedAt,
-      record.deletedAt ?? null
+      record.deletedAt ?? null,
     );
   }
 }

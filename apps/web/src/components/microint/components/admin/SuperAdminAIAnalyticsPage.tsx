@@ -1,6 +1,6 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
 import {
   Cpu,
   ShieldAlert,
@@ -15,7 +15,7 @@ import {
   Ban,
   SlidersHorizontal,
   Code2,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const SuperAdminAIAnalyticsPage: React.FC = () => {
   const { showToast } = useApp();
@@ -24,7 +24,9 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
   const [peerReviewWeight, setPeerReviewWeight] = useState(15);
   const [streakWeight, setStreakWeight] = useState(15);
 
-  const [selectedModel, setSelectedModel] = useState<'gemini' | 'groq' | 'openrouter' | 'ollama'>('gemini');
+  const [selectedModel, setSelectedModel] = useState<"gemini" | "groq" | "openrouter" | "ollama">(
+    "gemini",
+  );
   const [isTestingModel, setIsTestingModel] = useState(false);
 
   const [flaggedCandidates, setFlaggedCandidates] = useState<any[]>([]);
@@ -34,13 +36,17 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
   const handleSaveWeights = (e: React.FormEvent) => {
     e.preventDefault();
     if (totalWeight !== 100) {
-      showToast('Weight Mismatch', 'Total calibration weights must sum to exactly 100%.', 'warning');
+      showToast(
+        "Weight Mismatch",
+        "Total calibration weights must sum to exactly 100%.",
+        "warning",
+      );
       return;
     }
     showToast(
-      'AI Engine Calibrated',
-      'New Trust Score weighting formulas deployed across all 14 Docker sandbox runner nodes.',
-      'success'
+      "AI Engine Calibrated",
+      "New Trust Score weighting formulas deployed across all 14 Docker sandbox runner nodes.",
+      "success",
     );
   };
 
@@ -49,16 +55,16 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
     setTimeout(() => {
       setIsTestingModel(false);
       showToast(
-        'AI Model Test Passed',
+        "AI Model Test Passed",
         `Evaluator [${selectedModel.toUpperCase()}] tested against 50 reference submissions in 2.1s with 99.4% accuracy.`,
-        'success'
+        "success",
       );
     }, 1500);
   };
 
   const handleDismissFlag = (id: string) => {
     setFlaggedCandidates((prev) => prev.filter((item) => item.id !== id));
-    showToast('Alert Dismissed', 'Candidate flagged submission marked as false positive.', 'info');
+    showToast("Alert Dismissed", "Candidate flagged submission marked as false positive.", "info");
   };
 
   return (
@@ -84,12 +90,18 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <div className="px-4 py-2 rounded-2xl bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm text-center">
-            <div className="text-[10px] font-mono uppercase text-black/40 dark:text-white/40">Sandbox Nodes</div>
+            <div className="text-[10px] font-mono uppercase text-black/40 dark:text-white/40">
+              Sandbox Nodes
+            </div>
             <div className="text-base font-bold font-mono text-emerald-500">14 / 14 OK</div>
           </div>
           <div className="px-4 py-2 rounded-2xl bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm text-center">
-            <div className="text-[10px] font-mono uppercase text-black/40 dark:text-white/40">Plagiarism Flags</div>
-            <div className="text-base font-bold font-mono text-amber-500">{flaggedCandidates.length} Active</div>
+            <div className="text-[10px] font-mono uppercase text-black/40 dark:text-white/40">
+              Plagiarism Flags
+            </div>
+            <div className="text-base font-bold font-mono text-amber-500">
+              {flaggedCandidates.length} Active
+            </div>
           </div>
         </div>
       </div>
@@ -107,23 +119,26 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
               <span
                 className={`px-3 py-1 rounded-full font-mono text-xs font-bold ${
                   totalWeight === 100
-                    ? 'bg-black/5 dark:bg-white/10 text-black dark:text-white'
-                    : 'bg-red-500/10 text-red-500 animate-pulse'
+                    ? "bg-black/5 dark:bg-white/10 text-black dark:text-white"
+                    : "bg-red-500/10 text-red-500 animate-pulse"
                 }`}
               >
-                Sum: {totalWeight}% {totalWeight === 100 ? '(VALID)' : '(INVALID)'}
+                Sum: {totalWeight}% {totalWeight === 100 ? "(VALID)" : "(INVALID)"}
               </span>
             </div>
 
             <p className="text-xs text-black/60 dark:text-white/70 mb-6 leading-relaxed">
-              Adjust how the platform calculates Candidate Trust Scores across all 24,890 active apprentices.
+              Adjust how the platform calculates Candidate Trust Scores across all 24,890 active
+              apprentices.
             </p>
 
             <form onSubmit={handleSaveWeights} className="space-y-6">
               {/* Slider 1 */}
               <div>
                 <div className="flex justify-between text-xs font-mono mb-2">
-                  <span className="text-black dark:text-white">1. GitHub Automated Sandbox Unit Tests</span>
+                  <span className="text-black dark:text-white">
+                    1. GitHub Automated Sandbox Unit Tests
+                  </span>
                   <span className="font-bold text-black dark:text-white">{githubWeight}%</span>
                 </div>
                 <input
@@ -139,7 +154,9 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
               {/* Slider 2 */}
               <div>
                 <div className="flex justify-between text-xs font-mono mb-2">
-                  <span className="text-black dark:text-white">2. LLM Architectural Rubric Evaluation</span>
+                  <span className="text-black dark:text-white">
+                    2. LLM Architectural Rubric Evaluation
+                  </span>
                   <span className="font-bold text-black dark:text-white">{llmRubricWeight}%</span>
                 </div>
                 <input
@@ -155,7 +172,9 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
               {/* Slider 3 */}
               <div>
                 <div className="flex justify-between text-xs font-mono mb-2">
-                  <span className="text-black dark:text-white">3. Enterprise Partner Peer Code Review</span>
+                  <span className="text-black dark:text-white">
+                    3. Enterprise Partner Peer Code Review
+                  </span>
                   <span className="font-bold text-black dark:text-white">{peerReviewWeight}%</span>
                 </div>
                 <input
@@ -171,7 +190,9 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
               {/* Slider 4 */}
               <div>
                 <div className="flex justify-between text-xs font-mono mb-2">
-                  <span className="text-black dark:text-white">4. On-Time Delivery & Streak Consistency</span>
+                  <span className="text-black dark:text-white">
+                    4. On-Time Delivery & Streak Consistency
+                  </span>
                   <span className="font-bold text-black dark:text-white">{streakWeight}%</span>
                 </div>
                 <input
@@ -223,28 +244,47 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
             </div>
 
             <p className="text-xs text-black/70 dark:text-white/70 leading-relaxed">
-              Select the primary LLM architecture used to grade Candidate PR submissions, architectural clean code, and security vulnerability scans.
+              Select the primary LLM architecture used to grade Candidate PR submissions,
+              architectural clean code, and security vulnerability scans.
             </p>
 
             <div className="space-y-2.5">
               {[
-                { id: 'gemini', name: 'Gemini 1.5 Pro', desc: '2M Long-Context (Full Monorepo Auditing)' },
-                { id: 'groq', name: 'Groq Llama 3 70B', desc: 'Ultra-Fast Real-Time Candidate Eval' },
-                { id: 'openrouter', name: 'OpenRouter Multi-Model', desc: 'Dynamic Fallback & Routing Engine' },
-                { id: 'ollama', name: 'Ollama Local Deploy', desc: 'Air-Gapped Enterprise Privacy Node' },
+                {
+                  id: "gemini",
+                  name: "Gemini 1.5 Pro",
+                  desc: "2M Long-Context (Full Monorepo Auditing)",
+                },
+                {
+                  id: "groq",
+                  name: "Groq Llama 3 70B",
+                  desc: "Ultra-Fast Real-Time Candidate Eval",
+                },
+                {
+                  id: "openrouter",
+                  name: "OpenRouter Multi-Model",
+                  desc: "Dynamic Fallback & Routing Engine",
+                },
+                {
+                  id: "ollama",
+                  name: "Ollama Local Deploy",
+                  desc: "Air-Gapped Enterprise Privacy Node",
+                },
               ].map((model) => (
                 <div
                   key={model.id}
                   onClick={() => setSelectedModel(model.id as any)}
                   className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
                     selectedModel === model.id
-                      ? 'bg-black/5 dark:bg-white/10 border-black dark:border-white text-black dark:text-white shadow-sm'
-                      : 'bg-black/[0.02] dark:bg-white/[0.03] border-black/5 dark:border-white/5 text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/[0.05]'
+                      ? "bg-black/5 dark:bg-white/10 border-black dark:border-white text-black dark:text-white shadow-sm"
+                      : "bg-black/[0.02] dark:bg-white/[0.03] border-black/5 dark:border-white/5 text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/[0.05]"
                   }`}
                 >
                   <div>
                     <div className="font-bold text-xs font-mono">{model.name}</div>
-                    <div className="text-[11px] text-black/50 dark:text-white/50 mt-0.5">{model.desc}</div>
+                    <div className="text-[11px] text-black/50 dark:text-white/50 mt-0.5">
+                      {model.desc}
+                    </div>
                   </div>
                   {selectedModel === model.id && (
                     <span className="w-2 h-2 rounded-full bg-black dark:bg-white animate-pulse" />
@@ -258,8 +298,8 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
               disabled={isTestingModel}
               className="w-full flex justify-center items-center gap-2 py-3.5 rounded-2xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-black dark:text-white font-bold text-xs tracking-wider cursor-pointer transition-all"
             >
-              <RefreshCw className={`w-4 h-4 ${isTestingModel ? 'animate-spin' : ''}`} />
-              <span>{isTestingModel ? 'Running Test Suite...' : 'Test Eval Accuracy'}</span>
+              <RefreshCw className={`w-4 h-4 ${isTestingModel ? "animate-spin" : ""}`} />
+              <span>{isTestingModel ? "Running Test Suite..." : "Test Eval Accuracy"}</span>
             </button>
           </div>
 
@@ -269,7 +309,8 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
               <span>Anti-Cheat Sandbox Protection</span>
             </h4>
             <p className="text-xs text-black/50 dark:text-white/60 leading-relaxed">
-              Every PR is hashed against 14M open-source repositories and verified for non-VPN human typing rhythms.
+              Every PR is hashed against 14M open-source repositories and verified for non-VPN human
+              typing rhythms.
             </p>
           </div>
 
@@ -285,25 +326,54 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs font-mono">
               <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5">
-                <div className="text-black/40 dark:text-white/40 text-[10px]">TOTAL AI REQUESTS</div>
+                <div className="text-black/40 dark:text-white/40 text-[10px]">
+                  TOTAL AI REQUESTS
+                </div>
                 <div className="text-base font-bold text-black dark:text-white">1,428,910</div>
                 <div className="text-[10px] text-emerald-500 mt-0.5">99.8% Success • 480ms Avg</div>
               </div>
               <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5">
-                <div className="text-black/40 dark:text-white/40 text-[10px]">TOKEN CONSUMPTION</div>
+                <div className="text-black/40 dark:text-white/40 text-[10px]">
+                  TOKEN CONSUMPTION
+                </div>
                 <div className="text-base font-bold text-black dark:text-white">48.2M Tokens</div>
                 <div className="text-[10px] text-amber-500 mt-0.5">$1,222.80 Total Cost</div>
               </div>
             </div>
             <div className="space-y-2 text-xs font-mono pt-1">
-              <div className="text-[10px] font-bold text-black/50 dark:text-white/50 uppercase">Cost & Usage per Enterprise</div>
+              <div className="text-[10px] font-bold text-black/50 dark:text-white/50 uppercase">
+                Cost & Usage per Enterprise
+              </div>
               {[
-                { name: 'Google LLC (@google)', cost: '$412.50', tokens: '18.4M tokens', model: 'Gemini / Groq' },
-                { name: 'Microsoft Corp (@microsoft)', cost: '$380.10', tokens: '14.2M tokens', model: 'Gemini / OpenRouter' },
-                { name: 'Amazon Tech (@amazon)', cost: '$290.00', tokens: '10.1M tokens', model: 'Groq / Ollama' },
-                { name: 'Adobe Systems (@adobe)', cost: '$140.20', tokens: '5.5M tokens', model: 'Gemini 1.5 Pro' },
+                {
+                  name: "Google LLC (@google)",
+                  cost: "$412.50",
+                  tokens: "18.4M tokens",
+                  model: "Gemini / Groq",
+                },
+                {
+                  name: "Microsoft Corp (@microsoft)",
+                  cost: "$380.10",
+                  tokens: "14.2M tokens",
+                  model: "Gemini / OpenRouter",
+                },
+                {
+                  name: "Amazon Tech (@amazon)",
+                  cost: "$290.00",
+                  tokens: "10.1M tokens",
+                  model: "Groq / Ollama",
+                },
+                {
+                  name: "Adobe Systems (@adobe)",
+                  cost: "$140.20",
+                  tokens: "5.5M tokens",
+                  model: "Gemini 1.5 Pro",
+                },
               ].map((ent, idx) => (
-                <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03]">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03]"
+                >
                   <div>
                     <div className="font-bold text-black dark:text-white">{ent.name}</div>
                     <div className="text-[10px] text-black/40 dark:text-white/40">{ent.model}</div>
@@ -381,9 +451,9 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
                     onClick={() => {
                       handleDismissFlag(flag.id);
                       showToast(
-                        'Account Suspended',
+                        "Account Suspended",
                         `Candidate ${flag.candidate} suspended for terms of service violation.`,
-                        'warning'
+                        "warning",
                       );
                     }}
                     className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-white font-semibold transition-colors cursor-pointer flex items-center gap-1"

@@ -1,15 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
-const API_BASE_URL =
-  process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:5001';
+const API_BASE_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:5001";
 
 export function OAuthButtons() {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  const handleOAuthLogin = (provider: 'linkedin' | 'microsoft') => {
+  const handleOAuthLogin = (provider: "linkedin" | "microsoft") => {
     setLoadingProvider(provider);
     window.location.href = `${API_BASE_URL}/api/v1/auth/${provider}`;
   };
@@ -18,11 +17,11 @@ export function OAuthButtons() {
     <div className="flex flex-col gap-3">
       <button
         type="button"
-        onClick={() => handleOAuthLogin('linkedin')}
+        onClick={() => handleOAuthLogin("linkedin")}
         disabled={loadingProvider !== null}
         className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm font-semibold text-white shadow-sm backdrop-blur-md transition-all hover:border-slate-700 hover:bg-slate-800/80 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loadingProvider === 'linkedin' ? (
+        {loadingProvider === "linkedin" ? (
           <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
         ) : (
           <svg
@@ -38,11 +37,11 @@ export function OAuthButtons() {
 
       <button
         type="button"
-        onClick={() => handleOAuthLogin('microsoft')}
+        onClick={() => handleOAuthLogin("microsoft")}
         disabled={loadingProvider !== null}
         className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3 text-sm font-semibold text-white shadow-sm backdrop-blur-md transition-all hover:border-slate-700 hover:bg-slate-800/80 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loadingProvider === 'microsoft' ? (
+        {loadingProvider === "microsoft" ? (
           <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
         ) : (
           <svg

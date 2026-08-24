@@ -1,7 +1,7 @@
-import { createModuleLogger } from '@/core/logger.js';
-import type { PrismaClient } from '@microintern/database';
+import { createModuleLogger } from "@/core/logger.js";
+import type { PrismaClient } from "@microintern/database";
 
-const log = createModuleLogger('CandidateLeaderboardService');
+const log = createModuleLogger("CandidateLeaderboardService");
 
 export type LeaderboardEntry = {
   rank: number;
@@ -24,7 +24,7 @@ export class CandidateLeaderboardService {
     companyId: string,
     limit = 50,
   ): Promise<LeaderboardEntry[]> {
-    log.info({ roleProfileId, companyId }, 'Computing leaderboard');
+    log.info({ roleProfileId, companyId }, "Computing leaderboard");
 
     const journeys = await this.db.candidateJourney.findMany({
       where: { companyId, roleProfileId },
@@ -38,7 +38,7 @@ export class CandidateLeaderboardService {
     const verificationRows = await this.db.skillVerificationRecord.findMany({
       where: {
         candidateId: { in: candidateIds },
-        status: { in: ['AI_VERIFIED', 'HUMAN_VERIFIED', 'CERTIFIED'] },
+        status: { in: ["AI_VERIFIED", "HUMAN_VERIFIED", "CERTIFIED"] },
       },
       select: { candidateId: true },
     });
@@ -51,7 +51,7 @@ export class CandidateLeaderboardService {
     const evidenceRows = await this.db.evidence.findMany({
       where: {
         candidateId: { in: candidateIds },
-        verificationStatus: 'VERIFIED',
+        verificationStatus: "VERIFIED",
       },
       select: { candidateId: true },
     });
@@ -62,8 +62,8 @@ export class CandidateLeaderboardService {
 
     // Get best submission score per candidate
     const submissions = await this.db.submission.findMany({
-      where: { candidateId: { in: candidateIds }, status: 'PASSED' },
-      orderBy: { totalScore: 'desc' },
+      where: { candidateId: { in: candidateIds }, status: "PASSED" },
+      orderBy: { totalScore: "desc" },
       select: { candidateId: true, totalScore: true },
     });
     const submissionMap = new Map<string, number>();
@@ -105,7 +105,7 @@ export class CandidateLeaderboardService {
       return {
         rank: 0,
         candidateId: journey.candidateId,
-        candidateName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+        candidateName: user ? `${user.firstName} ${user.lastName}` : "Unknown",
         compositeScore: Math.round(composite * 10) / 10,
         skillMatchPercentage: journey.skillMatchPercentage,
         assessmentScore: submissionMap.get(journey.candidateId) ?? null,
@@ -118,7 +118,9 @@ export class CandidateLeaderboardService {
 
     // Sort and assign ranks
     entries.sort((a, b) => b.compositeScore - a.compositeScore);
-    entries.forEach((entry, idx) => { entry.rank = idx + 1; });
+    entries.forEach((entry, idx) => {
+      entry.rank = idx + 1;
+    });
 
     return entries.slice(0, limit);
   }
@@ -126,7 +128,7 @@ export class CandidateLeaderboardService {
   async getCompanyLeaderboard(companyId: string, limit = 20): Promise<LeaderboardEntry[]> {
     const journeys = await this.db.candidateJourney.findMany({
       where: { companyId },
-      orderBy: { overallScore: 'desc' },
+      orderBy: { overallScore: "desc" },
       take: limit * 3,
       select: { roleProfileId: true },
     });

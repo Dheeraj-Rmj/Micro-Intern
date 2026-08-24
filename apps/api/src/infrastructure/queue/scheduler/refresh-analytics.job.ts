@@ -1,11 +1,11 @@
-import type { PrismaClient } from '@microintern/database';
-import { createModuleLogger } from '@/core/logger.js';
+import type { PrismaClient } from "@microintern/database";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('RefreshAnalyticsJob');
+const log = createModuleLogger("RefreshAnalyticsJob");
 
 export async function refreshAnalytics(prisma: PrismaClient): Promise<{ refreshed: boolean }> {
-  log.info('Executing scheduled job: refreshAnalytics');
-  
+  log.info("Executing scheduled job: refreshAnalytics");
+
   // Aggregate candidate portfolio scores and count verifications
   const portfolios = await prisma.candidatePortfolio.findMany({
     select: { id: true, candidateId: true },
@@ -28,10 +28,10 @@ export async function refreshAnalytics(prisma: PrismaClient): Promise<{ refreshe
         },
       });
     } catch (err) {
-      log.error({ err, portfolioId: p.id }, 'Failed to refresh portfolio overallSkillScore');
+      log.error({ err, portfolioId: p.id }, "Failed to refresh portfolio overallSkillScore");
     }
   }
 
-  log.info({ count: portfolios.length }, 'refreshAnalytics completed');
+  log.info({ count: portfolios.length }, "refreshAnalytics completed");
   return { refreshed: true };
 }

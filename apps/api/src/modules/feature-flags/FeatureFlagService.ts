@@ -1,21 +1,26 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('FeatureFlagService');
+const log = createModuleLogger("FeatureFlagService");
 
 export type AIFeatureKey =
-  | 'AI_ASSESSMENT_GENERATION'
-  | 'AI_RUBRIC'
-  | 'AI_REWRITE'
-  | 'AI_SKILL_SUGGESTIONS'
-  | 'AI_INTERVIEW_QUESTIONS'
-  | 'AI_EVALUATION_NOTES'
+  | "AI_ASSESSMENT_GENERATION"
+  | "AI_RUBRIC"
+  | "AI_REWRITE"
+  | "AI_SKILL_SUGGESTIONS"
+  | "AI_INTERVIEW_QUESTIONS"
+  | "AI_EVALUATION_NOTES"
   | string;
 
 export interface IFeatureFlagService {
   isEnabled(key: AIFeatureKey, companyId?: string): Promise<boolean>;
   listFlags(): Promise<any[]>;
-  setFlag(key: string, isEnabled: boolean, description?: string, companyIds?: string[]): Promise<any>;
+  setFlag(
+    key: string,
+    isEnabled: boolean,
+    description?: string,
+    companyIds?: string[],
+  ): Promise<any>;
 }
 
 export class FeatureFlagService implements IFeatureFlagService {
@@ -57,7 +62,7 @@ export class FeatureFlagService implements IFeatureFlagService {
 
       return true;
     } catch (err) {
-      log.error({ err, key }, 'Error reading feature flag, defaulting to enabled');
+      log.error({ err, key }, "Error reading feature flag, defaulting to enabled");
       return true;
     }
   }
@@ -67,7 +72,7 @@ export class FeatureFlagService implements IFeatureFlagService {
    */
   public async listFlags(): Promise<any[]> {
     return prisma.featureFlag.findMany({
-      orderBy: { key: 'asc' },
+      orderBy: { key: "asc" },
     });
   }
 
@@ -77,7 +82,7 @@ export class FeatureFlagService implements IFeatureFlagService {
   public async setFlag(
     key: string,
     isEnabled: boolean,
-    description = 'AI Capability flag',
+    description = "AI Capability flag",
     companyIds: string[] = [],
   ): Promise<any> {
     return prisma.featureFlag.upsert({

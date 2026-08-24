@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SkillFrameworkService } from '@/modules/skill-framework/application/SkillFrameworkService.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { SkillFrameworkService } from "@/modules/skill-framework/application/SkillFrameworkService.js";
 
-describe('SkillFrameworkService', () => {
+describe("SkillFrameworkService", () => {
   let service: SkillFrameworkService;
   let mockRepo: any;
 
@@ -16,10 +16,10 @@ describe('SkillFrameworkService', () => {
     service = new SkillFrameworkService(mockRepo);
   });
 
-  it('should list all skills in the framework taxonomy', async () => {
+  it("should list all skills in the framework taxonomy", async () => {
     const mockSkills = [
-      { id: 'sk-1', name: 'TypeScript', difficulty: 3 },
-      { id: 'sk-2', name: 'Prisma', difficulty: 4 },
+      { id: "sk-1", name: "TypeScript", difficulty: 3 },
+      { id: "sk-2", name: "Prisma", difficulty: 4 },
     ];
     mockRepo.findAll.mockResolvedValue(mockSkills);
 
@@ -28,24 +28,28 @@ describe('SkillFrameworkService', () => {
     expect(mockRepo.findAll).toHaveBeenCalledWith(undefined);
   });
 
-  it('should create a new skill when slug is unique', async () => {
+  it("should create a new skill when slug is unique", async () => {
     const newSkillDTO = {
-      name: 'System Design',
-      slug: 'system-design',
+      name: "System Design",
+      slug: "system-design",
       difficulty: 4,
     };
     mockRepo.findByName.mockResolvedValue(null);
-    mockRepo.create.mockResolvedValue({ id: 'sk-3', ...newSkillDTO });
+    mockRepo.create.mockResolvedValue({ id: "sk-3", ...newSkillDTO });
 
     const created = await service.createSkill(newSkillDTO);
-    expect(created.id).toBe('sk-3');
+    expect(created.id).toBe("sk-3");
     expect(mockRepo.create).toHaveBeenCalledWith(newSkillDTO);
   });
 
-  it('should return existing skill if it already exists instead of throwing', async () => {
-    const existingSkill = { id: 'sk-existing', slug: 'typescript', name: 'TypeScript' };
+  it("should return existing skill if it already exists instead of throwing", async () => {
+    const existingSkill = { id: "sk-existing", slug: "typescript", name: "TypeScript" };
     mockRepo.findByName.mockResolvedValue(existingSkill);
-    const result = await service.createSkill({ name: 'TypeScript', categoryId: 'cat-1', difficulty: 3 });
+    const result = await service.createSkill({
+      name: "TypeScript",
+      categoryId: "cat-1",
+      difficulty: 3,
+    });
     expect(result).toEqual(existingSkill);
   });
 });

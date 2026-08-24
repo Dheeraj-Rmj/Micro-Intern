@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const LoginSchema = z.object({
   email: z.string().email(),
@@ -21,7 +21,7 @@ export interface AuthUserResponse {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'CANDIDATE' | 'COMPANY' | 'RECRUITER' | 'ADMIN';
+  role: "CANDIDATE" | "COMPANY" | "RECRUITER" | "ADMIN";
 }
 
 export interface LoginResponse {

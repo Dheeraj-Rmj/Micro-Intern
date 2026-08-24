@@ -1,4 +1,4 @@
-import type { AuthTokensResponse } from '../dtos/auth.dto.js';
+import type { AuthTokensResponse } from "../dtos/auth.dto.js";
 
 /**
  * JWT Service Interface — domain layer contract.

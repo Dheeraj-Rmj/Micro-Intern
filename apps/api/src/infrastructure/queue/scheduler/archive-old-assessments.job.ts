@@ -1,11 +1,13 @@
-import type { PrismaClient } from '@microintern/database';
-import { AssessmentStatus } from '@microintern/database';
-import { createModuleLogger } from '@/core/logger.js';
+import type { PrismaClient } from "@microintern/database";
+import { AssessmentStatus } from "@microintern/database";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('ArchiveOldAssessmentsJob');
+const log = createModuleLogger("ArchiveOldAssessmentsJob");
 
-export async function archiveOldAssessments(prisma: PrismaClient): Promise<{ archivedCount: number }> {
-  log.info('Executing scheduled job: archiveOldAssessments');
+export async function archiveOldAssessments(
+  prisma: PrismaClient,
+): Promise<{ archivedCount: number }> {
+  log.info("Executing scheduled job: archiveOldAssessments");
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   const result = await prisma.assessment.updateMany({
@@ -20,6 +22,6 @@ export async function archiveOldAssessments(prisma: PrismaClient): Promise<{ arc
     },
   });
 
-  log.info({ archivedCount: result.count }, 'archiveOldAssessments completed');
+  log.info({ archivedCount: result.count }, "archiveOldAssessments completed");
   return { archivedCount: result.count };
 }

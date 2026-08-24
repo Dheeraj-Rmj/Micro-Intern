@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import type { AssessmentValidationResult } from '@/lib/api/assessment';
+import React from "react";
+import type { AssessmentValidationResult } from "@/lib/api/assessment";
 
 interface AssessmentValidationModalProps {
   isOpen: boolean;
@@ -27,16 +27,16 @@ export function AssessmentValidationModal({
   const canPublish = validation?.canPublish ?? false;
 
   const allRules = [
-    { name: '1. Title Length (min 3 chars)', field: 'title' },
-    { name: '2. Detailed Description (min 10 chars)', field: 'description' },
-    { name: '3. Instructions Markdown', field: 'instructions' },
-    { name: '4. Tasks & Rubric Configuration', field: 'tasks' },
-    { name: '5. Passing Score Range (50-100)', field: 'passingScore' },
-    { name: '6. Realistic Duration (15-600 min)', field: 'durationMinutes' },
-    { name: '7. Skills Required (>= 1 tag)', field: 'skillsRequired' },
-    { name: '8. Deliverables Configuration', field: 'deliverables' },
-    { name: '9. Target Role Title', field: 'roleTitle' },
-    { name: '10. Complexity Score Range (1-100)', field: 'complexityScore' },
+    { name: "1. Title Length (min 3 chars)", field: "title" },
+    { name: "2. Detailed Description (min 10 chars)", field: "description" },
+    { name: "3. Instructions Markdown", field: "instructions" },
+    { name: "4. Tasks & Rubric Configuration", field: "tasks" },
+    { name: "5. Passing Score Range (50-100)", field: "passingScore" },
+    { name: "6. Realistic Duration (15-600 min)", field: "durationMinutes" },
+    { name: "7. Skills Required (>= 1 tag)", field: "skillsRequired" },
+    { name: "8. Deliverables Configuration", field: "deliverables" },
+    { name: "9. Target Role Title", field: "roleTitle" },
+    { name: "10. Complexity Score Range (1-100)", field: "complexityScore" },
   ];
 
   return (
@@ -71,24 +71,24 @@ export function AssessmentValidationModal({
               <div
                 className={`flex items-center justify-between rounded-lg border p-4 ${
                   !canPublish
-                    ? 'border-red-500/30 bg-red-500/10 text-red-200'
+                    ? "border-red-500/30 bg-red-500/10 text-red-200"
                     : warnings.length > 0
-                    ? 'border-amber-500/30 bg-amber-500/10 text-amber-200'
-                    : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
+                      ? "border-amber-500/30 bg-amber-500/10 text-amber-200"
+                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
                 }`}
               >
                 <div>
                   <h3 className="font-semibold text-sm">
                     {!canPublish
-                      ? '❌ Cannot Publish — Critical Validation Errors'
+                      ? "❌ Cannot Publish — Critical Validation Errors"
                       : warnings.length > 0
-                      ? '⚠️ Ready with Warnings — Review optional improvements'
-                      : '✅ Perfect — Enterprise Assessment Ready for Marketplace'}
+                        ? "⚠️ Ready with Warnings — Review optional improvements"
+                        : "✅ Perfect — Enterprise Assessment Ready for Marketplace"}
                   </h3>
                   <p className="text-xs mt-1 opacity-80">
                     {!canPublish
                       ? `Found ${errors.length} error(s) that must be resolved before publishing.`
-                      : 'All mandatory CTO integrity constraints are met.'}
+                      : "All mandatory CTO integrity constraints are met."}
                   </p>
                 </div>
                 <div className="text-right font-mono text-xs">
@@ -143,11 +143,11 @@ export function AssessmentValidationModal({
             disabled={!canPublish || isValidating || isPublishing}
             className={`rounded-lg px-5 py-2 text-sm font-semibold text-white shadow-lg transition-all ${
               !canPublish || isValidating || isPublishing
-                ? 'bg-slate-700 cursor-not-allowed opacity-50'
-                : 'bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-brand-500/20'
+                ? "bg-slate-700 cursor-not-allowed opacity-50"
+                : "bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-brand-500/20"
             }`}
           >
-            {isPublishing ? 'Publishing...' : 'Publish Assessment Now'}
+            {isPublishing ? "Publishing..." : "Publish Assessment Now"}
           </button>
         </div>
       </div>

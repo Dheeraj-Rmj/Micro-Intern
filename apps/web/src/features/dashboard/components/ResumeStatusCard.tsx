@@ -1,13 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import {
-  FileText,
-  UploadCloud,
-  CheckCircle2,
-  Cpu,
-  RefreshCw
-} from 'lucide-react';
+import Link from "next/link";
+import { FileText, UploadCloud, CheckCircle2, Cpu, RefreshCw } from "lucide-react";
 
 export function ResumeStatusCard() {
   return (
@@ -19,12 +13,8 @@ export function ResumeStatusCard() {
               <FileText className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">
-                Active Resume Status
-              </h3>
-              <p className="text-xs text-slate-400">
-                AI Parser &amp; Competency Engine
-              </p>
+              <h3 className="text-base font-bold text-white">Active Resume Status</h3>
+              <p className="text-xs text-slate-400">AI Parser &amp; Competency Engine</p>
             </div>
           </div>
           <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
@@ -40,12 +30,8 @@ export function ResumeStatusCard() {
                 <span className="text-xs font-extrabold">PDF</span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">
-                  ada_lovelace_resume_2026.pdf
-                </p>
-                <p className="text-xs text-slate-400">
-                  Uploaded July 24, 2026 &bull; 1.2 MB
-                </p>
+                <p className="text-sm font-semibold text-white">ada_lovelace_resume_2026.pdf</p>
+                <p className="text-xs text-slate-400">Uploaded July 24, 2026 &bull; 1.2 MB</p>
               </div>
             </div>
             <Link
@@ -59,12 +45,12 @@ export function ResumeStatusCard() {
 
           <div className="mt-4 flex flex-wrap gap-1.5 border-t border-slate-800/80 pt-3">
             {[
-              'React 19',
-              'Next.js App Router',
-              'TypeScript Strict',
-              'Clean Architecture',
-              'PostgreSQL',
-              'TanStack Query'
+              "React 19",
+              "Next.js App Router",
+              "TypeScript Strict",
+              "Clean Architecture",
+              "PostgreSQL",
+              "TanStack Query",
             ].map((tag) => (
               <span
                 key={tag}

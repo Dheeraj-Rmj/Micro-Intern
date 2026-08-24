@@ -1,10 +1,10 @@
 import type {
   ISkillVerificationRepository,
   UpsertVerificationDTO,
-} from '../domain/ISkillVerificationRepository.js';
-import { SkillVerificationStatus } from '@microintern/database';
-import type { SkillVerificationRecord } from '@microintern/database';
-import { DomainEventDispatcher } from '@/core/events/DomainEventDispatcher.js';
+} from "../domain/ISkillVerificationRepository.js";
+import { SkillVerificationStatus } from "@microintern/database";
+import type { SkillVerificationRecord } from "@microintern/database";
+import { DomainEventDispatcher } from "@/core/events/DomainEventDispatcher.js";
 
 export class SkillVerificationService {
   private static readonly STATE_HIERARCHY: Record<SkillVerificationStatus, number> = {
@@ -18,13 +18,16 @@ export class SkillVerificationService {
 
   constructor(
     private readonly verificationRepo: ISkillVerificationRepository,
-    private readonly eventDispatcher = DomainEventDispatcher.getInstance()
+    private readonly eventDispatcher = DomainEventDispatcher.getInstance(),
   ) {}
 
-  async verifySkill(data: UpsertVerificationDTO, actorId: string): Promise<SkillVerificationRecord> {
+  async verifySkill(
+    data: UpsertVerificationDTO,
+    actorId: string,
+  ): Promise<SkillVerificationRecord> {
     const existing = await this.verificationRepo.findByCandidateAndSkill(
       data.candidateId,
-      data.skillId
+      data.skillId,
     );
 
     if (existing) {
@@ -32,9 +35,9 @@ export class SkillVerificationService {
       const targetRank = SkillVerificationService.STATE_HIERARCHY[data.status];
 
       // Prevent accidental demotion unless explicitly requested by admin/human verification
-      if (targetRank < currentRank && !data.verificationNote?.includes('DEMOTION')) {
+      if (targetRank < currentRank && !data.verificationNote?.includes("DEMOTION")) {
         throw new Error(
-          `Cannot demote verification status from ${existing.status} to ${data.status} without explicit DEMOTION note.`
+          `Cannot demote verification status from ${existing.status} to ${data.status} without explicit DEMOTION note.`,
         );
       }
     }
@@ -42,8 +45,8 @@ export class SkillVerificationService {
     const record = await this.verificationRepo.upsert(data);
 
     await this.eventDispatcher.dispatch({
-      eventName: 'SkillVerified',
-      entityType: 'SkillVerification',
+      eventName: "SkillVerified",
+      entityType: "SkillVerification",
       entityId: record.id,
       metadata: {
         candidateId: record.candidateId,
@@ -60,7 +63,7 @@ export class SkillVerificationService {
 
   async getCandidateVerifiedSkills(
     candidateId: string,
-    minStatus?: SkillVerificationStatus
+    minStatus?: SkillVerificationStatus,
   ): Promise<SkillVerificationRecord[]> {
     const list = await this.verificationRepo.listByCandidate(candidateId);
     if (!minStatus) {
@@ -70,7 +73,10 @@ export class SkillVerificationService {
     return list.filter((r) => SkillVerificationService.STATE_HIERARCHY[r.status] >= minRank);
   }
 
-  async getSkillVerification(candidateId: string, skillId: string): Promise<SkillVerificationRecord | null> {
+  async getSkillVerification(
+    candidateId: string,
+    skillId: string,
+  ): Promise<SkillVerificationRecord | null> {
     return this.verificationRepo.findByCandidateAndSkill(candidateId, skillId);
   }
 }

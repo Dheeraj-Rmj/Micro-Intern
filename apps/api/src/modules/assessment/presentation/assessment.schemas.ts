@@ -1,5 +1,5 @@
-import { TaskType, ExperienceLevel, AssessmentStatus } from '@microintern/database';
-import { z } from 'zod';
+import { TaskType, ExperienceLevel, AssessmentStatus } from "@microintern/database";
+import { z } from "zod";
 
 export const CreateAssessmentSchema = z.object({
   title: z.string().min(3).max(255),
@@ -35,10 +35,10 @@ export const CreateAssessmentSchema = z.object({
               weight: z.number().min(0).optional(),
               maxPoints: z.number().int().positive().optional(),
               expectedOutput: z.string().optional(),
-            })
+            }),
           )
           .optional(),
-      })
+      }),
     )
     .optional(),
   deliverables: z
@@ -48,7 +48,7 @@ export const CreateAssessmentSchema = z.object({
         deliverableType: z.string(),
         isRequired: z.boolean().optional(),
         description: z.string().optional(),
-      })
+      }),
     )
     .optional(),
 });
@@ -86,17 +86,17 @@ export const SaveAsTemplateSchema = z.object({
 
 export const AIJobRequestSchema = z.object({
   action: z.enum([
-    'GENERATE_ASSESSMENT',
-    'IMPROVE_ASSESSMENT',
-    'REWRITE_INSTRUCTIONS',
-    'GENERATE_RUBRIC',
-    'SUGGEST_SKILLS',
-    'SUGGEST_DELIVERABLES',
-    'ESTIMATE_DIFFICULTY',
-    'ESTIMATE_DURATION',
-    'SUGGEST_LEARNING_OUTCOMES',
-    'GENERATE_INTERVIEW_QUESTIONS',
-    'GENERATE_EVALUATION_NOTES',
+    "GENERATE_ASSESSMENT",
+    "IMPROVE_ASSESSMENT",
+    "REWRITE_INSTRUCTIONS",
+    "GENERATE_RUBRIC",
+    "SUGGEST_SKILLS",
+    "SUGGEST_DELIVERABLES",
+    "ESTIMATE_DIFFICULTY",
+    "ESTIMATE_DURATION",
+    "SUGGEST_LEARNING_OUTCOMES",
+    "GENERATE_INTERVIEW_QUESTIONS",
+    "GENERATE_EVALUATION_NOTES",
   ]),
   input: z.record(z.unknown()),
   context: z.string().optional(),

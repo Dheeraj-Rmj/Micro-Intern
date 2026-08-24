@@ -1,8 +1,8 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
-import { DomainEventDispatcher } from '@/core/events/DomainEventDispatcher.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
+import { DomainEventDispatcher } from "@/core/events/DomainEventDispatcher.js";
 
-const log = createModuleLogger('SubmissionEngine');
+const log = createModuleLogger("SubmissionEngine");
 
 export interface ISubmissionEngine {
   addSection(submissionId: string, title: string, sortOrder: number): Promise<any>;
@@ -58,8 +58,8 @@ export class SubmissionEngine implements ISubmissionEngine {
     });
 
     await DomainEventDispatcher.getInstance().dispatch({
-      eventName: 'AssessmentSubmitted',
-      entityType: 'SUBMISSION',
+      eventName: "AssessmentSubmitted",
+      entityType: "SUBMISSION",
       entityId: submissionId,
       metadata: { deliverableItemId: item.id, deliverableType },
     });
@@ -111,7 +111,7 @@ export class SubmissionEngine implements ISubmissionEngine {
 
     const summary = `Candidate submitted ${items.length} deliverables (${Object.entries(counts)
       .map(([type, count]) => `${count} ${type}`)
-      .join(', ')}). All core sections and verification items are included.`;
+      .join(", ")}). All core sections and verification items are included.`;
 
     for (const it of items) {
       await prisma.submissionDeliverableItem.update({
@@ -120,7 +120,7 @@ export class SubmissionEngine implements ISubmissionEngine {
       });
     }
 
-    log.info({ submissionId, itemCount: items.length }, 'Generated AI submission summary');
+    log.info({ submissionId, itemCount: items.length }, "Generated AI submission summary");
     return summary;
   }
 }

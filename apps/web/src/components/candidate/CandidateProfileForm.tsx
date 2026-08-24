@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { candidateApi, type CandidateProfileWithRelations } from '@/lib/api/candidate';
+import { candidateApi, type CandidateProfileWithRelations } from "@/lib/api/candidate";
 
-import { Button } from '../ui/Button';
-import { FileUpload } from '../ui/FileUpload';
+import { Button } from "../ui/Button";
+import { FileUpload } from "../ui/FileUpload";
 
 interface CandidateProfileFormProps {
   initialProfile: CandidateProfileWithRelations;
   onProfileUpdate: (updatedProfile: CandidateProfileWithRelations) => void;
 }
 
-export function CandidateProfileForm({ initialProfile, onProfileUpdate }: CandidateProfileFormProps) {
+export function CandidateProfileForm({
+  initialProfile,
+  onProfileUpdate,
+}: CandidateProfileFormProps) {
   const [profile, setProfile] = useState(initialProfile);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export function CandidateProfileForm({ initialProfile, onProfileUpdate }: Candid
       setProfile(updated);
       onProfileUpdate(updated);
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to update profile';
+      const errorMsg = err instanceof Error ? err.message : "Failed to update profile";
       setError(errorMsg);
     } finally {
       setIsSaving(false);
@@ -75,17 +78,24 @@ export function CandidateProfileForm({ initialProfile, onProfileUpdate }: Candid
       </div>
 
       {/* Basic Info Form */}
-      <form onSubmit={(e) => { void handleSubmit(e); }} className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow space-y-6">
+      <form
+        onSubmit={(e) => {
+          void handleSubmit(e);
+        }}
+        className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow space-y-6"
+      >
         <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Basic Information</h3>
-        
+
         {error !== null && <div className="text-red-500 text-sm">{error}</div>}
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Headline</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Headline
+            </label>
             <input
               type="text"
-              value={profile.headline ?? ''}
+              value={profile.headline ?? ""}
               onChange={(e) => setProfile({ ...profile, headline: e.target.value })}
               className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:text-white sm:text-sm p-2 border"
               placeholder="e.g. Senior Software Engineer"
@@ -93,9 +103,11 @@ export function CandidateProfileForm({ initialProfile, onProfileUpdate }: Candid
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Bio</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Bio
+            </label>
             <textarea
-              value={profile.bio ?? ''}
+              value={profile.bio ?? ""}
               onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
               rows={4}
               className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:text-white sm:text-sm p-2 border"
@@ -105,10 +117,12 @@ export function CandidateProfileForm({ initialProfile, onProfileUpdate }: Candid
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Location</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Location
+              </label>
               <input
                 type="text"
-                value={profile.location ?? ''}
+                value={profile.location ?? ""}
                 onChange={(e) => setProfile({ ...profile, location: e.target.value })}
                 className="mt-1 block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-700 dark:text-white sm:text-sm p-2 border"
                 placeholder="e.g. San Francisco, CA"
@@ -116,7 +130,9 @@ export function CandidateProfileForm({ initialProfile, onProfileUpdate }: Candid
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Years of Experience</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                Years of Experience
+              </label>
               <input
                 type="number"
                 value={profile.yearsOfExperience ?? 0}
@@ -148,7 +164,9 @@ export function CandidateProfileForm({ initialProfile, onProfileUpdate }: Candid
                 onChange={(e) => setProfile({ ...profile, isPublic: e.target.checked })}
                 className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="ml-2 text-sm text-slate-700 dark:text-slate-300">Make Profile Public</span>
+              <span className="ml-2 text-sm text-slate-700 dark:text-slate-300">
+                Make Profile Public
+              </span>
             </label>
           </div>
         </div>

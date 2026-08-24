@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { Loader2, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '@/stores/auth.store';
-import { authService } from '../services/auth.service';
-import { registerSchema, type RegisterFormData } from '../schemas';
-import { OAuthButtons } from './OAuthButtons';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { useAuthStore } from "@/stores/auth.store";
+import { authService } from "../services/auth.service";
+import { registerSchema, type RegisterFormData } from "../schemas";
+import { OAuthButtons } from "./OAuthButtons";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -22,17 +22,17 @@ export function RegisterForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      acceptTerms: true
-    }
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      acceptTerms: true,
+    },
   });
 
   const registerMutation = useMutation({
@@ -40,15 +40,11 @@ export function RegisterForm() {
     onSuccess: (response) => {
       setApiError(null);
       setAuth(response.user, response.accessToken);
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     },
     onError: (error: unknown) => {
-      let message = 'Failed to register account. Please try again.';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error
-      ) {
+      let message = "Failed to register account. Please try again.";
+      if (typeof error === "object" && error !== null && "response" in error) {
         const errObj = error as {
           response?: { data?: { message?: string } };
         };
@@ -57,7 +53,7 @@ export function RegisterForm() {
         }
       }
       setApiError(message);
-    }
+    },
   });
 
   const onSubmit = (data: RegisterFormData) => {
@@ -87,7 +83,7 @@ export function RegisterForm() {
                 id="firstName"
                 type="text"
                 placeholder="Ada"
-                {...register('firstName')}
+                {...register("firstName")}
                 disabled={registerMutation.isPending}
                 className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
               />
@@ -111,14 +107,12 @@ export function RegisterForm() {
                 id="lastName"
                 type="text"
                 placeholder="Lovelace"
-                {...register('lastName')}
+                {...register("lastName")}
                 disabled={registerMutation.isPending}
                 className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
               />
               {errors.lastName !== undefined && (
-                <p className="mt-1.5 text-xs font-medium text-red-400">
-                  {errors.lastName.message}
-                </p>
+                <p className="mt-1.5 text-xs font-medium text-red-400">{errors.lastName.message}</p>
               )}
             </div>
           </div>
@@ -136,14 +130,12 @@ export function RegisterForm() {
               id="email"
               type="email"
               placeholder="candidate@example.com"
-              {...register('email')}
+              {...register("email")}
               disabled={registerMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
             {errors.email !== undefined && (
-              <p className="mt-1.5 text-xs font-medium text-red-400">
-                {errors.email.message}
-              </p>
+              <p className="mt-1.5 text-xs font-medium text-red-400">{errors.email.message}</p>
             )}
           </div>
         </div>
@@ -158,9 +150,9 @@ export function RegisterForm() {
           <div className="relative mt-1.5">
             <input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              {...register('password')}
+              {...register("password")}
               disabled={registerMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 pr-11 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
@@ -169,17 +161,11 @@ export function RegisterForm() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-200"
             >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           {errors.password !== undefined && (
-            <p className="mt-1.5 text-xs font-medium text-red-400">
-              {errors.password.message}
-            </p>
+            <p className="mt-1.5 text-xs font-medium text-red-400">{errors.password.message}</p>
           )}
         </div>
 
@@ -193,9 +179,9 @@ export function RegisterForm() {
           <div className="relative mt-1.5">
             <input
               id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="••••••••"
-              {...register('confirmPassword')}
+              {...register("confirmPassword")}
               disabled={registerMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 pr-11 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
@@ -204,11 +190,7 @@ export function RegisterForm() {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-200"
             >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           {errors.confirmPassword !== undefined && (
@@ -222,25 +204,18 @@ export function RegisterForm() {
           <input
             id="acceptTerms"
             type="checkbox"
-            {...register('acceptTerms')}
+            {...register("acceptTerms")}
             disabled={registerMutation.isPending}
             className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
           />
           <label htmlFor="acceptTerms" className="text-xs text-slate-400">
-            I agree to the{' '}
-            <span className="font-medium text-slate-200 underline">
-              Terms of Service
-            </span>{' '}
-            and{' '}
-            <span className="font-medium text-slate-200 underline">
-              Privacy Policy
-            </span>
+            I agree to the{" "}
+            <span className="font-medium text-slate-200 underline">Terms of Service</span> and{" "}
+            <span className="font-medium text-slate-200 underline">Privacy Policy</span>
           </label>
         </div>
         {errors.acceptTerms !== undefined && (
-          <p className="text-xs font-medium text-red-400">
-            {errors.acceptTerms.message}
-          </p>
+          <p className="text-xs font-medium text-red-400">{errors.acceptTerms.message}</p>
         )}
 
         <button
@@ -264,16 +239,14 @@ export function RegisterForm() {
           <div className="w-full border-t border-slate-800" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-slate-950 px-3 text-slate-500">
-            Or continue with
-          </span>
+          <span className="bg-slate-950 px-3 text-slate-500">Or continue with</span>
         </div>
       </div>
 
       <OAuthButtons />
 
       <p className="mt-8 text-center text-sm text-slate-400">
-        Already have a candidate account?{' '}
+        Already have a candidate account?{" "}
         <Link
           href="/auth/login"
           className="font-semibold text-blue-400 transition-colors hover:text-blue-300 hover:underline"

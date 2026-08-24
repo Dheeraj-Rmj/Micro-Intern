@@ -5,7 +5,7 @@
 
 ## 1. What We Have Built
 
-We have laid down the **initial engineering foundation** for the Micro-Intern platform. This isn't just a basic MVP—it's a production-ready monorepo designed for scale, maintainability, and enterprise-grade reliability. 
+We have laid down the **initial engineering foundation** for the Micro-Intern platform. This isn't just a basic MVP—it's a production-ready monorepo designed for scale, maintainability, and enterprise-grade reliability.
 
 ### Key Components
 
@@ -25,7 +25,7 @@ We have laid down the **initial engineering foundation** for the Micro-Intern pl
 
 ## 2. Why We Built It This Way
 
-As the System Architect, my goal is to ensure the team spends time building *features*, not fighting infrastructure or tracking down silent bugs.
+As the System Architect, my goal is to ensure the team spends time building _features_, not fighting infrastructure or tracking down silent bugs.
 
 - **"Zero-Error" Policy**: Before handing this over to the team (Vyshavi, Mustab, and Padmashree), I insisted on a flawless CI pipeline. We have eliminated all ESLint warnings, resolved unhandled Promise rejections, and fixed TypeScript strict mode violations. This sets the standard: **we don't merge broken code.**
 - **Code Reusability**: By extracting interfaces and validation schemas into `@microintern/shared`, Vyshavi (Backend) and Mustab (Frontend) are working from the exact same source of truth. If the API contract changes, the entire build fails, preventing integration bugs.
@@ -49,4 +49,5 @@ With the foundation rock-solid, our next steps are clear:
 4. **AI & Storage Integration**: Flesh out the AI rate-limited endpoints and integrate MinIO/S3 for user uploads (resumes, profile pictures).
 
 ---
-*This foundation represents a commitment to engineering excellence. Let's build something great.*
+
+_This foundation represents a commitment to engineering excellence. Let's build something great._

@@ -1,7 +1,7 @@
-import type { IRoleProfileRepository } from '@/modules/skill-framework/domain/IRoleProfileRepository.js';
-import type { ISkillVerificationRepository } from '@/modules/skill-verification/domain/ISkillVerificationRepository.js';
-import type { IEvidenceRepository } from '@/modules/evidence/domain/IEvidenceRepository.js';
-import { SkillVerificationStatus } from '@microintern/database';
+import type { IRoleProfileRepository } from "@/modules/skill-framework/domain/IRoleProfileRepository.js";
+import type { ISkillVerificationRepository } from "@/modules/skill-verification/domain/ISkillVerificationRepository.js";
+import type { IEvidenceRepository } from "@/modules/evidence/domain/IEvidenceRepository.js";
+import { SkillVerificationStatus } from "@microintern/database";
 
 export interface RoleMatchResult {
   roleProfileId: string;
@@ -19,14 +19,14 @@ export interface RoleMatchResult {
     isCritical: boolean;
   }>;
   growthPotentialScore: number;
-  recommendation: 'STRONG_MATCH' | 'POTENTIAL_MATCH' | 'DEVELOPMENT_NEEDED' | 'MISMATCH';
+  recommendation: "STRONG_MATCH" | "POTENTIAL_MATCH" | "DEVELOPMENT_NEEDED" | "MISMATCH";
 }
 
 export class SkillMatchingService {
   constructor(
     private readonly roleProfileRepo: IRoleProfileRepository,
     private readonly verificationRepo: ISkillVerificationRepository,
-    private readonly evidenceRepo: IEvidenceRepository
+    private readonly evidenceRepo: IEvidenceRepository,
   ) {}
 
   async matchCandidateToRole(roleProfileId: string, candidateId: string): Promise<RoleMatchResult> {
@@ -40,7 +40,10 @@ export class SkillMatchingService {
     const verifications = await this.verificationRepo.listByCandidate(candidateId);
     const evidenceList = await this.evidenceRepo.listByCandidate(candidateId);
 
-    const verificationMap = new Map<string, { status: SkillVerificationStatus; confidence: number }>();
+    const verificationMap = new Map<
+      string,
+      { status: SkillVerificationStatus; confidence: number }
+    >();
     for (const v of verifications) {
       verificationMap.set(v.skillId, {
         status: v.status,
@@ -58,7 +61,7 @@ export class SkillMatchingService {
     }
 
     // 1. Skill Match Percentage & Gaps
-    const skillGaps: RoleMatchResult['skillGaps'] = [];
+    const skillGaps: RoleMatchResult["skillGaps"] = [];
     let totalSkillWeightedScore = 0;
     let totalSkillWeight = 0;
     let matchedSkillsWithEvidence = 0;
@@ -100,7 +103,9 @@ export class SkillMatchingService {
     }
 
     const skillMatchPercentage =
-      totalSkillWeight > 0 ? Math.round((totalSkillWeightedScore / totalSkillWeight) * 10) / 10 : 100;
+      totalSkillWeight > 0
+        ? Math.round((totalSkillWeightedScore / totalSkillWeight) * 10) / 10
+        : 100;
 
     const evidenceMatchPercentage =
       requiredSkills.length > 0
@@ -114,27 +119,28 @@ export class SkillMatchingService {
     const competencyMatchPercentage = 85.0;
 
     // 3. Overall Match Score Formula
-    const overallMatchScore = Math.round(
-      (skillMatchPercentage * 0.5 +
-        competencyMatchPercentage * 0.25 +
-        evidenceMatchPercentage * 0.15 +
-        confidenceScore * 0.1) *
-        10
-    ) / 10;
+    const overallMatchScore =
+      Math.round(
+        (skillMatchPercentage * 0.5 +
+          competencyMatchPercentage * 0.25 +
+          evidenceMatchPercentage * 0.15 +
+          confidenceScore * 0.1) *
+          10,
+      ) / 10;
 
     // 4. Growth potential calculation (inverse of gap count with baseline)
     const growthPotentialScore = Math.max(0, Math.min(100, 85 - skillGaps.length * 10));
 
     // 5. Recommendation decision rule
-    let recommendation: RoleMatchResult['recommendation'] = 'MISMATCH';
+    let recommendation: RoleMatchResult["recommendation"] = "MISMATCH";
     const criticalGaps = skillGaps.filter((g) => g.isCritical);
 
     if (overallMatchScore >= 85 && criticalGaps.length === 0) {
-      recommendation = 'STRONG_MATCH';
+      recommendation = "STRONG_MATCH";
     } else if (overallMatchScore >= 70 && criticalGaps.length === 0) {
-      recommendation = 'POTENTIAL_MATCH';
+      recommendation = "POTENTIAL_MATCH";
     } else if (overallMatchScore >= 55) {
-      recommendation = 'DEVELOPMENT_NEEDED';
+      recommendation = "DEVELOPMENT_NEEDED";
     }
 
     return {
@@ -153,7 +159,7 @@ export class SkillMatchingService {
 
   async rankCandidatesForRole(
     roleProfileId: string,
-    candidateIds: string[]
+    candidateIds: string[],
   ): Promise<Array<RoleMatchResult & { rank: number }>> {
     const results: RoleMatchResult[] = [];
     for (const cid of candidateIds) {

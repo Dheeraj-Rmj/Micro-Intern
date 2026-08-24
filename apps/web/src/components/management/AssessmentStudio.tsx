@@ -1,13 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useAssessmentEditorStore, type AssessmentSectionKey } from '@/stores/assessment-editor.store';
-import { assessmentApi, type AssessmentDto, type AssessmentTaskDto, type AssessmentDeliverableDto } from '@/lib/api/assessment';
-import { AssessmentValidationModal } from './AssessmentValidationModal';
-import { CompetencyMatrixBuilder } from './CompetencyMatrixBuilder';
-import { LearningOutcomesEditor } from './LearningOutcomesEditor';
-import { MultiDevicePreviewModal } from './MultiDevicePreviewModal';
-import { CommandPalette } from './CommandPalette';
+import React, { useState, useEffect } from "react";
+import {
+  useAssessmentEditorStore,
+  type AssessmentSectionKey,
+} from "@/stores/assessment-editor.store";
+import {
+  assessmentApi,
+  type AssessmentDto,
+  type AssessmentTaskDto,
+  type AssessmentDeliverableDto,
+} from "@/lib/api/assessment";
+import { AssessmentValidationModal } from "./AssessmentValidationModal";
+import { CompetencyMatrixBuilder } from "./CompetencyMatrixBuilder";
+import { LearningOutcomesEditor } from "./LearningOutcomesEditor";
+import { MultiDevicePreviewModal } from "./MultiDevicePreviewModal";
+import { CommandPalette } from "./CommandPalette";
 
 interface AssessmentStudioProps {
   initialAssessment: AssessmentDto;
@@ -37,8 +45,8 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
   const [isAiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [isVersionDrawerOpen, setVersionDrawerOpen] = useState(false);
   const [versions, setVersions] = useState<any[]>([]);
-  const [aiAction, setAiAction] = useState('GENERATE_RUBRIC');
-  const [aiInputPrompt, setAiInputPrompt] = useState('');
+  const [aiAction, setAiAction] = useState("GENERATE_RUBRIC");
+  const [aiInputPrompt, setAiInputPrompt] = useState("");
   const [isAiRunning, setAiRunning] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [isPreviewModalOpen, setPreviewModalOpen] = useState(false);
@@ -57,10 +65,10 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
       try {
         await assessmentApi.updateAssessment(currentAssessment.id, currentAssessment);
         setDirty(false);
-        setNotification('Auto-saved changes to cloud');
+        setNotification("Auto-saved changes to cloud");
         setTimeout(() => setNotification(null), 3000);
       } catch (err) {
-        console.error('Autosave failed:', err);
+        console.error("Autosave failed:", err);
       }
     }, 2500);
 
@@ -74,7 +82,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
       const res = await assessmentApi.validateAssessment(currentAssessment.id);
       setValidationResult(res);
     } catch (err) {
-      console.error('Validation check failed:', err);
+      console.error("Validation check failed:", err);
     } finally {
       setValidating(false);
     }
@@ -86,10 +94,10 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
       const updated = await assessmentApi.publishAssessment(currentAssessment.id);
       setAssessment(updated);
       setValidationModalOpen(false);
-      setNotification('🎉 Assessment published successfully!');
+      setNotification("🎉 Assessment published successfully!");
       setTimeout(() => setNotification(null), 4000);
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Failed to publish assessment');
+      alert(err?.response?.data?.message || "Failed to publish assessment");
     } finally {
       setPublishing(false);
     }
@@ -101,7 +109,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
       const list = await assessmentApi.listVersions(currentAssessment.id);
       setVersions(list);
     } catch (err) {
-      console.error('Failed to load version history:', err);
+      console.error("Failed to load version history:", err);
     }
   };
 
@@ -113,7 +121,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
       setNotification(`Restored version #${versionNumber}`);
       setTimeout(() => setNotification(null), 3000);
     } catch (err) {
-      alert('Failed to restore version');
+      alert("Failed to restore version");
     }
   };
 
@@ -130,21 +138,21 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
       setAiDrawerOpen(false);
       setTimeout(() => setNotification(null), 4000);
     } catch (err) {
-      alert('Failed to queue AI job');
+      alert("Failed to queue AI job");
     } finally {
       setAiRunning(false);
     }
   };
 
   const sections: Array<{ key: AssessmentSectionKey; label: string; icon: string }> = [
-    { key: 'OVERVIEW', label: 'Overview', icon: '📋' },
-    { key: 'COMPETENCY', label: 'Competency Matrix', icon: '🎯' },
-    { key: 'LEARNING_OUTCOMES', label: 'Learning Outcomes', icon: '📚' },
-    { key: 'TECHNICAL', label: 'Technical Tasks', icon: '💻' },
-    { key: 'COMMUNICATION', label: 'Communication Tasks', icon: '💬' },
-    { key: 'RESEARCH', label: 'Research Tasks', icon: '🔍' },
-    { key: 'BONUS', label: 'Optional Bonus', icon: '⭐' },
-    { key: 'SUBMISSION', label: 'Submission & Deliverables', icon: '📦' },
+    { key: "OVERVIEW", label: "Overview", icon: "📋" },
+    { key: "COMPETENCY", label: "Competency Matrix", icon: "🎯" },
+    { key: "LEARNING_OUTCOMES", label: "Learning Outcomes", icon: "📚" },
+    { key: "TECHNICAL", label: "Technical Tasks", icon: "💻" },
+    { key: "COMMUNICATION", label: "Communication Tasks", icon: "💬" },
+    { key: "RESEARCH", label: "Research Tasks", icon: "🔍" },
+    { key: "BONUS", label: "Optional Bonus", icon: "⭐" },
+    { key: "SUBMISSION", label: "Submission & Deliverables", icon: "📦" },
   ];
 
   return (
@@ -156,7 +164,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
             <input
               type="text"
               value={currentAssessment.title}
-              onChange={(e) => updateAssessmentField('title', e.target.value)}
+              onChange={(e) => updateAssessmentField("title", e.target.value)}
               className="bg-transparent font-semibold text-base text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500 rounded px-1.5 py-0.5 -ml-1.5 transition-all"
               placeholder="Assessment Title..."
             />
@@ -231,7 +239,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
             disabled={isPublishing}
             className="rounded-lg bg-gradient-to-r from-brand-600 to-indigo-600 px-4 py-1.5 text-xs font-semibold text-white shadow-lg hover:from-brand-500 hover:to-indigo-500 transition-all"
           >
-            {isPublishing ? 'Publishing...' : 'Publish Assessment'}
+            {isPublishing ? "Publishing..." : "Publish Assessment"}
           </button>
         </div>
       </header>
@@ -249,8 +257,8 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
               onClick={() => setActiveSection(section.key)}
               className={`flex w-full items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 activeSection === section.key
-                  ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30 shadow-sm'
-                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+                  ? "bg-brand-600/20 text-brand-300 border border-brand-500/30 shadow-sm"
+                  : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
               }`}
             >
               <span>{section.icon}</span>
@@ -261,26 +269,30 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
 
         {/* Editor Content Area */}
         <main className="flex-1 overflow-y-auto p-8 max-w-5xl">
-          {activeSection === 'OVERVIEW' && (
+          {activeSection === "OVERVIEW" && (
             <div className="space-y-6">
               <h2 className="text-xl font-bold text-slate-100">Assessment Overview & Parameters</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Target Role Title</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">
+                    Target Role Title
+                  </label>
                   <input
                     type="text"
-                    value={currentAssessment.roleTitle || ''}
-                    onChange={(e) => updateAssessmentField('roleTitle', e.target.value)}
+                    value={currentAssessment.roleTitle || ""}
+                    onChange={(e) => updateAssessmentField("roleTitle", e.target.value)}
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 focus:border-brand-500 focus:outline-none"
                     placeholder="e.g. Senior Backend TypeScript Engineer"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Experience Level</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">
+                    Experience Level
+                  </label>
                   <select
-                    value={currentAssessment.level || 'SENIOR'}
-                    onChange={(e) => updateAssessmentField('level', e.target.value)}
+                    value={currentAssessment.level || "SENIOR"}
+                    onChange={(e) => updateAssessmentField("level", e.target.value)}
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 focus:border-brand-500 focus:outline-none"
                   >
                     <option value="JUNIOR">Junior (0-2 years)</option>
@@ -291,43 +303,53 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Duration (Minutes)</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">
+                    Duration (Minutes)
+                  </label>
                   <input
                     type="number"
                     value={currentAssessment.durationMinutes}
-                    onChange={(e) => updateAssessmentField('durationMinutes', Number(e.target.value))}
+                    onChange={(e) =>
+                      updateAssessmentField("durationMinutes", Number(e.target.value))
+                    }
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Passing Score (50-100)</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">
+                    Passing Score (50-100)
+                  </label>
                   <input
                     type="number"
                     value={currentAssessment.passingScore}
-                    onChange={(e) => updateAssessmentField('passingScore', Number(e.target.value))}
+                    onChange={(e) => updateAssessmentField("passingScore", Number(e.target.value))}
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Detailed Description</label>
+                <label className="block text-xs font-medium text-slate-400 mb-1">
+                  Detailed Description
+                </label>
                 <textarea
                   rows={4}
                   value={currentAssessment.description}
-                  onChange={(e) => updateAssessmentField('description', e.target.value)}
+                  onChange={(e) => updateAssessmentField("description", e.target.value)}
                   className="w-full rounded-lg border border-slate-800 bg-slate-900 p-3 text-sm text-slate-100 focus:border-brand-500 focus:outline-none font-mono text-xs"
                   placeholder="Comprehensive assessment description for candidates..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Instructions (Markdown Supported)</label>
+                <label className="block text-xs font-medium text-slate-400 mb-1">
+                  Instructions (Markdown Supported)
+                </label>
                 <textarea
                   rows={8}
                   value={currentAssessment.instructions}
-                  onChange={(e) => updateAssessmentField('instructions', e.target.value)}
+                  onChange={(e) => updateAssessmentField("instructions", e.target.value)}
                   className="w-full rounded-lg border border-slate-800 bg-slate-900 p-3 text-sm text-slate-100 focus:border-brand-500 focus:outline-none font-mono text-xs"
                   placeholder="# Complete the REST API endpoint..."
                 />
@@ -335,10 +357,10 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
             </div>
           )}
 
-          {activeSection === 'COMPETENCY' && (
+          {activeSection === "COMPETENCY" && (
             <div className="space-y-6">
               <CompetencyMatrixBuilder
-                assessmentId={currentAssessment.id || 'new-assessment'}
+                assessmentId={currentAssessment.id || "new-assessment"}
                 onUpdate={(comps, totalWeight) => {
                   setDirty(true);
                 }}
@@ -346,11 +368,11 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
             </div>
           )}
 
-          {activeSection === 'LEARNING_OUTCOMES' && (
+          {activeSection === "LEARNING_OUTCOMES" && (
             <div className="space-y-6">
               <LearningOutcomesEditor
-                assessmentId={currentAssessment.id || 'new-assessment'}
-                roleTitle={currentAssessment.title || 'Senior Software Engineer'}
+                assessmentId={currentAssessment.id || "new-assessment"}
+                roleTitle={currentAssessment.title || "Senior Software Engineer"}
                 onUpdate={(outcomes) => {
                   setDirty(true);
                 }}
@@ -358,24 +380,24 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
             </div>
           )}
 
-          {['TECHNICAL', 'COMMUNICATION', 'RESEARCH', 'BONUS'].includes(activeSection) && (
+          {["TECHNICAL", "COMMUNICATION", "RESEARCH", "BONUS"].includes(activeSection) && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-100">
-                  {activeSection === 'TECHNICAL'
-                    ? 'Technical Assessment Tasks'
-                    : activeSection === 'COMMUNICATION'
-                    ? 'Communication & Collaboration Tasks'
-                    : activeSection === 'RESEARCH'
-                    ? 'Research & Architecture Tasks'
-                    : 'Optional Bonus Tasks'}
+                  {activeSection === "TECHNICAL"
+                    ? "Technical Assessment Tasks"
+                    : activeSection === "COMMUNICATION"
+                      ? "Communication & Collaboration Tasks"
+                      : activeSection === "RESEARCH"
+                        ? "Research & Architecture Tasks"
+                        : "Optional Bonus Tasks"}
                 </h2>
                 <button
                   onClick={() =>
                     addTask({
-                      title: 'New Assessment Task',
-                      description: 'Task instructions and evaluation guidelines...',
-                      taskType: activeSection === 'TECHNICAL' ? 'CODING' : 'WRITING',
+                      title: "New Assessment Task",
+                      description: "Task instructions and evaluation guidelines...",
+                      taskType: activeSection === "TECHNICAL" ? "CODING" : "WRITING",
                       maxPoints: 50,
                       sortOrder: (currentAssessment.tasks?.length || 0) + 1,
                     })
@@ -434,7 +456,14 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                           </span>
                           <button
                             onClick={() => {
-                              const criteria = [...(task.criteria || []), { title: 'Code Cleanliness', description: 'Proper modular structure and naming', maxPoints: 10 }];
+                              const criteria = [
+                                ...(task.criteria || []),
+                                {
+                                  title: "Code Cleanliness",
+                                  description: "Proper modular structure and naming",
+                                  maxPoints: 10,
+                                },
+                              ];
                               updateTask(idx, { criteria });
                             }}
                             className="text-xs font-medium text-brand-400 hover:text-brand-300"
@@ -444,7 +473,10 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                         </div>
                         <div className="space-y-2">
                           {(task.criteria || []).map((crit, cIdx) => (
-                            <div key={cIdx} className="flex items-center justify-between rounded bg-slate-950/40 px-3 py-1.5 text-xs text-slate-300 border border-slate-800/60">
+                            <div
+                              key={cIdx}
+                              className="flex items-center justify-between rounded bg-slate-950/40 px-3 py-1.5 text-xs text-slate-300 border border-slate-800/60"
+                            >
                               <span className="font-medium">{crit.title}</span>
                               <span className="font-mono text-slate-400">{crit.maxPoints} pts</span>
                             </div>
@@ -462,17 +494,19 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
             </div>
           )}
 
-          {activeSection === 'SUBMISSION' && (
+          {activeSection === "SUBMISSION" && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-100">Submission & Required Deliverables</h2>
+                <h2 className="text-xl font-bold text-slate-100">
+                  Submission & Required Deliverables
+                </h2>
                 <button
                   onClick={() =>
                     addDeliverable({
-                      title: 'GitHub Repository URL',
-                      deliverableType: 'GITHUB_REPO',
+                      title: "GitHub Repository URL",
+                      deliverableType: "GITHUB_REPO",
                       isRequired: true,
-                      description: 'Provide the public or shared repository URL.',
+                      description: "Provide the public or shared repository URL.",
                     })
                   }
                   className="rounded-lg bg-brand-600 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-500 transition-colors shadow-md"
@@ -489,7 +523,9 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                   >
                     <div>
                       <div className="font-semibold text-slate-200">{deliv.title}</div>
-                      <div className="text-xs text-slate-400 font-mono">{deliv.deliverableType}</div>
+                      <div className="text-xs text-slate-400 font-mono">
+                        {deliv.deliverableType}
+                      </div>
                     </div>
                     <button
                       onClick={() => removeDeliverable(idx)}
@@ -534,7 +570,9 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Select AI Capability</label>
+                <label className="block text-xs font-medium text-slate-400 mb-1">
+                  Select AI Capability
+                </label>
                 <select
                   value={aiAction}
                   onChange={(e) => setAiAction(e.target.value)}
@@ -549,13 +587,19 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                   <option value="ESTIMATE_DIFFICULTY">Estimate Difficulty & Complexity</option>
                   <option value="ESTIMATE_DURATION">Estimate Realistic Duration</option>
                   <option value="SUGGEST_LEARNING_OUTCOMES">Suggest Learning Outcomes</option>
-                  <option value="GENERATE_INTERVIEW_QUESTIONS">Generate Follow-Up Interview Qs</option>
-                  <option value="GENERATE_EVALUATION_NOTES">Generate Recruiter Evaluation Notes</option>
+                  <option value="GENERATE_INTERVIEW_QUESTIONS">
+                    Generate Follow-Up Interview Qs
+                  </option>
+                  <option value="GENERATE_EVALUATION_NOTES">
+                    Generate Recruiter Evaluation Notes
+                  </option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Custom Prompt / Context</label>
+                <label className="block text-xs font-medium text-slate-400 mb-1">
+                  Custom Prompt / Context
+                </label>
                 <textarea
                   rows={4}
                   value={aiInputPrompt}
@@ -571,7 +615,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
               disabled={isAiRunning}
               className="w-full rounded-lg bg-gradient-to-r from-brand-600 to-indigo-600 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-brand-500 hover:to-indigo-500 transition-all"
             >
-              {isAiRunning ? 'Running AI Pipeline...' : 'Run AI Assistant'}
+              {isAiRunning ? "Running AI Pipeline..." : "Run AI Assistant"}
             </button>
           </div>
         </div>
@@ -608,7 +652,7 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                           {new Date(ver.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-slate-400">{ver.changeSummary || 'No summary provided'}</p>
+                      <p className="text-slate-400">{ver.changeSummary || "No summary provided"}</p>
                       <button
                         onClick={() => handleRestoreVersion(ver.versionNumber)}
                         className="text-brand-400 hover:text-brand-300 font-medium"
@@ -618,7 +662,9 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-slate-500 text-center py-8">No version snapshots recorded yet.</p>
+                  <p className="text-xs text-slate-500 text-center py-8">
+                    No version snapshots recorded yet.
+                  </p>
                 )}
               </div>
             </div>
@@ -631,9 +677,9 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
         isOpen={isPreviewModalOpen}
         onClose={() => setPreviewModalOpen(false)}
         assessment={{
-          id: currentAssessment.id || 'new-assessment',
-          title: currentAssessment.title || 'Untitled Assessment',
-          description: currentAssessment.description || 'Enterprise Assessment Assessment',
+          id: currentAssessment.id || "new-assessment",
+          title: currentAssessment.title || "Untitled Assessment",
+          description: currentAssessment.description || "Enterprise Assessment Assessment",
           durationMinutes: currentAssessment.durationMinutes || 180,
           tasks: currentAssessment.tasks || [],
         }}
@@ -644,11 +690,11 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
         isOpen={isCommandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
         onSelectCommand={(cmdId) => {
-          if (cmdId === 'AI_GENERATE_ASSESSMENT') setAiDrawerOpen(true);
-          else if (cmdId === 'VIEW_COMPETENCY_MATRIX') setActiveSection('COMPETENCY');
-          else if (cmdId === 'OPEN_MULTI_DEVICE_PREVIEW') setPreviewModalOpen(true);
-          else if (cmdId === 'PUBLISH_ASSESSMENT') handleRunValidation();
-          else if (cmdId === 'VIEW_ACTIVITY_TIMELINE') handleOpenVersions();
+          if (cmdId === "AI_GENERATE_ASSESSMENT") setAiDrawerOpen(true);
+          else if (cmdId === "VIEW_COMPETENCY_MATRIX") setActiveSection("COMPETENCY");
+          else if (cmdId === "OPEN_MULTI_DEVICE_PREVIEW") setPreviewModalOpen(true);
+          else if (cmdId === "PUBLISH_ASSESSMENT") handleRunValidation();
+          else if (cmdId === "VIEW_ACTIVITY_TIMELINE") handleOpenVersions();
         }}
       />
     </div>

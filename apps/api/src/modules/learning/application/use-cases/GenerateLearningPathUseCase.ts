@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { PROMPTS, compilePrompt } from '@/infrastructure/ai/PromptManager.js';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { PROMPTS, compilePrompt } from "@/infrastructure/ai/PromptManager.js";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('GenerateLearningPathUseCase');
+const log = createModuleLogger("GenerateLearningPathUseCase");
 
 export type GenerateLearningPathInput = {
   candidateId: string;
@@ -38,7 +38,7 @@ export class GenerateLearningPathUseCase {
   constructor(private readonly aiEngine: AIFallbackEngine) {}
 
   async execute(input: GenerateLearningPathInput): Promise<GenerateLearningPathOutput> {
-    log.info({ candidateId: input.candidateId }, 'Generating personalized learning path via AI');
+    log.info({ candidateId: input.candidateId }, "Generating personalized learning path via AI");
 
     try {
       const prompt = compilePrompt(PROMPTS.CANDIDATE_LEARNING_RECOMMENDATIONS, {
@@ -48,23 +48,23 @@ export class GenerateLearningPathUseCase {
 
       const response = await this.aiEngine.complete({
         messages: [
-          { role: 'system', content: prompt.systemMessage },
-          { role: 'user', content: prompt.userMessage },
+          { role: "system", content: prompt.systemMessage },
+          { role: "user", content: prompt.userMessage },
         ],
-        responseFormat: { type: 'json_object' },
+        responseFormat: { type: "json_object" },
       });
 
       const parsed = JSON.parse(response.content) as GenerateLearningPathOutput;
 
       if (!parsed.learningRecommendations || !Array.isArray(parsed.learningRecommendations)) {
-        throw new Error('AI returned invalid JSON structure for learning path');
+        throw new Error("AI returned invalid JSON structure for learning path");
       }
 
-      log.info('Successfully generated learning path');
+      log.info("Successfully generated learning path");
       return parsed;
     } catch (error) {
-      log.error({ err: error }, 'Failed to generate learning path');
-      throw new Error('Failed to generate personalized learning path using AI');
+      log.error({ err: error }, "Failed to generate learning path");
+      throw new Error("Failed to generate personalized learning path using AI");
     }
   }
 }

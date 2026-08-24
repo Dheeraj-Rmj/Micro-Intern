@@ -1,13 +1,13 @@
-import { REDIS_KEYS } from '@microintern/shared';
-import jwt from 'jsonwebtoken';
+import { REDIS_KEYS } from "@microintern/shared";
+import jwt from "jsonwebtoken";
 
-import { config } from '@/core/config.js';
-import { getRedisClient } from '@/core/redis.js';
-import { UnauthorizedError } from '@/shared/errors/index.js';
-import { anomalyDetectionMiddleware } from './anomaly.middleware.js';
+import { config } from "@/core/config.js";
+import { getRedisClient } from "@/core/redis.js";
+import { UnauthorizedError } from "@/shared/errors/index.js";
+import { anomalyDetectionMiddleware } from "./anomaly.middleware.js";
 
-import type { JwtAccessPayload, AuthenticatedUser } from '@microintern/shared';
-import type { Request, Response, NextFunction } from 'express';
+import type { JwtAccessPayload, AuthenticatedUser } from "@microintern/shared";
+import type { Request, Response, NextFunction } from "express";
 
 /**
  * Extend Express Request to include authenticated user.
@@ -45,12 +45,10 @@ export async function authMiddleware(
   next: NextFunction,
 ): Promise<void> {
   try {
-
-
     const token = extractBearerToken(req);
 
     if (token === null) {
-      throw new UnauthorizedError('Authentication token required', 'AUTH_TOKEN_INVALID');
+      throw new UnauthorizedError("Authentication token required", "AUTH_TOKEN_INVALID");
     }
 
     let payload: JwtAccessPayload;
@@ -58,13 +56,13 @@ export async function authMiddleware(
       payload = jwt.verify(token, config.JWT_ACCESS_SECRET, {
         issuer: config.JWT_ISSUER,
         audience: config.JWT_AUDIENCE,
-        algorithms: ['HS256'],
+        algorithms: ["HS256"],
       }) as JwtAccessPayload;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new UnauthorizedError('Access token expired', 'AUTH_TOKEN_EXPIRED');
+        throw new UnauthorizedError("Access token expired", "AUTH_TOKEN_EXPIRED");
       }
-      throw new UnauthorizedError('Invalid access token', 'AUTH_TOKEN_INVALID');
+      throw new UnauthorizedError("Invalid access token", "AUTH_TOKEN_INVALID");
     }
 
     // Verify session is still active in Redis
@@ -73,7 +71,7 @@ export async function authMiddleware(
     const sessionExists = await redis.exists(sessionKey);
 
     if (sessionExists === 0) {
-      throw new UnauthorizedError('Session expired or revoked', 'AUTH_TOKEN_REVOKED');
+      throw new UnauthorizedError("Session expired or revoked", "AUTH_TOKEN_REVOKED");
     }
 
     // Attach authenticated user to request
@@ -104,8 +102,6 @@ export async function optionalAuthMiddleware(
   _res: Response,
   next: NextFunction,
 ): Promise<void> {
-
-
   const token = extractBearerToken(req);
   if (token === null) {
     next();
@@ -116,7 +112,7 @@ export async function optionalAuthMiddleware(
     const payload = jwt.verify(token, config.JWT_ACCESS_SECRET, {
       issuer: config.JWT_ISSUER,
       audience: config.JWT_AUDIENCE,
-      algorithms: ['HS256'],
+      algorithms: ["HS256"],
     }) as JwtAccessPayload;
 
     req.user = {
@@ -136,7 +132,7 @@ export async function optionalAuthMiddleware(
 export function extractBearerToken(req: Request): string | null {
   const authHeader = req.headers.authorization;
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  if (!authHeader?.startsWith('Bearer ')) {
+  if (!authHeader?.startsWith("Bearer ")) {
     return null;
   }
   const token = authHeader.slice(7).trim();

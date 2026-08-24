@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import crypto from "node:crypto";
 
 /**
  * Token Service — generates, hashes, and verifies secure one-time tokens.
@@ -19,7 +19,7 @@ export class TokenService {
    * Returns a 64-character hex string.
    */
   generateSecureToken(): string {
-    return crypto.randomBytes(32).toString('hex');
+    return crypto.randomBytes(32).toString("hex");
   }
 
   /**
@@ -27,7 +27,7 @@ export class TokenService {
    * Always store this hash, never the plain token.
    */
   hashToken(plainToken: string): string {
-    return crypto.createHash('sha256').update(plainToken).digest('hex');
+    return crypto.createHash("sha256").update(plainToken).digest("hex");
   }
 
   /**
@@ -36,10 +36,7 @@ export class TokenService {
   verifyToken(plainToken: string, storedHash: string): boolean {
     const inputHash = this.hashToken(plainToken);
     try {
-      return crypto.timingSafeEqual(
-        Buffer.from(inputHash, 'hex'),
-        Buffer.from(storedHash, 'hex'),
-      );
+      return crypto.timingSafeEqual(Buffer.from(inputHash, "hex"), Buffer.from(storedHash, "hex"));
     } catch {
       return false;
     }

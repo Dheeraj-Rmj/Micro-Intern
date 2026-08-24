@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { PrismaClient } from '@microintern/database';
-import { z } from 'zod';
+import { createModuleLogger } from "@/core/logger.js";
+import { PrismaClient } from "@microintern/database";
+import { z } from "zod";
 
-const log = createModuleLogger('ConfigureSkillTrailUseCase');
+const log = createModuleLogger("ConfigureSkillTrailUseCase");
 
 export const SkillTrailConfigSchema = z.object({
   aiGenerateQuestions: z.boolean().default(true),
@@ -14,7 +14,16 @@ export const SkillTrailConfigSchema = z.object({
     hard: z.number(),
   }),
   passingScore: z.number().min(0).max(100),
-  requiredPerformance: z.enum(['Exceptional', 'Outstanding', 'Excellent', 'Above Average', 'Good', 'Average', 'Below Average', 'Needs Improvement']),
+  requiredPerformance: z.enum([
+    "Exceptional",
+    "Outstanding",
+    "Excellent",
+    "Above Average",
+    "Good",
+    "Average",
+    "Below Average",
+    "Needs Improvement",
+  ]),
   autoEvaluate: z.boolean().default(true),
   aiRecommendTask: z.boolean().default(true),
   candidateFeedback: z.object({
@@ -42,15 +51,23 @@ export class ConfigureSkillTrailUseCase {
   constructor(private readonly prisma: PrismaClient) {}
 
   async execute(input: ConfigureSkillTrailInput): Promise<any> {
-    log.info({ companyId: input.companyId, roleProfileId: input.roleProfileId }, 'Configuring Skill Trail');
+    log.info(
+      { companyId: input.companyId, roleProfileId: input.roleProfileId },
+      "Configuring Skill Trail",
+    );
 
     // 1. Validate the Configuration payload exactly
     const validConfig = SkillTrailConfigSchema.parse(input.configuration);
 
     // 2. Ensure total questions match the difficulty distribution
-    const totalDiff = validConfig.difficultyDistribution.easy + validConfig.difficultyDistribution.medium + validConfig.difficultyDistribution.hard;
+    const totalDiff =
+      validConfig.difficultyDistribution.easy +
+      validConfig.difficultyDistribution.medium +
+      validConfig.difficultyDistribution.hard;
     if (totalDiff !== validConfig.numberOfQuestions) {
-      throw new Error(`Difficulty distribution sum (${totalDiff}) does not match numberOfQuestions (${validConfig.numberOfQuestions})`);
+      throw new Error(
+        `Difficulty distribution sum (${totalDiff}) does not match numberOfQuestions (${validConfig.numberOfQuestions})`,
+      );
     }
 
     try {
@@ -84,11 +101,11 @@ export class ConfigureSkillTrailUseCase {
         return { ...trail, configuration: config };
       });
 
-      log.info('Successfully configured Skill Trail');
+      log.info("Successfully configured Skill Trail");
       return skillTrail;
     } catch (error) {
-      log.error({ err: error }, 'Failed to configure Skill Trail');
-      throw new Error('Database error configuring Skill Trail');
+      log.error({ err: error }, "Failed to configure Skill Trail");
+      throw new Error("Database error configuring Skill Trail");
     }
   }
 }

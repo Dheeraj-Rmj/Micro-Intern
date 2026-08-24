@@ -1,15 +1,10 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('SearchService');
+const log = createModuleLogger("SearchService");
 
 export type SearchEntityType =
-  | 'ASSESSMENT'
-  | 'TEMPLATE'
-  | 'COMPETENCY'
-  | 'SKILL'
-  | 'COMPANY'
-  | 'RESOURCE';
+  "ASSESSMENT" | "TEMPLATE" | "COMPETENCY" | "SKILL" | "COMPANY" | "RESOURCE";
 
 export interface ISearchQuery {
   query: string;
@@ -39,14 +34,16 @@ export interface ISearchService {
  * Meilisearch, or Elasticsearch.
  */
 export class PostgresSearchService implements ISearchService {
-  public async search(query: ISearchQuery): Promise<{ results: ISearchResultItem[]; total: number }> {
-    const q = query.query?.trim().toLowerCase() || '';
+  public async search(
+    query: ISearchQuery,
+  ): Promise<{ results: ISearchResultItem[]; total: number }> {
+    const q = query.query?.trim().toLowerCase() || "";
     const entityTypes = query.entityTypes || [
-      'ASSESSMENT',
-      'TEMPLATE',
-      'COMPETENCY',
-      'SKILL',
-      'RESOURCE',
+      "ASSESSMENT",
+      "TEMPLATE",
+      "COMPETENCY",
+      "SKILL",
+      "RESOURCE",
     ];
     const limit = query.limit || 20;
 
@@ -54,14 +51,14 @@ export class PostgresSearchService implements ISearchService {
 
     try {
       // 1. Search Assessments
-      if (entityTypes.includes('ASSESSMENT')) {
+      if (entityTypes.includes("ASSESSMENT")) {
         const assessments = await prisma.assessment.findMany({
           where: {
             deletedAt: null,
             OR: [
-              { title: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
-              { roleTitle: { contains: q, mode: 'insensitive' } },
+              { title: { contains: q, mode: "insensitive" } },
+              { description: { contains: q, mode: "insensitive" } },
+              { roleTitle: { contains: q, mode: "insensitive" } },
             ],
             ...(query.companyId ? { companyId: query.companyId } : {}),
           },
@@ -71,7 +68,7 @@ export class PostgresSearchService implements ISearchService {
         for (const t of assessments) {
           results.push({
             id: t.id,
-            entityType: 'ASSESSMENT',
+            entityType: "ASSESSMENT",
             title: t.title,
             description: t.description || undefined,
             tags: t.skillsRequired || [],
@@ -86,12 +83,12 @@ export class PostgresSearchService implements ISearchService {
       }
 
       // 2. Search Templates
-      if (entityTypes.includes('TEMPLATE')) {
+      if (entityTypes.includes("TEMPLATE")) {
         const templates = await prisma.assessmentTemplate.findMany({
           where: {
             OR: [
-              { title: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
+              { title: { contains: q, mode: "insensitive" } },
+              { description: { contains: q, mode: "insensitive" } },
             ],
           },
           take: limit,
@@ -100,7 +97,7 @@ export class PostgresSearchService implements ISearchService {
         for (const tmpl of templates) {
           results.push({
             id: tmpl.id,
-            entityType: 'TEMPLATE',
+            entityType: "TEMPLATE",
             title: tmpl.title,
             description: tmpl.description,
             tags: [tmpl.category],
@@ -110,12 +107,12 @@ export class PostgresSearchService implements ISearchService {
       }
 
       // 3. Search Competencies
-      if (entityTypes.includes('COMPETENCY')) {
+      if (entityTypes.includes("COMPETENCY")) {
         const competencies = await prisma.competency.findMany({
           where: {
             OR: [
-              { name: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
+              { name: { contains: q, mode: "insensitive" } },
+              { description: { contains: q, mode: "insensitive" } },
             ],
           },
           take: limit,
@@ -124,7 +121,7 @@ export class PostgresSearchService implements ISearchService {
         for (const comp of competencies) {
           results.push({
             id: comp.id,
-            entityType: 'COMPETENCY',
+            entityType: "COMPETENCY",
             title: comp.name,
             description: comp.description,
             tags: [comp.category],
@@ -133,10 +130,10 @@ export class PostgresSearchService implements ISearchService {
       }
 
       // 4. Search Skills
-      if (entityTypes.includes('SKILL')) {
+      if (entityTypes.includes("SKILL")) {
         const skills = await prisma.skillTaxonomy.findMany({
           where: {
-            name: { contains: q, mode: 'insensitive' },
+            name: { contains: q, mode: "insensitive" },
           },
           take: limit,
         });
@@ -144,7 +141,7 @@ export class PostgresSearchService implements ISearchService {
         for (const sk of skills) {
           results.push({
             id: sk.id,
-            entityType: 'SKILL',
+            entityType: "SKILL",
             title: sk.name,
             tags: [sk.category],
             metadata: { difficulty: sk.difficulty },
@@ -153,12 +150,12 @@ export class PostgresSearchService implements ISearchService {
       }
 
       // 5. Search Resource Library Items
-      if (entityTypes.includes('RESOURCE')) {
+      if (entityTypes.includes("RESOURCE")) {
         const resources = await prisma.resourceLibraryItem.findMany({
           where: {
             OR: [
-              { title: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
+              { title: { contains: q, mode: "insensitive" } },
+              { description: { contains: q, mode: "insensitive" } },
             ],
             ...(query.companyId ? { companyId: query.companyId } : {}),
           },
@@ -168,7 +165,7 @@ export class PostgresSearchService implements ISearchService {
         for (const res of resources) {
           results.push({
             id: res.id,
-            entityType: 'RESOURCE',
+            entityType: "RESOURCE",
             title: res.title,
             description: res.description || undefined,
             url: res.url,
@@ -182,7 +179,7 @@ export class PostgresSearchService implements ISearchService {
         total: results.length,
       };
     } catch (err) {
-      log.error({ err, query }, 'Failed to execute database search query');
+      log.error({ err, query }, "Failed to execute database search query");
       return { results: [], total: 0 };
     }
   }

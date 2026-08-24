@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config';
-import path from 'node:path';
+import { defineConfig } from "vitest/config";
+import path from "node:path";
 
 /**
  * Base Vitest configuration for all packages.
@@ -8,7 +8,7 @@ import path from 'node:path';
 export const baseVitestConfig = defineConfig({
   test: {
     // Use node environment for backend packages (override to 'jsdom' for frontend)
-    environment: 'node',
+    environment: "node",
 
     // Global test setup
     globals: true,
@@ -16,17 +16,17 @@ export const baseVitestConfig = defineConfig({
 
     // Coverage configuration
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
       exclude: [
-        'node_modules/',
-        'dist/',
-        'src/generated/',
-        '**/*.d.ts',
-        '**/*.config.*',
-        '**/index.ts', // Barrel exports
-        '**/__mocks__/**',
-        '**/fixtures/**',
+        "node_modules/",
+        "dist/",
+        "src/generated/",
+        "**/*.d.ts",
+        "**/*.config.*",
+        "**/index.ts", // Barrel exports
+        "**/__mocks__/**",
+        "**/fixtures/**",
       ],
       thresholds: {
         lines: 80,
@@ -37,11 +37,11 @@ export const baseVitestConfig = defineConfig({
     },
 
     // Test file patterns
-    include: ['src/**/*.test.ts', 'src/**/*.spec.ts', 'tests/**/*.test.ts'],
-    exclude: ['node_modules', 'dist', 'src/generated'],
+    include: ["src/**/*.test.ts", "src/**/*.spec.ts", "tests/**/*.test.ts"],
+    exclude: ["node_modules", "dist", "src/generated"],
 
     // Reporter
-    reporters: ['verbose'],
+    reporters: ["verbose"],
 
     // Timeout (ms) — increase for integration tests
     testTimeout: 10_000,
@@ -49,7 +49,7 @@ export const baseVitestConfig = defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(process.cwd(), './src'),
+      "@": path.resolve(process.cwd(), "./src"),
     },
   },
 });

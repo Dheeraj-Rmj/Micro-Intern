@@ -6,37 +6,37 @@ const config = {
   useTabs: false,
   semi: true,
   singleQuote: true,
-  quoteProps: 'as-needed',
+  quoteProps: "as-needed",
   jsxSingleQuote: false,
-  trailingComma: 'all',
+  trailingComma: "all",
   bracketSpacing: true,
   bracketSameLine: false,
-  arrowParens: 'always',
-  endOfLine: 'lf',
+  arrowParens: "always",
+  endOfLine: "lf",
 
   // File-specific overrides
   overrides: [
     {
-      files: '*.json',
+      files: "*.json",
       options: {
         printWidth: 80,
       },
     },
     {
-      files: '*.md',
+      files: "*.md",
       options: {
         printWidth: 80,
-        proseWrap: 'always',
+        proseWrap: "always",
       },
     },
     {
-      files: '*.{yml,yaml}',
+      files: "*.{yml,yaml}",
       options: {
         singleQuote: false,
       },
     },
     {
-      files: '*.prisma',
+      files: "*.prisma",
       options: {
         printWidth: 80,
       },

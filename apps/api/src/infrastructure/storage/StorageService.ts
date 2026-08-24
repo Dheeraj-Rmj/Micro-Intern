@@ -3,15 +3,15 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { StorageBucket , STORAGE } from '@microintern/shared';
-import { Client as MinioClient } from 'minio';
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { StorageBucket, STORAGE } from "@microintern/shared";
+import { Client as MinioClient } from "minio";
 
-import { config } from '@/core/config.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { config } from "@/core/config.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('StorageService');
+const log = createModuleLogger("StorageService");
 
 /**
  * Storage Service — unified interface over MinIO (dev) and AWS S3 (prod).
@@ -41,14 +41,14 @@ export type SignedUrlResult = {
 };
 
 export class StorageService {
-  private readonly provider: 'minio' | 's3';
+  private readonly provider: "minio" | "s3";
   private minioClient: MinioClient | null = null;
   private s3Client: S3Client | null = null;
 
   constructor() {
     this.provider = config.STORAGE_PROVIDER;
 
-    if (this.provider === 'minio') {
+    if (this.provider === "minio") {
       this.minioClient = new MinioClient({
         endPoint: config.MINIO_ENDPOINT,
         port: config.MINIO_PORT,
@@ -58,10 +58,10 @@ export class StorageService {
       });
     } else {
       this.s3Client = new S3Client({
-        region: config.AWS_REGION ?? 'us-east-1',
+        region: config.AWS_REGION ?? "us-east-1",
         credentials: {
-          accessKeyId: config.AWS_ACCESS_KEY_ID ?? '',
-          secretAccessKey: config.AWS_SECRET_ACCESS_KEY ?? '',
+          accessKeyId: config.AWS_ACCESS_KEY_ID ?? "",
+          secretAccessKey: config.AWS_SECRET_ACCESS_KEY ?? "",
         },
       });
     }
@@ -81,25 +81,24 @@ export class StorageService {
     const sizeBytes = options.data.byteLength;
 
     try {
-      if (this.provider === 'minio' && this.minioClient !== null) {
+      if (this.provider === "minio" && this.minioClient !== null) {
         const etag = await this.minioClient.putObject(
           bucketName,
           options.key,
           options.data,
           sizeBytes,
           {
-            'Content-Type': options.mimeType,
+            "Content-Type": options.mimeType,
             ...options.metadata,
           },
         );
 
-        const url = options.bucket === StorageBucket.PUBLIC
-          ? this.getPublicUrl(bucketName, options.key)
-          : '';
+        const url =
+          options.bucket === StorageBucket.PUBLIC ? this.getPublicUrl(bucketName, options.key) : "";
 
-        log.info({ key: options.key, bucket: bucketName, sizeBytes }, 'File uploaded (MinIO)');
+        log.info({ key: options.key, bucket: bucketName, sizeBytes }, "File uploaded (MinIO)");
 
-        return { key: options.key, bucket: bucketName, url, etag: etag.etag ?? '', sizeBytes };
+        return { key: options.key, bucket: bucketName, url, etag: etag.etag ?? "", sizeBytes };
       } else if (this.s3Client !== null) {
         const command = new PutObjectCommand({
           Bucket: bucketName,
@@ -110,24 +109,25 @@ export class StorageService {
         });
 
         const response = await this.s3Client.send(command);
-        const url = options.bucket === StorageBucket.PUBLIC
-          ? `https://${bucketName}.s3.amazonaws.com/${options.key}`
-          : '';
+        const url =
+          options.bucket === StorageBucket.PUBLIC
+            ? `https://${bucketName}.s3.amazonaws.com/${options.key}`
+            : "";
 
-        log.info({ key: options.key, bucket: bucketName, sizeBytes }, 'File uploaded (S3)');
+        log.info({ key: options.key, bucket: bucketName, sizeBytes }, "File uploaded (S3)");
 
         return {
           key: options.key,
           bucket: bucketName,
           url,
-          etag: response.ETag ?? '',
+          etag: response.ETag ?? "",
           sizeBytes,
         };
       }
 
-      throw new Error('No storage provider configured');
+      throw new Error("No storage provider configured");
     } catch (error) {
-      log.error({ err: error, key: options.key }, 'Upload failed');
+      log.error({ err: error, key: options.key }, "Upload failed");
       throw error;
     }
   }
@@ -143,7 +143,7 @@ export class StorageService {
     const bucketName = this.getBucketName(bucket);
     const expiresAt = new Date(Date.now() + expirySeconds * 1000);
 
-    if (this.provider === 'minio' && this.minioClient !== null) {
+    if (this.provider === "minio" && this.minioClient !== null) {
       const url = await this.minioClient.presignedGetObject(bucketName, key, expirySeconds);
       return { url, expiresAt };
     } else if (this.s3Client !== null) {
@@ -152,7 +152,7 @@ export class StorageService {
       return { url, expiresAt };
     }
 
-    throw new Error('No storage provider configured');
+    throw new Error("No storage provider configured");
   }
 
   /**
@@ -167,17 +167,17 @@ export class StorageService {
     const bucketName = this.getBucketName(bucket);
     const expiresAt = new Date(Date.now() + expirySeconds * 1000);
 
-    if (this.provider === 'minio' && this.minioClient !== null) {
+    if (this.provider === "minio" && this.minioClient !== null) {
       const url = await this.minioClient.presignedPutObject(bucketName, key, expirySeconds);
       return { url, expiresAt };
     } else if (this.s3Client !== null) {
-      const { PutObjectCommand: Put } = await import('@aws-sdk/client-s3');
+      const { PutObjectCommand: Put } = await import("@aws-sdk/client-s3");
       const command = new Put({ Bucket: bucketName, Key: key, ContentType: mimeType });
       const url = await getSignedUrl(this.s3Client, command, { expiresIn: expirySeconds });
       return { url, expiresAt };
     }
 
-    throw new Error('No storage provider configured');
+    throw new Error("No storage provider configured");
   }
 
   /**
@@ -186,13 +186,13 @@ export class StorageService {
   async delete(key: string, bucket: StorageBucket = StorageBucket.PRIVATE): Promise<void> {
     const bucketName = this.getBucketName(bucket);
 
-    if (this.provider === 'minio' && this.minioClient !== null) {
+    if (this.provider === "minio" && this.minioClient !== null) {
       await this.minioClient.removeObject(bucketName, key);
     } else if (this.s3Client !== null) {
       await this.s3Client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: key }));
     }
 
-    log.info({ key, bucket: bucketName }, 'File deleted');
+    log.info({ key, bucket: bucketName }, "File deleted");
   }
 
   /**
@@ -200,7 +200,7 @@ export class StorageService {
    * Format: `{entityType}/{entityId}/{uuid}.{extension}`
    */
   static generateKey(entityType: string, entityId: string, filename: string): string {
-    const ext = filename.split('.').pop() ?? 'bin';
+    const ext = filename.split(".").pop() ?? "bin";
     const uniqueId = crypto.randomUUID();
     return `${entityType}/${entityId}/${uniqueId}.${ext}`;
   }
@@ -208,33 +208,33 @@ export class StorageService {
   /**
    * Health check — verify connectivity to storage provider.
    */
-  async healthCheck(): Promise<{ status: 'healthy' | 'unhealthy'; provider: string }> {
+  async healthCheck(): Promise<{ status: "healthy" | "unhealthy"; provider: string }> {
     try {
-      if (this.provider === 'minio' && this.minioClient !== null) {
+      if (this.provider === "minio" && this.minioClient !== null) {
         const publicBucket = this.getBucketName(StorageBucket.PUBLIC);
         await this.minioClient.bucketExists(publicBucket);
       }
-      return { status: 'healthy', provider: this.provider };
+      return { status: "healthy", provider: this.provider };
     } catch {
-      return { status: 'unhealthy', provider: this.provider };
+      return { status: "unhealthy", provider: this.provider };
     }
   }
 
   private getBucketName(bucket: StorageBucket): string {
-    if (this.provider === 'minio') {
+    if (this.provider === "minio") {
       return bucket === StorageBucket.PUBLIC
         ? config.MINIO_BUCKET_PUBLIC
         : config.MINIO_BUCKET_PRIVATE;
     } else {
       return bucket === StorageBucket.PUBLIC
-        ? (config.S3_BUCKET_PUBLIC ?? 'microintern-public')
-        : (config.S3_BUCKET_PRIVATE ?? 'microintern-private');
+        ? (config.S3_BUCKET_PUBLIC ?? "microintern-public")
+        : (config.S3_BUCKET_PRIVATE ?? "microintern-private");
     }
   }
 
   private getPublicUrl(bucket: string, key: string): string {
-    if (this.provider === 'minio') {
-      const protocol = config.MINIO_USE_SSL ? 'https' : 'http';
+    if (this.provider === "minio") {
+      const protocol = config.MINIO_USE_SSL ? "https" : "http";
       return `${protocol}://${config.MINIO_ENDPOINT}:${config.MINIO_PORT}/${bucket}/${key}`;
     }
     return `https://${bucket}.s3.amazonaws.com/${key}`;
@@ -245,7 +245,7 @@ export class StorageService {
 let storageService: StorageService | null = null;
 
 export function getStorageService(): StorageService {
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (storageService === null) {
     storageService = new StorageService();
   }

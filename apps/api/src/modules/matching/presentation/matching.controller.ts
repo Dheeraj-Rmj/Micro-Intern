@@ -1,5 +1,5 @@
-import type { SkillMatchingService } from '../application/SkillMatchingService.js';
-import type { Request, Response, NextFunction } from 'express';
+import type { SkillMatchingService } from "../application/SkillMatchingService.js";
+import type { Request, Response, NextFunction } from "express";
 
 export class MatchingController {
   constructor(private readonly matchingService: SkillMatchingService) {}
@@ -19,7 +19,7 @@ export class MatchingController {
       const { roleProfileId, candidateIds } = req.body;
       const ranked = await this.matchingService.rankCandidatesForRole(
         roleProfileId,
-        Array.isArray(candidateIds) ? candidateIds : []
+        Array.isArray(candidateIds) ? candidateIds : [],
       );
       res.status(200).json({ success: true, data: ranked });
     } catch (err) {

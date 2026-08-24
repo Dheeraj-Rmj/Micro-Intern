@@ -2,22 +2,22 @@ import type {
   IEvidenceRepository,
   CreateEvidenceDTO,
   VerifyEvidenceDTO,
-} from '../domain/IEvidenceRepository.js';
-import type { Evidence, EvidenceType, EvidenceVerificationStatus } from '@microintern/database';
-import { DomainEventDispatcher } from '@/core/events/DomainEventDispatcher.js';
+} from "../domain/IEvidenceRepository.js";
+import type { Evidence, EvidenceType, EvidenceVerificationStatus } from "@microintern/database";
+import { DomainEventDispatcher } from "@/core/events/DomainEventDispatcher.js";
 
 export class EvidenceService {
   constructor(
     private readonly evidenceRepo: IEvidenceRepository,
-    private readonly eventDispatcher = DomainEventDispatcher.getInstance()
+    private readonly eventDispatcher = DomainEventDispatcher.getInstance(),
   ) {}
 
   async registerEvidence(data: CreateEvidenceDTO, actorId: string): Promise<Evidence> {
     const evidence = await this.evidenceRepo.create(data);
 
     await this.eventDispatcher.dispatch({
-      eventName: 'EvidenceRegistered',
-      entityType: 'Evidence',
+      eventName: "EvidenceRegistered",
+      entityType: "Evidence",
       entityId: evidence.id,
       metadata: {
         evidenceId: evidence.id,
@@ -40,8 +40,8 @@ export class EvidenceService {
     const updated = await this.evidenceRepo.updateVerificationStatus(data);
 
     await this.eventDispatcher.dispatch({
-      eventName: 'EvidenceVerified',
-      entityType: 'Evidence',
+      eventName: "EvidenceVerified",
+      entityType: "Evidence",
       entityId: updated.id,
       metadata: {
         evidenceId: updated.id,
@@ -66,7 +66,7 @@ export class EvidenceService {
 
   async listCandidateEvidence(
     candidateId: string,
-    options?: { type?: EvidenceType; status?: EvidenceVerificationStatus }
+    options?: { type?: EvidenceType; status?: EvidenceVerificationStatus },
   ): Promise<Evidence[]> {
     return this.evidenceRepo.listByCandidate(candidateId, options);
   }
@@ -79,7 +79,12 @@ export class EvidenceService {
     return this.evidenceRepo.linkSkill(evidenceId, skillId, confidence, notes);
   }
 
-  async linkCompetency(evidenceId: string, competencyId: string, confidence?: number, notes?: string) {
+  async linkCompetency(
+    evidenceId: string,
+    competencyId: string,
+    confidence?: number,
+    notes?: string,
+  ) {
     return this.evidenceRepo.linkCompetency(evidenceId, competencyId, confidence, notes);
   }
 }

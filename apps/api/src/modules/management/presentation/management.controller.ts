@@ -1,15 +1,15 @@
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
-import { z } from 'zod';
+import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
+import { z } from "zod";
 
-import { LoginSchema } from '@/modules/auth/application/dtos/auth.dto.js';
+import { LoginSchema } from "@/modules/auth/application/dtos/auth.dto.js";
 
 import type {
   InviteRecruiterUseCase,
   InviteAdminUseCase,
   AcceptInvitationUseCase,
-} from '@/modules/auth/application/use-cases/invitation.usecase.js';
-import type { ManagementLoginUseCase } from '@/modules/auth/application/use-cases/management-auth.usecase.js';
-import type { Request, Response, NextFunction } from 'express';
+} from "@/modules/auth/application/use-cases/invitation.usecase.js";
+import type { ManagementLoginUseCase } from "@/modules/auth/application/use-cases/management-auth.usecase.js";
+import type { Request, Response, NextFunction } from "express";
 
 export const AcceptInvitationSchema = z.object({
   token: z.string().min(1),
@@ -45,7 +45,7 @@ export class ManagementController {
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const dto = LoginSchema.parse(req.body);
-      const ipAddress = req.ip || '';
+      const ipAddress = req.ip || "";
       const result = await this.managementLoginUseCase.execute(dto, ipAddress);
       ResponseFormatter.success(res, result);
     } catch (error) {
@@ -68,7 +68,7 @@ export class ManagementController {
       const dto = InviteRecruiterSchema.parse(req.body);
       const invitedById = req.user?.id;
       if (invitedById === undefined) {
-        res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        res.status(401).json({ success: false, error: { message: "Unauthorized" } });
         return;
       }
 
@@ -88,7 +88,7 @@ export class ManagementController {
       const dto = InviteAdminSchema.parse(req.body);
       const invitedById = req.user?.id;
       if (invitedById === undefined) {
-        res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        res.status(401).json({ success: false, error: { message: "Unauthorized" } });
         return;
       }
 

@@ -1,11 +1,11 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { buildPaginationMeta, toPrismaPage } from '@/shared/response/ResponseFormatter.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { buildPaginationMeta, toPrismaPage } from "@/shared/response/ResponseFormatter.js";
 
-import type { IAssessmentRepository } from '../ports/IAssessmentRepository.js';
-import type { ExperienceLevel } from '@microintern/database';
-import type { PaginationMeta } from '@microintern/shared';
+import type { IAssessmentRepository } from "../ports/IAssessmentRepository.js";
+import type { ExperienceLevel } from "@microintern/database";
+import type { PaginationMeta } from "@microintern/shared";
 
-const log = createModuleLogger('ListPublicAssessmentsUseCase');
+const log = createModuleLogger("ListPublicAssessmentsUseCase");
 
 export class ListPublicAssessmentsUseCase {
   constructor(private readonly assessmentRepository: IAssessmentRepository) {}
@@ -19,7 +19,7 @@ export class ListPublicAssessmentsUseCase {
   }): Promise<{ assessments: Array<ReturnType<any>>; pagination: PaginationMeta }> {
     const page = query.page ?? 1;
     const limit = query.limit ?? 12;
-    log.info({ page, limit, query }, 'Listing open marketplace assessment assessments');
+    log.info({ page, limit, query }, "Listing open marketplace assessment assessments");
 
     const paginationInput = toPrismaPage(page, limit);
     const { assessments, total } = await this.assessmentRepository.listPublicAssessments({

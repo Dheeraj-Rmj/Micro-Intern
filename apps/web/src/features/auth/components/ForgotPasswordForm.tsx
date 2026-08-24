@@ -1,16 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { Loader2, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react';
-import { authService } from '../services/auth.service';
-import {
-  forgotPasswordSchema,
-  type ForgotPasswordFormData
-} from '../schemas';
+import { useState } from "react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, AlertCircle, CheckCircle2, ArrowLeft } from "lucide-react";
+import { authService } from "../services/auth.service";
+import { forgotPasswordSchema, type ForgotPasswordFormData } from "../schemas";
 
 export function ForgotPasswordForm() {
   const [isSuccess, setIsSuccess] = useState(false);
@@ -19,28 +16,23 @@ export function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: ''
-    }
+      email: "",
+    },
   });
 
   const forgotMutation = useMutation({
-    mutationFn: (data: ForgotPasswordFormData) =>
-      authService.forgotPassword(data.email),
+    mutationFn: (data: ForgotPasswordFormData) => authService.forgotPassword(data.email),
     onSuccess: () => {
       setApiError(null);
       setIsSuccess(true);
     },
     onError: (error: unknown) => {
-      let message = 'Failed to send reset email. Please try again.';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error
-      ) {
+      let message = "Failed to send reset email. Please try again.";
+      if (typeof error === "object" && error !== null && "response" in error) {
         const errObj = error as {
           response?: { data?: { message?: string } };
         };
@@ -49,7 +41,7 @@ export function ForgotPasswordForm() {
         }
       }
       setApiError(message);
-    }
+    },
   });
 
   const onSubmit = (data: ForgotPasswordFormData) => {
@@ -62,9 +54,7 @@ export function ForgotPasswordForm() {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
           <CheckCircle2 className="h-6 w-6" />
         </div>
-        <h3 className="mt-4 text-lg font-semibold text-white">
-          Check your email
-        </h3>
+        <h3 className="mt-4 text-lg font-semibold text-white">Check your email</h3>
         <p className="mt-2 text-sm text-slate-400">
           We have sent password reset instructions to your email address.
         </p>
@@ -101,14 +91,12 @@ export function ForgotPasswordForm() {
               id="email"
               type="email"
               placeholder="candidate@example.com"
-              {...register('email')}
+              {...register("email")}
               disabled={forgotMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
             {errors.email !== undefined && (
-              <p className="mt-1.5 text-xs font-medium text-red-400">
-                {errors.email.message}
-              </p>
+              <p className="mt-1.5 text-xs font-medium text-red-400">{errors.email.message}</p>
             )}
           </div>
         </div>

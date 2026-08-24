@@ -7,6 +7,6 @@ export class CompanyDepartment {
     public readonly budget: number,
     public readonly status: string,
     public readonly createdAt: Date,
-    public readonly updatedAt: Date
+    public readonly updatedAt: Date,
   ) {}
 }

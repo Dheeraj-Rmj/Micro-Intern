@@ -1,6 +1,6 @@
-import { AssessmentStatus } from '@microintern/database';
+import { AssessmentStatus } from "@microintern/database";
 
-import { Assessment } from '../../domain/entities/Assessment.entity.js';
+import { Assessment } from "../../domain/entities/Assessment.entity.js";
 
 import type {
   IAssessmentRepository,
@@ -10,19 +10,19 @@ import type {
   CompanyAssessmentsFilter,
   AssessmentVersionSummary,
   AssessmentAnalytics,
-} from '../../application/ports/IAssessmentRepository.js';
-import type { PrismaClient, Prisma, TaskType } from '@microintern/database';
+} from "../../application/ports/IAssessmentRepository.js";
+import type { PrismaClient, Prisma, TaskType } from "@microintern/database";
 
 export class PrismaAssessmentRepository implements IAssessmentRepository {
   constructor(private readonly db: PrismaClient) {}
 
   private readonly standardInclude = {
     tasks: {
-      orderBy: { sortOrder: 'asc' as const },
+      orderBy: { sortOrder: "asc" as const },
       include: { criteria: true },
     },
     sections: {
-      orderBy: { sortOrder: 'asc' as const },
+      orderBy: { sortOrder: "asc" as const },
     },
     deliverables: true,
     resources: true,
@@ -46,7 +46,8 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
   }
 
   async findByIdOrSlug(identifier: string): Promise<Assessment | null> {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(identifier);
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(identifier);
     if (isUuid) {
       const byId = await this.findById(identifier);
       if (byId) return byId;
@@ -253,7 +254,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
     versionNumber: number,
     snapshot: unknown,
     changeSummary: string,
-    createdBy: string
+    createdBy: string,
   ): Promise<void> {
     await this.db.assessmentVersion.create({
       data: {
@@ -269,7 +270,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
   async listVersions(assessmentId: string): Promise<AssessmentVersionSummary[]> {
     const records = await this.db.assessmentVersion.findMany({
       where: { assessmentId },
-      orderBy: { versionNumber: 'desc' },
+      orderBy: { versionNumber: "desc" },
       select: {
         id: true,
         versionNumber: true,
@@ -334,7 +335,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
 
     return await this.db.assessmentTemplate.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -360,7 +361,10 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
     };
   }
 
-  async listCompanyAssessments(companyId: string, filter: CompanyAssessmentsFilter): Promise<{ assessments: Assessment[]; total: number }> {
+  async listCompanyAssessments(
+    companyId: string,
+    filter: CompanyAssessmentsFilter,
+  ): Promise<{ assessments: Assessment[]; total: number }> {
     const where: Prisma.AssessmentWhereInput = {
       companyId,
       deletedAt: null,
@@ -373,7 +377,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
         where,
         skip: filter.skip,
         take: filter.take,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         include: this.standardInclude,
       }),
     ]);
@@ -384,7 +388,9 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
     };
   }
 
-  async listPublicAssessments(filter: PublicAssessmentsFilter): Promise<{ assessments: Assessment[]; total: number }> {
+  async listPublicAssessments(
+    filter: PublicAssessmentsFilter,
+  ): Promise<{ assessments: Assessment[]; total: number }> {
     const where: Prisma.AssessmentWhereInput = {
       status: AssessmentStatus.PUBLISHED,
       deletedAt: null,
@@ -393,8 +399,8 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
       ...(filter.search
         ? {
             OR: [
-              { title: { contains: filter.search, mode: 'insensitive' } },
-              { description: { contains: filter.search, mode: 'insensitive' } },
+              { title: { contains: filter.search, mode: "insensitive" } },
+              { description: { contains: filter.search, mode: "insensitive" } },
             ],
           }
         : {}),
@@ -406,7 +412,7 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
         where,
         skip: filter.skip,
         take: filter.take,
-        orderBy: { publishedAt: 'desc' },
+        orderBy: { publishedAt: "desc" },
         include: this.standardInclude,
       }),
     ]);

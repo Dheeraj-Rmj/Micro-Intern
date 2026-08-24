@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@microintern/database';
+import type { PrismaClient } from "@microintern/database";
 
 export class ReportingService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -48,7 +48,7 @@ export class ReportingService {
     const totalSkills = await this.prisma.skill.count();
     const totalCategories = await this.prisma.skillCategory.count();
     const verificationsGrouped = await this.prisma.skillVerificationRecord.groupBy({
-      by: ['status'],
+      by: ["status"],
       _count: { skillId: true },
     });
 
@@ -85,21 +85,21 @@ export class ReportingService {
 
   exportToCsv(rows: Record<string, unknown>[]): string {
     if (rows.length === 0) {
-      return '';
+      return "";
     }
     const headers = Object.keys(rows[0]!);
-    const lines = [headers.join(',')];
+    const lines = [headers.join(",")];
 
     for (const row of rows) {
       const values = headers.map((h) => {
         const val = row[h];
-        if (val === null || val === undefined) return '';
-        const stringVal = typeof val === 'object' ? JSON.stringify(val) : String(val);
+        if (val === null || val === undefined) return "";
+        const stringVal = typeof val === "object" ? JSON.stringify(val) : String(val);
         return `"${stringVal.replace(/"/g, '""')}"`;
       });
-      lines.push(values.join(','));
+      lines.push(values.join(","));
     }
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 }

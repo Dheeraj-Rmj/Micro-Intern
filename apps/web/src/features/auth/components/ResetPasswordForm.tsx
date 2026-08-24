@@ -1,20 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import {
-  Loader2,
-  Eye,
-  EyeOff,
-  AlertCircle,
-  CheckCircle2,
-  ArrowRight
-} from 'lucide-react';
-import { authService } from '../services/auth.service';
-import { resetPasswordSchema, type ResetPasswordFormData } from '../schemas';
+import { useState } from "react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
+import { authService } from "../services/auth.service";
+import { resetPasswordSchema, type ResetPasswordFormData } from "../schemas";
 
 interface ResetPasswordFormProps {
   token: string;
@@ -29,13 +22,13 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      password: '',
-      confirmPassword: ''
-    }
+      password: "",
+      confirmPassword: "",
+    },
   });
 
   const resetMutation = useMutation({
@@ -43,19 +36,15 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       authService.resetPassword({
         token,
         password: data.password,
-        confirmPassword: data.confirmPassword
+        confirmPassword: data.confirmPassword,
       }),
     onSuccess: () => {
       setApiError(null);
       setIsSuccess(true);
     },
     onError: (error: unknown) => {
-      let message = 'Failed to reset password. The token may be expired.';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error
-      ) {
+      let message = "Failed to reset password. The token may be expired.";
+      if (typeof error === "object" && error !== null && "response" in error) {
         const errObj = error as {
           response?: { data?: { message?: string } };
         };
@@ -64,7 +53,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         }
       }
       setApiError(message);
-    }
+    },
   });
 
   const onSubmit = (data: ResetPasswordFormData) => {
@@ -77,9 +66,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
           <CheckCircle2 className="h-6 w-6" />
         </div>
-        <h3 className="mt-4 text-lg font-semibold text-white">
-          Password updated
-        </h3>
+        <h3 className="mt-4 text-lg font-semibold text-white">Password updated</h3>
         <p className="mt-2 text-sm text-slate-400">
           Your candidate account password has been successfully changed.
         </p>
@@ -114,9 +101,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           <div className="relative mt-1.5">
             <input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              {...register('password')}
+              {...register("password")}
               disabled={resetMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 pr-11 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
@@ -125,17 +112,11 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-200"
             >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           {errors.password !== undefined && (
-            <p className="mt-1.5 text-xs font-medium text-red-400">
-              {errors.password.message}
-            </p>
+            <p className="mt-1.5 text-xs font-medium text-red-400">{errors.password.message}</p>
           )}
         </div>
 
@@ -149,9 +130,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           <div className="relative mt-1.5">
             <input
               id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="••••••••"
-              {...register('confirmPassword')}
+              {...register("confirmPassword")}
               disabled={resetMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 pr-11 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
@@ -160,11 +141,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-200"
             >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           {errors.confirmPassword !== undefined && (

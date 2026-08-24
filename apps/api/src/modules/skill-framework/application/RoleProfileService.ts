@@ -4,8 +4,13 @@ import type {
   AddRequiredSkillDTO,
   AddRequiredCompetencyDTO,
   AddHiringBenchmarkDTO,
-} from '../domain/IRoleProfileRepository.js';
-import type { RoleProfile, RequiredSkill, RequiredCompetency, HiringBenchmark } from '@microintern/database';
+} from "../domain/IRoleProfileRepository.js";
+import type {
+  RoleProfile,
+  RequiredSkill,
+  RequiredCompetency,
+  HiringBenchmark,
+} from "@microintern/database";
 
 export class RoleProfileService {
   constructor(private readonly roleProfileRepo: IRoleProfileRepository) {}
@@ -41,7 +46,7 @@ export class RoleProfileService {
   async evaluateCandidateAgainstProfile(
     roleProfileId: string,
     candidateSkillScores: Record<string, number>,
-    candidateCompetencyScores: Record<string, number>
+    candidateCompetencyScores: Record<string, number>,
   ): Promise<{
     roleProfileId: string;
     overallMatchPercentage: number;
@@ -82,7 +87,8 @@ export class RoleProfileService {
     const avgSkill = totalSkillWeight > 0 ? totalSkillWeightedScore / totalSkillWeight : 100;
     const avgComp = totalCompWeight > 0 ? totalCompWeightedScore / totalCompWeight : 100;
     const overallMatchPercentage = Math.round((avgSkill * 0.6 + avgComp * 0.4) * 10) / 10;
-    const passedMinimumThreshold = overallMatchPercentage >= profile.minimumOverallScore && skillGaps.length === 0;
+    const passedMinimumThreshold =
+      overallMatchPercentage >= profile.minimumOverallScore && skillGaps.length === 0;
 
     return {
       roleProfileId,

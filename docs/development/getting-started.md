@@ -6,13 +6,13 @@ Complete setup guide for MicroIntern development.
 
 ## 1. System Requirements
 
-| Tool | Version | Install |
-|------|---------|---------|
-| Node.js | 20.18.x | `nvm install` (uses `.nvmrc`) |
-| pnpm | 9.12.x | `corepack enable && corepack prepare` |
-| Docker | 24+ | [docker.com](https://www.docker.com/) |
-| Docker Compose | 2.x | Included with Docker Desktop |
-| Git | 2.40+ | Included on macOS |
+| Tool           | Version | Install                               |
+| -------------- | ------- | ------------------------------------- |
+| Node.js        | 20.18.x | `nvm install` (uses `.nvmrc`)         |
+| pnpm           | 9.12.x  | `corepack enable && corepack prepare` |
+| Docker         | 24+     | [docker.com](https://www.docker.com/) |
+| Docker Compose | 2.x     | Included with Docker Desktop          |
+| Git            | 2.40+   | Included on macOS                     |
 
 ---
 
@@ -82,6 +82,7 @@ docker compose ps
 ```
 
 Expected output:
+
 ```
 NAME                    STATUS              PORTS
 microintern_postgres    healthy             0.0.0.0:5432->5432/tcp
@@ -113,24 +114,24 @@ pnpm dev
 
 Services available at:
 
-| Service | URL |
-|---------|-----|
-| Web app | http://localhost:3000 |
-| API | http://localhost:3001 |
-| API Health | http://localhost:3001/health |
-| MinIO Console | http://localhost:9001 (admin/admin) |
-| MailHog | http://localhost:8025 |
+| Service       | URL                                      |
+| ------------- | ---------------------------------------- |
+| Web app       | http://localhost:3000                    |
+| API           | http://localhost:3001                    |
+| API Health    | http://localhost:3001/health             |
+| MinIO Console | http://localhost:9001 (admin/admin)      |
+| MailHog       | http://localhost:8025                    |
 | Prisma Studio | `pnpm db:studio` → http://localhost:5555 |
 
 ## 7. Seed Credentials
 
-| Role | Email | Password |
-|------|-------|----------|
-| Super Admin | superadmin@microintern.io | Password@123 |
-| Admin | admin@microintern.io | Password@123 |
-| Company Owner | owner@acme.com | Password@123 |
-| Recruiter | recruiter@acme.com | Password@123 |
-| Candidate | candidate@example.com | Password@123 |
+| Role          | Email                     | Password     |
+| ------------- | ------------------------- | ------------ |
+| Super Admin   | superadmin@microintern.io | Password@123 |
+| Admin         | admin@microintern.io      | Password@123 |
+| Company Owner | owner@acme.com            | Password@123 |
+| Recruiter     | recruiter@acme.com        | Password@123 |
+| Candidate     | candidate@example.com     | Password@123 |
 
 ## 8. Development Workflow
 

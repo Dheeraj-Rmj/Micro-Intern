@@ -1,39 +1,40 @@
+import { rateLimit } from "express-rate-limit";
+import { RedisStore } from "rate-limit-redis";
 
-import { rateLimit } from 'express-rate-limit';
-import { RedisStore } from 'rate-limit-redis';
+import { config } from "@/core/config.js";
+import { getRedisClient } from "@/core/redis.js";
+import { RateLimitError } from "@/shared/errors/index.js";
+import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
 
-import { config } from '@/core/config.js';
-import { getRedisClient } from '@/core/redis.js';
-import { RateLimitError } from '@/shared/errors/index.js';
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
+import type { Request, Response } from "express";
 
-import type { Request, Response } from 'express';
+type RateLimitContext = "global" | "auth" | "ai" | "upload";
 
+const isDev = config.NODE_ENV === "development";
 
-type RateLimitContext = 'global' | 'auth' | 'ai' | 'upload';
-
-const isDev = config.NODE_ENV === 'development';
-
-const rateLimitConfigs: Record<RateLimitContext, { windowMs: number; max: number; message: string }> = {
+const rateLimitConfigs: Record<
+  RateLimitContext,
+  { windowMs: number; max: number; message: string }
+> = {
   global: {
     windowMs: config.RATE_LIMIT_WINDOW_MS,
     max: isDev ? 10000 : config.RATE_LIMIT_MAX_REQUESTS,
-    message: 'Too many requests. Please slow down.',
+    message: "Too many requests. Please slow down.",
   },
   auth: {
     windowMs: config.RATE_LIMIT_WINDOW_MS,
     max: isDev ? 10000 : config.RATE_LIMIT_AUTH_MAX_REQUESTS,
-    message: 'Too many authentication attempts. Please wait before trying again.',
+    message: "Too many authentication attempts. Please wait before trying again.",
   },
   ai: {
     windowMs: 60_000,
     max: 20,
-    message: 'AI request limit exceeded. Please try again in a minute.',
+    message: "AI request limit exceeded. Please try again in a minute.",
   },
   upload: {
     windowMs: 60_000,
     max: 10,
-    message: 'Upload limit exceeded. Please wait before uploading again.',
+    message: "Upload limit exceeded. Please wait before uploading again.",
   },
 };
 
@@ -52,19 +53,18 @@ export function createRateLimitMiddleware(context: RateLimitContext) {
   return rateLimit({
     windowMs: contextConfig.windowMs,
     max: contextConfig.max,
-    standardHeaders: 'draft-7', // `RateLimit-*` headers per RFC 6585
+    standardHeaders: "draft-7", // `RateLimit-*` headers per RFC 6585
     legacyHeaders: false,
     keyGenerator: (req: Request): string => {
       // Use authenticated user ID if available, otherwise IP
       const userId = (req as Request & { user?: { id: string } }).user?.id;
-      const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+      const ip = req.ip ?? req.socket.remoteAddress ?? "unknown";
       return `rl:${context}:${userId ?? ip}`;
     },
     store: new RedisStore({
       sendCommand: async (...args: string[]) => {
- 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-        return (await getRedisClient().call(args[0] ?? '', ...args.slice(1))) as any;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+        return (await getRedisClient().call(args[0] ?? "", ...args.slice(1))) as any;
       },
     }),
     handler: (req: Request, res: Response) => {
@@ -77,7 +77,7 @@ export function createRateLimitMiddleware(context: RateLimitContext) {
     },
     skip: (req: Request): boolean => {
       // Skip rate limiting for health checks
-      return req.path === '/health' || req.path === '/health/ready';
+      return req.path === "/health" || req.path === "/health/ready";
     },
   });
 }
@@ -86,14 +86,14 @@ export function createRateLimitMiddleware(context: RateLimitContext) {
  * Stricter rate limiter for auth endpoints.
  * Applied per-route, not globally.
  */
-export const authRateLimiter = createRateLimitMiddleware('auth');
+export const authRateLimiter = createRateLimitMiddleware("auth");
 
 /**
  * Rate limiter for AI endpoints.
  */
-export const aiRateLimiter = createRateLimitMiddleware('ai');
+export const aiRateLimiter = createRateLimitMiddleware("ai");
 
 /**
  * Rate limiter for upload endpoints.
  */
-export const uploadRateLimiter = createRateLimitMiddleware('upload');
+export const uploadRateLimiter = createRateLimitMiddleware("upload");

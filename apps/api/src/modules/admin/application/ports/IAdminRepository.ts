@@ -1,4 +1,4 @@
-import type { PlatformStatsProps } from '../../domain/entities/PlatformStats.entity.js';
+import type { PlatformStatsProps } from "../../domain/entities/PlatformStats.entity.js";
 
 export interface UserSummary {
   id: string;
@@ -30,4 +30,3 @@ export interface IAdminRepository {
   getPaymentMetrics(): Promise<any>;
   getGlobalAnalytics(): Promise<any>;
 }
-

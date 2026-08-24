@@ -1,12 +1,11 @@
-import { UpdateCandidateGraphSchema } from '@microintern/shared';
+import { UpdateCandidateGraphSchema } from "@microintern/shared";
 
-import type { GetProfileUseCase } from '../application/use-cases/get-profile.usecase.js';
-import type { GetResumeUrlUseCase } from '../application/use-cases/get-resume-url.usecase.js';
-import type { UpdateProfileUseCase } from '../application/use-cases/update-profile.usecase.js';
-import type { UploadAvatarUseCase } from '../application/use-cases/upload-avatar.usecase.js';
-import type { UploadResumeUseCase } from '../application/use-cases/upload-resume.usecase.js';
-import type { Request, Response } from 'express';
-
+import type { GetProfileUseCase } from "../application/use-cases/get-profile.usecase.js";
+import type { GetResumeUrlUseCase } from "../application/use-cases/get-resume-url.usecase.js";
+import type { UpdateProfileUseCase } from "../application/use-cases/update-profile.usecase.js";
+import type { UploadAvatarUseCase } from "../application/use-cases/upload-avatar.usecase.js";
+import type { UploadResumeUseCase } from "../application/use-cases/upload-resume.usecase.js";
+import type { Request, Response } from "express";
 
 export class CandidateController {
   constructor(
@@ -14,7 +13,7 @@ export class CandidateController {
     private readonly updateProfileUseCase: UpdateProfileUseCase,
     private readonly uploadAvatarUseCase: UploadAvatarUseCase,
     private readonly uploadResumeUseCase: UploadResumeUseCase,
-    private readonly getResumeUrlUseCase: GetResumeUrlUseCase
+    private readonly getResumeUrlUseCase: GetResumeUrlUseCase,
   ) {}
 
   /**
@@ -53,7 +52,7 @@ export class CandidateController {
     const file = req.file;
 
     if (!file) {
-      res.status(400).json({ success: false, message: 'No file uploaded' });
+      res.status(400).json({ success: false, message: "No file uploaded" });
       return;
     }
 
@@ -73,7 +72,7 @@ export class CandidateController {
     const file = req.file;
 
     if (!file) {
-      res.status(400).json({ success: false, message: 'No file uploaded' });
+      res.status(400).json({ success: false, message: "No file uploaded" });
       return;
     }
 

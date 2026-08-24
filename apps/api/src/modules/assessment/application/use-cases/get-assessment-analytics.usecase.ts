@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { AssessmentNotFoundError } from '../../domain/errors/assessment.errors.js';
-import type { IAssessmentRepository, AssessmentAnalytics } from '../ports/IAssessmentRepository.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { AssessmentNotFoundError } from "../../domain/errors/assessment.errors.js";
+import type { IAssessmentRepository, AssessmentAnalytics } from "../ports/IAssessmentRepository.js";
 
-const log = createModuleLogger('GetAssessmentAnalyticsUseCase');
+const log = createModuleLogger("GetAssessmentAnalyticsUseCase");
 
 export class GetAssessmentAnalyticsUseCase {
   constructor(private readonly assessmentRepository: IAssessmentRepository) {}
@@ -13,7 +13,7 @@ export class GetAssessmentAnalyticsUseCase {
       throw new AssessmentNotFoundError(assessmentId);
     }
 
-    log.info({ assessmentId }, 'Fetching assessment analytics metrics');
+    log.info({ assessmentId }, "Fetching assessment analytics metrics");
     return await this.assessmentRepository.getAnalytics(assessmentId);
   }
 }

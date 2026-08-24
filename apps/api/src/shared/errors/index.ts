@@ -11,7 +11,7 @@ export {
   ServiceUnavailableError,
   isAppError,
   isOperationalError,
-} from './AppError.js';
+} from "./AppError.js";
 
 export {
   DomainError,
@@ -20,4 +20,4 @@ export {
   AuthDomainError,
   CandidateDomainError,
   CompanyDomainError,
-} from './DomainError.js';
+} from "./DomainError.js";

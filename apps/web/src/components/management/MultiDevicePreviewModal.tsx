@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Monitor,
   Tablet,
@@ -11,9 +11,9 @@ import {
   Sparkles,
   Clock,
   ShieldCheck,
-} from 'lucide-react';
+} from "lucide-react";
 
-export type PreviewDeviceMode = 'DESKTOP' | 'TABLET' | 'MOBILE' | 'REVIEWER';
+export type PreviewDeviceMode = "DESKTOP" | "TABLET" | "MOBILE" | "REVIEWER";
 
 interface MultiDevicePreviewModalProps {
   isOpen: boolean;
@@ -37,20 +37,20 @@ export function MultiDevicePreviewModal({
   onClose,
   assessment,
 }: MultiDevicePreviewModalProps) {
-  const [deviceMode, setDeviceMode] = useState<PreviewDeviceMode>('DESKTOP');
+  const [deviceMode, setDeviceMode] = useState<PreviewDeviceMode>("DESKTOP");
 
   if (!isOpen) return null;
 
   const getWidthClass = () => {
     switch (deviceMode) {
-      case 'MOBILE':
-        return 'max-w-[375px]';
-      case 'TABLET':
-        return 'max-w-[768px]';
-      case 'REVIEWER':
-      case 'DESKTOP':
+      case "MOBILE":
+        return "max-w-[375px]";
+      case "TABLET":
+        return "max-w-[768px]";
+      case "REVIEWER":
+      case "DESKTOP":
       default:
-        return 'max-w-[1100px]';
+        return "max-w-[1100px]";
     }
   };
 
@@ -70,11 +70,11 @@ export function MultiDevicePreviewModal({
           <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-800 border border-slate-700">
             <button
               type="button"
-              onClick={() => setDeviceMode('DESKTOP')}
+              onClick={() => setDeviceMode("DESKTOP")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                deviceMode === 'DESKTOP'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                deviceMode === "DESKTOP"
+                  ? "bg-indigo-600 text-white shadow-md"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               <Monitor className="w-3.5 h-3.5" />
@@ -83,11 +83,11 @@ export function MultiDevicePreviewModal({
 
             <button
               type="button"
-              onClick={() => setDeviceMode('TABLET')}
+              onClick={() => setDeviceMode("TABLET")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                deviceMode === 'TABLET'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                deviceMode === "TABLET"
+                  ? "bg-indigo-600 text-white shadow-md"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               <Tablet className="w-3.5 h-3.5" />
@@ -96,11 +96,11 @@ export function MultiDevicePreviewModal({
 
             <button
               type="button"
-              onClick={() => setDeviceMode('MOBILE')}
+              onClick={() => setDeviceMode("MOBILE")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                deviceMode === 'MOBILE'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                deviceMode === "MOBILE"
+                  ? "bg-indigo-600 text-white shadow-md"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               <Smartphone className="w-3.5 h-3.5" />
@@ -109,11 +109,11 @@ export function MultiDevicePreviewModal({
 
             <button
               type="button"
-              onClick={() => setDeviceMode('REVIEWER')}
+              onClick={() => setDeviceMode("REVIEWER")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                deviceMode === 'REVIEWER'
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
-                  : 'text-slate-400 hover:text-white'
+                deviceMode === "REVIEWER"
+                  ? "bg-purple-600 text-white shadow-md shadow-purple-600/30"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               <CheckSquare className="w-3.5 h-3.5" />
@@ -136,7 +136,7 @@ export function MultiDevicePreviewModal({
           <div
             className={`w-full ${getWidthClass()} transition-all duration-300 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden`}
           >
-            {deviceMode === 'REVIEWER' ? (
+            {deviceMode === "REVIEWER" ? (
               /* Reviewer Rubric Scoring Viewport */
               <div className="p-8 text-slate-100">
                 <div className="flex items-center justify-between pb-6 mb-6 border-b border-slate-800">
@@ -207,11 +207,13 @@ export function MultiDevicePreviewModal({
                     <span>Learning Outcomes & Core Competencies</span>
                   </h4>
                   <ul className="space-y-2 text-sm text-slate-300 list-disc pl-5">
-                    {(assessment.learningOutcomes || [
-                      'RESTful API Design & HTTP Status Code conventions',
-                      'Clean Architecture layer separation',
-                      'Database Schema Modeling & Indexing',
-                    ]).map((lo, i) => (
+                    {(
+                      assessment.learningOutcomes || [
+                        "RESTful API Design & HTTP Status Code conventions",
+                        "Clean Architecture layer separation",
+                        "Database Schema Modeling & Indexing",
+                      ]
+                    ).map((lo, i) => (
                       <li key={i}>{lo}</li>
                     ))}
                   </ul>

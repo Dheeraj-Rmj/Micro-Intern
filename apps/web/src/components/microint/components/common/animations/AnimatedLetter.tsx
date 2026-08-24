@@ -1,7 +1,7 @@
-'use client';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import React from 'react';
+"use client";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import React from "react";
 
 interface AnimatedLetterProps {
   text: string;
@@ -20,24 +20,20 @@ const CharSpan: React.FC<CharSpanProps> = ({ char, i, totalChars, scrollYProgres
   const opacity = useTransform(
     scrollYProgress,
     [charProgress - 0.1, charProgress + 0.05],
-    [0.2, 1]
+    [0.2, 1],
   );
 
-  return (
-    <motion.span style={{ opacity }}>
-      {char === ' ' ? '\u00A0' : char}
-    </motion.span>
-  );
+  return <motion.span style={{ opacity }}>{char === " " ? "\u00A0" : char}</motion.span>;
 };
 
-export const AnimatedLetter: React.FC<AnimatedLetterProps> = ({ text, className = '' }) => {
+export const AnimatedLetter: React.FC<AnimatedLetterProps> = ({ text, className = "" }) => {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
-    offset: ['start 0.8', 'end 0.2'],
+    offset: ["start 0.8", "end 0.2"],
   });
 
-  const characters = text.split('');
+  const characters = text.split("");
   const totalChars = characters.length;
 
   return (
@@ -54,4 +50,3 @@ export const AnimatedLetter: React.FC<AnimatedLetterProps> = ({ text, className 
     </p>
   );
 };
-

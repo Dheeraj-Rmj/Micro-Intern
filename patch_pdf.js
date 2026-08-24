@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = 'apps/web/src/components/microint/components/pages/ProfilePage.tsx';
-let content = fs.readFileSync(path, 'utf8');
+const fs = require("fs");
+const path = "apps/web/src/components/microint/components/pages/ProfilePage.tsx";
+let content = fs.readFileSync(path, "utf8");
 
 const newExtractionLogic = `          // Dynamic import of PDF.js from CDN to bypass package manager issues
           const loadPDFJS = async () => {
@@ -103,7 +103,7 @@ content = content.replace(
           setIsAnalyzingResume(false);
           setResumeName(file.name);
 
-          // Extract generic info from filename to simulate AI extraction`
+          // Extract generic info from filename to simulate AI extraction`,
 );
 
 const oldExtractionBlock = `          // Extract generic info from filename to simulate AI extraction
@@ -136,12 +136,12 @@ const oldExtractionBlock = `          // Extract generic info from filename to s
 content = content.replace(oldExtractionBlock, newExtractionLogic);
 
 // Add global declaration for pdfjsLib at the top
-if (!content.includes('interface Window {')) {
+if (!content.includes("interface Window {")) {
   content = content.replace(
     `import { AvatarCropper } from '../common/AvatarCropper';`,
-    `import { AvatarCropper } from '../common/AvatarCropper';\n\ndeclare global {\n  interface Window {\n    pdfjsLib: any;\n  }\n}`
+    `import { AvatarCropper } from '../common/AvatarCropper';\n\ndeclare global {\n  interface Window {\n    pdfjsLib: any;\n  }\n}`,
   );
 }
 
-fs.writeFileSync(path, content, 'utf8');
-console.log('Successfully patched ProfilePage.tsx for real PDF parsing');
+fs.writeFileSync(path, content, "utf8");
+console.log("Successfully patched ProfilePage.tsx for real PDF parsing");

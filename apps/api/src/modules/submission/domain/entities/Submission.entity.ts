@@ -1,9 +1,12 @@
-import { SubmissionStatus } from '@microintern/database';
+import { SubmissionStatus } from "@microintern/database";
 
-import { AssessmentExpiredError, SubmissionAlreadyCompletedError } from '../errors/submission.errors.js';
+import {
+  AssessmentExpiredError,
+  SubmissionAlreadyCompletedError,
+} from "../errors/submission.errors.js";
 
-import { Evaluation } from '../../../evaluation/domain/entities/Evaluation.entity.js';
-import { SubmissionAnswer } from './SubmissionAnswer.entity.js';
+import { Evaluation } from "../../../evaluation/domain/entities/Evaluation.entity.js";
+import { SubmissionAnswer } from "./SubmissionAnswer.entity.js";
 
 export class Submission {
   constructor(
@@ -23,7 +26,7 @@ export class Submission {
     public readonly updatedAt: Date,
     public readonly deletedAt: Date | null,
     public readonly answers?: SubmissionAnswer[],
-    public readonly evaluation?: Evaluation | null
+    public readonly evaluation?: Evaluation | null,
   ) {}
 
   /**
@@ -80,7 +83,7 @@ export class Submission {
       record.updatedAt,
       record.deletedAt ?? null,
       record.answers ? record.answers.map((a: any) => SubmissionAnswer.fromPrisma(a)) : undefined,
-      record.evaluation ? Evaluation.fromPrisma(record.evaluation) : null
+      record.evaluation ? Evaluation.fromPrisma(record.evaluation) : null,
     );
   }
 }

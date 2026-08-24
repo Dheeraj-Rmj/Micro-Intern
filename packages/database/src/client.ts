@@ -1,4 +1,4 @@
-import { PrismaClient } from './generated/client/index.js';
+import { PrismaClient } from "./generated/client/index.js";
 
 /**
  * PrismaClient singleton with connection pool configuration.
@@ -13,17 +13,17 @@ import { PrismaClient } from './generated/client/index.js';
  */
 
 const createPrismaClient = () => {
-  const isDevelopment = process.env['NODE_ENV'] === 'development';
+  const isDevelopment = process.env["NODE_ENV"] === "development";
 
   return new PrismaClient({
     log: isDevelopment
       ? [
-          { emit: 'event', level: 'query' },
-          { emit: 'event', level: 'error' },
-          { emit: 'event', level: 'warn' },
+          { emit: "event", level: "query" },
+          { emit: "event", level: "error" },
+          { emit: "event", level: "warn" },
         ]
-      : [{ emit: 'event', level: 'error' }],
-    errorFormat: isDevelopment ? 'pretty' : 'minimal',
+      : [{ emit: "event", level: "error" }],
+    errorFormat: isDevelopment ? "pretty" : "minimal",
   });
 };
 
@@ -33,7 +33,7 @@ const globalForPrisma = globalThis as unknown as {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env['NODE_ENV'] !== 'production') {
+if (process.env["NODE_ENV"] !== "production") {
   globalForPrisma.prisma = prisma;
 }
 
@@ -49,22 +49,22 @@ export async function disconnectDatabase(): Promise<void> {
  * Health check — verifies database connectivity.
  */
 export async function checkDatabaseHealth(): Promise<{
-  status: 'healthy' | 'unhealthy';
+  status: "healthy" | "unhealthy";
   latencyMs: number;
   error?: string;
 }> {
   const start = Date.now();
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return { status: 'healthy', latencyMs: Date.now() - start };
+    return { status: "healthy", latencyMs: Date.now() - start };
   } catch (error) {
     return {
-      status: 'unhealthy',
+      status: "unhealthy",
       latencyMs: Date.now() - start,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }
 
 export type { PrismaClient };
-export { Prisma } from './generated/client/index.js';
+export { Prisma } from "./generated/client/index.js";

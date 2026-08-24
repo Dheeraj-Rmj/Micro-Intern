@@ -1,17 +1,17 @@
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 
-import Handlebars from 'handlebars';
-import nodemailer from 'nodemailer';
+import Handlebars from "handlebars";
+import nodemailer from "nodemailer";
 
-import { config } from '@/core/config.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { config } from "@/core/config.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-import type { Transporter, SendMailOptions } from 'nodemailer';
+import type { Transporter, SendMailOptions } from "nodemailer";
 
-const log = createModuleLogger('EmailService');
+const log = createModuleLogger("EmailService");
 
-const TEMPLATES_DIR = join(__dirname, 'templates');
+const TEMPLATES_DIR = join(__dirname, "templates");
 
 /**
  * Email Service — Nodemailer with Handlebars templating.
@@ -57,7 +57,7 @@ export class EmailService {
     const html = await this.renderTemplate(options.templateId, options.variables);
 
     await this.send({
-      to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
+      to: Array.isArray(options.to) ? options.to.join(", ") : options.to,
       subject: options.subject,
       html,
       replyTo: options.replyTo,
@@ -84,12 +84,12 @@ export class EmailService {
     };
 
     try {
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const info = await this.transporter.sendMail(mailOptions);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      log.info({ messageId: info.messageId, to: options.to }, 'Email sent');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      log.info({ messageId: info.messageId, to: options.to }, "Email sent");
     } catch (error) {
-      log.error({ err: error, to: options.to }, 'Email send failed');
+      log.error({ err: error, to: options.to }, "Email send failed");
       throw error;
     }
   }
@@ -114,7 +114,7 @@ export class EmailService {
 
     if (template === undefined) {
       const templatePath = join(TEMPLATES_DIR, `${templateId}.hbs`);
-      const source = await readFile(templatePath, 'utf-8');
+      const source = await readFile(templatePath, "utf-8");
       template = Handlebars.compile(source);
       this.templateCache.set(templateId, template);
     }
@@ -123,7 +123,10 @@ export class EmailService {
   }
 
   private stripHtml(html: string): string {
-    return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    return html
+      .replace(/<[^>]*>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 }
 
@@ -131,7 +134,7 @@ export class EmailService {
 let emailService: EmailService | null = null;
 
 export function getEmailService(): EmailService {
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (emailService === null) {
     emailService = new EmailService();
   }

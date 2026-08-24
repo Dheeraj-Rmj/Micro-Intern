@@ -1,16 +1,16 @@
-import { PrismaClient, SkillVerificationStatus } from '@microintern/database';
-import type { SkillVerificationRecord } from '@microintern/database';
+import { PrismaClient, SkillVerificationStatus } from "@microintern/database";
+import type { SkillVerificationRecord } from "@microintern/database";
 import type {
   ISkillVerificationRepository,
   UpsertVerificationDTO,
-} from '../domain/ISkillVerificationRepository.js';
+} from "../domain/ISkillVerificationRepository.js";
 
 export class PrismaSkillVerificationRepository implements ISkillVerificationRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async findByCandidateAndSkill(
     candidateId: string,
-    skillId: string
+    skillId: string,
   ): Promise<SkillVerificationRecord | null> {
     return this.prisma.skillVerificationRecord.findUnique({
       where: {
@@ -27,7 +27,7 @@ export class PrismaSkillVerificationRepository implements ISkillVerificationRepo
 
   async listByCandidate(
     candidateId: string,
-    status?: SkillVerificationStatus
+    status?: SkillVerificationStatus,
   ): Promise<SkillVerificationRecord[]> {
     const where: any = { candidateId };
     if (status) {
@@ -35,7 +35,7 @@ export class PrismaSkillVerificationRepository implements ISkillVerificationRepo
     }
     return this.prisma.skillVerificationRecord.findMany({
       where,
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
       include: {
         skill: true,
       } as any,

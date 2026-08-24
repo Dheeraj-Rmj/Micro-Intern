@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { GetProfileUseCase } from '@/modules/candidate/application/use-cases/get-profile.usecase.js';
+import { GetProfileUseCase } from "@/modules/candidate/application/use-cases/get-profile.usecase.js";
 
-describe('GetProfileUseCase', () => {
+describe("GetProfileUseCase", () => {
   let useCase: GetProfileUseCase;
   let mockDb: any;
 
@@ -16,11 +16,11 @@ describe('GetProfileUseCase', () => {
     useCase = new GetProfileUseCase(mockDb);
   });
 
-  it('should return existing candidate profile with all normalized relations', async () => {
+  it("should return existing candidate profile with all normalized relations", async () => {
     const mockProfile = {
-      id: 'prof-123',
-      userId: 'user-123',
-      headline: 'Developer',
+      id: "prof-123",
+      userId: "user-123",
+      headline: "Developer",
       skills: [],
       educations: [],
       experiences: [],
@@ -31,20 +31,20 @@ describe('GetProfileUseCase', () => {
     };
     mockDb.candidateProfile.findUnique.mockResolvedValue(mockProfile);
 
-    const result = await useCase.execute('user-123');
+    const result = await useCase.execute("user-123");
     expect(result).toEqual(mockProfile);
     expect(mockDb.candidateProfile.findUnique).toHaveBeenCalledWith({
-      where: { userId: 'user-123' },
+      where: { userId: "user-123" },
       include: expect.any(Object),
     });
     expect(mockDb.candidateProfile.create).not.toHaveBeenCalled();
   });
 
-  it('should initialize a new empty candidate profile if one does not exist (lazy creation)', async () => {
+  it("should initialize a new empty candidate profile if one does not exist (lazy creation)", async () => {
     mockDb.candidateProfile.findUnique.mockResolvedValue(null);
     const newProfile = {
-      id: 'prof-new',
-      userId: 'user-123',
+      id: "prof-new",
+      userId: "user-123",
       skills: [],
       educations: [],
       experiences: [],
@@ -55,10 +55,10 @@ describe('GetProfileUseCase', () => {
     };
     mockDb.candidateProfile.create.mockResolvedValue(newProfile);
 
-    const result = await useCase.execute('user-123');
+    const result = await useCase.execute("user-123");
     expect(result).toEqual(newProfile);
     expect(mockDb.candidateProfile.create).toHaveBeenCalledWith({
-      data: { userId: 'user-123' },
+      data: { userId: "user-123" },
       include: {
         skills: true,
         educations: true,

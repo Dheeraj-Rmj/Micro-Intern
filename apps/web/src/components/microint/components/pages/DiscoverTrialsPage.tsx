@@ -1,8 +1,8 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
-import { Breadcrumbs } from '../common/Breadcrumbs';
-import { Trial } from '../../types';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
+import { Breadcrumbs } from "../common/Breadcrumbs";
+import { Trial } from "../../types";
 import {
   Search,
   Bookmark,
@@ -15,7 +15,7 @@ import {
   Sparkles,
   ArrowRight,
   ChevronRight,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const DiscoverTrialsPage: React.FC = () => {
   const {
@@ -28,12 +28,20 @@ export const DiscoverTrialsPage: React.FC = () => {
     setSearchQuery,
   } = useApp();
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [activeModalTrial, setActiveModalTrial] = useState<Trial | null>(null);
 
-  const categories = ['All', 'Frontend', 'AI / ML', 'Backend', 'UI/UX Design', 'Full Stack', 'DevOps'];
-  const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+  const categories = [
+    "All",
+    "Frontend",
+    "AI / ML",
+    "Backend",
+    "UI/UX Design",
+    "Full Stack",
+    "DevOps",
+  ];
+  const difficulties = ["All", "Beginner", "Intermediate", "Advanced"];
 
   const filteredTrials = trials.filter((t) => {
     const matchesSearch =
@@ -41,8 +49,8 @@ export const DiscoverTrialsPage: React.FC = () => {
       t.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.skillsRequired.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const matchesCategory = selectedCategory === 'All' || t.category === selectedCategory;
-    const matchesDifficulty = selectedDifficulty === 'All' || t.difficulty === selectedDifficulty;
+    const matchesCategory = selectedCategory === "All" || t.category === selectedCategory;
+    const matchesDifficulty = selectedDifficulty === "All" || t.difficulty === selectedDifficulty;
 
     return matchesSearch && matchesCategory && matchesDifficulty;
   });
@@ -76,7 +84,7 @@ export const DiscoverTrialsPage: React.FC = () => {
           />
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => setSearchQuery("")}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white cursor-pointer"
             >
               <X className="w-4 h-4" />
@@ -92,8 +100,8 @@ export const DiscoverTrialsPage: React.FC = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-                  : 'bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10'
+                  ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+                  : "bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10"
               }`}
             >
               {cat}
@@ -108,15 +116,18 @@ export const DiscoverTrialsPage: React.FC = () => {
           <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 text-black dark:text-white flex items-center justify-center mx-auto mb-6">
             <Search className="w-6 h-6" />
           </div>
-          <h3 className="text-2xl tracking-tight text-black dark:text-white font-serif">No matching trials</h3>
+          <h3 className="text-2xl tracking-tight text-black dark:text-white font-serif">
+            No matching trials
+          </h3>
           <p className="text-sm text-black/50 dark:text-white/60 max-w-sm mx-auto mt-2 leading-relaxed">
-            We could not find any skill trials matching your search or filters. Try resetting your query.
+            We could not find any skill trials matching your search or filters. Try resetting your
+            query.
           </p>
           <button
             onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('All');
-              setSelectedDifficulty('All');
+              setSearchQuery("");
+              setSelectedCategory("All");
+              setSelectedDifficulty("All");
             }}
             className="mt-8 px-6 py-3 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm shadow-sm transition-transform hover:scale-105 cursor-pointer inline-flex items-center gap-2"
           >
@@ -142,8 +153,8 @@ export const DiscoverTrialsPage: React.FC = () => {
                       onClick={() => toggleBookmark(trial.id)}
                       className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                         isBookmarked
-                          ? 'bg-[#111111] dark:bg-white text-white dark:text-black'
-                          : 'bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white'
+                          ? "bg-[#111111] dark:bg-white text-white dark:text-black"
+                          : "bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"
                       }`}
                     >
                       <Bookmark className="w-4 h-4 fill-current" />
@@ -199,7 +210,10 @@ export const DiscoverTrialsPage: React.FC = () => {
       {/* Trial Brief Modal */}
       {activeModalTrial && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setActiveModalTrial(null)} />
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setActiveModalTrial(null)}
+          />
           <div className="bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[40px] max-w-2xl w-full p-8 sm:p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto z-10 text-black dark:text-white">
             <button
               onClick={() => setActiveModalTrial(null)}
@@ -229,7 +243,9 @@ export const DiscoverTrialsPage: React.FC = () => {
                 <span className="text-[10px] font-bold text-black/40 dark:text-white/50 uppercase tracking-widest block mb-1">
                   Time Commitment
                 </span>
-                <span className="text-xl font-bold text-black dark:text-white">{activeModalTrial.duration}</span>
+                <span className="text-xl font-bold text-black dark:text-white">
+                  {activeModalTrial.duration}
+                </span>
               </div>
             </div>
 
@@ -239,11 +255,14 @@ export const DiscoverTrialsPage: React.FC = () => {
               </h4>
               <ul className="space-y-2">
                 {[
-                  'Clean, documented source code or design files',
-                  'Brief 2-minute walkthrough recording of solution',
-                  'Test cases or verification checklist',
+                  "Clean, documented source code or design files",
+                  "Brief 2-minute walkthrough recording of solution",
+                  "Test cases or verification checklist",
                 ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-black/80 dark:text-white/80">
+                  <li
+                    key={i}
+                    className="flex items-center gap-3 text-sm text-black/80 dark:text-white/80"
+                  >
                     <CheckCircle2 className="w-5 h-5 text-black dark:text-white shrink-0" />
                     <span>{item}</span>
                   </li>
@@ -263,7 +282,7 @@ export const DiscoverTrialsPage: React.FC = () => {
                   applyForTrial(activeModalTrial.id);
                   setActiveWorkspaceTrial(activeModalTrial);
                   setActiveModalTrial(null);
-                  setCurrentRoute('workspace');
+                  setCurrentRoute("workspace");
                 }}
                 className="px-8 py-3 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black text-sm font-bold shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center gap-2"
               >

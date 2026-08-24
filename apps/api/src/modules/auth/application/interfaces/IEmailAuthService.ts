@@ -23,10 +23,7 @@ export interface IEmailAuthService {
     resetToken: string;
   }): Promise<void>;
 
-  sendPasswordChangedEmail(data: {
-    email: string;
-    firstName: string;
-  }): Promise<void>;
+  sendPasswordChangedEmail(data: { email: string; firstName: string }): Promise<void>;
 
   sendInvitationEmail(data: {
     email: string;

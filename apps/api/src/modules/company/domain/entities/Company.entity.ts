@@ -1,4 +1,4 @@
-import { EntityStatus } from '@microintern/shared';
+import { EntityStatus } from "@microintern/shared";
 
 /**
  * Company Domain Entity.
@@ -28,10 +28,7 @@ export class Company {
    * Check if company account is currently active or pending verification.
    */
   isActiveOrPending(): boolean {
-    return (
-      this.status === EntityStatus.ACTIVE ||
-      this.status === EntityStatus.PENDING_VERIFICATION
-    );
+    return this.status === EntityStatus.ACTIVE || this.status === EntityStatus.PENDING_VERIFICATION;
   }
 
   /**

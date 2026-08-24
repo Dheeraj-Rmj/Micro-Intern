@@ -1,19 +1,23 @@
-import { config, aiFallbackProviders } from '@/core/config.js';
+import { config, aiFallbackProviders } from "@/core/config.js";
 
-import { AIFallbackEngine } from './AIFallbackEngine.js';
-import { AISafetyLayer } from './AISafetyLayer.js';
-import { GeminiProvider } from './providers/GeminiProvider.js';
-import { GroqProvider } from './providers/GroqProvider.js';
-import { OllamaProvider } from './providers/OllamaProvider.js';
-import { OpenRouterProvider } from './providers/OpenRouterProvider.js';
+import { AIFallbackEngine } from "./AIFallbackEngine.js";
+import { AISafetyLayer } from "./AISafetyLayer.js";
+import { GeminiProvider } from "./providers/GeminiProvider.js";
+import { GroqProvider } from "./providers/GroqProvider.js";
+import { OllamaProvider } from "./providers/OllamaProvider.js";
+import { OpenRouterProvider } from "./providers/OpenRouterProvider.js";
 
-import type { IAIProvider } from './interfaces/IAIProvider.js';
+import type { IAIProvider } from "./interfaces/IAIProvider.js";
 
-export { AIFallbackEngine } from './AIFallbackEngine.js';
-export { AISafetyLayer } from './AISafetyLayer.js';
-export { compilePrompt, PROMPTS } from './PromptManager.js';
-export type { CompiledPrompt, PromptTemplate } from './PromptManager.js';
-export type { IAIProvider, AICompletionRequest, AICompletionResponse } from './interfaces/IAIProvider.js';
+export { AIFallbackEngine } from "./AIFallbackEngine.js";
+export { AISafetyLayer } from "./AISafetyLayer.js";
+export { compilePrompt, PROMPTS } from "./PromptManager.js";
+export type { CompiledPrompt, PromptTemplate } from "./PromptManager.js";
+export type {
+  IAIProvider,
+  AICompletionRequest,
+  AICompletionResponse,
+} from "./interfaces/IAIProvider.js";
 
 /**
  * AI Gateway singleton factory.
@@ -74,7 +78,7 @@ export function getAIGateway(): AIFallbackEngine {
 }
 
 export function getAISafetyLayer(): AISafetyLayer {
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (safetyInstance === null) {
     safetyInstance = new AISafetyLayer();
   }

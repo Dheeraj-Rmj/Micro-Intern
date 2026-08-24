@@ -1,10 +1,15 @@
-import { PrismaClient, EvidenceVerificationStatus } from '@microintern/database';
-import type { Evidence, EvidenceSkillMapping, EvidenceCompetencyMapping, EvidenceType } from '@microintern/database';
+import { PrismaClient, EvidenceVerificationStatus } from "@microintern/database";
+import type {
+  Evidence,
+  EvidenceSkillMapping,
+  EvidenceCompetencyMapping,
+  EvidenceType,
+} from "@microintern/database";
 import type {
   IEvidenceRepository,
   CreateEvidenceDTO,
   VerifyEvidenceDTO,
-} from '../domain/IEvidenceRepository.js';
+} from "../domain/IEvidenceRepository.js";
 
 export class PrismaEvidenceRepository implements IEvidenceRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -21,7 +26,7 @@ export class PrismaEvidenceRepository implements IEvidenceRepository {
 
   async listByCandidate(
     candidateId: string,
-    options?: { type?: EvidenceType; status?: EvidenceVerificationStatus }
+    options?: { type?: EvidenceType; status?: EvidenceVerificationStatus },
   ): Promise<Evidence[]> {
     const where: any = {
       candidateId,
@@ -36,7 +41,7 @@ export class PrismaEvidenceRepository implements IEvidenceRepository {
 
     return this.prisma.evidence.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         linkedSkills: { include: { skill: true } },
         linkedCompetencies: { include: { competency: true } },
@@ -50,7 +55,7 @@ export class PrismaEvidenceRepository implements IEvidenceRepository {
         submissionId,
         deletedAt: null,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         linkedSkills: { include: { skill: true } },
         linkedCompetencies: { include: { competency: true } },
@@ -118,7 +123,7 @@ export class PrismaEvidenceRepository implements IEvidenceRepository {
     evidenceId: string,
     skillId: string,
     confidence?: number,
-    notes?: string
+    notes?: string,
   ): Promise<EvidenceSkillMapping> {
     return this.prisma.evidenceSkillMapping.upsert({
       where: {
@@ -144,7 +149,7 @@ export class PrismaEvidenceRepository implements IEvidenceRepository {
     evidenceId: string,
     competencyId: string,
     confidence?: number,
-    notes?: string
+    notes?: string,
   ): Promise<EvidenceCompetencyMapping> {
     return this.prisma.evidenceCompetencyMapping.upsert({
       where: {

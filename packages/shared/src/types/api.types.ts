@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Standard API success response envelope.
@@ -100,7 +100,7 @@ export type AuthenticatedUser = {
  * JWT payload structure.
  */
 export type JwtAccessPayload = {
-  sub: string;       // userId
+  sub: string; // userId
   email: string;
   role: string;
   companyId: string | null;
@@ -112,7 +112,7 @@ export type JwtAccessPayload = {
 };
 
 export type JwtRefreshPayload = {
-  sub: string;       // userId
+  sub: string; // userId
   sessionId: string;
   iat: number;
   exp: number;
@@ -126,7 +126,7 @@ export type JwtRefreshPayload = {
 export type DeviceSession = {
   id: string;
   userId: string;
-  deviceType: 'desktop' | 'mobile' | 'tablet' | 'unknown';
+  deviceType: "desktop" | "mobile" | "tablet" | "unknown";
   browser: string;
   os: string;
   ipAddress: string;
@@ -138,8 +138,8 @@ export type DeviceSession = {
   isCurrent: boolean;
   isActive: boolean;
   lastActiveAt: string; // ISO 8601 string
-  createdAt: string;    // ISO 8601 string
-  expiresAt: string;    // ISO 8601 string
+  createdAt: string; // ISO 8601 string
+  expiresAt: string; // ISO 8601 string
   revokedAt: string | null;
 };
 
@@ -153,9 +153,9 @@ export type RevokeSessionResult = {
 /**
  * Zod schema for UUID validation — used across all route parameters.
  */
-export const UuidSchema = z.string().uuid({ message: 'Invalid UUID format' });
+export const UuidSchema = z.string().uuid({ message: "Invalid UUID format" });
 
 /**
  * Zod schema for ISO 8601 date strings.
  */
-export const IsoDateSchema = z.string().datetime({ message: 'Invalid ISO 8601 date' });
+export const IsoDateSchema = z.string().datetime({ message: "Invalid ISO 8601 date" });

@@ -1,22 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import {
-  Award,
-  Plus,
-  Trash2,
-  CheckCircle2,
-  AlertTriangle,
-  BarChart3,
-  Sliders,
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Award, Plus, Trash2, CheckCircle2, AlertTriangle, BarChart3, Sliders } from "lucide-react";
 
 export interface CompetencyItem {
   id?: string;
   name: string;
   category: string;
   weight: number;
-  importance: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  importance: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 }
 
 interface CompetencyMatrixBuilderProps {
@@ -25,13 +17,13 @@ interface CompetencyMatrixBuilderProps {
   onUpdate?: (competencies: CompetencyItem[], totalWeight: number) => void;
 }
 
-const DEFAULT_CATEGORIES = ['Core', 'Architecture', 'Engineering', 'Collaboration', 'Leadership'];
+const DEFAULT_CATEGORIES = ["Core", "Architecture", "Engineering", "Collaboration", "Leadership"];
 
 const PRESET_COMPETENCIES: CompetencyItem[] = [
-  { name: 'Problem Solving', category: 'Core', weight: 30, importance: 'HIGH' },
-  { name: 'System Design', category: 'Architecture', weight: 25, importance: 'CRITICAL' },
-  { name: 'Code Quality', category: 'Engineering', weight: 25, importance: 'HIGH' },
-  { name: 'Communication', category: 'Collaboration', weight: 20, importance: 'MEDIUM' },
+  { name: "Problem Solving", category: "Core", weight: 30, importance: "HIGH" },
+  { name: "System Design", category: "Architecture", weight: 25, importance: "CRITICAL" },
+  { name: "Code Quality", category: "Engineering", weight: 25, importance: "HIGH" },
+  { name: "Communication", category: "Collaboration", weight: 20, importance: "MEDIUM" },
 ];
 
 export function CompetencyMatrixBuilder({
@@ -40,12 +32,16 @@ export function CompetencyMatrixBuilder({
   onUpdate,
 }: CompetencyMatrixBuilderProps) {
   const [competencies, setCompetencies] = useState<CompetencyItem[]>(
-    initialCompetencies && initialCompetencies.length > 0 ? initialCompetencies : PRESET_COMPETENCIES,
+    initialCompetencies && initialCompetencies.length > 0
+      ? initialCompetencies
+      : PRESET_COMPETENCIES,
   );
-  const [newCompetencyName, setNewCompetencyName] = useState('');
-  const [newCategory, setNewCategory] = useState('Core');
+  const [newCompetencyName, setNewCompetencyName] = useState("");
+  const [newCategory, setNewCategory] = useState("Core");
   const [newWeight, setNewWeight] = useState<number>(10);
-  const [newImportance, setNewImportance] = useState<'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'>('MEDIUM');
+  const [newImportance, setNewImportance] = useState<"LOW" | "MEDIUM" | "HIGH" | "CRITICAL">(
+    "MEDIUM",
+  );
 
   const totalWeight = competencies.reduce((acc, c) => acc + (c.weight || 0), 0);
   const isValidWeight = Math.abs(totalWeight - 100) < 0.5 || totalWeight === 0;
@@ -68,7 +64,7 @@ export function CompetencyMatrixBuilder({
       },
     ];
     setCompetencies(updated);
-    setNewCompetencyName('');
+    setNewCompetencyName("");
     setNewWeight(10);
   };
 
@@ -101,8 +97,8 @@ export function CompetencyMatrixBuilder({
         <div
           className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold ${
             isValidWeight
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+              : "bg-amber-500/10 border-amber-500/30 text-amber-400"
           }`}
         >
           {isValidWeight ? (
@@ -133,11 +129,11 @@ export function CompetencyMatrixBuilder({
                 <div className="flex items-center gap-2 mt-1">
                   <span
                     className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded ${
-                      comp.importance === 'CRITICAL'
-                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                        : comp.importance === 'HIGH'
-                        ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                        : 'bg-slate-700/60 text-slate-300'
+                      comp.importance === "CRITICAL"
+                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                        : comp.importance === "HIGH"
+                          ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                          : "bg-slate-700/60 text-slate-300"
                     }`}
                   >
                     {comp.importance} importance

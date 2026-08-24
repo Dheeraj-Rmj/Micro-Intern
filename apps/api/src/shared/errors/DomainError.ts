@@ -1,6 +1,6 @@
-import { AppError } from './AppError.js';
+import { AppError } from "./AppError.js";
 
-import type { ErrorCode } from '@microintern/shared';
+import type { ErrorCode } from "@microintern/shared";
 
 /**
  * Domain errors — thrown from domain layer entities and value objects.
@@ -43,30 +43,30 @@ export class DomainError extends AppError {
 
 export class AssessmentDomainError extends DomainError {
   constructor(code: ErrorCode, message: string) {
-    super({ code, message, domain: 'Assessment' });
+    super({ code, message, domain: "Assessment" });
   }
 }
 
 export class EvaluationDomainError extends DomainError {
   constructor(code: ErrorCode, message: string) {
-    super({ code, message, domain: 'Evaluation' });
+    super({ code, message, domain: "Evaluation" });
   }
 }
 
 export class AuthDomainError extends DomainError {
   constructor(code: ErrorCode, message: string) {
-    super({ code, message, domain: 'Auth' });
+    super({ code, message, domain: "Auth" });
   }
 }
 
 export class CandidateDomainError extends DomainError {
   constructor(code: ErrorCode, message: string) {
-    super({ code, message, domain: 'Candidate' });
+    super({ code, message, domain: "Candidate" });
   }
 }
 
 export class CompanyDomainError extends DomainError {
   constructor(code: ErrorCode, message: string) {
-    super({ code, message, domain: 'Company' });
+    super({ code, message, domain: "Company" });
   }
 }

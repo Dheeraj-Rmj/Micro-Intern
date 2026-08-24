@@ -1,6 +1,6 @@
-import type { SkillFrameworkService } from '../application/SkillFrameworkService.js';
-import type { Request, Response, NextFunction } from 'express';
-import { SkillRelationshipType } from '@microintern/database';
+import type { SkillFrameworkService } from "../application/SkillFrameworkService.js";
+import type { Request, Response, NextFunction } from "express";
+import { SkillRelationshipType } from "@microintern/database";
 
 export class SkillController {
   constructor(private readonly skillService: SkillFrameworkService) {}
@@ -16,7 +16,7 @@ export class SkillController {
 
   getSkill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const skill = await this.skillService.getSkill(req.params['id'] as string);
+      const skill = await this.skillService.getSkill(req.params["id"] as string);
       res.status(200).json({ success: true, data: skill });
     } catch (err) {
       next(err);
@@ -25,8 +25,10 @@ export class SkillController {
 
   listSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const categoryId = req.query['categoryId'] as string | undefined;
-      const minDifficulty = req.query['minDifficulty'] ? Number(req.query['minDifficulty']) : undefined;
+      const categoryId = req.query["categoryId"] as string | undefined;
+      const minDifficulty = req.query["minDifficulty"]
+        ? Number(req.query["minDifficulty"])
+        : undefined;
       const skills = await this.skillService.listSkills({ categoryId, minDifficulty });
       res.status(200).json({ success: true, data: skills });
     } catch (err) {
@@ -55,7 +57,7 @@ export class SkillController {
 
   getSkillGraph = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const graph = await this.skillService.getSkillGraph(req.params['id'] as string);
+      const graph = await this.skillService.getSkillGraph(req.params["id"] as string);
       res.status(200).json({ success: true, data: graph });
     } catch (err) {
       next(err);

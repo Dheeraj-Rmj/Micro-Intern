@@ -1,9 +1,9 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { AssessmentNotFoundError } from '../../domain/errors/assessment.errors.js';
-import type { Assessment } from '../../domain/entities/Assessment.entity.js';
-import type { IAssessmentRepository } from '../ports/IAssessmentRepository.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { AssessmentNotFoundError } from "../../domain/errors/assessment.errors.js";
+import type { Assessment } from "../../domain/entities/Assessment.entity.js";
+import type { IAssessmentRepository } from "../ports/IAssessmentRepository.js";
 
-const log = createModuleLogger('DuplicateAssessmentUseCase');
+const log = createModuleLogger("DuplicateAssessmentUseCase");
 
 export class DuplicateAssessmentUseCase {
   constructor(private readonly assessmentRepository: IAssessmentRepository) {}
@@ -15,9 +15,13 @@ export class DuplicateAssessmentUseCase {
     }
 
     const newSlug = `${existing.slug}-copy-${Date.now().toString(36)}`;
-    log.info({ assessmentId, recruiterId, newSlug }, 'Duplicating assessment');
+    log.info({ assessmentId, recruiterId, newSlug }, "Duplicating assessment");
 
-    const duplicated = await this.assessmentRepository.duplicate(assessmentId, newSlug, recruiterId);
+    const duplicated = await this.assessmentRepository.duplicate(
+      assessmentId,
+      newSlug,
+      recruiterId,
+    );
 
     // Create initial version snapshot for the duplicate
     await this.assessmentRepository.createVersion(
@@ -25,7 +29,7 @@ export class DuplicateAssessmentUseCase {
       1,
       duplicated,
       `Duplicated from assessment ${existing.title}`,
-      recruiterId
+      recruiterId,
     );
 
     return duplicated;

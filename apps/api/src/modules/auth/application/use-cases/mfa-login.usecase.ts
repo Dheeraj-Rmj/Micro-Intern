@@ -1,14 +1,14 @@
-import { authenticator } from 'otplib';
-import { createModuleLogger } from '@/core/logger.js';
-import { UnauthorizedError, AuthDomainError } from '@/shared/errors/index.js';
+import { authenticator } from "otplib";
+import { createModuleLogger } from "@/core/logger.js";
+import { UnauthorizedError, AuthDomainError } from "@/shared/errors/index.js";
 
-import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
-import type { IJwtService } from '../interfaces/IJwtService.js';
-import type { ISessionService } from '../interfaces/ISessionService.js';
-import type { ParsedDeviceInfo } from '@/shared/utils/device-parser.js';
-import type { LoginResponse } from '../dtos/auth.dto.js';
+import type { IUserRepository } from "../../domain/repositories/IUserRepository.js";
+import type { IJwtService } from "../interfaces/IJwtService.js";
+import type { ISessionService } from "../interfaces/ISessionService.js";
+import type { ParsedDeviceInfo } from "@/shared/utils/device-parser.js";
+import type { LoginResponse } from "../dtos/auth.dto.js";
 
-const log = createModuleLogger('MfaLoginUseCase');
+const log = createModuleLogger("MfaLoginUseCase");
 
 export class MfaLoginUseCase {
   constructor(
@@ -27,26 +27,26 @@ export class MfaLoginUseCase {
 
     // 2. Fetch User
     const user = await this.userRepository.findById(userId);
-    if (!user) throw new UnauthorizedError('User not found');
+    if (!user) throw new UnauthorizedError("User not found");
     if (!user.mfaEnabled || !user.totpSecret) {
-      throw new UnauthorizedError('MFA is not fully setup on this account');
+      throw new UnauthorizedError("MFA is not fully setup on this account");
     }
 
     // 3. Verify the 6-digit TOTP code
     const isValid = authenticator.verify({ token: code, secret: user.totpSecret });
     if (!isValid) {
       await this.userRepository.incrementLoginAttempts(user.id);
-      throw new UnauthorizedError('Invalid TOTP token', 'AUTH_MFA_TOKEN_INVALID');
+      throw new UnauthorizedError("Invalid TOTP token", "AUTH_MFA_TOKEN_INVALID");
     }
 
     // 4. Finalize login
     await this.userRepository.resetLoginAttempts(user.id);
-    await this.userRepository.updateLastLogin(user.id, metadata?.ipAddress ?? '');
+    await this.userRepository.updateLastLogin(user.id, metadata?.ipAddress ?? "");
 
     const sessionId = await this.sessionService.createSession(user.id, metadata);
     const tokens = await this.jwtService.generateTokenPair(user, sessionId);
 
-    log.info({ userId: user.id, sessionId }, 'MFA Login successful');
+    log.info({ userId: user.id, sessionId }, "MFA Login successful");
 
     return {
       user: {

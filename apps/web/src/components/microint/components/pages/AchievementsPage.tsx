@@ -1,7 +1,7 @@
-'use client';
-import React from 'react';
-import { useApp } from '../../context/AppContext';
-import { Breadcrumbs } from '../common/Breadcrumbs';
+"use client";
+import React from "react";
+import { useApp } from "../../context/AppContext";
+import { Breadcrumbs } from "../common/Breadcrumbs";
 import {
   Award,
   ShieldCheck,
@@ -11,15 +11,19 @@ import {
   CheckCircle2,
   Download,
   ExternalLink,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const AchievementsPage: React.FC = () => {
   const { achievements, userProfile, trials, showToast } = useApp();
 
-  const completedTrials = trials.filter((t) => t.status === 'completed');
+  const completedTrials = trials.filter((t) => t.status === "completed");
 
   const handleDownloadCertificate = (certName: string) => {
-    showToast('Certificate Downloaded', `Generated PDF badge certificate for "${certName}".`, 'success');
+    showToast(
+      "Certificate Downloaded",
+      `Generated PDF badge certificate for "${certName}".`,
+      "success",
+    );
   };
 
   return (
@@ -38,11 +42,15 @@ export const AchievementsPage: React.FC = () => {
               <span>Verified Proof-of-Talent</span>
             </div>
             <h1 className="text-4xl sm:text-6xl font-serif tracking-tight text-black dark:text-white">
-              Trust Score: <span className="font-semibold text-black dark:text-white">{userProfile.trustScore}</span>{' '}
+              Trust Score:{" "}
+              <span className="font-semibold text-black dark:text-white">
+                {userProfile.trustScore}
+              </span>{" "}
               <span className="text-2xl text-black/40 dark:text-white/40">/ 100</span>
             </h1>
             <p className="mt-4 text-sm text-black/60 dark:text-white/70 font-medium max-w-xl leading-relaxed">
-              Calculated from passed test cases, verified GitHub repo connection, and completed trial deliverables.
+              Calculated from passed test cases, verified GitHub repo connection, and completed
+              trial deliverables.
             </p>
           </div>
 
@@ -50,7 +58,9 @@ export const AchievementsPage: React.FC = () => {
             <p className="text-[10px] uppercase tracking-widest font-bold text-black/40 dark:text-white/50">
               Percentile Rank
             </p>
-            <p className="text-4xl font-serif tracking-tight text-black dark:text-white mt-2">Top 5%</p>
+            <p className="text-4xl font-serif tracking-tight text-black dark:text-white mt-2">
+              Top 5%
+            </p>
             <p className="text-[11px] font-bold text-black dark:text-white uppercase tracking-widest mt-2">
               Candidate Ecosystem
             </p>
@@ -68,9 +78,12 @@ export const AchievementsPage: React.FC = () => {
         {achievements.length === 0 ? (
           <div className="py-24 px-6 text-center rounded-[40px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
             <Sparkles className="w-10 h-10 text-black dark:text-white mx-auto mb-4" />
-            <h3 className="text-2xl font-serif tracking-tight text-black dark:text-white">No Badges Yet</h3>
+            <h3 className="text-2xl font-serif tracking-tight text-black dark:text-white">
+              No Badges Yet
+            </h3>
             <p className="text-sm text-black/50 dark:text-white/60 max-w-sm mx-auto mt-2 font-medium">
-              Complete trial workspaces and submit code deliverables to earn skill badges and raise your Trust Score.
+              Complete trial workspaces and submit code deliverables to earn skill badges and raise
+              your Trust Score.
             </p>
           </div>
         ) : (
@@ -161,7 +174,8 @@ export const AchievementsPage: React.FC = () => {
                 Complete your first workspace trial!
               </h3>
               <p className="text-sm text-black/50 dark:text-white/60 max-w-md mx-auto mt-2 font-medium">
-                Finish active workspace tasks to generate official verifiable PDF certificates for your portfolio.
+                Finish active workspace tasks to generate official verifiable PDF certificates for
+                your portfolio.
               </p>
             </div>
           )}

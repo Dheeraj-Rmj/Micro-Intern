@@ -1,7 +1,7 @@
-import { createModuleLogger } from '@/core/logger.js';
-import type { PrismaClient } from '@microintern/database';
+import { createModuleLogger } from "@/core/logger.js";
+import type { PrismaClient } from "@microintern/database";
 
-const log = createModuleLogger('MessagingService');
+const log = createModuleLogger("MessagingService");
 
 export type SendMessageDTO = {
   journeyId: string;
@@ -31,7 +31,7 @@ export class MessagingService {
         body: dto.body,
       },
     });
-    log.info({ journeyId: dto.journeyId, senderId: dto.senderId }, 'Message sent');
+    log.info({ journeyId: dto.journeyId, senderId: dto.senderId }, "Message sent");
     return message;
   }
 
@@ -39,7 +39,7 @@ export class MessagingService {
     const thread = await this.db.messageThread.findUnique({
       where: { journeyId },
       include: {
-        messages: { orderBy: { createdAt: 'asc' } },
+        messages: { orderBy: { createdAt: "asc" } },
       },
     });
     if (!thread) return { journeyId, messages: [] };

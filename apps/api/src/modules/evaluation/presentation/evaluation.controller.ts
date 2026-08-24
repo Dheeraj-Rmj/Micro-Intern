@@ -1,12 +1,10 @@
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
-import type { Request, Response, NextFunction } from 'express';
-import type { SubmissionParamDto } from './evaluation.schemas.js';
-import type { GetSubmissionEvaluationUseCase } from '../application/use-cases/get-submission-evaluation.usecase.js';
+import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
+import type { Request, Response, NextFunction } from "express";
+import type { SubmissionParamDto } from "./evaluation.schemas.js";
+import type { GetSubmissionEvaluationUseCase } from "../application/use-cases/get-submission-evaluation.usecase.js";
 
 export class EvaluationController {
-  constructor(
-    private readonly getSubmissionEvaluationUseCase: GetSubmissionEvaluationUseCase
-  ) {}
+  constructor(private readonly getSubmissionEvaluationUseCase: GetSubmissionEvaluationUseCase) {}
 
   async getSubmissionEvaluation(req: Request, res: Response, _next: NextFunction): Promise<void> {
     const userId = req.user!.id;

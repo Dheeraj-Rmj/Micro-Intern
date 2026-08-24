@@ -1,9 +1,9 @@
-import { AUTH } from '@microintern/shared';
+import { AUTH } from "@microintern/shared";
 
-import { User } from '../../domain/entities/User.entity.js';
+import { User } from "../../domain/entities/User.entity.js";
 
-import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
-import type { PrismaClient, OAuthProvider } from '@microintern/database';
+import type { IUserRepository } from "../../domain/repositories/IUserRepository.js";
+import type { PrismaClient, OAuthProvider } from "@microintern/database";
 
 /**
  * Prisma User Repository — infrastructure implementation.
@@ -62,8 +62,8 @@ export class PrismaUserRepository implements IUserRepository {
           email: data.email.toLowerCase(),
           firstName: data.firstName,
           lastName: data.lastName,
-          role: 'CANDIDATE',
-          status: 'ACTIVE',
+          role: "CANDIDATE",
+          status: "ACTIVE",
           emailVerifiedAt: new Date(), // OAuth emails are considered verified
           candidateProfile: {
             create: {
@@ -88,12 +88,15 @@ export class PrismaUserRepository implements IUserRepository {
     return User.fromPrisma({ ...user, companyMembership: [] });
   }
 
-  async linkOAuthAccount(userId: string, data: {
-    provider: string;
-    providerAccountId: string;
-    accessToken?: string;
-    refreshToken?: string;
-  }): Promise<void> {
+  async linkOAuthAccount(
+    userId: string,
+    data: {
+      provider: string;
+      providerAccountId: string;
+      accessToken?: string;
+      refreshToken?: string;
+    },
+  ): Promise<void> {
     await this.db.oAuthAccount.create({
       data: {
         userId,
@@ -118,8 +121,8 @@ export class PrismaUserRepository implements IUserRepository {
           passwordHash: data.passwordHash,
           firstName: data.firstName,
           lastName: data.lastName,
-          role: 'CANDIDATE',
-          status: 'PENDING_VERIFICATION',
+          role: "CANDIDATE",
+          status: "PENDING_VERIFICATION",
           candidateProfile: {
             create: {
               isPublic: false,
@@ -146,13 +149,16 @@ export class PrismaUserRepository implements IUserRepository {
     companyWebsite?: string;
   }): Promise<User> {
     const user = await this.db.$transaction(async (tx) => {
-      const slug = data.companyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const slug = data.companyName
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
       const company = await tx.company.create({
         data: {
           name: data.companyName,
           slug,
           websiteUrl: data.companyWebsite,
-          status: 'PENDING_VERIFICATION',
+          status: "PENDING_VERIFICATION",
         },
       });
 
@@ -162,12 +168,12 @@ export class PrismaUserRepository implements IUserRepository {
           passwordHash: data.passwordHash,
           firstName: data.firstName,
           lastName: data.lastName,
-          role: 'COMPANY_OWNER',
-          status: 'PENDING_VERIFICATION',
+          role: "COMPANY_OWNER",
+          status: "PENDING_VERIFICATION",
           companyMembership: {
             create: {
               companyId: company.id,
-              role: 'COMPANY_OWNER',
+              role: "COMPANY_OWNER",
               joinedAt: new Date(),
             },
           },
@@ -198,7 +204,7 @@ export class PrismaUserRepository implements IUserRepository {
           firstName: data.firstName,
           lastName: data.lastName,
           role: data.role as any,
-          status: 'ACTIVE',
+          status: "ACTIVE",
           emailVerifiedAt: new Date(), // Invitation implies email is valid
           ...(data.companyId !== undefined && {
             companyMembership: {
@@ -272,7 +278,7 @@ export class PrismaUserRepository implements IUserRepository {
   async setEmailVerified(userId: string): Promise<void> {
     await this.db.user.update({
       where: { id: userId },
-      data: { emailVerifiedAt: new Date(), status: 'ACTIVE' },
+      data: { emailVerifiedAt: new Date(), status: "ACTIVE" },
     });
   }
 
@@ -290,7 +296,11 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-  async updateMfaSettings(userId: string, mfaEnabled: boolean, totpSecret?: string | null): Promise<void> {
+  async updateMfaSettings(
+    userId: string,
+    mfaEnabled: boolean,
+    totpSecret?: string | null,
+  ): Promise<void> {
     await this.db.user.update({
       where: { id: userId },
       data: {
@@ -304,7 +314,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async createVerificationToken(data: {
     userId: string;
-    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
     tokenHash: string;
     expiresAt: Date;
   }): Promise<void> {
@@ -326,7 +336,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async findVerificationToken(data: {
     tokenHash: string;
-    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
   }): Promise<{ id: string; userId: string; expiresAt: Date; usedAt: Date | null } | null> {
     return await this.db.verificationToken.findFirst({
       where: {
@@ -352,7 +362,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async invalidateVerificationTokens(data: {
     userId: string;
-    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
   }): Promise<void> {
     await this.db.verificationToken.updateMany({
       where: { userId: data.userId, type: data.type, usedAt: null },
@@ -421,14 +431,17 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-  async saveWebAuthnCredential(userId: string, credential: {
-    id: string;
-    publicKey: Buffer;
-    counter: bigint;
-    deviceType: string;
-    backedUp: boolean;
-    transports: string[];
-  }): Promise<void> {
+  async saveWebAuthnCredential(
+    userId: string,
+    credential: {
+      id: string;
+      publicKey: Buffer;
+      counter: bigint;
+      deviceType: string;
+      backedUp: boolean;
+      transports: string[];
+    },
+  ): Promise<void> {
     await this.db.webAuthnCredential.create({
       data: {
         id: credential.id,
@@ -442,16 +455,18 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
-  async getWebAuthnCredentials(userId: string): Promise<Array<{
-    id: string;
-    publicKey: Buffer;
-    counter: bigint;
-    transports: string[];
-  }>> {
+  async getWebAuthnCredentials(userId: string): Promise<
+    Array<{
+      id: string;
+      publicKey: Buffer;
+      counter: bigint;
+      transports: string[];
+    }>
+  > {
     const creds = await this.db.webAuthnCredential.findMany({
       where: { userId },
     });
-    return creds.map(c => ({
+    return creds.map((c) => ({
       id: c.id,
       publicKey: c.publicKey,
       counter: c.counter,

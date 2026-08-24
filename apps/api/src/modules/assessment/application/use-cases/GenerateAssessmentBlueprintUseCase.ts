@@ -1,9 +1,9 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { PROMPTS, compilePrompt } from '@/infrastructure/ai/PromptManager.js';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
-import type { SkillTrailConfigurationType } from '../../../management/application/use-cases/ConfigureSkillTrailUseCase.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { PROMPTS, compilePrompt } from "@/infrastructure/ai/PromptManager.js";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
+import type { SkillTrailConfigurationType } from "../../../management/application/use-cases/ConfigureSkillTrailUseCase.js";
 
-const log = createModuleLogger('GenerateAssessmentBlueprintUseCase');
+const log = createModuleLogger("GenerateAssessmentBlueprintUseCase");
 
 export type GenerateAssessmentBlueprintInput = {
   roleProfile: string;
@@ -12,12 +12,12 @@ export type GenerateAssessmentBlueprintInput = {
 };
 
 export type GeneratedTask = {
-  type: 'MCQ' | 'CODE' | 'FILE_UPLOAD';
+  type: "MCQ" | "CODE" | "FILE_UPLOAD";
   title: string;
   description: string;
   competencies: string[];
   maxPoints: number;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  difficulty: "Easy" | "Medium" | "Hard";
   // MCQ specific
   options?: string[];
   correctOptionIndex?: number;
@@ -44,7 +44,7 @@ export class GenerateAssessmentBlueprintUseCase {
   async execute(
     input: GenerateAssessmentBlueprintInput,
   ): Promise<GenerateAssessmentBlueprintOutput> {
-    log.info({ roleProfile: input.roleProfile }, 'Generating assessment blueprint via AI');
+    log.info({ roleProfile: input.roleProfile }, "Generating assessment blueprint via AI");
 
     try {
       const prompt = compilePrompt(PROMPTS.ASSESSMENT_GENERATOR, {
@@ -55,16 +55,16 @@ export class GenerateAssessmentBlueprintUseCase {
 
       const response = await this.aiEngine.complete({
         messages: [
-          { role: 'system', content: prompt.systemMessage },
-          { role: 'user', content: prompt.userMessage },
+          { role: "system", content: prompt.systemMessage },
+          { role: "user", content: prompt.userMessage },
         ],
-        responseFormat: { type: 'json_object' },
+        responseFormat: { type: "json_object" },
       });
 
       const parsed = JSON.parse(response.content) as GenerateAssessmentBlueprintOutput;
 
       if (!parsed.blueprint || !Array.isArray(parsed.blueprint.tasks)) {
-        throw new Error('AI returned invalid JSON structure for assessment blueprint');
+        throw new Error("AI returned invalid JSON structure for assessment blueprint");
       }
 
       log.info(
@@ -72,13 +72,13 @@ export class GenerateAssessmentBlueprintUseCase {
           roleProfile: input.roleProfile,
           taskCount: parsed.blueprint.tasks.length,
         },
-        'Successfully generated assessment blueprint adhering to Skill Trail Rules',
+        "Successfully generated assessment blueprint adhering to Skill Trail Rules",
       );
 
       return parsed;
     } catch (error) {
-      log.error({ err: error }, 'Failed to generate assessment blueprint');
-      throw new Error('Failed to generate assessment blueprint using AI');
+      log.error({ err: error }, "Failed to generate assessment blueprint");
+      throw new Error("Failed to generate assessment blueprint using AI");
     }
   }
 }

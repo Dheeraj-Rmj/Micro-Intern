@@ -1,6 +1,6 @@
-import { HTTP_STATUS } from '@microintern/shared';
+import { HTTP_STATUS } from "@microintern/shared";
 
-import type { ErrorCode } from '@microintern/shared';
+import type { ErrorCode } from "@microintern/shared";
 
 /**
  * Base application error class.
@@ -69,7 +69,7 @@ export class AppError extends Error {
  */
 export class BadRequestError extends AppError {
   constructor(message: string, details?: Record<string, unknown>[]) {
-    super({ code: 'BAD_REQUEST', message, statusCode: HTTP_STATUS.BAD_REQUEST, details });
+    super({ code: "BAD_REQUEST", message, statusCode: HTTP_STATUS.BAD_REQUEST, details });
   }
 }
 
@@ -77,7 +77,7 @@ export class BadRequestError extends AppError {
  * 401 Unauthorized — missing or invalid credentials
  */
 export class UnauthorizedError extends AppError {
-  constructor(message = 'Authentication required', code: ErrorCode = 'UNAUTHORIZED') {
+  constructor(message = "Authentication required", code: ErrorCode = "UNAUTHORIZED") {
     super({ code, message, statusCode: HTTP_STATUS.UNAUTHORIZED });
   }
 }
@@ -86,7 +86,7 @@ export class UnauthorizedError extends AppError {
  * 403 Forbidden — authenticated but lacks permission
  */
 export class ForbiddenError extends AppError {
-  constructor(message = 'Insufficient permissions', code: ErrorCode = 'FORBIDDEN') {
+  constructor(message = "Insufficient permissions", code: ErrorCode = "FORBIDDEN") {
     super({ code, message, statusCode: HTTP_STATUS.FORBIDDEN });
   }
 }
@@ -96,10 +96,11 @@ export class ForbiddenError extends AppError {
  */
 export class NotFoundError extends AppError {
   constructor(resource: string, identifier?: string) {
-    const message = identifier !== undefined
-      ? `${resource} with ID "${identifier}" not found`
-      : `${resource} not found`;
-    super({ code: 'NOT_FOUND', message, statusCode: HTTP_STATUS.NOT_FOUND });
+    const message =
+      identifier !== undefined
+        ? `${resource} with ID "${identifier}" not found`
+        : `${resource} not found`;
+    super({ code: "NOT_FOUND", message, statusCode: HTTP_STATUS.NOT_FOUND });
   }
 }
 
@@ -107,7 +108,7 @@ export class NotFoundError extends AppError {
  * 409 Conflict — duplicate resource
  */
 export class ConflictError extends AppError {
-  constructor(message: string, code: ErrorCode = 'CONFLICT') {
+  constructor(message: string, code: ErrorCode = "CONFLICT") {
     super({ code, message, statusCode: HTTP_STATUS.CONFLICT });
   }
 }
@@ -118,7 +119,7 @@ export class ConflictError extends AppError {
 export class ValidationError extends AppError {
   constructor(message: string, details?: Record<string, unknown>[]) {
     super({
-      code: 'VALIDATION_ERROR',
+      code: "VALIDATION_ERROR",
       message,
       statusCode: HTTP_STATUS.UNPROCESSABLE_ENTITY,
       details,
@@ -130,8 +131,8 @@ export class ValidationError extends AppError {
  * 429 Too Many Requests
  */
 export class RateLimitError extends AppError {
-  constructor(message = 'Too many requests. Please try again later.') {
-    super({ code: 'RATE_LIMIT_EXCEEDED', message, statusCode: HTTP_STATUS.TOO_MANY_REQUESTS });
+  constructor(message = "Too many requests. Please try again later.") {
+    super({ code: "RATE_LIMIT_EXCEEDED", message, statusCode: HTTP_STATUS.TOO_MANY_REQUESTS });
   }
 }
 
@@ -139,9 +140,9 @@ export class RateLimitError extends AppError {
  * 500 Internal Server Error — unexpected/non-operational errors
  */
 export class InternalServerError extends AppError {
-  constructor(message = 'An unexpected error occurred', cause?: Error) {
+  constructor(message = "An unexpected error occurred", cause?: Error) {
     super({
-      code: 'INTERNAL_SERVER_ERROR',
+      code: "INTERNAL_SERVER_ERROR",
       message,
       statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
       isOperational: false,
@@ -154,7 +155,10 @@ export class InternalServerError extends AppError {
  * 503 Service Unavailable
  */
 export class ServiceUnavailableError extends AppError {
-  constructor(message = 'Service temporarily unavailable', code: ErrorCode = 'SERVICE_UNAVAILABLE') {
+  constructor(
+    message = "Service temporarily unavailable",
+    code: ErrorCode = "SERVICE_UNAVAILABLE",
+  ) {
     super({ code, message, statusCode: HTTP_STATUS.SERVICE_UNAVAILABLE });
   }
 }

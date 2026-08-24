@@ -1,12 +1,12 @@
-import type { PortfolioService } from '../application/PortfolioService.js';
-import type { Request, Response, NextFunction } from 'express';
+import type { PortfolioService } from "../application/PortfolioService.js";
+import type { Request, Response, NextFunction } from "express";
 
 export class PortfolioController {
   constructor(private readonly portfolioService: PortfolioService) {}
 
   getMyPortfolio = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const candidateId = (req as any).user?.id || req.query['candidateId'];
+      const candidateId = (req as any).user?.id || req.query["candidateId"];
       const portfolio = await this.portfolioService.getPortfolioByCandidateId(candidateId);
       res.status(200).json({ success: true, data: portfolio });
     } catch (err) {
@@ -16,7 +16,7 @@ export class PortfolioController {
 
   updateMyPortfolio = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const candidateId = (req as any).user?.id || req.body['candidateId'];
+      const candidateId = (req as any).user?.id || req.body["candidateId"];
       const portfolio = await this.portfolioService.updatePortfolio(candidateId, req.body);
       res.status(200).json({ success: true, data: portfolio });
     } catch (err) {
@@ -46,7 +46,7 @@ export class PortfolioController {
 
   getTimeline = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const candidateId = (req as any).user?.id || req.params['candidateId'];
+      const candidateId = (req as any).user?.id || req.params["candidateId"];
       const timeline = await this.portfolioService.getTimeline(candidateId);
       res.status(200).json({ success: true, data: timeline });
     } catch (err) {

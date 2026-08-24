@@ -1,14 +1,18 @@
-import { AI } from '@microintern/shared';
+import { AI } from "@microintern/shared";
 
-import { createModuleLogger } from '@/core/logger.js';
-import { ServiceUnavailableError } from '@/shared/errors/index.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { ServiceUnavailableError } from "@/shared/errors/index.js";
 
-import { AIProviderError } from './interfaces/IAIProvider.js';
+import { AIProviderError } from "./interfaces/IAIProvider.js";
 
-import type { IAIProvider, AICompletionRequest, AICompletionResponse } from './interfaces/IAIProvider.js';
-import type { AIProvider } from '@microintern/shared';
+import type {
+  IAIProvider,
+  AICompletionRequest,
+  AICompletionResponse,
+} from "./interfaces/IAIProvider.js";
+import type { AIProvider } from "@microintern/shared";
 
-const log = createModuleLogger('AIFallbackEngine');
+const log = createModuleLogger("AIFallbackEngine");
 
 /**
  * AI Fallback Engine — the core of the AI Gateway.
@@ -49,8 +53,8 @@ export class AIFallbackEngine {
 
     if (configuredProviders.length === 0) {
       throw new ServiceUnavailableError(
-        'No AI providers are configured. Set at least one API key.',
-        'AI_ALL_PROVIDERS_FAILED',
+        "No AI providers are configured. Set at least one API key.",
+        "AI_ALL_PROVIDERS_FAILED",
       );
     }
 
@@ -61,7 +65,7 @@ export class AIFallbackEngine {
         const result = await this.executeWithRetry(provider, request);
         return result;
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
+        const message = error instanceof Error ? error.message : "Unknown error";
         errors.push({ provider: provider.name, error: message });
 
         log.warn(
@@ -72,11 +76,11 @@ export class AIFallbackEngine {
     }
 
     // All providers failed
-    log.error({ errors }, 'All AI providers failed');
+    log.error({ errors }, "All AI providers failed");
 
     throw new ServiceUnavailableError(
-      `All AI providers failed. Last errors: ${errors.map((e) => `${e.provider}: ${e.error}`).join('; ')}`,
-      'AI_ALL_PROVIDERS_FAILED',
+      `All AI providers failed. Last errors: ${errors.map((e) => `${e.provider}: ${e.error}`).join("; ")}`,
+      "AI_ALL_PROVIDERS_FAILED",
     );
   }
 
@@ -94,7 +98,7 @@ export class AIFallbackEngine {
         const result = await provider.complete(request);
 
         if (attempt > 1) {
-          log.info({ provider: provider.name, attempt }, 'Provider succeeded after retry');
+          log.info({ provider: provider.name, attempt }, "Provider succeeded after retry");
         }
 
         return result;
@@ -117,7 +121,7 @@ export class AIFallbackEngine {
       }
     }
 
-    throw lastError ?? new Error('Unknown retry failure');
+    throw lastError ?? new Error("Unknown retry failure");
   }
 
   /**

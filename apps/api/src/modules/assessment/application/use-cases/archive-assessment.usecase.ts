@@ -1,9 +1,9 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { AssessmentNotFoundError } from '../../domain/errors/assessment.errors.js';
-import type { Assessment } from '../../domain/entities/Assessment.entity.js';
-import type { IAssessmentRepository } from '../ports/IAssessmentRepository.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { AssessmentNotFoundError } from "../../domain/errors/assessment.errors.js";
+import type { Assessment } from "../../domain/entities/Assessment.entity.js";
+import type { IAssessmentRepository } from "../ports/IAssessmentRepository.js";
 
-const log = createModuleLogger('ArchiveAssessmentUseCase');
+const log = createModuleLogger("ArchiveAssessmentUseCase");
 
 export class ArchiveAssessmentUseCase {
   constructor(private readonly assessmentRepository: IAssessmentRepository) {}
@@ -14,7 +14,7 @@ export class ArchiveAssessmentUseCase {
       throw new AssessmentNotFoundError(assessmentId);
     }
 
-    log.info({ assessmentId, recruiterId }, 'Archiving assessment');
+    log.info({ assessmentId, recruiterId }, "Archiving assessment");
     const archived = await this.assessmentRepository.archive(assessmentId);
 
     // Snapshot archive transition
@@ -22,8 +22,8 @@ export class ArchiveAssessmentUseCase {
       archived.id,
       999,
       archived,
-      'Assessment archived',
-      recruiterId
+      "Assessment archived",
+      recruiterId,
     );
 
     return archived;

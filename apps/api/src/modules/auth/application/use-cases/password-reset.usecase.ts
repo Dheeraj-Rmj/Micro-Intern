@@ -1,14 +1,14 @@
-import { AUTH } from '@microintern/shared';
+import { AUTH } from "@microintern/shared";
 
-import { createModuleLogger } from '@/core/logger.js';
-import { TokenService } from '@/modules/auth/infrastructure/services/TokenService.js';
-import { AuthDomainError } from '@/shared/errors/DomainError.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { TokenService } from "@/modules/auth/infrastructure/services/TokenService.js";
+import { AuthDomainError } from "@/shared/errors/DomainError.js";
 
-import type { IEmailAuthService } from '../interfaces/IEmailAuthService.js';
-import type { IPasswordService, ISessionService } from '../interfaces/IPasswordService.js';
-import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
+import type { IEmailAuthService } from "../interfaces/IEmailAuthService.js";
+import type { IPasswordService, ISessionService } from "../interfaces/IPasswordService.js";
+import type { IUserRepository } from "../../domain/repositories/IUserRepository.js";
 
-const log = createModuleLogger('PasswordResetUseCase');
+const log = createModuleLogger("PasswordResetUseCase");
 
 export class ForgotPasswordUseCase {
   constructor(
@@ -22,19 +22,17 @@ export class ForgotPasswordUseCase {
 
     // Security: Do not leak whether an account exists for this email
     if (user === null) {
-      log.info({ email }, 'Forgot password requested for non-existent email');
+      log.info({ email }, "Forgot password requested for non-existent email");
       return;
     }
 
     const plainToken = this.tokenService.generateSecureToken();
     const tokenHash = this.tokenService.hashToken(plainToken);
-    const expiresAt = new Date(
-      Date.now() + AUTH.PASSWORD_RESET_EXPIRY_MINUTES * 60 * 1000,
-    );
+    const expiresAt = new Date(Date.now() + AUTH.PASSWORD_RESET_EXPIRY_MINUTES * 60 * 1000);
 
     await this.userRepository.createVerificationToken({
       userId: user.id,
-      type: 'PASSWORD_RESET',
+      type: "PASSWORD_RESET",
       tokenHash,
       expiresAt,
     });
@@ -45,7 +43,7 @@ export class ForgotPasswordUseCase {
       resetToken: plainToken,
     });
 
-    log.info({ userId: user.id }, 'Sent password reset email');
+    log.info({ userId: user.id }, "Sent password reset email");
   }
 }
 
@@ -63,20 +61,23 @@ export class ResetPasswordUseCase {
 
     const record = await this.userRepository.findVerificationToken({
       tokenHash,
-      type: 'PASSWORD_RESET',
+      type: "PASSWORD_RESET",
     });
 
     if (record === null) {
-      throw new AuthDomainError('AUTH_TOKEN_INVALID', 'Invalid password reset token');
+      throw new AuthDomainError("AUTH_TOKEN_INVALID", "Invalid password reset token");
     }
 
     if (record.expiresAt < new Date()) {
-      throw new AuthDomainError('AUTH_TOKEN_EXPIRED', 'Password reset token has expired');
+      throw new AuthDomainError("AUTH_TOKEN_EXPIRED", "Password reset token has expired");
     }
 
     const user = await this.userRepository.findById(record.userId);
     if (user === null) {
-      throw new AuthDomainError('AUTH_TOKEN_INVALID', 'User associated with token no longer exists');
+      throw new AuthDomainError(
+        "AUTH_TOKEN_INVALID",
+        "User associated with token no longer exists",
+      );
     }
 
     // Hash new password and update
@@ -95,6 +96,6 @@ export class ResetPasswordUseCase {
       firstName: user.firstName,
     });
 
-    log.info({ userId: user.id }, 'Password reset successfully and sessions revoked');
+    log.info({ userId: user.id }, "Password reset successfully and sessions revoked");
   }
 }

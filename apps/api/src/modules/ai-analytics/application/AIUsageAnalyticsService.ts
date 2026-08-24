@@ -1,7 +1,7 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('AIUsageAnalyticsService');
+const log = createModuleLogger("AIUsageAnalyticsService");
 
 export interface IAIUsageMetricInput {
   companyId?: string;
@@ -41,7 +41,7 @@ export class AIUsageAnalyticsService {
         },
       });
     } catch (err) {
-      log.error({ err }, 'Failed to record AI usage metric');
+      log.error({ err }, "Failed to record AI usage metric");
       return null;
     }
   }

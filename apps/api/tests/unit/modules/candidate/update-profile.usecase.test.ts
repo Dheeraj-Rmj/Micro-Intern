@@ -1,9 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { UpdateProfileUseCase } from '@/modules/candidate/application/use-cases/update-profile.usecase.js';
-import { CandidateProfileNotFoundError, CandidateProfileConflictError } from '@/modules/candidate/domain/candidate.errors.js';
+import { UpdateProfileUseCase } from "@/modules/candidate/application/use-cases/update-profile.usecase.js";
+import {
+  CandidateProfileNotFoundError,
+  CandidateProfileConflictError,
+} from "@/modules/candidate/domain/candidate.errors.js";
 
-describe('UpdateProfileUseCase', () => {
+describe("UpdateProfileUseCase", () => {
   let useCase: UpdateProfileUseCase;
   let mockDb: any;
   let mockCalcCompletion: any;
@@ -22,7 +25,9 @@ describe('UpdateProfileUseCase', () => {
   });
 
   const mockTx: any = {
-    candidateProfile: { update: vi.fn().mockResolvedValue({ id: 'prof-1', headline: 'New Headline' }) },
+    candidateProfile: {
+      update: vi.fn().mockResolvedValue({ id: "prof-1", headline: "New Headline" }),
+    },
     candidateSkill: { updateMany: vi.fn(), createMany: vi.fn() },
     candidateExperience: { updateMany: vi.fn(), createMany: vi.fn() },
     candidateEducation: { updateMany: vi.fn(), createMany: vi.fn() },
@@ -32,44 +37,46 @@ describe('UpdateProfileUseCase', () => {
     auditLog: { create: vi.fn() },
   };
 
-  it('should throw CandidateProfileNotFoundError if user profile does not exist', async () => {
+  it("should throw CandidateProfileNotFoundError if user profile does not exist", async () => {
     mockDb.candidateProfile.findUnique.mockResolvedValue(null);
-    await expect(useCase.execute('user-1', { profile: { headline: 'Dev' } } as any)).rejects.toThrow(
-      CandidateProfileNotFoundError
-    );
+    await expect(
+      useCase.execute("user-1", { profile: { headline: "Dev" } } as any),
+    ).rejects.toThrow(CandidateProfileNotFoundError);
   });
 
-  it('should throw CandidateProfileConflictError on optimistic concurrency timestamp mismatch', async () => {
+  it("should throw CandidateProfileConflictError on optimistic concurrency timestamp mismatch", async () => {
     const now = Date.now();
     mockDb.candidateProfile.findUnique.mockResolvedValue({
-      id: 'prof-1',
+      id: "prof-1",
       updatedAt: new Date(now + 10000), // Server version is newer
     });
     await expect(
-      useCase.execute('user-1', { profile: { headline: 'Dev', updatedAt: new Date(now).toISOString() } } as any)
+      useCase.execute("user-1", {
+        profile: { headline: "Dev", updatedAt: new Date(now).toISOString() },
+      } as any),
     ).rejects.toThrow(CandidateProfileConflictError);
   });
 
-  it('should successfully update core profile, skills, and trigger completion recalculation', async () => {
+  it("should successfully update core profile, skills, and trigger completion recalculation", async () => {
     const now = Date.now();
     mockDb.candidateProfile.findUnique.mockResolvedValue({
-      id: 'prof-1',
+      id: "prof-1",
       updatedAt: new Date(now),
     });
 
-    const result = await useCase.execute('user-1', {
-      profile: { headline: 'Updated Headline', updatedAt: new Date(now).toISOString() },
-      skills: [{ skill: 'TypeScript', level: 'EXPERT' } as any],
+    const result = await useCase.execute("user-1", {
+      profile: { headline: "Updated Headline", updatedAt: new Date(now).toISOString() },
+      skills: [{ skill: "TypeScript", level: "EXPERT" } as any],
     } as any);
 
-    expect(result).toEqual({ id: 'prof-1', headline: 'New Headline' });
+    expect(result).toEqual({ id: "prof-1", headline: "New Headline" });
     expect(mockTx.candidateProfile.update).toHaveBeenCalled();
     expect(mockTx.candidateSkill.updateMany).toHaveBeenCalledWith({
-      where: { candidateId: 'prof-1', deletedAt: null },
+      where: { candidateId: "prof-1", deletedAt: null },
       data: { deletedAt: expect.any(Date) },
     });
     expect(mockTx.candidateSkill.createMany).toHaveBeenCalledWith({
-      data: [{ candidateId: 'prof-1', skill: 'TypeScript', level: 'EXPERT' }],
+      data: [{ candidateId: "prof-1", skill: "TypeScript", level: "EXPERT" }],
     });
     expect(mockTx.auditLog.create).toHaveBeenCalled();
   });

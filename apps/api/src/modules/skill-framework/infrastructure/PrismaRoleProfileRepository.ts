@@ -1,12 +1,17 @@
-import { PrismaClient } from '@microintern/database';
-import type { RoleProfile, RequiredSkill, RequiredCompetency, HiringBenchmark } from '@microintern/database';
+import { PrismaClient } from "@microintern/database";
+import type {
+  RoleProfile,
+  RequiredSkill,
+  RequiredCompetency,
+  HiringBenchmark,
+} from "@microintern/database";
 import type {
   IRoleProfileRepository,
   CreateRoleProfileDTO,
   AddRequiredSkillDTO,
   AddRequiredCompetencyDTO,
   AddHiringBenchmarkDTO,
-} from '../domain/IRoleProfileRepository.js';
+} from "../domain/IRoleProfileRepository.js";
 
 export class PrismaRoleProfileRepository implements IRoleProfileRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -25,7 +30,7 @@ export class PrismaRoleProfileRepository implements IRoleProfileRepository {
   async listByCompany(companyId: string): Promise<RoleProfile[]> {
     return this.prisma.roleProfile.findMany({
       where: { companyId, isActive: true },
-      orderBy: { title: 'asc' },
+      orderBy: { title: "asc" },
       include: {
         requiredSkills: { include: { skill: true } },
         requiredCompetencies: { include: { competency: true } },
@@ -38,7 +43,7 @@ export class PrismaRoleProfileRepository implements IRoleProfileRepository {
       data: {
         companyId: data.companyId,
         title: data.title,
-        level: data.level ?? 'MID',
+        level: data.level ?? "MID",
         description: data.description,
         minimumOverallScore: data.minimumOverallScore ?? 70.0,
       },

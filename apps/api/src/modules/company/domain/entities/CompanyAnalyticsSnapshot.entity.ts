@@ -9,6 +9,6 @@ export class CompanyAnalyticsSnapshot {
     public readonly totalPlacements: number,
     public readonly funnelData: any | null,
     public readonly sourceData: any | null,
-    public readonly createdAt: Date
+    public readonly createdAt: Date,
   ) {}
 }

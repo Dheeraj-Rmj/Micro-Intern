@@ -1,10 +1,10 @@
-import { DomainError } from '@/shared/errors/index.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { DomainError } from "@/shared/errors/index.js";
+import { createModuleLogger } from "@/core/logger.js";
 // Re-using the prompt manager, though we'd typically have a specific prompt for this
-import { compilePrompt } from '@/infrastructure/ai/PromptManager.js';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { compilePrompt } from "@/infrastructure/ai/PromptManager.js";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('RecommendTasksUseCase');
+const log = createModuleLogger("RecommendTasksUseCase");
 
 export type RecommendTasksInput = {
   candidateId: string;
@@ -16,7 +16,7 @@ export type RecommendTasksInput = {
 export type RecommendedTask = {
   title: string;
   description: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  difficulty: "Easy" | "Medium" | "Hard";
   estimatedTimeMins: number;
   skillsCovered: string[];
   confidenceScore: number;
@@ -35,7 +35,7 @@ export class RecommendTasksUseCase {
   constructor(private readonly aiEngine: AIFallbackEngine) {}
 
   async execute(input: RecommendTasksInput): Promise<RecommendTasksOutput> {
-    log.info({ candidateId: input.candidateId }, 'Recommending tasks via AI');
+    log.info({ candidateId: input.candidateId }, "Recommending tasks via AI");
 
     try {
       // In a real implementation, this would use a dedicated prompt from PromptManager
@@ -49,16 +49,16 @@ Role Required Skills: ${JSON.stringify(input.roleRequiredCompetencies)}`;
 
       const response = await this.aiEngine.complete({
         messages: [
-          { role: 'system', content: systemMessage },
-          { role: 'user', content: userMessage },
+          { role: "system", content: systemMessage },
+          { role: "user", content: userMessage },
         ],
-        responseFormat: { type: 'json_object' },
+        responseFormat: { type: "json_object" },
       });
 
       const parsed = JSON.parse(response.content) as RecommendTasksOutput;
 
       if (!parsed.recommendedTasks || !Array.isArray(parsed.recommendedTasks)) {
-        throw new Error('AI returned invalid JSON structure for task recommendations');
+        throw new Error("AI returned invalid JSON structure for task recommendations");
       }
 
       log.info(
@@ -66,13 +66,13 @@ Role Required Skills: ${JSON.stringify(input.roleRequiredCompetencies)}`;
           candidateId: input.candidateId,
           recommendationCount: parsed.recommendedTasks.length,
         },
-        'Successfully generated task recommendations',
+        "Successfully generated task recommendations",
       );
 
       return parsed;
     } catch (error) {
-      log.error({ err: error }, 'Failed to recommend tasks');
-      throw new Error('Failed to recommend assessment tasks using AI');
+      log.error({ err: error }, "Failed to recommend tasks");
+      throw new Error("Failed to recommend assessment tasks using AI");
     }
   }
 }

@@ -1,5 +1,5 @@
-import type { Assessment } from '../../domain/entities/Assessment.entity.js';
-import type { AssessmentStatus, ExperienceLevel } from '@microintern/database';
+import type { Assessment } from "../../domain/entities/Assessment.entity.js";
+import type { AssessmentStatus, ExperienceLevel } from "@microintern/database";
 
 export interface CreateAssessmentData {
   companyId: string;
@@ -127,7 +127,7 @@ export interface IAssessmentRepository {
     versionNumber: number,
     snapshot: unknown,
     changeSummary: string,
-    createdBy: string
+    createdBy: string,
   ): Promise<void>;
   listVersions(assessmentId: string): Promise<AssessmentVersionSummary[]>;
   restoreVersion(assessmentId: string, versionNumber: number): Promise<Assessment>;
@@ -146,6 +146,11 @@ export interface IAssessmentRepository {
   getAnalytics(assessmentId: string): Promise<AssessmentAnalytics>;
 
   // Queries
-  listCompanyAssessments(companyId: string, filter: CompanyAssessmentsFilter): Promise<{ assessments: Assessment[]; total: number }>;
-  listPublicAssessments(filter: PublicAssessmentsFilter): Promise<{ assessments: Assessment[]; total: number }>;
+  listCompanyAssessments(
+    companyId: string,
+    filter: CompanyAssessmentsFilter,
+  ): Promise<{ assessments: Assessment[]; total: number }>;
+  listPublicAssessments(
+    filter: PublicAssessmentsFilter,
+  ): Promise<{ assessments: Assessment[]; total: number }>;
 }

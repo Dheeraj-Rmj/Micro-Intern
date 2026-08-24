@@ -1,7 +1,7 @@
-'use client';
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
-import React from 'react';
+"use client";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+import React from "react";
 
 interface WordsPullUpProps {
   text: string;
@@ -9,10 +9,14 @@ interface WordsPullUpProps {
   showAsterisk?: boolean;
 }
 
-export const WordsPullUp: React.FC<WordsPullUpProps> = ({ text, className = '', showAsterisk = false }) => {
+export const WordsPullUp: React.FC<WordsPullUpProps> = ({
+  text,
+  className = "",
+  showAsterisk = false,
+}) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
-  const words = text.split(' ');
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const words = text.split(" ");
 
   return (
     <div ref={ref} className={`flex flex-wrap ${className}`}>
@@ -22,8 +26,8 @@ export const WordsPullUp: React.FC<WordsPullUpProps> = ({ text, className = '', 
           <motion.div
             key={i}
             className="overflow-hidden mr-[0.2em] pr-[0.08em] pb-[0.08em]"
-            initial={{ y: '100%', opacity: 0 }}
-            animate={isInView ? { y: 0, opacity: 1 } : { y: '100%', opacity: 0 }}
+            initial={{ y: "100%", opacity: 0 }}
+            animate={isInView ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
             transition={{
               duration: 0.8,
               delay: i * 0.08,

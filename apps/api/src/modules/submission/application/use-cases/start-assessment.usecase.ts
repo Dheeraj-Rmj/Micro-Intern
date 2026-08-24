@@ -1,27 +1,33 @@
-import { SubmissionStatus } from '@microintern/database';
+import { SubmissionStatus } from "@microintern/database";
 
-import { createModuleLogger } from '@/core/logger.js';
-import { AssessmentNotFoundError, AssessmentNotPublishedError } from '@/modules/assessment/domain/errors/assessment.errors.js';
-import { eventBus, DOMAIN_EVENTS } from '@/shared/events/EventBus.js';
+import { createModuleLogger } from "@/core/logger.js";
+import {
+  AssessmentNotFoundError,
+  AssessmentNotPublishedError,
+} from "@/modules/assessment/domain/errors/assessment.errors.js";
+import { eventBus, DOMAIN_EVENTS } from "@/shared/events/EventBus.js";
 
-import { MaxAttemptsExceededError, CandidateProfileNotFoundError } from '../../domain/errors/submission.errors.js';
+import {
+  MaxAttemptsExceededError,
+  CandidateProfileNotFoundError,
+} from "../../domain/errors/submission.errors.js";
 
-import type { Submission } from '../../domain/entities/Submission.entity.js';
-import type { ISubmissionRepository } from '../ports/ISubmissionRepository.js';
-import type { GetProfileUseCase } from '@/modules/candidate/application/use-cases/get-profile.usecase.js';
-import type { IAssessmentRepository } from '@/modules/assessment/application/ports/IAssessmentRepository.js';
+import type { Submission } from "../../domain/entities/Submission.entity.js";
+import type { ISubmissionRepository } from "../ports/ISubmissionRepository.js";
+import type { GetProfileUseCase } from "@/modules/candidate/application/use-cases/get-profile.usecase.js";
+import type { IAssessmentRepository } from "@/modules/assessment/application/ports/IAssessmentRepository.js";
 
-const log = createModuleLogger('StartAssessmentUseCase');
+const log = createModuleLogger("StartAssessmentUseCase");
 
 export class StartAssessmentUseCase {
   constructor(
     private readonly submissionRepository: ISubmissionRepository,
     private readonly assessmentRepository: IAssessmentRepository,
-    private readonly getProfileUseCase: GetProfileUseCase
+    private readonly getProfileUseCase: GetProfileUseCase,
   ) {}
 
   async execute(userId: string, assessmentId: string): Promise<Submission> {
-    log.info({ userId, assessmentId }, 'Initiating skill assessment assessment session');
+    log.info({ userId, assessmentId }, "Initiating skill assessment assessment session");
 
     const profile = await this.getProfileUseCase.execute(userId);
     if (!profile) {
@@ -38,9 +44,15 @@ export class StartAssessmentUseCase {
     }
 
     // Check if candidate already has an active session IN_PROGRESS
-    const activeSubmission = await this.submissionRepository.findActiveByCandidateAndAssessment(profile.id, assessment.id);
+    const activeSubmission = await this.submissionRepository.findActiveByCandidateAndAssessment(
+      profile.id,
+      assessment.id,
+    );
     if (activeSubmission && activeSubmission.status === SubmissionStatus.IN_PROGRESS) {
-      log.info({ submissionId: activeSubmission.id }, 'Resuming existing active assessment session');
+      log.info(
+        { submissionId: activeSubmission.id },
+        "Resuming existing active assessment session",
+      );
       return activeSubmission;
     }
 
@@ -61,7 +73,10 @@ export class StartAssessmentUseCase {
       expiresAt,
     });
 
-    log.info({ submissionId: submission.id, attemptNumber: submission.attemptNumber, expiresAt }, 'Assessment session successfully started');
+    log.info(
+      { submissionId: submission.id, attemptNumber: submission.attemptNumber, expiresAt },
+      "Assessment session successfully started",
+    );
 
     await eventBus.emit(DOMAIN_EVENTS.ASSESSMENT_STARTED, {
       submissionId: submission.id,

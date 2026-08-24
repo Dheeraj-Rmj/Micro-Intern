@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@microintern/database';
+import type { PrismaClient } from "@microintern/database";
 
 export class GetProfileUseCase {
   constructor(private readonly db: PrismaClient) {}
@@ -13,26 +13,26 @@ export class GetProfileUseCase {
       include: {
         skills: {
           where: { deletedAt: null },
-          orderBy: { level: 'desc' },
+          orderBy: { level: "desc" },
         },
         educations: {
           where: { deletedAt: null },
-          orderBy: { startDate: 'desc' },
+          orderBy: { startDate: "desc" },
         },
         experiences: {
           where: { deletedAt: null },
-          orderBy: { startDate: 'desc' },
+          orderBy: { startDate: "desc" },
         },
         certificates: {
           where: { deletedAt: null },
-          orderBy: { issueDate: 'desc' },
+          orderBy: { issueDate: "desc" },
         },
         socials: {
           where: { deletedAt: null },
         },
         preferences: true,
         aiAnalyses: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1, // Only return the latest AI analysis
         },
       },

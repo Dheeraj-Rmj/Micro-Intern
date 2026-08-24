@@ -1,6 +1,6 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
 import {
   Users,
   UserPlus,
@@ -13,7 +13,7 @@ import {
   ShieldAlert,
   Building2,
   Lock,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface RecruiterSeat {
   id: string;
@@ -21,19 +21,19 @@ interface RecruiterSeat {
   email: string;
   roleTitle: string;
   assignedTrials: number;
-  status: 'ACTIVE' | 'SUSPENDED';
+  status: "ACTIVE" | "SUSPENDED";
   created: string;
 }
 
 const INITIAL_RECRUITERS: RecruiterSeat[] = [];
-import { companyApi } from '../../../../lib/api/company';
+import { companyApi } from "../../../../lib/api/company";
 
 export const CompanyRecruitersPage: React.FC = () => {
   const { showToast } = useApp();
   const [recruiters, setRecruiters] = useState<RecruiterSeat[]>([]);
-  const [fullName, setFullName] = useState('');
-  const [handle, setHandle] = useState('');
-  const [roleTitle, setRoleTitle] = useState('Technical Recruiter');
+  const [fullName, setFullName] = useState("");
+  const [handle, setHandle] = useState("");
+  const [roleTitle, setRoleTitle] = useState("Technical Recruiter");
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -44,18 +44,20 @@ export const CompanyRecruitersPage: React.FC = () => {
         if (res.data?.members) {
           const mapped = res.data.members.map((m: any) => ({
             id: m.userId,
-            name: m.userDetails?.firstName ? `${m.userDetails.firstName} ${m.userDetails.lastName}` : 'Pending User',
+            name: m.userDetails?.firstName
+              ? `${m.userDetails.firstName} ${m.userDetails.lastName}`
+              : "Pending User",
             email: m.userDetails?.email || `pending-${m.id}@company.microintern`,
             roleTitle: m.role,
             assignedTrials: 0,
-            status: m.status || 'ACTIVE',
+            status: m.status || "ACTIVE",
             created: new Date(m.joinedAt || m.createdAt).toLocaleDateString(),
           }));
           setRecruiters(mapped);
         }
       } catch (err) {
-        console.error('Failed to fetch members:', err);
-        showToast('Error', 'Failed to load team members', 'error');
+        console.error("Failed to fetch members:", err);
+        showToast("Error", "Failed to load team members", "error");
       } finally {
         setLoading(false);
       }
@@ -66,39 +68,39 @@ export const CompanyRecruitersPage: React.FC = () => {
   const handleGenerateLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !handle.trim()) {
-      showToast('Missing Details', 'Please enter recruiter name and login handle.', 'warning');
+      showToast("Missing Details", "Please enter recruiter name and login handle.", "warning");
       return;
     }
 
-    const cleanedHandle = handle.toLowerCase().replace(/\s+/g, '.');
+    const cleanedHandle = handle.toLowerCase().replace(/\s+/g, ".");
     const newEmail = `${cleanedHandle}@company.microintern`;
 
     try {
       const res = await companyApi.inviteMember(newEmail, roleTitle);
-      
+
       const newRecruiter: RecruiterSeat = {
         id: res.data.userId || `REC-${Math.floor(100 + Math.random() * 900)}`,
         name: fullName,
         email: newEmail,
         roleTitle: roleTitle,
         assignedTrials: 0,
-        status: 'ACTIVE',
-        created: 'Just now',
+        status: "ACTIVE",
+        created: "Just now",
       };
 
       setRecruiters([newRecruiter, ...recruiters]);
-      setFullName('');
-      setHandle('');
-      setRoleTitle('Technical Talent Recruiter');
+      setFullName("");
+      setHandle("");
+      setRoleTitle("Technical Talent Recruiter");
 
       showToast(
-        'Recruiter Seat Created!',
+        "Recruiter Seat Created!",
         `Generated corporate credentials: ${newEmail}. Login password ready to copy.`,
-        'success'
+        "success",
       );
     } catch (err) {
       console.error(err);
-      showToast('Error', 'Failed to invite team member', 'error');
+      showToast("Error", "Failed to invite team member", "error");
     }
   };
 
@@ -106,7 +108,7 @@ export const CompanyRecruitersPage: React.FC = () => {
     const textToCopy = `Login: ${email} | Password: MicroIntern#Recruit2026!`;
     navigator.clipboard.writeText(textToCopy);
     setCopiedEmail(email);
-    showToast('Credentials Copied', `Copied login ID & temp password for ${email}.`, 'success');
+    showToast("Credentials Copied", `Copied login ID & temp password for ${email}.`, "success");
     setTimeout(() => setCopiedEmail(null), 2500);
   };
 
@@ -114,10 +116,10 @@ export const CompanyRecruitersPage: React.FC = () => {
     try {
       await companyApi.removeMember(id);
       setRecruiters((prev) => prev.filter((r) => r.id !== id));
-      showToast('Recruiter Seat Revoked', `Access for ${name} has been terminated.`, 'info');
+      showToast("Recruiter Seat Revoked", `Access for ${name} has been terminated.`, "info");
     } catch (err) {
       console.error(err);
-      showToast('Error', 'Failed to remove team member', 'error');
+      showToast("Error", "Failed to remove team member", "error");
     }
   };
 
@@ -138,7 +140,8 @@ export const CompanyRecruitersPage: React.FC = () => {
             Manage Recruiter Accounts & Corporate Logins
           </h1>
           <p className="text-sm text-black/60 dark:text-white/70 mt-1">
-            Generate and administer official MicroIntern recruiter credentials for your enterprise hiring team.
+            Generate and administer official MicroIntern recruiter credentials for your enterprise
+            hiring team.
           </p>
         </div>
 
@@ -213,7 +216,9 @@ export const CompanyRecruitersPage: React.FC = () => {
                   <span>Automated Credential Generation</span>
                 </div>
                 <p className="text-[11px] opacity-90">
-                  New seat will automatically receive temporary access key <code className="font-mono">MicroIntern#Recruit2026!</code> and access to enterprise candidate pipelines.
+                  New seat will automatically receive temporary access key{" "}
+                  <code className="font-mono">MicroIntern#Recruit2026!</code> and access to
+                  enterprise candidate pipelines.
                 </p>
               </div>
 
@@ -237,7 +242,8 @@ export const CompanyRecruitersPage: React.FC = () => {
                   Active Enterprise Recruiter Credentials ({recruiters.length})
                 </h2>
                 <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
-                  Recruiters can log into MicroIntern with these credentials to evaluate applicants and issue offers.
+                  Recruiters can log into MicroIntern with these credentials to evaluate applicants
+                  and issue offers.
                 </p>
               </div>
 

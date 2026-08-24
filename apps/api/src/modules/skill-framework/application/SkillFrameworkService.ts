@@ -2,8 +2,8 @@ import type {
   ISkillRepository,
   CreateSkillDTO,
   CreateSkillRelationshipDTO,
-} from '../domain/ISkillRepository.js';
-import type { Skill, SkillCategory, SubSkill, SkillRelationship } from '@microintern/database';
+} from "../domain/ISkillRepository.js";
+import type { Skill, SkillCategory, SubSkill, SkillRelationship } from "@microintern/database";
 
 export class SkillFrameworkService {
   constructor(private readonly skillRepo: ISkillRepository) {}
@@ -36,7 +36,12 @@ export class SkillFrameworkService {
     return this.skillRepo.listCategories();
   }
 
-  async addSubSkill(skillId: string, name: string, difficulty?: number, description?: string): Promise<SubSkill> {
+  async addSubSkill(
+    skillId: string,
+    name: string,
+    difficulty?: number,
+    description?: string,
+  ): Promise<SubSkill> {
     return this.skillRepo.createSubSkill(skillId, name, difficulty, description);
   }
 

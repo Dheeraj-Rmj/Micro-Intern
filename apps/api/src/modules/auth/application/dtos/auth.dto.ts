@@ -1,5 +1,5 @@
-import { EmailSchema, PasswordSchema, NameSchema } from '@microintern/shared';
-import { z } from 'zod';
+import { EmailSchema, PasswordSchema, NameSchema } from "@microintern/shared";
+import { z } from "zod";
 
 /**
  * Auth module DTOs (Data Transfer Objects).
@@ -38,7 +38,7 @@ export type RegisterCompanyOwnerDto = z.infer<typeof RegisterCompanyOwnerSchema>
 
 export const LoginSchema = z.object({
   email: EmailSchema,
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, "Password is required"),
 });
 
 export type LoginDto = z.infer<typeof LoginSchema>;
@@ -46,7 +46,7 @@ export type LoginDto = z.infer<typeof LoginSchema>;
 // ── Token Refresh ─────────────────────────────────────────────────────────────
 
 export const RefreshTokenSchema = z.object({
-  refreshToken: z.string().min(1, 'Refresh token is required'),
+  refreshToken: z.string().min(1, "Refresh token is required"),
 });
 
 export type RefreshTokenDto = z.infer<typeof RefreshTokenSchema>;
@@ -67,7 +67,7 @@ export const ResetPasswordSchema = z.object({
 export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
 
 export const ChangePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
+  currentPassword: z.string().min(1, "Current password is required"),
   newPassword: PasswordSchema,
 });
 
@@ -76,7 +76,7 @@ export type ChangePasswordDto = z.infer<typeof ChangePasswordSchema>;
 // ── Email Verification ─────────────────────────────────────────────────────────
 
 export const VerifyEmailSchema = z.object({
-  token: z.string().min(1, 'Verification token is required'),
+  token: z.string().min(1, "Verification token is required"),
 });
 
 export type VerifyEmailDto = z.infer<typeof VerifyEmailSchema>;
@@ -87,7 +87,7 @@ export type AuthTokensResponse = {
   accessToken: string;
   refreshToken: string;
   expiresIn: number; // seconds until access token expires
-  tokenType: 'Bearer';
+  tokenType: "Bearer";
 };
 
 export type AuthUserResponse = {
@@ -101,6 +101,5 @@ export type AuthUserResponse = {
   avatarUrl: string | null;
 };
 
-export type LoginResponse = 
-  | { user: AuthUserResponse; tokens: AuthTokensResponse }
-  | { mfaRequired: true; mfaToken: string };
+export type LoginResponse =
+  { user: AuthUserResponse; tokens: AuthTokensResponse } | { mfaRequired: true; mfaToken: string };

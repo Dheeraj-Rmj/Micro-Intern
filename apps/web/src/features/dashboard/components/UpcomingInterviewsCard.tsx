@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Calendar, Video, Clock, ArrowRight, Sparkles } from 'lucide-react';
+import Link from "next/link";
+import { Calendar, Video, Clock, ArrowRight, Sparkles } from "lucide-react";
 
 export function UpcomingInterviewsCard() {
   return (
@@ -13,12 +13,8 @@ export function UpcomingInterviewsCard() {
               <Calendar className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">
-                Upcoming Interviews
-              </h3>
-              <p className="text-xs text-slate-400">
-                Direct hiring lead conversations
-              </p>
+              <h3 className="text-base font-bold text-white">Upcoming Interviews</h3>
+              <p className="text-xs text-slate-400">Direct hiring lead conversations</p>
             </div>
           </div>
           <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-400">

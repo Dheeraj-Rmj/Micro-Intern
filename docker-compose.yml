@@ -75,8 +75,8 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
       MINIO_BROWSER: "on"
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # MinIO Console UI
+      - "9000:9000" # S3 API
+      - "9001:9001" # MinIO Console UI
     volumes:
       - minio_data:/data
     healthcheck:
@@ -112,8 +112,8 @@ services:
     container_name: microintern_mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
     networks:
       - microintern
 

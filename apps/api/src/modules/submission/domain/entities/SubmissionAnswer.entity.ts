@@ -9,7 +9,7 @@ export class SubmissionAnswer {
     public readonly earnedPoints: number | null,
     public readonly feedback: string | null,
     public readonly createdAt: Date,
-    public readonly updatedAt: Date
+    public readonly updatedAt: Date,
   ) {}
 
   static fromPrisma(record: any): SubmissionAnswer {
@@ -23,7 +23,7 @@ export class SubmissionAnswer {
       record.earnedPoints != null ? Number(record.earnedPoints) : null,
       record.feedback ?? null,
       record.createdAt,
-      record.updatedAt
+      record.updatedAt,
     );
   }
 }

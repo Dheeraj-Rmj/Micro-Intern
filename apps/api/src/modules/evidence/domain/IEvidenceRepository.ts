@@ -1,4 +1,10 @@
-import type { Evidence, EvidenceSkillMapping, EvidenceCompetencyMapping, EvidenceType, EvidenceVerificationStatus } from '@microintern/database';
+import type {
+  Evidence,
+  EvidenceSkillMapping,
+  EvidenceCompetencyMapping,
+  EvidenceType,
+  EvidenceVerificationStatus,
+} from "@microintern/database";
 
 export interface CreateEvidenceDTO {
   candidateId: string;
@@ -23,13 +29,26 @@ export interface VerifyEvidenceDTO {
 
 export interface IEvidenceRepository {
   findById(id: string): Promise<Evidence | null>;
-  listByCandidate(candidateId: string, options?: { type?: EvidenceType; status?: EvidenceVerificationStatus }): Promise<Evidence[]>;
+  listByCandidate(
+    candidateId: string,
+    options?: { type?: EvidenceType; status?: EvidenceVerificationStatus },
+  ): Promise<Evidence[]>;
   listBySubmission(submissionId: string): Promise<Evidence[]>;
   create(data: CreateEvidenceDTO): Promise<Evidence>;
   updateVerificationStatus(data: VerifyEvidenceDTO): Promise<Evidence>;
   delete(id: string): Promise<void>;
-  
+
   // Mappings
-  linkSkill(evidenceId: string, skillId: string, confidence?: number, notes?: string): Promise<EvidenceSkillMapping>;
-  linkCompetency(evidenceId: string, competencyId: string, confidence?: number, notes?: string): Promise<EvidenceCompetencyMapping>;
+  linkSkill(
+    evidenceId: string,
+    skillId: string,
+    confidence?: number,
+    notes?: string,
+  ): Promise<EvidenceSkillMapping>;
+  linkCompetency(
+    evidenceId: string,
+    competencyId: string,
+    confidence?: number,
+    notes?: string,
+  ): Promise<EvidenceCompetencyMapping>;
 }

@@ -1,10 +1,10 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
-import { DomainEventDispatcher } from '@/core/events/DomainEventDispatcher.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
+import { DomainEventDispatcher } from "@/core/events/DomainEventDispatcher.js";
 
-const log = createModuleLogger('EvaluationEngine');
+const log = createModuleLogger("EvaluationEngine");
 
-export type HiringDecisionType = 'STRONGLY_HIRE' | 'HIRE' | 'NO_HIRE' | 'PENDING_REVIEW';
+export type HiringDecisionType = "STRONGLY_HIRE" | "HIRE" | "NO_HIRE" | "PENDING_REVIEW";
 
 export interface IEvaluationEngine {
   addReviewerScore(
@@ -73,7 +73,7 @@ export class EvaluationEngine implements IEvaluationEngine {
     });
 
     if (!evaluation) {
-      log.warn({ evaluationId }, 'Evaluation not found during competency score calculation');
+      log.warn({ evaluationId }, "Evaluation not found during competency score calculation");
       return [];
     }
 
@@ -154,7 +154,7 @@ export class EvaluationEngine implements IEvaluationEngine {
 
     if (scores.length === 0) {
       return {
-        decision: 'PENDING_REVIEW',
+        decision: "PENDING_REVIEW",
         totalScore: 0,
         passed: false,
       };
@@ -171,17 +171,17 @@ export class EvaluationEngine implements IEvaluationEngine {
 
     const averagePercentage = totalWeight > 0 ? Number((weightedSum / totalWeight).toFixed(1)) : 0;
 
-    let decision: HiringDecisionType = 'NO_HIRE';
+    let decision: HiringDecisionType = "NO_HIRE";
     let passed = false;
 
     if (averagePercentage >= 85) {
-      decision = 'STRONGLY_HIRE';
+      decision = "STRONGLY_HIRE";
       passed = true;
     } else if (averagePercentage >= 70) {
-      decision = 'HIRE';
+      decision = "HIRE";
       passed = true;
     } else {
-      decision = 'NO_HIRE';
+      decision = "NO_HIRE";
       passed = false;
     }
 
@@ -195,15 +195,15 @@ export class EvaluationEngine implements IEvaluationEngine {
     });
 
     await DomainEventDispatcher.getInstance().dispatch({
-      eventName: 'EvaluationCompleted',
-      entityType: 'EVALUATION',
+      eventName: "EvaluationCompleted",
+      entityType: "EVALUATION",
       entityId: evaluationId,
       metadata: { totalScore: averagePercentage, decision, passed },
     });
 
     log.info(
       { evaluationId, averagePercentage, decision },
-      'Computed hiring recommendation decision',
+      "Computed hiring recommendation decision",
     );
 
     return {

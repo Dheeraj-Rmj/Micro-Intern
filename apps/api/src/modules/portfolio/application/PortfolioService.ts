@@ -4,8 +4,13 @@ import type {
   AddProjectDTO,
   AddAchievementDTO,
   AddTimelineEntryDTO,
-} from '../domain/IPortfolioRepository.js';
-import type { CandidatePortfolio, PortfolioProject, PortfolioAchievement, SkillTimelineEntry } from '@microintern/database';
+} from "../domain/IPortfolioRepository.js";
+import type {
+  CandidatePortfolio,
+  PortfolioProject,
+  PortfolioAchievement,
+  SkillTimelineEntry,
+} from "@microintern/database";
 
 export class PortfolioService {
   constructor(private readonly portfolioRepo: IPortfolioRepository) {}
@@ -30,12 +35,18 @@ export class PortfolioService {
     return portfolio;
   }
 
-  async updatePortfolio(candidateId: string, data: Partial<CreatePortfolioDTO>): Promise<CandidatePortfolio> {
+  async updatePortfolio(
+    candidateId: string,
+    data: Partial<CreatePortfolioDTO>,
+  ): Promise<CandidatePortfolio> {
     const existing = await this.getPortfolioByCandidateId(candidateId);
     return this.portfolioRepo.update(existing.candidateId, data);
   }
 
-  async addProject(candidateId: string, data: Omit<AddProjectDTO, 'portfolioId'>): Promise<PortfolioProject> {
+  async addProject(
+    candidateId: string,
+    data: Omit<AddProjectDTO, "portfolioId">,
+  ): Promise<PortfolioProject> {
     const portfolio = await this.getPortfolioByCandidateId(candidateId);
     const project = await this.portfolioRepo.addProject({
       ...data,
@@ -44,7 +55,7 @@ export class PortfolioService {
 
     await this.portfolioRepo.addTimelineEntry({
       portfolioId: portfolio.id,
-      eventType: 'PROJECT_ADDED',
+      eventType: "PROJECT_ADDED",
       title: `Added project: ${data.title}`,
       description: data.description,
     });
@@ -54,7 +65,7 @@ export class PortfolioService {
 
   async addAchievement(
     candidateId: string,
-    data: Omit<AddAchievementDTO, 'portfolioId'>
+    data: Omit<AddAchievementDTO, "portfolioId">,
   ): Promise<PortfolioAchievement> {
     const portfolio = await this.getPortfolioByCandidateId(candidateId);
     const achievement = await this.portfolioRepo.addAchievement({
@@ -64,7 +75,7 @@ export class PortfolioService {
 
     await this.portfolioRepo.addTimelineEntry({
       portfolioId: portfolio.id,
-      eventType: 'ACHIEVEMENT_EARNED',
+      eventType: "ACHIEVEMENT_EARNED",
       title: `Earned achievement: ${data.title}`,
       description: data.description,
     });
@@ -72,7 +83,10 @@ export class PortfolioService {
     return achievement;
   }
 
-  async addTimelineEntry(candidateId: string, data: Omit<AddTimelineEntryDTO, 'portfolioId'>): Promise<SkillTimelineEntry> {
+  async addTimelineEntry(
+    candidateId: string,
+    data: Omit<AddTimelineEntryDTO, "portfolioId">,
+  ): Promise<SkillTimelineEntry> {
     const portfolio = await this.getPortfolioByCandidateId(candidateId);
     return this.portfolioRepo.addTimelineEntry({
       ...data,

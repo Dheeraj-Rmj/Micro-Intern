@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Sparkles,
@@ -12,14 +12,14 @@ import {
   Command,
   ArrowRight,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
 export interface CommandItem {
   id: string;
   label: string;
   description: string;
   icon: React.ReactNode;
-  category: 'AI' | 'STUDIO' | 'PUBLISHING' | 'AUDIT';
+  category: "AI" | "STUDIO" | "PUBLISHING" | "AUDIT";
   onSelect: () => void;
 }
 
@@ -30,73 +30,73 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ isOpen, onClose, onSelectCommand }: CommandPaletteProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   // Keyboard shortcut listener for Cmd+K / Ctrl+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         // toggles or triggers search
       }
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   const commands: CommandItem[] = [
     {
-      id: 'AI_GENERATE_ASSESSMENT',
-      label: 'Generate Assessment with AI',
-      description: 'Use AI to generate competency tasks, rubrics & learning outcomes',
+      id: "AI_GENERATE_ASSESSMENT",
+      label: "Generate Assessment with AI",
+      description: "Use AI to generate competency tasks, rubrics & learning outcomes",
       icon: <Sparkles className="w-4 h-4 text-purple-400" />,
-      category: 'AI',
-      onSelect: () => onSelectCommand?.('AI_GENERATE_ASSESSMENT'),
+      category: "AI",
+      onSelect: () => onSelectCommand?.("AI_GENERATE_ASSESSMENT"),
     },
     {
-      id: 'VIEW_COMPETENCY_MATRIX',
-      label: 'View Competency Matrix',
-      description: 'Configure percentage weights and signal importance',
+      id: "VIEW_COMPETENCY_MATRIX",
+      label: "View Competency Matrix",
+      description: "Configure percentage weights and signal importance",
       icon: <Award className="w-4 h-4 text-indigo-400" />,
-      category: 'STUDIO',
-      onSelect: () => onSelectCommand?.('VIEW_COMPETENCY_MATRIX'),
+      category: "STUDIO",
+      onSelect: () => onSelectCommand?.("VIEW_COMPETENCY_MATRIX"),
     },
     {
-      id: 'OPEN_MULTI_DEVICE_PREVIEW',
-      label: 'Open Multi-Device Preview',
-      description: 'Preview assessment on Desktop, Tablet, Mobile, and Reviewer Rubric modes',
+      id: "OPEN_MULTI_DEVICE_PREVIEW",
+      label: "Open Multi-Device Preview",
+      description: "Preview assessment on Desktop, Tablet, Mobile, and Reviewer Rubric modes",
       icon: <Monitor className="w-4 h-4 text-blue-400" />,
-      category: 'STUDIO',
-      onSelect: () => onSelectCommand?.('OPEN_MULTI_DEVICE_PREVIEW'),
+      category: "STUDIO",
+      onSelect: () => onSelectCommand?.("OPEN_MULTI_DEVICE_PREVIEW"),
     },
     {
-      id: 'SAVE_AS_TEMPLATE',
-      label: 'Save as Reusable Template',
-      description: 'Create an Organization or Global reusable assessment template',
+      id: "SAVE_AS_TEMPLATE",
+      label: "Save as Reusable Template",
+      description: "Create an Organization or Global reusable assessment template",
       icon: <Bookmark className="w-4 h-4 text-amber-400" />,
-      category: 'PUBLISHING',
-      onSelect: () => onSelectCommand?.('SAVE_AS_TEMPLATE'),
+      category: "PUBLISHING",
+      onSelect: () => onSelectCommand?.("SAVE_AS_TEMPLATE"),
     },
     {
-      id: 'PUBLISH_ASSESSMENT',
-      label: 'Publish Assessment Assessment',
-      description: 'Run pre-publish validation and publish assessment to marketplace',
+      id: "PUBLISH_ASSESSMENT",
+      label: "Publish Assessment Assessment",
+      description: "Run pre-publish validation and publish assessment to marketplace",
       icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
-      category: 'PUBLISHING',
-      onSelect: () => onSelectCommand?.('PUBLISH_ASSESSMENT'),
+      category: "PUBLISHING",
+      onSelect: () => onSelectCommand?.("PUBLISH_ASSESSMENT"),
     },
     {
-      id: 'VIEW_ACTIVITY_TIMELINE',
-      label: 'View Activity Timeline',
-      description: 'Audit complete history of edits, AI generations, and approvals',
+      id: "VIEW_ACTIVITY_TIMELINE",
+      label: "View Activity Timeline",
+      description: "Audit complete history of edits, AI generations, and approvals",
       icon: <History className="w-4 h-4 text-pink-400" />,
-      category: 'AUDIT',
-      onSelect: () => onSelectCommand?.('VIEW_ACTIVITY_TIMELINE'),
+      category: "AUDIT",
+      onSelect: () => onSelectCommand?.("VIEW_ACTIVITY_TIMELINE"),
     },
   ];
 

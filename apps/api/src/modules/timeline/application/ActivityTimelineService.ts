@@ -1,4 +1,4 @@
-import { prisma } from '@/core/database.js';
+import { prisma } from "@/core/database.js";
 
 export interface IActivityTimelineFilter {
   assessmentId?: string;
@@ -18,7 +18,7 @@ export class ActivityTimelineService {
         ...(filter.companyId ? { companyId: filter.companyId } : {}),
         ...(filter.userId ? { userId: filter.userId } : {}),
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: filter.limit || 50,
     });
   }

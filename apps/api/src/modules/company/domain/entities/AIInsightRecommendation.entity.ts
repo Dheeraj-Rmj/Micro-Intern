@@ -8,6 +8,6 @@ export class AIInsightRecommendation {
     public readonly severity: string | null,
     public readonly metadata: any | null,
     public readonly createdAt: Date,
-    public readonly isDismissed: boolean
+    public readonly isDismissed: boolean,
   ) {}
 }

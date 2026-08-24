@@ -1,15 +1,18 @@
 # Module 02: Company Module
 
 ## 1. Overview
+
 Manages company profiles, billing tiers, and team members. A user with `COMPANY_OWNER` role creates the company and can invite `RECRUITER`s.
 
 ## 2. Backend Requirements (Vyshavi)
 
 ### Domain Entities
+
 - **Company**: `name`, `website`, `logoUrl`, `description`, `industry`.
 - **CompanyMember**: Joins `User` to `Company` with a specific role (`OWNER`, `RECRUITER`).
 
 ### Use Cases
+
 1. `CreateCompanyUseCase`: Creates company and assigns current user as OWNER.
 2. `UpdateCompanyUseCase`: Updates details and logo.
 3. `InviteTeamMemberUseCase`: Sends an email invite to a new user to join the company as a RECRUITER.
@@ -17,6 +20,7 @@ Manages company profiles, billing tiers, and team members. A user with `COMPANY_
 5. `RemoveTeamMemberUseCase`: Removes a user from the company.
 
 ### API Endpoints
+
 - `POST /api/v1/companies` - Create company (Requires `COMPANY_OWNER` with no existing company)
 - `GET /api/v1/companies/me` - Get context company
 - `PUT /api/v1/companies/me` - Update company
@@ -28,13 +32,16 @@ Manages company profiles, billing tiers, and team members. A user with `COMPANY_
 ## 3. Frontend Requirements (Mustab)
 
 ### Route Group: `(company)/company/settings`
+
 ### UI Components Needed
+
 - **Company Onboarding Flow**: If `COMPANY_OWNER` logs in and has no company, force redirect to a creation wizard.
 - **Company Profile Settings**: Form for name, website, industry, description. Logo uploader.
 - **Team Management Table**: Uses `SkeletonTable` while loading. Shows members, roles, and a "Remove" button (requires confirmation dialog using `radix-ui/react-alert-dialog`).
 - **Invite Modal**: Form with email input to invite recruiters.
 
 ## 4. Acceptance Criteria (Padmashree)
+
 - [ ] Company Owner can create exactly one company.
 - [ ] Owner can invite a user via email. The system sends an invitation email (via EventBus -> EmailService).
 - [ ] Invited user clicks link, registers, and is automatically added to the company as a RECRUITER.

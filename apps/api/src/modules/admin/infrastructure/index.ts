@@ -1,1 +1,1 @@
-export * from './repositories/PrismaAdminRepository.js';
+export * from "./repositories/PrismaAdminRepository.js";

@@ -1,13 +1,18 @@
-import { AIProvider } from '@microintern/shared';
+import { AIProvider } from "@microintern/shared";
 
-import { config } from '@/core/config.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { config } from "@/core/config.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-import { AIProviderError } from '../interfaces/IAIProvider.js';
+import { AIProviderError } from "../interfaces/IAIProvider.js";
 
-import type { IAIProvider, AICompletionRequest, AICompletionResponse, AIProviderHealth } from '../interfaces/IAIProvider.js';
+import type {
+  IAIProvider,
+  AICompletionRequest,
+  AICompletionResponse,
+  AIProviderHealth,
+} from "../interfaces/IAIProvider.js";
 
-const log = createModuleLogger('OpenRouterProvider');
+const log = createModuleLogger("OpenRouterProvider");
 
 /**
  * OpenRouter Provider — second fallback.
@@ -19,7 +24,7 @@ const log = createModuleLogger('OpenRouterProvider');
 export class OpenRouterProvider implements IAIProvider {
   readonly name = AIProvider.OPENROUTER;
   readonly defaultModel = config.OPENROUTER_DEFAULT_MODEL;
-  private readonly baseUrl = 'https://openrouter.ai/api/v1';
+  private readonly baseUrl = "https://openrouter.ai/api/v1";
 
   isConfigured(): boolean {
     return config.OPENROUTER_API_KEY !== undefined && config.OPENROUTER_API_KEY.length > 0;
@@ -27,19 +32,19 @@ export class OpenRouterProvider implements IAIProvider {
 
   async complete(request: AICompletionRequest): Promise<AICompletionResponse> {
     if (!this.isConfigured()) {
-      throw new AIProviderError(AIProvider.OPENROUTER, 'OpenRouter API key not configured', false);
+      throw new AIProviderError(AIProvider.OPENROUTER, "OpenRouter API key not configured", false);
     }
 
     const start = Date.now();
 
     try {
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${config.OPENROUTER_API_KEY}`,
-          'HTTP-Referer': config.OPENROUTER_SITE_URL ?? 'https://microintern.io',
-          'X-Title': config.OPENROUTER_SITE_NAME ?? 'MicroIntern',
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.OPENROUTER_API_KEY}`,
+          "HTTP-Referer": config.OPENROUTER_SITE_URL ?? "https://microintern.io",
+          "X-Title": config.OPENROUTER_SITE_NAME ?? "MicroIntern",
         },
         body: JSON.stringify({
           model: request.model ?? this.defaultModel,
@@ -63,7 +68,7 @@ export class OpenRouterProvider implements IAIProvider {
         );
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         choices: Array<{ message: { content: string }; finish_reason: string }>;
         model: string;
         usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
@@ -71,7 +76,7 @@ export class OpenRouterProvider implements IAIProvider {
 
       const choice = data.choices[0];
       if (choice === undefined) {
-        throw new AIProviderError(AIProvider.OPENROUTER, 'No completion choices returned', true);
+        throw new AIProviderError(AIProvider.OPENROUTER, "No completion choices returned", true);
       }
 
       return {
@@ -84,14 +89,14 @@ export class OpenRouterProvider implements IAIProvider {
           totalTokens: data.usage.total_tokens,
         },
         latencyMs: Date.now() - start,
-        finishReason: (choice.finish_reason as AICompletionResponse['finishReason']) ?? 'stop',
+        finishReason: (choice.finish_reason as AICompletionResponse["finishReason"]) ?? "stop",
       };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
-      log.warn({ err: error }, 'OpenRouter API error');
+      log.warn({ err: error }, "OpenRouter API error");
       throw new AIProviderError(
         AIProvider.OPENROUTER,
-        error instanceof Error ? error.message : 'OpenRouter request failed',
+        error instanceof Error ? error.message : "OpenRouter request failed",
         true,
         error instanceof Error ? error : undefined,
       );
@@ -100,14 +105,30 @@ export class OpenRouterProvider implements IAIProvider {
 
   async healthCheck(): Promise<AIProviderHealth> {
     if (!this.isConfigured()) {
-      return { provider: AIProvider.OPENROUTER, status: 'unavailable', error: 'Not configured', checkedAt: new Date() };
+      return {
+        provider: AIProvider.OPENROUTER,
+        status: "unavailable",
+        error: "Not configured",
+        checkedAt: new Date(),
+      };
     }
     const start = Date.now();
     try {
-      await this.complete({ messages: [{ role: 'user', content: 'Reply ok' }], maxTokens: 5 });
-      return { provider: AIProvider.OPENROUTER, status: 'available', latencyMs: Date.now() - start, checkedAt: new Date() };
+      await this.complete({ messages: [{ role: "user", content: "Reply ok" }], maxTokens: 5 });
+      return {
+        provider: AIProvider.OPENROUTER,
+        status: "available",
+        latencyMs: Date.now() - start,
+        checkedAt: new Date(),
+      };
     } catch {
-      return { provider: AIProvider.OPENROUTER, status: 'unavailable', latencyMs: Date.now() - start, error: 'Health check failed', checkedAt: new Date() };
+      return {
+        provider: AIProvider.OPENROUTER,
+        status: "unavailable",
+        latencyMs: Date.now() - start,
+        error: "Health check failed",
+        checkedAt: new Date(),
+      };
     }
   }
 }

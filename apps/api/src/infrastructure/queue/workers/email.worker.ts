@@ -1,12 +1,12 @@
-import { QUEUE_NAMES, QUEUE } from '@microintern/shared';
+import { QUEUE_NAMES, QUEUE } from "@microintern/shared";
 
-import { createModuleLogger } from '@/core/logger.js';
-import { getEmailService } from '@/infrastructure/email/EmailService.js';
-import { createWorker, type EmailJobData } from '@/infrastructure/queue/queues.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { getEmailService } from "@/infrastructure/email/EmailService.js";
+import { createWorker, type EmailJobData } from "@/infrastructure/queue/queues.js";
 
-import type { Worker } from 'bullmq';
+import type { Worker } from "bullmq";
 
-const log = createModuleLogger('EmailWorker');
+const log = createModuleLogger("EmailWorker");
 
 /**
  * Email Queue Worker — BullMQ Consumer.
@@ -22,16 +22,16 @@ export function startEmailWorker(): Worker<EmailJobData> {
     async (job) => {
       const { to, templateId, variables, subject } = job.data;
 
-      log.info({ jobId: job.id, to, templateId }, 'Processing email job');
+      log.info({ jobId: job.id, to, templateId }, "Processing email job");
 
       await emailService.sendTemplated({
         to,
         templateId,
-        subject: subject ?? 'Notification from MicroIntern',
+        subject: subject ?? "Notification from MicroIntern",
         variables,
       });
 
-      log.info({ jobId: job.id, to, templateId }, 'Email sent successfully');
+      log.info({ jobId: job.id, to, templateId }, "Email sent successfully");
     },
     {
       concurrency: QUEUE.EMAIL_CONCURRENCY,

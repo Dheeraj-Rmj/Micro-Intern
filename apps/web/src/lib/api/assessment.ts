@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface AssessmentTaskDto {
   id?: string;
@@ -63,7 +63,7 @@ export interface AssessmentDto {
 export interface ValidationIssue {
   field: string;
   message: string;
-  severity: 'ERROR' | 'WARNING';
+  severity: "ERROR" | "WARNING";
 }
 
 export interface AssessmentValidationResult {
@@ -75,7 +75,7 @@ export interface AssessmentValidationResult {
 
 export const assessmentApi = {
   createAssessment: async (payload: Partial<AssessmentDto>): Promise<AssessmentDto> => {
-    const { data } = await apiClient.post<{ data: AssessmentDto }>('/assessments', payload);
+    const { data } = await apiClient.post<{ data: AssessmentDto }>("/assessments", payload);
     return data.data;
   },
 
@@ -108,26 +108,31 @@ export const assessmentApi = {
     return data.data;
   },
 
-  listPublicAssessments: async (params?: Record<string, unknown>): Promise<{
+  listPublicAssessments: async (
+    params?: Record<string, unknown>,
+  ): Promise<{
     assessments: AssessmentDto[];
     meta: { pagination?: { total: number; page: number; limit: number } };
   }> => {
     const { data } = await apiClient.get<{
       data: AssessmentDto[];
       meta: { pagination?: { total: number; page: number; limit: number } };
-    }>('/assessments', { params });
+    }>("/assessments", { params });
     return { assessments: data.data, meta: data.meta };
   },
 
   createVersion: async (id: string, changeSummary: string): Promise<{ message: string }> => {
-    const { data } = await apiClient.post<{ data: { message: string } }>(`/assessments/${id}/versions`, {
-      changeSummary,
-    });
+    const { data } = await apiClient.post<{ data: { message: string } }>(
+      `/assessments/${id}/versions`,
+      {
+        changeSummary,
+      },
+    );
     return data.data;
   },
 
   listVersions: async (
-    id: string
+    id: string,
   ): Promise<
     Array<{
       id: string;
@@ -142,29 +147,34 @@ export const assessmentApi = {
   },
 
   restoreVersion: async (id: string, versionNumber: number): Promise<AssessmentDto> => {
-    const { data } = await apiClient.post<{ data: AssessmentDto }>(`/assessments/${id}/versions/restore`, {
-      versionNumber,
-    });
+    const { data } = await apiClient.post<{ data: AssessmentDto }>(
+      `/assessments/${id}/versions/restore`,
+      {
+        versionNumber,
+      },
+    );
     return data.data;
   },
 
   saveAsTemplate: async (
     id: string,
-    payload: { title: string; description: string; category: string; isGlobal?: boolean }
+    payload: { title: string; description: string; category: string; isGlobal?: boolean },
   ): Promise<{ id: string }> => {
     const { data } = await apiClient.post<{ data: { id: string } }>(
       `/assessments/${id}/template`,
-      payload
+      payload,
     );
     return data.data;
   },
 
   listTemplates: async (params?: { category?: string }): Promise<any[]> => {
-    const { data } = await apiClient.get<{ data: any[] }>('/assessments/templates', { params });
+    const { data } = await apiClient.get<{ data: any[] }>("/assessments/templates", { params });
     return data.data;
   },
 
-  getAnalytics: async (id: string): Promise<{
+  getAnalytics: async (
+    id: string,
+  ): Promise<{
     views: number;
     applications: number;
     starts: number;
@@ -178,14 +188,16 @@ export const assessmentApi = {
   },
 
   validateAssessment: async (id: string): Promise<AssessmentValidationResult> => {
-    const { data } = await apiClient.get<{ data: AssessmentValidationResult }>(`/assessments/${id}/validate`);
+    const { data } = await apiClient.get<{ data: AssessmentValidationResult }>(
+      `/assessments/${id}/validate`,
+    );
     return data.data;
   },
 
   triggerAIJob: async (
     id: string,
     action: string,
-    input: Record<string, unknown>
+    input: Record<string, unknown>,
   ): Promise<{ message: string; jobId: string; action: string }> => {
     const { data } = await apiClient.post<{
       data: { message: string; jobId: string; action: string };
@@ -202,11 +214,11 @@ export const assessmentApi = {
     // If it's a FormData object
     if (payload instanceof FormData) {
       const { data } = await apiClient.post(`/assessments/${id}/submit`, payload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { "Content-Type": "multipart/form-data" },
       });
       return data.data;
     }
-    
+
     // Default JSON payload
     const { data } = await apiClient.post(`/assessments/${id}/submit`, payload);
     return data.data;
@@ -217,7 +229,10 @@ export const assessmentApi = {
     techStack: string;
     difficulty: string;
   }): Promise<{ id: string }> => {
-    const { data } = await apiClient.post<{ data: { id: string } }>('/assessments/generate-micro-tasks', payload);
+    const { data } = await apiClient.post<{ data: { id: string } }>(
+      "/assessments/generate-micro-tasks",
+      payload,
+    );
     return data.data;
-  }
+  },
 };

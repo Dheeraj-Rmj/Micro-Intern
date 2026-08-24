@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-import { config } from '@/core/config.js';
-import { UnauthorizedError } from '@/shared/errors/index.js';
+import { config } from "@/core/config.js";
+import { UnauthorizedError } from "@/shared/errors/index.js";
 
-import type { AuthTokensResponse } from '../../application/dtos/auth.dto.js';
-import type { IJwtService } from '../../application/interfaces/IJwtService.js';
+import type { AuthTokensResponse } from "../../application/dtos/auth.dto.js";
+import type { IJwtService } from "../../application/interfaces/IJwtService.js";
 
 /**
  * JWT service — signs and verifies access and refresh tokens.
@@ -32,11 +32,11 @@ export class JwtService implements IJwtService {
       accessToken,
       refreshToken,
       expiresIn,
-      tokenType: 'Bearer',
+      tokenType: "Bearer",
     };
   }
 
-// eslint-disable-next-line @typescript-eslint/require-await
+  // eslint-disable-next-line @typescript-eslint/require-await
   async generateAccessToken(
     user: { id: string; email: string; role: string; companyId?: string | null },
     sessionId: string,
@@ -56,7 +56,7 @@ export class JwtService implements IJwtService {
         expiresIn,
         issuer: this.issuer,
         audience: this.audience,
-        algorithm: 'HS256',
+        algorithm: "HS256",
       },
     );
 
@@ -64,20 +64,16 @@ export class JwtService implements IJwtService {
   }
 
   private signRefreshToken(userId: string, sessionId: string): string {
-    return jwt.sign(
-      { sessionId },
-      this.refreshSecret,
-      {
-        subject: userId,
-        expiresIn: '7d',
-        issuer: this.issuer,
-        audience: this.audience,
-        algorithm: 'HS256',
-      },
-    );
+    return jwt.sign({ sessionId }, this.refreshSecret, {
+      subject: userId,
+      expiresIn: "7d",
+      issuer: this.issuer,
+      audience: this.audience,
+      algorithm: "HS256",
+    });
   }
 
-// eslint-disable-next-line @typescript-eslint/require-await
+  // eslint-disable-next-line @typescript-eslint/require-await
   async verifyAccessToken(token: string): Promise<{
     sub: string;
     email: string;
@@ -89,58 +85,57 @@ export class JwtService implements IJwtService {
       const payload = jwt.verify(token, this.accessSecret, {
         issuer: this.issuer,
         audience: this.audience,
-        algorithms: ['HS256'],
+        algorithms: ["HS256"],
       }) as jwt.JwtPayload;
 
       return {
-        sub: payload['sub'] as string,
-        email: payload['email'] as string,
-        role: payload['role'] as string,
-        companyId: (payload['companyId'] as string | null) ?? null,
-        sessionId: payload['sessionId'] as string,
+        sub: payload["sub"] as string,
+        email: payload["email"] as string,
+        role: payload["role"] as string,
+        companyId: (payload["companyId"] as string | null) ?? null,
+        sessionId: payload["sessionId"] as string,
       };
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new UnauthorizedError('Access token expired', 'AUTH_TOKEN_EXPIRED');
+        throw new UnauthorizedError("Access token expired", "AUTH_TOKEN_EXPIRED");
       }
-      throw new UnauthorizedError('Invalid access token', 'AUTH_TOKEN_INVALID');
+      throw new UnauthorizedError("Invalid access token", "AUTH_TOKEN_INVALID");
     }
   }
 
-// eslint-disable-next-line @typescript-eslint/require-await
+  // eslint-disable-next-line @typescript-eslint/require-await
   async verifyRefreshToken(token: string): Promise<{ sub: string; sessionId: string }> {
     try {
       const payload = jwt.verify(token, this.refreshSecret, {
         issuer: this.issuer,
         audience: this.audience,
-        algorithms: ['HS256'],
+        algorithms: ["HS256"],
       }) as jwt.JwtPayload;
 
       return {
-        sub: payload['sub'] as string,
-        sessionId: payload['sessionId'] as string,
+        sub: payload["sub"] as string,
+        sessionId: payload["sessionId"] as string,
       };
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
-        throw new UnauthorizedError('Refresh token expired. Please log in again.', 'AUTH_REFRESH_TOKEN_INVALID');
+        throw new UnauthorizedError(
+          "Refresh token expired. Please log in again.",
+          "AUTH_REFRESH_TOKEN_INVALID",
+        );
       }
-      throw new UnauthorizedError('Invalid refresh token', 'AUTH_REFRESH_TOKEN_INVALID');
+      throw new UnauthorizedError("Invalid refresh token", "AUTH_REFRESH_TOKEN_INVALID");
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async generateMfaToken(userId: string): Promise<string> {
-    return jwt.sign(
-      { type: 'mfa_pending' },
-      this.accessSecret,
-      {
-        subject: userId,
-        expiresIn: '5m', // 5 minutes to complete MFA
-        issuer: this.issuer,
-        audience: `${this.audience}:mfa`,
-        algorithm: 'HS256',
-      },
-    );
+    return jwt.sign({ type: "mfa_pending" }, this.accessSecret, {
+      subject: userId,
+      expiresIn: "5m", // 5 minutes to complete MFA
+      issuer: this.issuer,
+      audience: `${this.audience}:mfa`,
+      algorithm: "HS256",
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -149,18 +144,18 @@ export class JwtService implements IJwtService {
       const payload = jwt.verify(token, this.accessSecret, {
         issuer: this.issuer,
         audience: `${this.audience}:mfa`,
-        algorithms: ['HS256'],
+        algorithms: ["HS256"],
       }) as jwt.JwtPayload;
 
-      if (payload['type'] !== 'mfa_pending') {
-        throw new Error('Invalid token type');
+      if (payload["type"] !== "mfa_pending") {
+        throw new Error("Invalid token type");
       }
 
       return {
-        sub: payload['sub'] as string,
+        sub: payload["sub"] as string,
       };
     } catch (error) {
-      throw new UnauthorizedError('Invalid or expired MFA token', 'AUTH_MFA_TOKEN_INVALID');
+      throw new UnauthorizedError("Invalid or expired MFA token", "AUTH_MFA_TOKEN_INVALID");
     }
   }
 }

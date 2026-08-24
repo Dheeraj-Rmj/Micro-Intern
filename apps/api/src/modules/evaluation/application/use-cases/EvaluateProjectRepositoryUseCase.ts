@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { PROMPTS, compilePrompt } from '@/infrastructure/ai/PromptManager.js';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { PROMPTS, compilePrompt } from "@/infrastructure/ai/PromptManager.js";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('EvaluateProjectRepositoryUseCase');
+const log = createModuleLogger("EvaluateProjectRepositoryUseCase");
 
 export type EvaluateProjectRepositoryInput = {
   projectInstructions: string;
@@ -27,7 +27,7 @@ export class EvaluateProjectRepositoryUseCase {
   constructor(private readonly aiEngine: AIFallbackEngine) {}
 
   async execute(input: EvaluateProjectRepositoryInput): Promise<EvaluateProjectRepositoryOutput> {
-    log.info('Evaluating candidate project repository');
+    log.info("Evaluating candidate project repository");
 
     try {
       const prompt = compilePrompt(PROMPTS.PROJECT_EVALUATION, {
@@ -37,23 +37,23 @@ export class EvaluateProjectRepositoryUseCase {
 
       const response = await this.aiEngine.complete({
         messages: [
-          { role: 'system', content: prompt.systemMessage },
-          { role: 'user', content: prompt.userMessage },
+          { role: "system", content: prompt.systemMessage },
+          { role: "user", content: prompt.userMessage },
         ],
-        responseFormat: { type: 'json_object' },
+        responseFormat: { type: "json_object" },
       });
 
       const parsed = JSON.parse(response.content) as EvaluateProjectRepositoryOutput;
 
-      if (typeof parsed.projectScore !== 'number') {
-        throw new Error('AI returned invalid JSON structure for project evaluation');
+      if (typeof parsed.projectScore !== "number") {
+        throw new Error("AI returned invalid JSON structure for project evaluation");
       }
 
-      log.info('Successfully evaluated project repository');
+      log.info("Successfully evaluated project repository");
       return parsed;
     } catch (error) {
-      log.error({ err: error }, 'Failed to evaluate project repository');
-      throw new Error('Failed to evaluate project using AI');
+      log.error({ err: error }, "Failed to evaluate project repository");
+      throw new Error("Failed to evaluate project using AI");
     }
   }
 }

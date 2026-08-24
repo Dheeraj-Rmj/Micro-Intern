@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@microintern/database';
+import type { PrismaClient } from "@microintern/database";
 
 export interface SearchPaginationOptions {
   limit?: number;
@@ -8,12 +8,17 @@ export interface SearchPaginationOptions {
 export class SearchEngineService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async searchSkills(query?: string, categoryId?: string, minDifficulty?: number, options?: SearchPaginationOptions) {
+  async searchSkills(
+    query?: string,
+    categoryId?: string,
+    minDifficulty?: number,
+    options?: SearchPaginationOptions,
+  ) {
     const limit = options?.limit ?? 20;
     const where: any = {};
 
     if (query) {
-      where.name = { contains: query, mode: 'insensitive' };
+      where.name = { contains: query, mode: "insensitive" };
     }
     if (categoryId) {
       where.categoryId = categoryId;
@@ -26,7 +31,7 @@ export class SearchEngineService {
       where,
       take: limit + 1,
       cursor: options?.cursor ? { id: options.cursor } : undefined,
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
       include: { category: true } as any,
     });
 
@@ -44,7 +49,7 @@ export class SearchEngineService {
     const where: any = { isActive: true };
 
     if (query) {
-      where.title = { contains: query, mode: 'insensitive' };
+      where.title = { contains: query, mode: "insensitive" };
     }
     if (companyId) {
       where.companyId = companyId;
@@ -54,7 +59,7 @@ export class SearchEngineService {
       where,
       take: limit + 1,
       cursor: options?.cursor ? { id: options.cursor } : undefined,
-      orderBy: { title: 'asc' },
+      orderBy: { title: "asc" },
       include: { requiredSkills: { include: { skill: true } } } as any,
     });
 
@@ -67,12 +72,17 @@ export class SearchEngineService {
     return { items, nextCursor };
   }
 
-  async searchEvidence(query?: string, candidateId?: string, verificationStatus?: string, options?: SearchPaginationOptions): Promise<{ items: any[]; nextCursor?: string }> {
+  async searchEvidence(
+    query?: string,
+    candidateId?: string,
+    verificationStatus?: string,
+    options?: SearchPaginationOptions,
+  ): Promise<{ items: any[]; nextCursor?: string }> {
     const limit = options?.limit ?? 20;
     const where: any = { deletedAt: null };
 
     if (query) {
-      where.title = { contains: query, mode: 'insensitive' };
+      where.title = { contains: query, mode: "insensitive" };
     }
     if (candidateId) {
       where.candidateId = candidateId;
@@ -85,7 +95,7 @@ export class SearchEngineService {
       where,
       take: limit + 1,
       cursor: options?.cursor ? { id: options.cursor } : undefined,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: { linkedSkills: { include: { skill: true } } } as any,
     });
 
@@ -98,12 +108,16 @@ export class SearchEngineService {
     return { items, nextCursor };
   }
 
-  async searchPortfolios(query?: string, minScore?: number, options?: SearchPaginationOptions): Promise<{ items: any[]; nextCursor?: string }> {
+  async searchPortfolios(
+    query?: string,
+    minScore?: number,
+    options?: SearchPaginationOptions,
+  ): Promise<{ items: any[]; nextCursor?: string }> {
     const limit = options?.limit ?? 20;
     const where: any = { isPublic: true };
 
     if (query) {
-      where.bio = { contains: query, mode: 'insensitive' };
+      where.bio = { contains: query, mode: "insensitive" };
     }
     if (minScore !== undefined) {
       where.overallSkillScore = { gte: minScore };
@@ -113,7 +127,7 @@ export class SearchEngineService {
       where,
       take: limit + 1,
       cursor: options?.cursor ? { id: options.cursor } : undefined,
-      orderBy: { overallSkillScore: 'desc' },
+      orderBy: { overallSkillScore: "desc" },
       include: { projects: true } as any,
     });
 

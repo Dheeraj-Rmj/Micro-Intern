@@ -1,6 +1,6 @@
-import pino from 'pino';
+import pino from "pino";
 
-import { config, isDevelopment } from './config.js';
+import { config, isDevelopment } from "./config.js";
 
 /**
  * Application logger — Pino with structured JSON output.
@@ -16,15 +16,15 @@ export const logger = pino({
   level: config.LOG_LEVEL,
   redact: {
     paths: [
-      'req.headers.authorization',
-      'req.headers.cookie',
-      'req.body.password',
-      'req.body.passwordHash',
-      'req.body.token',
-      'req.body.refreshToken',
+      "req.headers.authorization",
+      "req.headers.cookie",
+      "req.body.password",
+      "req.body.passwordHash",
+      "req.body.token",
+      "req.body.refreshToken",
       'res.headers["set-cookie"]',
     ],
-    censor: '[REDACTED]',
+    censor: "[REDACTED]",
   },
   serializers: {
     req: pino.stdSerializers.req,
@@ -39,11 +39,11 @@ export const logger = pino({
   timestamp: pino.stdTimeFunctions.isoTime,
   ...(isDevelopment && {
     transport: {
-      target: 'pino-pretty',
+      target: "pino-pretty",
       options: {
         colorize: true,
-        translateTime: 'SYS:HH:MM:ss',
-        ignore: 'pid,hostname,app,version,env',
+        translateTime: "SYS:HH:MM:ss",
+        ignore: "pid,hostname,app,version,env",
       },
     },
   }),

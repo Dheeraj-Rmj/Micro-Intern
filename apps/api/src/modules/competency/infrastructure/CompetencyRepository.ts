@@ -1,4 +1,4 @@
-import { prisma } from '@/core/database.js';
+import { prisma } from "@/core/database.js";
 
 export interface ICompetencyRepository {
   findByName(name: string): Promise<any | null>;
@@ -28,21 +28,25 @@ export class PrismaCompetencyRepository implements ICompetencyRepository {
   public async listAll(category?: string): Promise<any[]> {
     return prisma.competency.findMany({
       where: category ? { category } : undefined,
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
   }
 
-  public async createCompetency(data: { name: string; description: string; category?: string }): Promise<any> {
+  public async createCompetency(data: {
+    name: string;
+    description: string;
+    category?: string;
+  }): Promise<any> {
     return prisma.competency.upsert({
       where: { name: data.name },
       create: {
         name: data.name,
         description: data.description,
-        category: data.category || 'Core',
+        category: data.category || "Core",
       },
       update: {
         description: data.description,
-        category: data.category || 'Core',
+        category: data.category || "Core",
       },
     });
   }
@@ -51,7 +55,7 @@ export class PrismaCompetencyRepository implements ICompetencyRepository {
     return prisma.competencyMapping.findMany({
       where: { assessmentId },
       include: { competency: true },
-      orderBy: { weight: 'desc' },
+      orderBy: { weight: "desc" },
     });
   }
 
@@ -72,8 +76,8 @@ export class PrismaCompetencyRepository implements ICompetencyRepository {
         taskId: data.taskId || null,
         criteriaId: data.criteriaId || null,
         weight: data.weight ?? 10.0,
-        importance: data.importance || 'MEDIUM',
-        minLevel: data.minLevel || 'SENIOR',
+        importance: data.importance || "MEDIUM",
+        minLevel: data.minLevel || "SENIOR",
         notes: data.notes || null,
       },
       include: { competency: true },

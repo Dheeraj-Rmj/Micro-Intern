@@ -1,19 +1,18 @@
-import { Prisma } from '@microintern/database';
-import { ZodError } from 'zod';
+import { Prisma } from "@microintern/database";
+import { ZodError } from "zod";
 
-import { logger } from '@/core/logger.js';
+import { logger } from "@/core/logger.js";
 import {
   ValidationError,
   ConflictError,
   NotFoundError,
   InternalServerError,
   isAppError,
-} from '@/shared/errors/index.js';
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
+} from "@/shared/errors/index.js";
+import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
 
-import type {
-  AppError} from '@/shared/errors/index.js';
-import type { ErrorRequestHandler , Request, Response, NextFunction } from 'express';
+import type { AppError } from "@/shared/errors/index.js";
+import type { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 
 /**
  * Global error handler middleware.
@@ -44,26 +43,23 @@ export const errorMiddleware: ErrorRequestHandler = (
   } else if (error instanceof ZodError) {
     // Zod validation error that escaped the validate middleware
     appError = new ValidationError(
-      'Validation failed',
-      error.issues.map((i) => ({ field: i.path.join('.'), message: i.message, code: i.code })),
+      "Validation failed",
+      error.issues.map((i) => ({ field: i.path.join("."), message: i.message, code: i.code })),
     );
   } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
     appError = mapPrismaError(error);
   } else if (error instanceof Prisma.PrismaClientValidationError) {
-    appError = new ValidationError('Invalid database query parameters');
+    appError = new ValidationError("Invalid database query parameters");
   } else {
     // Unknown error — bug or library error
-    let message = error instanceof Error ? error.message : 'An unexpected error occurred';
+    let message = error instanceof Error ? error.message : "An unexpected error occurred";
 
     // Extract SAMLResponse for debugging signature issues
-    if (message.includes('Invalid document signature') && req.body && req.body.SAMLResponse) {
+    if (message.includes("Invalid document signature") && req.body && req.body.SAMLResponse) {
       message = `Invalid document signature. RAW_SAML: ${req.body.SAMLResponse}`;
     }
 
-    appError = new InternalServerError(
-      message,
-      error instanceof Error ? error : undefined,
-    );
+    appError = new InternalServerError(message, error instanceof Error ? error : undefined);
   }
 
   // ── Logging ─────────────────────────────────────────────────────────────
@@ -77,7 +73,7 @@ export const errorMiddleware: ErrorRequestHandler = (
   };
 
   if (!appError.isOperational) {
-    logger.error({ ...logContext, err: error }, 'Non-operational error — requires investigation');
+    logger.error({ ...logContext, err: error }, "Non-operational error — requires investigation");
   } else if (appError.statusCode >= 500) {
     logger.error(logContext, appError.message);
   } else if (appError.statusCode >= 400) {
@@ -89,7 +85,8 @@ export const errorMiddleware: ErrorRequestHandler = (
     statusCode: appError.statusCode,
     code: appError.code,
     message: appError.message,
-    details: appError.details as Array<{ field?: string; message: string; code?: string }> | undefined,
+    details: appError.details as
+      Array<{ field?: string; message: string; code?: string }> | undefined,
   });
 };
 
@@ -98,26 +95,26 @@ export const errorMiddleware: ErrorRequestHandler = (
  */
 function mapPrismaError(error: Prisma.PrismaClientKnownRequestError): AppError {
   switch (error.code) {
-    case 'P2002': {
+    case "P2002": {
       // Unique constraint violation
-      const fields = (error.meta?.['target'] as string[] | undefined)?.join(', ') ?? 'field';
+      const fields = (error.meta?.["target"] as string[] | undefined)?.join(", ") ?? "field";
       return new ConflictError(`A record with this ${fields} already exists`);
     }
-    case 'P2025': {
+    case "P2025": {
       // Record not found
-      return new NotFoundError('Record');
+      return new NotFoundError("Record");
     }
-    case 'P2003': {
+    case "P2003": {
       // Foreign key constraint violation
-      return new ValidationError('Referenced resource does not exist');
+      return new ValidationError("Referenced resource does not exist");
     }
-    case 'P2014': {
+    case "P2014": {
       // Relation violation
-      return new ValidationError('Invalid relation — cannot perform this operation');
+      return new ValidationError("Invalid relation — cannot perform this operation");
     }
     default: {
-      logger.error({ prismaCode: error.code, err: error }, 'Unmapped Prisma error');
-      return new InternalServerError('Database operation failed');
+      logger.error({ prismaCode: error.code, err: error }, "Unmapped Prisma error");
+      return new InternalServerError("Database operation failed");
     }
   }
 }

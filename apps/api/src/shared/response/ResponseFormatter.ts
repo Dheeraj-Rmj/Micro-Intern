@@ -1,5 +1,5 @@
-import type { PaginationMeta, CursorPaginationMeta } from '@microintern/shared';
-import type { Response } from 'express';
+import type { PaginationMeta, CursorPaginationMeta } from "@microintern/shared";
+import type { Response } from "express";
 
 /**
  * Standard API Response Formatter.
@@ -21,11 +21,7 @@ export class ResponseFormatter {
   /**
    * Send a successful response.
    */
-  static success<T>(
-    res: Response,
-    data: T,
-    options: SendOptions = {},
-  ): Response {
+  static success<T>(res: Response, data: T, options: SendOptions = {}): Response {
     const { statusCode = 200, pagination, cursorPagination } = options;
 
     const requestId = ResponseFormatter.getRequestId(res);
@@ -59,11 +55,7 @@ export class ResponseFormatter {
   /**
    * Send a paginated list response.
    */
-  static paginated<T>(
-    res: Response,
-    data: T[],
-    pagination: PaginationMeta,
-  ): Response {
+  static paginated<T>(res: Response, data: T[], pagination: PaginationMeta): Response {
     return ResponseFormatter.success(res, data, { pagination });
   }
 

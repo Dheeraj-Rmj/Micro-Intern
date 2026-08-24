@@ -1,4 +1,4 @@
-import { NotificationChannel } from '@microintern/shared';
+import { NotificationChannel } from "@microintern/shared";
 
 export interface NotificationProps {
   id?: string;
@@ -54,14 +54,14 @@ export class Notification {
   }
 
   public static create(props: NotificationProps): Notification {
-    if (!props.userId || props.userId.trim() === '') {
-      throw new Error('Notification requires a valid userId');
+    if (!props.userId || props.userId.trim() === "") {
+      throw new Error("Notification requires a valid userId");
     }
-    if (!props.title || props.title.trim() === '') {
-      throw new Error('Notification requires a non-empty title');
+    if (!props.title || props.title.trim() === "") {
+      throw new Error("Notification requires a non-empty title");
     }
-    if (!props.body || props.body.trim() === '') {
-      throw new Error('Notification requires a non-empty body');
+    if (!props.body || props.body.trim() === "") {
+      throw new Error("Notification requires a non-empty body");
     }
 
     return new Notification({

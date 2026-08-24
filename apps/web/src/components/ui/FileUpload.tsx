@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 
-import { Button } from './Button';
+import { Button } from "./Button";
 
 interface FileUploadProps {
   label: string;
@@ -14,10 +14,10 @@ interface FileUploadProps {
 
 export function FileUpload({
   label,
-  accept = '*/*',
+  accept = "*/*",
   onUpload,
   currentFileUrl,
-  buttonText = 'Upload File',
+  buttonText = "Upload File",
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -32,13 +32,13 @@ export function FileUpload({
       setError(null);
       await onUpload(file);
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to upload file';
+      const errorMsg = err instanceof Error ? err.message : "Failed to upload file";
       setError(errorMsg);
     } finally {
       setIsUploading(false);
       // Reset input so the same file can be selected again if needed
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -64,7 +64,9 @@ export function FileUpload({
           accept={accept}
           className="hidden"
           ref={fileInputRef}
-          onChange={(e) => { void handleFileChange(e); }}
+          onChange={(e) => {
+            void handleFileChange(e);
+          }}
         />
         <Button
           type="button"

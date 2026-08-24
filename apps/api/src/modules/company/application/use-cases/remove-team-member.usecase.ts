@@ -1,21 +1,21 @@
-import { createModuleLogger } from '@/core/logger.js';
+import { createModuleLogger } from "@/core/logger.js";
 
 import {
   CompanyNotFoundError,
   NotCompanyOwnerError,
   MemberNotFoundError,
   CannotRemoveOwnerError,
-} from '../../domain/errors/company.errors.js';
+} from "../../domain/errors/company.errors.js";
 
-import type { ICompanyRepository } from '../../domain/repositories/ICompanyRepository.js';
+import type { ICompanyRepository } from "../../domain/repositories/ICompanyRepository.js";
 
-const log = createModuleLogger('RemoveTeamMemberUseCase');
+const log = createModuleLogger("RemoveTeamMemberUseCase");
 
 export class RemoveTeamMemberUseCase {
   constructor(private readonly companyRepository: ICompanyRepository) {}
 
   async execute(requestingUserId: string, targetUserId: string): Promise<void> {
-    log.info({ requestingUserId, targetUserId }, 'Attempting to remove team member');
+    log.info({ requestingUserId, targetUserId }, "Attempting to remove team member");
 
     const company = await this.companyRepository.findByUserId(requestingUserId);
     if (company === null) {
@@ -41,6 +41,6 @@ export class RemoveTeamMemberUseCase {
       throw new MemberNotFoundError(targetUserId);
     }
 
-    log.info({ companyId: company.id, targetUserId }, 'Team member removed successfully');
+    log.info({ companyId: company.id, targetUserId }, "Team member removed successfully");
   }
 }

@@ -1,4 +1,4 @@
-import type { AIProvider } from '@microintern/shared';
+import type { AIProvider } from "@microintern/shared";
 
 /**
  * AI Provider Interface — the contract all AI providers must implement.
@@ -11,7 +11,7 @@ import type { AIProvider } from '@microintern/shared';
  */
 
 export type AIMessage = {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 };
 
@@ -22,7 +22,7 @@ export type AICompletionRequest = {
   temperature?: number;
   topP?: number;
   stream?: false; // Streaming handled separately
-  responseFormat?: { type: 'json_object' | 'text' };
+  responseFormat?: { type: "json_object" | "text" };
 };
 
 export type AICompletionResponse = {
@@ -35,12 +35,12 @@ export type AICompletionResponse = {
     totalTokens: number;
   };
   latencyMs: number;
-  finishReason: 'stop' | 'length' | 'content_filter' | 'error';
+  finishReason: "stop" | "length" | "content_filter" | "error";
 };
 
 export type AIProviderHealth = {
   provider: AIProvider;
-  status: 'available' | 'degraded' | 'unavailable';
+  status: "available" | "degraded" | "unavailable";
   latencyMs?: number;
   error?: string;
   checkedAt: Date;
@@ -81,7 +81,7 @@ export class AIProviderError extends Error {
     public override readonly cause?: Error,
   ) {
     super(message);
-    this.name = 'AIProviderError';
+    this.name = "AIProviderError";
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }

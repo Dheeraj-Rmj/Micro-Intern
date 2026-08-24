@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { Bot, Sparkles, Code, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
-import { assessmentApi } from '@/lib/api/assessment';
-import { useApp } from '../../context/AppContext';
+import React, { useState } from "react";
+import { Bot, Sparkles, Code, CheckCircle, Loader2, ArrowRight } from "lucide-react";
+import { assessmentApi } from "@/lib/api/assessment";
+import { useApp } from "../../context/AppContext";
 
 export const CompanyAIGeneratorPage: React.FC = () => {
   const { setCurrentRoute } = useApp();
-  const [projectContext, setProjectContext] = useState('');
-  const [techStack, setTechStack] = useState('');
-  const [difficulty, setDifficulty] = useState('Medium');
+  const [projectContext, setProjectContext] = useState("");
+  const [techStack, setTechStack] = useState("");
+  const [difficulty, setDifficulty] = useState("Medium");
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<any>(null);
 
   const handleGenerate = async () => {
     if (!projectContext.trim() || !techStack.trim()) return;
-    
+
     setIsGenerating(true);
     setResult(null);
 
@@ -25,8 +25,8 @@ export const CompanyAIGeneratorPage: React.FC = () => {
       });
       setResult(response);
     } catch (error) {
-      console.error('Failed to generate tasks:', error);
-      alert('Failed to generate micro-tasks. Please try again.');
+      console.error("Failed to generate tasks:", error);
+      alert("Failed to generate micro-tasks. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -44,7 +44,8 @@ export const CompanyAIGeneratorPage: React.FC = () => {
             AI Micro-Task Generator
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-3 text-lg max-w-2xl leading-relaxed">
-            Paste a Jira ticket or project description, and let our AI instantly generate a structured, real-world skill assessment.
+            Paste a Jira ticket or project description, and let our AI instantly generate a
+            structured, real-world skill assessment.
           </p>
         </div>
       </div>
@@ -99,7 +100,14 @@ export const CompanyAIGeneratorPage: React.FC = () => {
                   <option value="Hard">Hard (Senior)</option>
                 </select>
                 <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -131,7 +139,7 @@ export const CompanyAIGeneratorPage: React.FC = () => {
           {/* Decorative background elements */}
           <div className="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
           <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-          
+
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2 relative z-10">
             <CheckCircle className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
             Generated Result
@@ -147,12 +155,15 @@ export const CompanyAIGeneratorPage: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Synthesizing Tasks</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    Synthesizing Tasks
+                  </h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Analyzing context, mapping skills, and building a comprehensive coding challenge rubric...
+                    Analyzing context, mapping skills, and building a comprehensive coding challenge
+                    rubric...
                   </p>
                 </div>
-                
+
                 {/* Progress bar skeleton */}
                 <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                   <div className="h-full bg-indigo-500 rounded-full w-1/2 animate-[pulse_2s_ease-in-out_infinite]" />
@@ -165,24 +176,31 @@ export const CompanyAIGeneratorPage: React.FC = () => {
                     <CheckCircle className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-slate-900 dark:text-emerald-50 mb-2">Assessment Ready!</h3>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-emerald-50 mb-2">
+                      Assessment Ready!
+                    </h3>
                     <p className="text-slate-600 dark:text-emerald-200/70 mb-6 leading-relaxed">
-                      The micro-tasks have been successfully drafted based on your Jira requirements. They are now pending your final review.
+                      The micro-tasks have been successfully drafted based on your Jira
+                      requirements. They are now pending your final review.
                     </p>
-                    
+
                     <div className="bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/5 rounded-xl p-4 inline-flex flex-col gap-1 w-full sm:w-auto">
-                      <span className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider">Assessment ID</span>
-                      <code className="text-slate-800 dark:text-emerald-300 font-mono text-sm font-semibold">{result.id}</code>
+                      <span className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider">
+                        Assessment ID
+                      </span>
+                      <code className="text-slate-800 dark:text-emerald-300 font-mono text-sm font-semibold">
+                        {result.id}
+                      </code>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mt-8 pt-6 border-t border-slate-100 dark:border-emerald-900/30 flex justify-end">
-                  <button 
-                    onClick={() => setCurrentRoute('company-manage-trials')}
+                  <button
+                    onClick={() => setCurrentRoute("company-manage-trials")}
                     className="group flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/20 text-white dark:text-emerald-400 rounded-xl font-semibold transition-all shadow-md dark:shadow-none"
                   >
-                    Review in Dashboard 
+                    Review in Dashboard
                     <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -193,9 +211,12 @@ export const CompanyAIGeneratorPage: React.FC = () => {
                   <Sparkles className="w-10 h-10 text-slate-400 dark:text-slate-500" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-200 mb-2">Ready to Generate</h3>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-200 mb-2">
+                    Ready to Generate
+                  </h3>
                   <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-                    Fill in the project details on the left, and watch the AI instantly build your assessment tasks.
+                    Fill in the project details on the left, and watch the AI instantly build your
+                    assessment tasks.
                   </p>
                 </div>
               </div>

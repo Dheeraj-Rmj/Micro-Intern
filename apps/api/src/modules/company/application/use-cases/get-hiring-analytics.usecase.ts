@@ -1,5 +1,5 @@
-import { ICompanyRepository } from '../ports/ICompanyRepository';
-import { CompanyAnalyticsSnapshot } from '../../domain/entities/CompanyAnalyticsSnapshot.entity';
+import { ICompanyRepository } from "../ports/ICompanyRepository";
+import { CompanyAnalyticsSnapshot } from "../../domain/entities/CompanyAnalyticsSnapshot.entity";
 
 export class GetHiringAnalyticsUseCase {
   constructor(private companyRepo: ICompanyRepository) {}

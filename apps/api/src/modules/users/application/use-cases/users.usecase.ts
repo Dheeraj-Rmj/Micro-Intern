@@ -1,6 +1,6 @@
-import { PrismaClient } from '@microintern/database';
-import { v7 as uuidv7 } from 'uuid';
-import { InternalServerError } from '@/shared/errors/index.js';
+import { PrismaClient } from "@microintern/database";
+import { v7 as uuidv7 } from "uuid";
+import { InternalServerError } from "@/shared/errors/index.js";
 
 export class UsersUseCase {
   private prisma: PrismaClient;
@@ -22,16 +22,16 @@ export class UsersUseCase {
         data: {
           token,
           superAdminId,
-          status: 'PENDING',
-        }
+          status: "PENDING",
+        },
       });
 
       return {
         token,
-        url: `http://localhost:3000/users/ekyc/${token}`
+        url: `http://localhost:3000/users/ekyc/${token}`,
       };
     } catch (error: any) {
-      throw new InternalServerError('Failed to generate secure onboarding token', error);
+      throw new InternalServerError("Failed to generate secure onboarding token", error);
     }
   }
 }

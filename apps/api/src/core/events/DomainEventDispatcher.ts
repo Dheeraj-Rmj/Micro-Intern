@@ -1,38 +1,38 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('DomainEventDispatcher');
+const log = createModuleLogger("DomainEventDispatcher");
 
 export interface IDomainEvent {
   eventName:
-    | 'AssessmentCreated'
-    | 'AssessmentUpdated'
-    | 'AssessmentPublished'
-    | 'AssessmentArchived'
-    | 'AssessmentDeleted'
-    | 'AssessmentDuplicated'
-    | 'AssessmentVersionCreated'
-    | 'AssessmentTemplateCreated'
-    | 'AssessmentViewed'
-    | 'AssessmentStarted'
-    | 'AssessmentSubmitted'
-    | 'EvaluationStarted'
-    | 'EvaluationCompleted'
-    | 'EvaluationVerified'
-    | 'EvaluationPublished'
-    | 'CompanyCreated'
-    | 'CompanyUpdated'
-    | 'CompanyMemberAdded'
-    | 'CompanyMemberRemoved'
-    | 'CandidateJourneyStarted'
-    | 'CandidateJourneyStatusChanged'
-    | 'EvidenceRegistered'
-    | 'SkillVerified'
-    | 'SkillVerificationStatusChanged'
-    | 'AIAssessmentGenerated'
-    | 'RubricGenerated'
-    | 'SkillsSuggested'
-    | 'VersionRestored'
+    | "AssessmentCreated"
+    | "AssessmentUpdated"
+    | "AssessmentPublished"
+    | "AssessmentArchived"
+    | "AssessmentDeleted"
+    | "AssessmentDuplicated"
+    | "AssessmentVersionCreated"
+    | "AssessmentTemplateCreated"
+    | "AssessmentViewed"
+    | "AssessmentStarted"
+    | "AssessmentSubmitted"
+    | "EvaluationStarted"
+    | "EvaluationCompleted"
+    | "EvaluationVerified"
+    | "EvaluationPublished"
+    | "CompanyCreated"
+    | "CompanyUpdated"
+    | "CompanyMemberAdded"
+    | "CompanyMemberRemoved"
+    | "CandidateJourneyStarted"
+    | "CandidateJourneyStatusChanged"
+    | "EvidenceRegistered"
+    | "SkillVerified"
+    | "SkillVerificationStatusChanged"
+    | "AIAssessmentGenerated"
+    | "RubricGenerated"
+    | "SkillsSuggested"
+    | "VersionRestored"
     | string;
   entityType: string;
   entityId: string;
@@ -82,17 +82,17 @@ export class DomainEventDispatcher {
 
     log.info(
       { eventName: ev.eventName, entityType: ev.entityType, entityId: ev.entityId },
-      'Dispatching domain event',
+      "Dispatching domain event",
     );
 
     // 1. Asynchronously persist to DomainEventLog & ActivityTimelineEntry without blocking
     this.persistEventLog(ev).catch((err) => {
-      log.error({ err, eventName: ev.eventName }, 'Failed to persist domain event log to database');
+      log.error({ err, eventName: ev.eventName }, "Failed to persist domain event log to database");
     });
 
     // 2. Invoke specific handlers
     const specificHandlers = this.subscribers.get(ev.eventName) || [];
-    const globalHandlers = this.subscribers.get('*') || [];
+    const globalHandlers = this.subscribers.get("*") || [];
     const allHandlers = [...specificHandlers, ...globalHandlers];
 
     await Promise.all(
@@ -100,7 +100,10 @@ export class DomainEventDispatcher {
         try {
           await handler(ev);
         } catch (err) {
-          log.error({ err, eventName: ev.eventName }, 'Subscriber error while handling domain event');
+          log.error(
+            { err, eventName: ev.eventName },
+            "Subscriber error while handling domain event",
+          );
         }
       }),
     );
@@ -121,12 +124,10 @@ export class DomainEventDispatcher {
 
     const metadata = event.metadata || {};
     const assessmentId =
-      event.entityType === 'ASSESSMENT'
-        ? event.entityId
-        : metadata['assessmentId'] || null;
+      event.entityType === "ASSESSMENT" ? event.entityId : metadata["assessmentId"] || null;
 
-    const companyId = metadata['companyId'] || null;
-    const userId = event.actorId || metadata['userId'] || null;
+    const companyId = metadata["companyId"] || null;
+    const userId = event.actorId || metadata["userId"] || null;
 
     await prisma.activityTimelineEntry.create({
       data: {

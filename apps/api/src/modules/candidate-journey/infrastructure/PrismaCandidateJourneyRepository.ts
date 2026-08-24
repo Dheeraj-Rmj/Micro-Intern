@@ -1,10 +1,10 @@
-import { PrismaClient, CandidateJourneyStatus } from '@microintern/database';
-import type { CandidateJourney, CandidateJourneyHistory } from '@microintern/database';
+import { PrismaClient, CandidateJourneyStatus } from "@microintern/database";
+import type { CandidateJourney, CandidateJourneyHistory } from "@microintern/database";
 import type {
   ICandidateJourneyRepository,
   CreateCandidateJourneyDTO,
   AdvanceJourneyStatusDTO,
-} from '../domain/ICandidateJourneyRepository.js';
+} from "../domain/ICandidateJourneyRepository.js";
 
 export class PrismaCandidateJourneyRepository implements ICandidateJourneyRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -14,17 +14,20 @@ export class PrismaCandidateJourneyRepository implements ICandidateJourneyReposi
       where: { id },
       include: {
         roleProfile: true,
-        history: { orderBy: { timestamp: 'desc' } },
+        history: { orderBy: { timestamp: "desc" } },
       } as any,
     });
   }
 
-  async findByCandidateAndCompany(candidateId: string, companyId: string): Promise<CandidateJourney | null> {
+  async findByCandidateAndCompany(
+    candidateId: string,
+    companyId: string,
+  ): Promise<CandidateJourney | null> {
     return this.prisma.candidateJourney.findFirst({
       where: { candidateId, companyId },
       include: {
         roleProfile: true,
-        history: { orderBy: { timestamp: 'desc' } },
+        history: { orderBy: { timestamp: "desc" } },
       } as any,
     });
   }
@@ -32,21 +35,24 @@ export class PrismaCandidateJourneyRepository implements ICandidateJourneyReposi
   async listByCandidate(candidateId: string): Promise<CandidateJourney[]> {
     return this.prisma.candidateJourney.findMany({
       where: { candidateId },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
       include: {
         roleProfile: true,
       } as any,
     });
   }
 
-  async listByCompany(companyId: string, status?: CandidateJourneyStatus): Promise<CandidateJourney[]> {
+  async listByCompany(
+    companyId: string,
+    status?: CandidateJourneyStatus,
+  ): Promise<CandidateJourney[]> {
     const where: any = { companyId };
     if (status) {
       where.status = status;
     }
     return this.prisma.candidateJourney.findMany({
       where,
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
       include: {
         roleProfile: true,
       } as any,
@@ -71,7 +77,7 @@ export class PrismaCandidateJourneyRepository implements ICandidateJourneyReposi
         journeyId: journey.id,
         fromStatus: CandidateJourneyStatus.INVITED,
         toStatus: journey.status,
-        reason: 'Journey initiated',
+        reason: "Journey initiated",
       },
     });
 
@@ -117,7 +123,7 @@ export class PrismaCandidateJourneyRepository implements ICandidateJourneyReposi
   async getHistory(journeyId: string): Promise<CandidateJourneyHistory[]> {
     return this.prisma.candidateJourneyHistory.findMany({
       where: { journeyId },
-      orderBy: { timestamp: 'desc' },
+      orderBy: { timestamp: "desc" },
     });
   }
 }

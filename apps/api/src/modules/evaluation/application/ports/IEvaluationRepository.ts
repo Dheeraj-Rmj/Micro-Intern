@@ -1,6 +1,5 @@
-import type { Evaluation } from '../../domain/entities/Evaluation.entity.js';
-import type { EvaluationStatus } from '@microintern/database';
-
+import type { Evaluation } from "../../domain/entities/Evaluation.entity.js";
+import type { EvaluationStatus } from "@microintern/database";
 
 export interface SaveEvaluationData {
   submissionId: string;

@@ -1,10 +1,10 @@
-import cors from 'cors';
-import helmet from 'helmet';
-import hpp from 'hpp';
+import cors from "cors";
+import helmet from "helmet";
+import hpp from "hpp";
 
-import { corsOrigins } from '@/core/config.js';
+import { corsOrigins } from "@/core/config.js";
 
-import type { Application } from 'express';
+import type { Application } from "express";
 
 /**
  * Security middleware stack.
@@ -31,7 +31,7 @@ export function applySecurityMiddleware(app: Application): void {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
-          imgSrc: ["'self'", 'data:', 'https:'],
+          imgSrc: ["'self'", "data:", "https:"],
           connectSrc: ["'self'"],
           fontSrc: ["'self'"],
           objectSrc: ["'none'"],
@@ -41,12 +41,12 @@ export function applySecurityMiddleware(app: Application): void {
       },
       // Cross-Origin headers
       crossOriginEmbedderPolicy: true,
-      crossOriginOpenerPolicy: { policy: 'same-origin' },
-      crossOriginResourcePolicy: { policy: 'same-site' },
+      crossOriginOpenerPolicy: { policy: "same-origin" },
+      crossOriginResourcePolicy: { policy: "same-site" },
       // Prevent MIME type sniffing
       noSniff: true,
       // Prevent clickjacking
-      frameguard: { action: 'deny' },
+      frameguard: { action: "deny" },
       // Enforce HTTPS
       hsts: {
         maxAge: 31_536_000, // 1 year
@@ -58,7 +58,7 @@ export function applySecurityMiddleware(app: Application): void {
       // Disable XSS filter (modern browsers ignore it, it can cause issues)
       xssFilter: false,
       // Referrer Policy
-      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      referrerPolicy: { policy: "strict-origin-when-cross-origin" },
     }),
   );
 
@@ -78,14 +78,9 @@ export function applySecurityMiddleware(app: Application): void {
         }
       },
       credentials: true, // Allow cookies
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Request-ID',
-        'X-Correlation-ID',
-      ],
-      exposedHeaders: ['X-Request-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining'],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "X-Request-ID", "X-Correlation-ID"],
+      exposedHeaders: ["X-Request-ID", "X-RateLimit-Limit", "X-RateLimit-Remaining"],
       maxAge: 86_400, // Preflight cache 24h
     }),
   );
@@ -94,7 +89,7 @@ export function applySecurityMiddleware(app: Application): void {
   // Whitelist parameters that legitimately accept arrays
   app.use(
     hpp({
-      whitelist: ['sort', 'filter', 'fields', 'expand'],
+      whitelist: ["sort", "filter", "fields", "expand"],
     }),
   );
 }

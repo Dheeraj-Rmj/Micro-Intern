@@ -1,16 +1,16 @@
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
-import express, { type Application } from 'express';
-import { pinoHttp } from 'pino-http';
+import compression from "compression";
+import cookieParser from "cookie-parser";
+import express, { type Application } from "express";
+import { pinoHttp } from "pino-http";
 
-import { healthRouter } from '@/api/health/health.routes.js';
-import { createV1Router } from '@/api/v1/index.js';
-import { errorMiddleware } from '@/middleware/error.middleware.js';
-import { createRateLimitMiddleware } from '@/middleware/ratelimit.middleware.js';
-import { applySecurityMiddleware } from '@/middleware/security.middleware.js';
-import { strictContentTypeMiddleware } from '@/middleware/content-type.middleware.js';
-import { xssSanitizerMiddleware } from '@/middleware/xss.middleware.js';
-import { logger } from './logger.js';
+import { healthRouter } from "@/api/health/health.routes.js";
+import { createV1Router } from "@/api/v1/index.js";
+import { errorMiddleware } from "@/middleware/error.middleware.js";
+import { createRateLimitMiddleware } from "@/middleware/ratelimit.middleware.js";
+import { applySecurityMiddleware } from "@/middleware/security.middleware.js";
+import { strictContentTypeMiddleware } from "@/middleware/content-type.middleware.js";
+import { xssSanitizerMiddleware } from "@/middleware/xss.middleware.js";
+import { logger } from "./logger.js";
 
 /**
  * Express application factory.
@@ -31,14 +31,14 @@ export function createApp(): Application {
   const app = express();
 
   // ── Trust proxy (required for rate limiting behind Nginx/load balancer) ─
-  app.set('trust proxy', 1);
+  app.set("trust proxy", 1);
 
   // ── Security middleware (helmet, CORS, HPP) ─────────────────────────────
   applySecurityMiddleware(app);
 
   // ── Body parsing ─────────────────────────────────────────────────────────
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
   app.use(cookieParser());
 
   // ── Advanced Data Security (XXE & XSS) ───────────────────────────────────
@@ -54,39 +54,38 @@ export function createApp(): Application {
       logger,
       // Auto-generate requestId, propagate to all child logs
       genReqId: (req) => {
-        return (req.headers['x-request-id'] as string | undefined) ?? crypto.randomUUID();
+        return (req.headers["x-request-id"] as string | undefined) ?? crypto.randomUUID();
       },
       customLogLevel: (req, res, error) => {
-        if (error !== undefined || res.statusCode >= 500) return 'error';
-        if (res.statusCode >= 400) return 'warn';
-        return 'info';
+        if (error !== undefined || res.statusCode >= 500) return "error";
+        if (res.statusCode >= 400) return "warn";
+        return "info";
       },
-      customSuccessMessage: (req, res) =>
-        `${req.method} ${req.url} ${res.statusCode}`,
+      customSuccessMessage: (req, res) => `${req.method} ${req.url} ${res.statusCode}`,
       customErrorMessage: (req, res, error) =>
         `${req.method} ${req.url} ${res.statusCode} - ${error.message}`,
       // Don't log health check endpoints (too noisy)
       autoLogging: {
-        ignore: (req) => req.url === '/health' || req.url === '/health/ready',
+        ignore: (req) => req.url === "/health" || req.url === "/health/ready",
       },
     }),
   );
 
   // ── Global rate limiting ─────────────────────────────────────────────────
-  app.use(createRateLimitMiddleware('global'));
+  app.use(createRateLimitMiddleware("global"));
 
   // ── Routes ───────────────────────────────────────────────────────────────
-  app.use('/health', healthRouter);
-  app.use('/api/v1', createV1Router());
+  app.use("/health", healthRouter);
+  app.use("/api/v1", createV1Router());
 
   // ── 404 handler ──────────────────────────────────────────────────────────
   app.use((req, res) => {
     res.status(404).json({
       success: false,
       error: {
-        code: 'NOT_FOUND',
+        code: "NOT_FOUND",
         message: `Cannot ${req.method} ${req.path}`,
-        requestId: (req as express.Request & { id?: string }).id ?? 'unknown',
+        requestId: (req as express.Request & { id?: string }).id ?? "unknown",
         timestamp: new Date().toISOString(),
       },
     });

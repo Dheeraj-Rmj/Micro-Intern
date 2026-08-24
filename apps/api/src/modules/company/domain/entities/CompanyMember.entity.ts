@@ -1,4 +1,4 @@
-import { Role } from '@microintern/shared';
+import { Role } from "@microintern/shared";
 
 /**
  * Company Member Domain Entity.
@@ -28,7 +28,7 @@ export class CompanyMember {
    * Check if this member is an owner of the company.
    */
   isOwner(): boolean {
-    return this.role === Role.COMPANY_OWNER || this.role === 'OWNER';
+    return this.role === Role.COMPANY_OWNER || this.role === "OWNER";
   }
 
   /**

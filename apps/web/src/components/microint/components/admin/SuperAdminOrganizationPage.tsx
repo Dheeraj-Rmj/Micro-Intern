@@ -1,7 +1,7 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
-import { adminApi, type AdminUser } from '@/lib/api/admin';
+"use client";
+import React, { useState, useEffect } from "react";
+import { useApp } from "../../context/AppContext";
+import { adminApi, type AdminUser } from "@/lib/api/admin";
 import {
   Users,
   Search,
@@ -21,22 +21,24 @@ import {
   Plus,
   ArrowRight,
   Key,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const SuperAdminOrganizationPage: React.FC = () => {
   const { showToast, setRole, setCurrentRoute } = useApp();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRoleFilter, setSelectedRoleFilter] = useState<'all' | 'candidate' | 'company' | 'recruiter'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRoleFilter, setSelectedRoleFilter] = useState<
+    "all" | "candidate" | "company" | "recruiter"
+  >("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [impersonateModalUser, setImpersonateModalUser] = useState<AdminUser | null>(null);
 
   // Enterprise Company eKYC Verification Modal State
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
-  const [companyLegalName, setCompanyLegalName] = useState('');
-  const [companyDomain, setCompanyDomain] = useState('');
-  const [einNumber, setEinNumber] = useState('');
-  const [escrowPool, setEscrowPool] = useState('$25,000');
+  const [companyLegalName, setCompanyLegalName] = useState("");
+  const [companyDomain, setCompanyDomain] = useState("");
+  const [einNumber, setEinNumber] = useState("");
+  const [escrowPool, setEscrowPool] = useState("$25,000");
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -44,7 +46,7 @@ export const SuperAdminOrganizationPage: React.FC = () => {
       const data = await adminApi.getUsers();
       setUsers(data);
     } catch (err) {
-      console.error('Failed to fetch admin users', err);
+      console.error("Failed to fetch admin users", err);
     } finally {
       setLoading(false);
     }
@@ -57,36 +59,36 @@ export const SuperAdminOrganizationPage: React.FC = () => {
   const handleVerifyCompany = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyLegalName.trim() || !companyDomain.trim()) {
-      showToast('Missing Fields', 'Please specify legal company name and domain.', 'warning');
+      showToast("Missing Fields", "Please specify legal company name and domain.", "warning");
       return;
     }
 
     try {
       // In a real flow, company is created first. Here we simulate verified company registration.
       showToast(
-        'Enterprise eKYC Submitted!',
+        "Enterprise eKYC Submitted!",
         `Submitted verification for "${companyLegalName}".`,
-        'success'
+        "success",
       );
       setShowAddCompanyModal(false);
       fetchUsers();
     } catch (err: any) {
-      showToast('Error', err.message || 'Verification failed.', 'warning');
+      showToast("Error", err.message || "Verification failed.", "warning");
     }
   };
 
   const handleLaunchCompanyPortal = () => {
-    setRole('company');
-    setCurrentRoute('company-dashboard');
+    setRole("company");
+    setCurrentRoute("company-dashboard");
     showToast(
-      '🏢 Enterprise Company Portal',
-      'Launched Enterprise Company Admin Portal. You are now viewing the Company Command Center.',
-      'info'
+      "🏢 Enterprise Company Portal",
+      "Launched Enterprise Company Admin Portal. You are now viewing the Company Command Center.",
+      "info",
     );
   };
 
   const filteredUsers = users.filter((u) => {
-    const matchesRole = selectedRoleFilter === 'all' || u.role === selectedRoleFilter;
+    const matchesRole = selectedRoleFilter === "all" || u.role === selectedRoleFilter;
     const matchesSearch =
       u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,28 +99,32 @@ export const SuperAdminOrganizationPage: React.FC = () => {
   const toggleVerification = async (userId: string) => {
     try {
       await adminApi.verifyCompany(userId);
-      showToast('Verification Updated', 'Enterprise verification status updated successfully.', 'success');
+      showToast(
+        "Verification Updated",
+        "Enterprise verification status updated successfully.",
+        "success",
+      );
       fetchUsers();
     } catch (err: any) {
-      showToast('Error', err.message || 'Action failed.', 'warning');
+      showToast("Error", err.message || "Action failed.", "warning");
     }
   };
 
   const toggleSuspension = async (userId: string) => {
     try {
       await adminApi.suspendUser(userId);
-      showToast('Suspension Updated', 'User suspension status updated successfully.', 'success');
+      showToast("Suspension Updated", "User suspension status updated successfully.", "success");
       fetchUsers();
     } catch (err: any) {
-      showToast('Error', err.message || 'Action failed.', 'warning');
+      showToast("Error", err.message || "Action failed.", "warning");
     }
   };
 
   const handleResetTrustScore = (userId: string, name: string) => {
     showToast(
-      'Trust Score Recalibrated',
+      "Trust Score Recalibrated",
       `AI evaluation weights for ${name} reset to default baseline (90).`,
-      'info'
+      "info",
     );
   };
 
@@ -168,10 +174,19 @@ export const SuperAdminOrganizationPage: React.FC = () => {
         {/* Role Segmented Tabs */}
         <div className="flex items-center p-1.5 rounded-full bg-black/5 dark:bg-white/5 w-full sm:w-auto overflow-x-auto">
           {[
-            { id: 'all', label: `All Users (${users.length})` },
-            { id: 'candidate', label: `Candidates (${users.filter((u) => u.role === 'candidate').length})` },
-            { id: 'company', label: `Enterprises (${users.filter((u) => u.role === 'company').length})` },
-            { id: 'recruiter', label: `Recruiters (${users.filter((u) => u.role === 'recruiter').length})` },
+            { id: "all", label: `All Users (${users.length})` },
+            {
+              id: "candidate",
+              label: `Candidates (${users.filter((u) => u.role === "candidate").length})`,
+            },
+            {
+              id: "company",
+              label: `Enterprises (${users.filter((u) => u.role === "company").length})`,
+            },
+            {
+              id: "recruiter",
+              label: `Recruiters (${users.filter((u) => u.role === "recruiter").length})`,
+            },
           ].map((tab) => {
             const isActive = selectedRoleFilter === tab.id;
             return (
@@ -180,8 +195,8 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                 onClick={() => setSelectedRoleFilter(tab.id as any)}
                 className={`px-5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+                    ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+                    : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -227,11 +242,11 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm shadow-sm ${
-                          user.role === 'company'
-                            ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20'
-                            : user.role === 'recruiter'
-                            ? 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20'
-                            : 'bg-black dark:bg-white text-white dark:text-black'
+                          user.role === "company"
+                            ? "bg-purple-500/10 text-purple-500 border border-purple-500/20"
+                            : user.role === "recruiter"
+                              ? "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
+                              : "bg-black dark:bg-white text-white dark:text-black"
                         }`}
                       >
                         {user.name.charAt(0)}
@@ -255,11 +270,11 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                   <td className="py-4 px-4">
                     <span
                       className={`px-2.5 py-1 rounded-full font-mono font-bold text-[10px] uppercase ${
-                        user.role === 'company'
-                          ? 'bg-purple-500/10 text-purple-500'
-                          : user.role === 'recruiter'
-                          ? 'bg-indigo-500/10 text-indigo-500'
-                          : 'bg-blue-500/10 text-blue-500'
+                        user.role === "company"
+                          ? "bg-purple-500/10 text-purple-500"
+                          : user.role === "recruiter"
+                            ? "bg-indigo-500/10 text-indigo-500"
+                            : "bg-blue-500/10 text-blue-500"
                       }`}
                     >
                       {user.role}
@@ -272,10 +287,10 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                         <div
                           className={`h-full rounded-full ${
                             user.trustScore >= 90
-                              ? 'bg-emerald-500'
+                              ? "bg-emerald-500"
                               : user.trustScore >= 70
-                              ? 'bg-blue-500'
-                              : 'bg-amber-500'
+                                ? "bg-blue-500"
+                                : "bg-amber-500"
                           }`}
                           style={{ width: `${user.trustScore}%` }}
                         />
@@ -289,9 +304,9 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                   <td className="py-4 px-4">
                     <span
                       className={`px-2.5 py-1 rounded-full font-mono text-[10px] font-bold uppercase ${
-                        user.status === 'active'
-                          ? 'bg-emerald-500/10 text-emerald-500'
-                          : 'bg-red-500/10 text-red-500'
+                        user.status === "active"
+                          ? "bg-emerald-500/10 text-emerald-500"
+                          : "bg-red-500/10 text-red-500"
                       }`}
                     >
                       {user.status}
@@ -309,10 +324,14 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                         onClick={() => toggleVerification(user.id)}
                         className={`p-2 rounded-xl border transition-colors cursor-pointer ${
                           user.verified
-                            ? 'border-blue-500/20 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20'
-                            : 'border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/40 dark:text-white/40'
+                            ? "border-blue-500/20 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20"
+                            : "border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/40 dark:text-white/40"
                         }`}
-                        title={user.verified ? 'Revoke Blue Tick Verification' : 'Grant Blue Tick Verification'}
+                        title={
+                          user.verified
+                            ? "Revoke Blue Tick Verification"
+                            : "Grant Blue Tick Verification"
+                        }
                       >
                         <ShieldCheck className="w-3.5 h-3.5" />
                       </button>
@@ -339,11 +358,15 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                       <button
                         onClick={() => toggleSuspension(user.id)}
                         className={`p-2 rounded-xl border transition-colors cursor-pointer ${
-                          user.status === 'suspended'
-                            ? 'border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20'
-                            : 'border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/60'
+                          user.status === "suspended"
+                            ? "border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                            : "border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 text-black/60 dark:text-white/60"
                         }`}
-                        title={user.status === 'suspended' ? 'Restore User Account' : 'Suspend User Account'}
+                        title={
+                          user.status === "suspended"
+                            ? "Restore User Account"
+                            : "Suspend User Account"
+                        }
                       >
                         <Ban className="w-3.5 h-3.5" />
                       </button>
@@ -371,7 +394,9 @@ export const SuperAdminOrganizationPage: React.FC = () => {
               <span>Impersonating {impersonateModalUser.name}</span>
             </h3>
             <p className="text-xs text-black/60 dark:text-white/70 mb-5 leading-relaxed">
-              You are about to switch your active session to <strong>{impersonateModalUser.email}</strong> ({impersonateModalUser.role}). This action is logged with SOC-2 audit timestamping.
+              You are about to switch your active session to{" "}
+              <strong>{impersonateModalUser.email}</strong> ({impersonateModalUser.role}). This
+              action is logged with SOC-2 audit timestamping.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
@@ -383,9 +408,9 @@ export const SuperAdminOrganizationPage: React.FC = () => {
               <button
                 onClick={() => {
                   showToast(
-                    'Impersonation Active',
+                    "Impersonation Active",
                     `Now viewing as ${impersonateModalUser.name} (${impersonateModalUser.email})`,
-                    'info'
+                    "info",
                   );
                   setImpersonateModalUser(null);
                 }}
@@ -518,7 +543,10 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                   </div>
                 </div>
                 <p className="text-[11px] opacity-90 leading-relaxed border-t border-indigo-500/20 pt-2">
-                  Upon verification, Company Admins under this domain will receive dedicated workspace access (<code className="font-mono text-amber-500 font-bold">@microintern</code>) to manage recruiter credentials, AI resources, and assessments.
+                  Upon verification, Company Admins under this domain will receive dedicated
+                  workspace access (
+                  <code className="font-mono text-amber-500 font-bold">@microintern</code>) to
+                  manage recruiter credentials, AI resources, and assessments.
                 </p>
               </div>
 

@@ -1,5 +1,5 @@
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Merge Tailwind classes — the standard `cn()` utility.
@@ -22,19 +22,19 @@ export function formatRelativeTime(date: Date | string): string {
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffSecs < 60) return 'just now';
+  if (diffSecs < 60) return "just now";
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 /**
  * Format bytes to human-readable size.
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const units = ['B', 'KB', 'MB', 'GB'];
+  if (bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
 }
@@ -45,10 +45,10 @@ export function formatFileSize(bytes: number): string {
  */
 export function getInitials(name: string): string {
   return name
-    .split(' ')
+    .split(" ")
     .map((n) => n[0])
     .slice(0, 2)
-    .join('')
+    .join("")
     .toUpperCase();
 }
 
@@ -77,7 +77,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 /**
  * Check if running in a browser environment.
  */
-export const isBrowser = typeof window !== 'undefined';
+export const isBrowser = typeof window !== "undefined";
 
 /**
  * Safely parse JSON with a fallback value.

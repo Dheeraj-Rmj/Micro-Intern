@@ -46,11 +46,7 @@ if (typeof data === 'object' && data !== null) { ... }
 
 ```typescript
 // ✅ Discriminated union — exhaustive
-type LoadState<T> =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: Error };
+type LoadState<T> = { status: "idle" } | { status: "loading" } | { status: "success"; data: T } | { status: "error"; error: Error };
 ```
 
 ---
@@ -61,11 +57,11 @@ type LoadState<T> =
 
 ```typescript
 // ✅ Correct
-throw new NotFoundError('Trial', trialId);
-throw new ForbiddenError('Only company owners can publish trials');
+throw new NotFoundError("Trial", trialId);
+throw new ForbiddenError("Only company owners can publish trials");
 
 // ❌ Wrong — raw Error loses HTTP status and error code
-throw new Error('Not found');
+throw new Error("Not found");
 ```
 
 ### Never swallow errors silently
@@ -82,7 +78,7 @@ try {
 try {
   await doSomething();
 } catch (error) {
-  log.error({ err: error }, 'Failed to do something');
+  log.error({ err: error }, "Failed to do something");
   throw error; // or convert to AppError
 }
 ```
@@ -124,17 +120,17 @@ presentation/ → can import from application/ only (not infrastructure/)
 
 ## Naming Conventions
 
-| Pattern | Convention | Example |
-|---------|-----------|---------|
-| Files | kebab-case | `user-repository.ts` |
-| Classes | PascalCase | `UserRepository` |
-| Interfaces | I-prefixed PascalCase | `IUserRepository` |
-| Enums | PascalCase | `TrialStatus` |
-| Functions | camelCase | `getUserById` |
-| Constants | SCREAMING_SNAKE_CASE | `MAX_LOGIN_ATTEMPTS` |
-| Types | PascalCase | `UserResponse` |
-| React components | PascalCase | `UserCard` |
-| Hooks | use-prefixed camelCase | `useCurrentUser` |
+| Pattern          | Convention             | Example              |
+| ---------------- | ---------------------- | -------------------- |
+| Files            | kebab-case             | `user-repository.ts` |
+| Classes          | PascalCase             | `UserRepository`     |
+| Interfaces       | I-prefixed PascalCase  | `IUserRepository`    |
+| Enums            | PascalCase             | `TrialStatus`        |
+| Functions        | camelCase              | `getUserById`        |
+| Constants        | SCREAMING_SNAKE_CASE   | `MAX_LOGIN_ATTEMPTS` |
+| Types            | PascalCase             | `UserResponse`       |
+| React components | PascalCase             | `UserCard`           |
+| Hooks            | use-prefixed camelCase | `useCurrentUser`     |
 
 ---
 

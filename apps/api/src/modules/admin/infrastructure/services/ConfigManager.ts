@@ -1,9 +1,9 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
-import { createModuleLogger } from '@/core/logger.js';
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('ConfigManager');
+const log = createModuleLogger("ConfigManager");
 
 export interface SystemConfig {
   featureFlags: {
@@ -39,34 +39,49 @@ const DEFAULT_CONFIG: SystemConfig = {
   },
   emailTemplates: [
     {
-      id: 'candidate_onboarding',
-      name: 'Candidate Onboarding Invitation',
-      subject: 'Welcome to MicroIntern - Complete Your eKYC Onboarding',
-      body: 'Hello {{name}},\n\nWelcome to MicroIntern! Please click the link below to verify your account and start your real-world skill trials.\n\nBest regards,\nThe MicroIntern Team',
+      id: "candidate_onboarding",
+      name: "Candidate Onboarding Invitation",
+      subject: "Welcome to MicroIntern - Complete Your eKYC Onboarding",
+      body: "Hello {{name}},\n\nWelcome to MicroIntern! Please click the link below to verify your account and start your real-world skill trials.\n\nBest regards,\nThe MicroIntern Team",
     },
     {
-      id: 'interview_scheduled',
-      name: 'Interview Scheduled Notification',
-      subject: 'Interview Confirmed: {{trialTitle}}',
-      body: 'Hello {{name}},\n\nYour technical panel interview for {{trialTitle}} has been scheduled successfully. Please find details below:\n\nDate/Time: {{dateTime}}\nMeeting Link: {{meetingLink}}',
+      id: "interview_scheduled",
+      name: "Interview Scheduled Notification",
+      subject: "Interview Confirmed: {{trialTitle}}",
+      body: "Hello {{name}},\n\nYour technical panel interview for {{trialTitle}} has been scheduled successfully. Please find details below:\n\nDate/Time: {{dateTime}}\nMeeting Link: {{meetingLink}}",
     },
     {
-      id: 'trial_graded',
-      name: 'Assessment Evaluation Graded',
-      subject: 'Your Skill Trial Score is Available for {{trialTitle}}',
-      body: 'Hello {{name}},\n\nCongratulations! Your workspace solution for {{trialTitle}} has been graded. Your total score is {{score}}%.\n\nFeedback:\n{{feedback}}',
+      id: "trial_graded",
+      name: "Assessment Evaluation Graded",
+      subject: "Your Skill Trial Score is Available for {{trialTitle}}",
+      body: "Hello {{name}},\n\nCongratulations! Your workspace solution for {{trialTitle}} has been graded. Your total score is {{score}}%.\n\nFeedback:\n{{feedback}}",
     },
   ],
   apiKeys: [
-    { id: 'openai', name: 'OpenAI Evaluation API Key', keyMasked: 'sk-proj-...8aK9', status: 'HEALTHY' },
-    { id: 'stripe', name: 'Stripe Escrow Connect API Key', keyMasked: 'rk_live_...2A0d', status: 'HEALTHY' },
-    { id: 'tavily', name: 'Tavily Web Search API Key', keyMasked: 'tvly-...fD82', status: 'HEALTHY' },
+    {
+      id: "openai",
+      name: "OpenAI Evaluation API Key",
+      keyMasked: "sk-proj-...8aK9",
+      status: "HEALTHY",
+    },
+    {
+      id: "stripe",
+      name: "Stripe Escrow Connect API Key",
+      keyMasked: "rk_live_...2A0d",
+      status: "HEALTHY",
+    },
+    {
+      id: "tavily",
+      name: "Tavily Web Search API Key",
+      keyMasked: "tvly-...fD82",
+      status: "HEALTHY",
+    },
   ],
 };
 
 const CONFIG_PATH = path.resolve(
   process.cwd(),
-  'apps/api/src/modules/admin/infrastructure/services/admin_config.json'
+  "apps/api/src/modules/admin/infrastructure/services/admin_config.json",
 );
 
 export class ConfigManager {
@@ -92,11 +107,11 @@ export class ConfigManager {
       }
 
       if (!fs.existsSync(CONFIG_PATH)) {
-        fs.writeFileSync(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, 2), 'utf8');
-        log.info('Default system configurations generated at admin_config.json');
+        fs.writeFileSync(CONFIG_PATH, JSON.stringify(DEFAULT_CONFIG, null, 2), "utf8");
+        log.info("Default system configurations generated at admin_config.json");
       }
     } catch (err) {
-      log.error({ err }, 'Failed to initialize system settings JSON file');
+      log.error({ err }, "Failed to initialize system settings JSON file");
     }
   }
 
@@ -106,11 +121,11 @@ export class ConfigManager {
         return this.cachedConfig;
       }
       this.ensureConfigFileExists();
-      const content = fs.readFileSync(CONFIG_PATH, 'utf8');
+      const content = fs.readFileSync(CONFIG_PATH, "utf8");
       this.cachedConfig = JSON.parse(content) as SystemConfig;
       return this.cachedConfig;
     } catch (err) {
-      log.error({ err }, 'Failed to read system settings, returning default configuration');
+      log.error({ err }, "Failed to read system settings, returning default configuration");
       return DEFAULT_CONFIG;
     }
   }
@@ -127,12 +142,12 @@ export class ConfigManager {
         },
       };
 
-      fs.writeFileSync(CONFIG_PATH, JSON.stringify(updated, null, 2), 'utf8');
+      fs.writeFileSync(CONFIG_PATH, JSON.stringify(updated, null, 2), "utf8");
       this.cachedConfig = updated;
-      log.info('Platform system configurations updated successfully');
+      log.info("Platform system configurations updated successfully");
       return updated;
     } catch (err) {
-      log.error({ err }, 'Failed to write updated settings to config file');
+      log.error({ err }, "Failed to write updated settings to config file");
       throw err;
     }
   }

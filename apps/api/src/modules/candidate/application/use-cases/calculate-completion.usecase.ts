@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
+import { createModuleLogger } from "@/core/logger.js";
 
-import type { PrismaClient } from '@microintern/database';
+import type { PrismaClient } from "@microintern/database";
 
-const log = createModuleLogger('CalculateCompletionUseCase');
+const log = createModuleLogger("CalculateCompletionUseCase");
 
 /**
  * Weights for the candidate profile completion algorithm.
@@ -45,20 +45,24 @@ export class CalculateCompletionUseCase {
     let score = 0;
 
     // 1. Basic Info (15%)
-    if ((profile.headline ?? '') !== '' && (profile.bio ?? '') !== '' && (profile.location ?? '') !== '') {
+    if (
+      (profile.headline ?? "") !== "" &&
+      (profile.bio ?? "") !== "" &&
+      (profile.location ?? "") !== ""
+    ) {
       score += WEIGHTS.BASIC_INFO;
-    } else if ((profile.headline ?? '') !== '' || (profile.bio ?? '') !== '') {
+    } else if ((profile.headline ?? "") !== "" || (profile.bio ?? "") !== "") {
       score += WEIGHTS.BASIC_INFO / 2; // Partial credit
     }
 
     // 2. Avatar (5%)
     const user = await this.db.user.findUnique({ where: { id: userId } });
-    if ((user?.avatarUrl ?? '') !== '') {
+    if ((user?.avatarUrl ?? "") !== "") {
       score += WEIGHTS.AVATAR;
     }
 
     // 3. Resume (15%)
-    if ((profile.resumeUrl ?? '') !== '') {
+    if ((profile.resumeUrl ?? "") !== "") {
       score += WEIGHTS.RESUME;
     }
 
@@ -97,7 +101,10 @@ export class CalculateCompletionUseCase {
         where: { id: profile.id },
         data: { completionPercentage: finalScore },
       });
-      log.info({ userId, oldScore: profile.completionPercentage, newScore: finalScore }, 'Recalculated profile completion');
+      log.info(
+        { userId, oldScore: profile.completionPercentage, newScore: finalScore },
+        "Recalculated profile completion",
+      );
     }
 
     return finalScore;

@@ -1,20 +1,11 @@
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 /**
  * Skeleton component — loading placeholder with shimmer animation.
  * Used instead of spinners for perceived performance.
  */
-export function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn('skeleton rounded-md', className)}
-      aria-hidden="true"
-      {...props}
-    />
-  );
+export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("skeleton rounded-md", className)} aria-hidden="true" {...props} />;
 }
 
 /**

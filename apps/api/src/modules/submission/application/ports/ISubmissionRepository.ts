@@ -1,7 +1,6 @@
-
-import type { Submission } from '../../domain/entities/Submission.entity.js';
-import type { SubmissionAnswer } from '../../domain/entities/SubmissionAnswer.entity.js';
-import type { SubmissionStatus } from '@microintern/database';
+import type { Submission } from "../../domain/entities/Submission.entity.js";
+import type { SubmissionAnswer } from "../../domain/entities/SubmissionAnswer.entity.js";
+import type { SubmissionStatus } from "@microintern/database";
 
 export interface SaveAnswerData {
   taskId: string;
@@ -21,17 +20,20 @@ export interface CreateSubmissionData {
 
 export interface ISubmissionRepository {
   findById(id: string): Promise<Submission | null>;
-  findActiveByCandidateAndAssessment(candidateId: string, assessmentId: string): Promise<Submission | null>;
+  findActiveByCandidateAndAssessment(
+    candidateId: string,
+    assessmentId: string,
+  ): Promise<Submission | null>;
   countAttempts(candidateId: string, assessmentId: string): Promise<number>;
   create(data: CreateSubmissionData): Promise<Submission>;
   updateStatus(
     id: string,
     status: SubmissionStatus,
-    metadata?: { submittedAt?: Date; totalScore?: number; isPassed?: boolean }
+    metadata?: { submittedAt?: Date; totalScore?: number; isPassed?: boolean },
   ): Promise<Submission>;
   saveAnswers(submissionId: string, answers: SaveAnswerData[]): Promise<SubmissionAnswer[]>;
   listByCandidate(
     candidateId: string,
-    pagination: { skip: number; take: number }
+    pagination: { skip: number; take: number },
   ): Promise<{ submissions: Submission[]; total: number }>;
 }

@@ -4,16 +4,16 @@
  */
 
 export const APP = {
-  NAME: 'MicroIntern',
-  VERSION: '0.1.0',
-  DESCRIPTION: 'AI-Powered Skill Trial Platform',
-  SUPPORT_EMAIL: 'support@microintern.io',
-  WEBSITE_URL: 'https://microintern.io',
+  NAME: "MicroIntern",
+  VERSION: "0.1.0",
+  DESCRIPTION: "AI-Powered Skill Trial Platform",
+  SUPPORT_EMAIL: "support@microintern.io",
+  WEBSITE_URL: "https://microintern.io",
 } as const;
 
 export const AUTH = {
-  ACCESS_TOKEN_EXPIRY: '15m',
-  REFRESH_TOKEN_EXPIRY: '7d',
+  ACCESS_TOKEN_EXPIRY: "15m",
+  REFRESH_TOKEN_EXPIRY: "7d",
   REFRESH_TOKEN_EXPIRY_SECONDS: 60 * 60 * 24 * 7, // 7 days
   MAX_LOGIN_ATTEMPTS: 5,
   LOCKOUT_DURATION_MINUTES: 30,
@@ -33,9 +33,12 @@ export const STORAGE = {
   MAX_AVATAR_SIZE_MB: 5,
   MAX_RESUME_SIZE_MB: 10,
   MAX_SUBMISSION_FILE_SIZE_MB: 50,
-  ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
-  ALLOWED_DOCUMENT_TYPES: ['application/pdf', 'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+  ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/webp"],
+  ALLOWED_DOCUMENT_TYPES: [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ],
   SIGNED_URL_EXPIRY_SECONDS: 3600,
 } as const;
 
@@ -66,7 +69,7 @@ export const QUEUE = {
 
 export const AI = {
   DEFAULT_MAX_TOKENS: 8192,
-  DEFAULT_TEMPERATURE: 0.1,  // Low temperature for evaluation tasks (determinism)
+  DEFAULT_TEMPERATURE: 0.1, // Low temperature for evaluation tasks (determinism)
   EVALUATION_TEMPERATURE: 0.1,
   GENERATION_TEMPERATURE: 0.7,
   DEFAULT_TIMEOUT_MS: 30_000,
@@ -92,8 +95,7 @@ export const HTTP_STATUS = {
 } as const;
 
 export const REDIS_KEYS = {
-  refreshToken: (userId: string, sessionId: string) =>
-    `auth:refresh:${userId}:${sessionId}`,
+  refreshToken: (userId: string, sessionId: string) => `auth:refresh:${userId}:${sessionId}`,
   userSessions: (userId: string) => `auth:sessions:${userId}`,
   rateLimitGlobal: (ip: string) => `rl:global:${ip}`,
   rateLimitAuth: (ip: string) => `rl:auth:${ip}`,
@@ -104,12 +106,12 @@ export const REDIS_KEYS = {
 } as const;
 
 export const QUEUE_NAMES = {
-  EMAIL: 'email',
-  AI_EVALUATION: 'ai-evaluation',
-  NOTIFICATION: 'notification',
-  STORAGE_PROCESSING: 'storage-processing',
-  AUDIT: 'audit',
-  RESUME_PARSER: 'resume-parser',
-  TRIAL_AI: 'trial-ai',
-  ASSESSMENT_AI: 'assessment-ai',
+  EMAIL: "email",
+  AI_EVALUATION: "ai-evaluation",
+  NOTIFICATION: "notification",
+  STORAGE_PROCESSING: "storage-processing",
+  AUDIT: "audit",
+  RESUME_PARSER: "resume-parser",
+  TRIAL_AI: "trial-ai",
+  ASSESSMENT_AI: "assessment-ai",
 } as const;

@@ -1,14 +1,14 @@
-import { QUEUE_NAMES, QUEUE } from '@microintern/shared';
+import { QUEUE_NAMES, QUEUE } from "@microintern/shared";
 
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
-import { createWorker } from '@/infrastructure/queue/queues.js';
-import { createAIGateway } from '@/infrastructure/ai/index.js';
-import { compilePrompt, PROMPTS } from '@/infrastructure/ai/PromptManager.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
+import { createWorker } from "@/infrastructure/queue/queues.js";
+import { createAIGateway } from "@/infrastructure/ai/index.js";
+import { compilePrompt, PROMPTS } from "@/infrastructure/ai/PromptManager.js";
 
-import type { Worker } from 'bullmq';
+import type { Worker } from "bullmq";
 
-const log = createModuleLogger('ResumeParserWorker');
+const log = createModuleLogger("ResumeParserWorker");
 
 export type ResumeParserJobData = {
   candidateId: string;
@@ -20,7 +20,13 @@ type ParsedResume = {
   summary: string;
   yearsOfExperience: number;
   skills: string[];
-  experience: Array<{ title?: string; role?: string; company: string; duration: string; description: string }>;
+  experience: Array<{
+    title?: string;
+    role?: string;
+    company: string;
+    duration: string;
+    description: string;
+  }>;
   education: Array<{ degree: string; institution: string; year?: string }>;
   certifications: string[];
   languages: string[];
@@ -44,13 +50,16 @@ export function startResumeParserWorker(): Worker<ResumeParserJobData> {
     async (job) => {
       const { candidateId, resumeText } = job.data;
 
-      log.info({ jobId: job.id, candidateId }, 'Processing resume parsing job');
+      log.info({ jobId: job.id, candidateId }, "Processing resume parsing job");
 
       if (!resumeText || resumeText.trim().length === 0) {
-        log.warn({ jobId: job.id, candidateId }, 'No resume text provided — skipping AI extraction');
+        log.warn(
+          { jobId: job.id, candidateId },
+          "No resume text provided — skipping AI extraction",
+        );
         await prisma.candidateProfile.update({
           where: { id: candidateId },
-          data: { resumeStatus: 'PARSED' },
+          data: { resumeStatus: "PARSED" },
         });
         return;
       }
@@ -64,17 +73,20 @@ export function startResumeParserWorker(): Worker<ResumeParserJobData> {
 
         const aiResponse = await aiEngine.complete({
           messages: [
-            { role: 'system', content: systemMessage },
-            { role: 'user', content: userMessage },
+            { role: "system", content: systemMessage },
+            { role: "user", content: userMessage },
           ],
-          responseFormat: { type: 'json_object' } as const,
+          responseFormat: { type: "json_object" } as const,
           temperature: 0.1,
         });
 
         parsed = JSON.parse(aiResponse.content) as ParsedResume;
-        log.info({ candidateId, skillsFound: parsed.skills?.length }, 'Resume AI extraction complete');
+        log.info(
+          { candidateId, skillsFound: parsed.skills?.length },
+          "Resume AI extraction complete",
+        );
       } catch (err) {
-        log.error({ err, candidateId }, 'AI resume extraction failed — using fallback');
+        log.error({ err, candidateId }, "AI resume extraction failed — using fallback");
       }
 
       // ── Step 2: Persist Extracted Data ────────────────────────────
@@ -101,8 +113,8 @@ export function startResumeParserWorker(): Worker<ResumeParserJobData> {
             await tx.candidateExperience.create({
               data: {
                 candidateId,
-                role: exp.role ?? exp.title ?? 'Unknown Role',
-                company: exp.company ?? 'Unknown',
+                role: exp.role ?? exp.title ?? "Unknown Role",
+                company: exp.company ?? "Unknown",
                 description: exp.description,
                 isCurrent: false,
                 startDate: new Date(),
@@ -117,9 +129,9 @@ export function startResumeParserWorker(): Worker<ResumeParserJobData> {
             await tx.candidateEducation.create({
               data: {
                 candidateId,
-                degree: edu.degree ?? 'Unknown',
-                institution: edu.institution ?? 'Unknown',
-                fieldOfStudy: '',
+                degree: edu.degree ?? "Unknown",
+                institution: edu.institution ?? "Unknown",
+                fieldOfStudy: "",
                 startDate: new Date(),
               },
             });
@@ -134,16 +146,16 @@ export function startResumeParserWorker(): Worker<ResumeParserJobData> {
         await tx.candidateAIAnalysis.create({
           data: {
             candidateId,
-            provider: 'groq',
-            model: 'llama-3.3-70b-versatile',
+            provider: "groq",
+            model: "llama-3.3-70b-versatile",
             resumeScore,
             atsScore: Math.round(resumeScore * 0.95),
             profileScore: Math.round(resumeScore * 0.9),
-            summary: parsed?.summary ?? 'Resume successfully parsed.',
+            summary: parsed?.summary ?? "Resume successfully parsed.",
             recommendations: [
-              'Complete your skill verification for top skills',
-              'Add evidence items linked to your experience',
-              'Build your portfolio with project samples',
+              "Complete your skill verification for top skills",
+              "Add evidence items linked to your experience",
+              "Build your portfolio with project samples",
             ],
           },
         });
@@ -151,11 +163,11 @@ export function startResumeParserWorker(): Worker<ResumeParserJobData> {
         // Update resume status
         await tx.candidateProfile.update({
           where: { id: candidateId },
-          data: { resumeStatus: 'PARSED' },
+          data: { resumeStatus: "PARSED" },
         });
       });
 
-      log.info({ jobId: job.id, candidateId }, 'Resume parsed and data persisted successfully');
+      log.info({ jobId: job.id, candidateId }, "Resume parsed and data persisted successfully");
     },
     {
       concurrency: QUEUE.STORAGE_PROCESSING_CONCURRENCY,

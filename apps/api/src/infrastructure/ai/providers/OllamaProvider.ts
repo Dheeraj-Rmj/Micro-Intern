@@ -1,13 +1,18 @@
-import { AIProvider } from '@microintern/shared';
+import { AIProvider } from "@microintern/shared";
 
-import { config } from '@/core/config.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { config } from "@/core/config.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-import { AIProviderError } from '../interfaces/IAIProvider.js';
+import { AIProviderError } from "../interfaces/IAIProvider.js";
 
-import type { IAIProvider, AICompletionRequest, AICompletionResponse, AIProviderHealth } from '../interfaces/IAIProvider.js';
+import type {
+  IAIProvider,
+  AICompletionRequest,
+  AICompletionResponse,
+  AIProviderHealth,
+} from "../interfaces/IAIProvider.js";
 
-const log = createModuleLogger('OllamaProvider');
+const log = createModuleLogger("OllamaProvider");
 
 /**
  * Ollama Provider — local inference fallback.
@@ -32,8 +37,8 @@ export class OllamaProvider implements IAIProvider {
 
     try {
       const response = await fetch(`${this.baseUrl}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: request.model ?? this.defaultModel,
           messages: request.messages,
@@ -43,7 +48,7 @@ export class OllamaProvider implements IAIProvider {
             temperature: request.temperature ?? 0.1,
             top_p: request.topP ?? 1,
           },
-          format: request.responseFormat?.type === 'json_object' ? 'json' : undefined,
+          format: request.responseFormat?.type === "json_object" ? "json" : undefined,
         }),
         signal: AbortSignal.timeout(60_000), // Ollama is slower
       });
@@ -56,7 +61,7 @@ export class OllamaProvider implements IAIProvider {
         );
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         message: { content: string };
         done: boolean;
         prompt_eval_count?: number;
@@ -74,14 +79,14 @@ export class OllamaProvider implements IAIProvider {
           totalTokens: (data.prompt_eval_count ?? 0) + (data.eval_count ?? 0),
         },
         latencyMs: Date.now() - start,
-        finishReason: 'stop',
+        finishReason: "stop",
       };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
-      log.warn({ err: error }, 'Ollama error');
+      log.warn({ err: error }, "Ollama error");
       throw new AIProviderError(
         AIProvider.OLLAMA,
-        error instanceof Error ? error.message : 'Ollama request failed',
+        error instanceof Error ? error.message : "Ollama request failed",
         false, // Ollama failures are usually not retryable (service down)
         error instanceof Error ? error : undefined,
       );
@@ -91,13 +96,32 @@ export class OllamaProvider implements IAIProvider {
   async healthCheck(): Promise<AIProviderHealth> {
     const start = Date.now();
     try {
-      const response = await fetch(`${this.baseUrl}/api/tags`, { signal: AbortSignal.timeout(5000) });
+      const response = await fetch(`${this.baseUrl}/api/tags`, {
+        signal: AbortSignal.timeout(5000),
+      });
       if (response.ok) {
-        return { provider: AIProvider.OLLAMA, status: 'available', latencyMs: Date.now() - start, checkedAt: new Date() };
+        return {
+          provider: AIProvider.OLLAMA,
+          status: "available",
+          latencyMs: Date.now() - start,
+          checkedAt: new Date(),
+        };
       }
-      return { provider: AIProvider.OLLAMA, status: 'unavailable', latencyMs: Date.now() - start, error: 'Ollama not running', checkedAt: new Date() };
+      return {
+        provider: AIProvider.OLLAMA,
+        status: "unavailable",
+        latencyMs: Date.now() - start,
+        error: "Ollama not running",
+        checkedAt: new Date(),
+      };
     } catch {
-      return { provider: AIProvider.OLLAMA, status: 'unavailable', latencyMs: Date.now() - start, error: 'Ollama not reachable', checkedAt: new Date() };
+      return {
+        provider: AIProvider.OLLAMA,
+        status: "unavailable",
+        latencyMs: Date.now() - start,
+        error: "Ollama not reachable",
+        checkedAt: new Date(),
+      };
     }
   }
 }

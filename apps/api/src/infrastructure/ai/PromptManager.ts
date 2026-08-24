@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Prompt Manager — versioned, typed prompt templates.
@@ -38,10 +38,7 @@ export type CompiledPrompt = {
  * Compile a prompt template with input variables.
  * Validates input against schema before compilation.
  */
-export function compilePrompt<T>(
-  template: PromptTemplate<T>,
-  input: T,
-): CompiledPrompt {
+export function compilePrompt<T>(template: PromptTemplate<T>, input: T): CompiledPrompt {
   // Validate input
   const parsed = template.inputSchema.parse(input);
 
@@ -69,9 +66,9 @@ export const PROMPTS = {
    * Used by: EvaluationModule
    */
   ASSESSMENT_EVALUATION: {
-    id: 'assessment-evaluation',
-    version: '1.0.0',
-    description: 'Evaluate a candidate submission against assessment criteria',
+    id: "assessment-evaluation",
+    version: "1.0.0",
+    description: "Evaluate a candidate submission against assessment criteria",
     inputSchema: z.object({
       assessmentTitle: z.string(),
       assessmentInstructions: z.string(),
@@ -121,9 +118,9 @@ Never make up information not present in the submission.`,
    * Analyzes a Job Description to generate a Competency Matrix.
    */
   ROLE_UNDERSTANDING: {
-    id: 'role-understanding',
-    version: '1.0.0',
-    description: 'Analyze a Job Description to extract competencies and difficulty profile',
+    id: "role-understanding",
+    version: "1.0.0",
+    description: "Analyze a Job Description to extract competencies and difficulty profile",
     inputSchema: z.object({
       jobTitle: z.string(),
       jobDescription: z.string(),
@@ -167,9 +164,10 @@ Do not include markdown code blocks, just raw JSON.`,
    * Automatically generates an assessment blueprint with MCQs and Coding Challenges.
    */
   ASSESSMENT_GENERATOR: {
-    id: 'assessment-generator',
-    version: '2.0.0', // Bumped for Phase 5
-    description: 'Generates structured assessment tasks based on competencies and Skill Trail Rules',
+    id: "assessment-generator",
+    version: "2.0.0", // Bumped for Phase 5
+    description:
+      "Generates structured assessment tasks based on competencies and Skill Trail Rules",
     inputSchema: z.object({
       roleProfile: z.string(),
       competencies: z.string(), // stringified JSON
@@ -232,9 +230,9 @@ Ensure questions are unique and strictly map to the requested competencies.
    * Automatically generates Micro-Internship assessments from project context or Jira tickets.
    */
   MICRO_TASK_GENERATOR: {
-    id: 'micro-task-generator',
-    version: '1.0.0',
-    description: 'Generates structured micro-internship tasks based on project context',
+    id: "micro-task-generator",
+    version: "1.0.0",
+    description: "Generates structured micro-internship tasks based on project context",
     inputSchema: z.object({
       projectContext: z.string(),
       techStack: z.string(),
@@ -285,9 +283,9 @@ Generate a micro-internship assessment containing 1-3 tasks that can be complete
    * Includes Performance Classification and Deep Rubric Analysis.
    */
   ADVANCED_EVALUATION: {
-    id: 'advanced-evaluation',
-    version: '2.0.0',
-    description: 'Advanced candidate evaluation generating Performance Classifications',
+    id: "advanced-evaluation",
+    version: "2.0.0",
+    description: "Advanced candidate evaluation generating Performance Classifications",
     inputSchema: z.object({
       assessmentTitle: z.string(),
       candidateSubmissionJSON: z.string(),
@@ -329,9 +327,9 @@ Performance Classifications: "Exceptional", "Outstanding", "Above Average", "Goo
   // ── Phase 3: AI Hiring OS Prompts ──────────────────────────────────────────
 
   CANDIDATE_RANKING: {
-    id: 'candidate-ranking',
-    version: '1.0.0',
-    description: 'Ranks a list of candidates against a Role Profile',
+    id: "candidate-ranking",
+    version: "1.0.0",
+    description: "Ranks a list of candidates against a Role Profile",
     inputSchema: z.object({
       roleProfile: z.string(),
       candidatesDataJSON: z.string(),
@@ -366,9 +364,9 @@ Analyze the candidates. Output a ranked list with a calculated Fit Score (0-100)
   }>,
 
   INTERVIEW_KIT_GENERATOR: {
-    id: 'interview-kit-generator',
-    version: '1.0.0',
-    description: 'Generates structured interview questions and rubrics',
+    id: "interview-kit-generator",
+    version: "1.0.0",
+    description: "Generates structured interview questions and rubrics",
     inputSchema: z.object({
       roleProfile: z.string(),
       competencies: z.string(),
@@ -409,9 +407,9 @@ Generate an interview kit with exactly 2 technical questions and 1 behavioral qu
   }>,
 
   PROJECT_EVALUATION: {
-    id: 'project-evaluation',
-    version: '1.0.0',
-    description: 'Evaluates GitHub repositories or ZIP project submissions',
+    id: "project-evaluation",
+    version: "1.0.0",
+    description: "Evaluates GitHub repositories or ZIP project submissions",
     inputSchema: z.object({
       projectInstructions: z.string(),
       repositoryContextJSON: z.string(),
@@ -447,9 +445,9 @@ Evaluate the project holistically.
   // ── Phase 4: Candidate Recovery Engine Prompts ───────────────────────────
 
   CANDIDATE_RECOVERY_REPORT: {
-    id: 'candidate-recovery-report',
-    version: '1.0.0',
-    description: 'Generates a comprehensive rejection and recovery report',
+    id: "candidate-recovery-report",
+    version: "1.0.0",
+    description: "Generates a comprehensive rejection and recovery report",
     inputSchema: z.object({
       roleProfile: z.string(),
       candidateEvaluationJSON: z.string(),
@@ -487,9 +485,9 @@ Analyze the data and produce the Recovery Report. Always end with a positive, mo
   }>,
 
   CANDIDATE_LEARNING_RECOMMENDATIONS: {
-    id: 'candidate-learning-recommendations',
-    version: '1.0.0',
-    description: 'Generates specific learning and practice project recommendations',
+    id: "candidate-learning-recommendations",
+    version: "1.0.0",
+    description: "Generates specific learning and practice project recommendations",
     inputSchema: z.object({
       weakSkills: z.string(), // stringified array
       missingCompetencies: z.string(), // stringified array
@@ -531,9 +529,9 @@ Generate specific learning paths and a practice project.
   }>,
 
   CANDIDATE_CAREER_RECOMMENDATIONS: {
-    id: 'candidate-career-recommendations',
-    version: '1.0.0',
-    description: 'Recommends alternative roles based on current strengths',
+    id: "candidate-career-recommendations",
+    version: "1.0.0",
+    description: "Recommends alternative roles based on current strengths",
     inputSchema: z.object({
       verifiedSkills: z.string(), // stringified array
       appliedRole: z.string(),
@@ -570,9 +568,9 @@ Generate exactly 3 alternative role recommendations with a match percentage.
    * PHASE 7: AI Integrity Engine
    */
   INTEGRITY_ANALYZER: {
-    id: 'integrity-analyzer-v1',
-    version: '1.0.0',
-    description: 'Analyzes a submission for potential AI plagiarism or cheating.',
+    id: "integrity-analyzer-v1",
+    version: "1.0.0",
+    description: "Analyzes a submission for potential AI plagiarism or cheating.",
     inputSchema: z.object({
       taskContext: z.string(),
       candidateSubmission: z.string(),
@@ -615,9 +613,9 @@ Always respond with valid JSON.`,
    * PHASE 7: AI Onboarding Plan Generator
    */
   ONBOARDING_PLAN_GENERATOR: {
-    id: 'onboarding-plan-generator-v1',
-    version: '1.0.0',
-    description: 'Generates a 30-day onboarding plan for hired candidates based on skill deltas.',
+    id: "onboarding-plan-generator-v1",
+    version: "1.0.0",
+    description: "Generates a 30-day onboarding plan for hired candidates based on skill deltas.",
     inputSchema: z.object({
       roleProfileRequirements: z.string(),
       candidateVerifiedSkills: z.string(),
@@ -671,9 +669,9 @@ Always respond with valid JSON.`,
    * PHASE 8: Recruiter Copilot
    */
   COPILOT_QUERY_GENERATOR: {
-    id: 'copilot-query-generator-v1',
-    version: '1.0.0',
-    description: 'Translates natural language recruiter requests into Prisma ORM query parameters.',
+    id: "copilot-query-generator-v1",
+    version: "1.0.0",
+    description: "Translates natural language recruiter requests into Prisma ORM query parameters.",
     inputSchema: z.object({
       recruiterQuery: z.string(),
       companyId: z.string(),
@@ -696,9 +694,9 @@ Generate exactly the JSON object for the Prisma "where" clause. Return only vali
   // ── Phase 10: High & Medium Value Feature Prompts ─────────────────────────
 
   INTERVIEW_ANSWER_EVALUATOR: {
-    id: 'interview-answer-evaluator-v1',
-    version: '1.0.0',
-    description: 'Evaluates a candidate interview answer and returns a score with feedback.',
+    id: "interview-answer-evaluator-v1",
+    version: "1.0.0",
+    description: "Evaluates a candidate interview answer and returns a score with feedback.",
     inputSchema: z.object({
       questionText: z.string(),
       rubric: z.string(),
@@ -729,9 +727,9 @@ Return JSON with score and feedback.`,
   }>,
 
   RESUME_EXTRACTOR: {
-    id: 'resume-extractor-v1',
-    version: '1.0.0',
-    description: 'Extracts structured candidate data from raw resume text.',
+    id: "resume-extractor-v1",
+    version: "1.0.0",
+    description: "Extracts structured candidate data from raw resume text.",
     inputSchema: z.object({
       resumeText: z.string(),
     }),
@@ -752,9 +750,9 @@ Return ONLY valid JSON:
   }>,
 
   JOB_DESCRIPTION_GENERATOR: {
-    id: 'job-description-generator-v1',
-    version: '1.0.0',
-    description: 'Generates a professional job description and suggested role profile.',
+    id: "job-description-generator-v1",
+    version: "1.0.0",
+    description: "Generates a professional job description and suggested role profile.",
     inputSchema: z.object({
       roleName: z.string(),
       companyName: z.string(),
@@ -789,9 +787,9 @@ Generate the job description JSON.`,
   }>,
 
   QUESTION_GENERATOR: {
-    id: 'question-generator-v1',
-    version: '1.0.0',
-    description: 'Generates assessment questions for given skills and difficulty.',
+    id: "question-generator-v1",
+    version: "1.0.0",
+    description: "Generates assessment questions for given skills and difficulty.",
     inputSchema: z.object({
       skills: z.string(),
       competencies: z.string(),
@@ -827,9 +825,9 @@ Generate {{count}} questions as JSON array.`,
   }>,
 
   OFFER_LETTER_GENERATOR: {
-    id: 'offer-letter-generator-v1',
-    version: '1.0.0',
-    description: 'Generates a professional offer letter for a hired candidate.',
+    id: "offer-letter-generator-v1",
+    version: "1.0.0",
+    description: "Generates a professional offer letter for a hired candidate.",
     inputSchema: z.object({
       companyName: z.string(),
       candidateName: z.string(),
@@ -857,5 +855,4 @@ Generate the offer letter JSON.`,
     salary: string;
     additionalTerms: string;
   }>,
-
 } as const;

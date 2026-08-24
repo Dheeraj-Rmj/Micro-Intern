@@ -1,5 +1,5 @@
-import type { DeviceSession } from '@microintern/shared';
-import type { ParsedDeviceInfo } from '@/shared/utils/device-parser.js';
+import type { DeviceSession } from "@microintern/shared";
+import type { ParsedDeviceInfo } from "@/shared/utils/device-parser.js";
 
 export interface ISessionService {
   createSession(userId: string, metadata?: Partial<ParsedDeviceInfo>): Promise<string>;

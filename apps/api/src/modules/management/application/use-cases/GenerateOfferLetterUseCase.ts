@@ -1,9 +1,9 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { compilePrompt, PROMPTS } from '@/infrastructure/ai/PromptManager.js';
-import type { PrismaClient } from '@microintern/database';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { compilePrompt, PROMPTS } from "@/infrastructure/ai/PromptManager.js";
+import type { PrismaClient } from "@microintern/database";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('OfferLetterUseCase');
+const log = createModuleLogger("OfferLetterUseCase");
 
 export type GenerateOfferLetterDTO = {
   journeyId: string;
@@ -16,12 +16,10 @@ export type GenerateOfferLetterDTO = {
 };
 
 export class GenerateOfferLetterUseCase {
-  constructor(
-    private readonly aiEngine: AIFallbackEngine,
-  ) {}
+  constructor(private readonly aiEngine: AIFallbackEngine) {}
 
   async execute(dto: GenerateOfferLetterDTO): Promise<{ offerLetter: string }> {
-    log.info({ journeyId: dto.journeyId }, 'Generating offer letter');
+    log.info({ journeyId: dto.journeyId }, "Generating offer letter");
 
     const { systemMessage, userMessage } = compilePrompt(PROMPTS.OFFER_LETTER_GENERATOR, {
       companyName: dto.companyName,
@@ -29,27 +27,27 @@ export class GenerateOfferLetterUseCase {
       roleName: dto.roleName,
       startDate: dto.startDate,
       salary: dto.salary,
-      additionalTerms: dto.additionalTerms ?? 'Standard employment terms apply.',
+      additionalTerms: dto.additionalTerms ?? "Standard employment terms apply.",
     });
 
     const aiResponse = await this.aiEngine.complete({
       messages: [
-        { role: 'system', content: systemMessage },
-        { role: 'user', content: userMessage },
+        { role: "system", content: systemMessage },
+        { role: "user", content: userMessage },
       ],
-      responseFormat: { type: 'json_object' } as const,
+      responseFormat: { type: "json_object" } as const,
       temperature: 0.3,
     });
 
-    let result: { offerLetter: string } = { offerLetter: '' };
+    let result: { offerLetter: string } = { offerLetter: "" };
     try {
       result = JSON.parse(aiResponse.content);
     } catch {
-      log.warn('Failed to parse AI offer letter response');
+      log.warn("Failed to parse AI offer letter response");
       result = { offerLetter: aiResponse.content };
     }
 
-    log.info({ journeyId: dto.journeyId }, 'Offer letter generated');
+    log.info({ journeyId: dto.journeyId }, "Offer letter generated");
     return result;
   }
 }

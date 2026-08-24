@@ -1,4 +1,4 @@
-import type { IAdminRepository } from '../ports/IAdminRepository.js';
+import type { IAdminRepository } from "../ports/IAdminRepository.js";
 
 export class GetSubscriptionMetricsUseCase {
   constructor(private readonly adminRepository: IAdminRepository) {}

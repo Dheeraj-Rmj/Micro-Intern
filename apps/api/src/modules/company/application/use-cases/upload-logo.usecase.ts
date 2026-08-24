@@ -1,21 +1,21 @@
-import { StorageBucket } from '@microintern/shared';
-import sharp from 'sharp';
+import { StorageBucket } from "@microintern/shared";
+import sharp from "sharp";
 
-import { createModuleLogger } from '@/core/logger.js';
+import { createModuleLogger } from "@/core/logger.js";
 
 import {
   CompanyNotFoundError,
   NotCompanyOwnerError,
   InvalidFileTypeError,
   FileTooLargeError,
-} from '../../domain/errors/company.errors.js';
+} from "../../domain/errors/company.errors.js";
 
-import type { ICompanyRepository } from '../../domain/repositories/ICompanyRepository.js';
-import type { StorageService } from '@/infrastructure/storage/StorageService.js';
+import type { ICompanyRepository } from "../../domain/repositories/ICompanyRepository.js";
+import type { StorageService } from "@/infrastructure/storage/StorageService.js";
 
-const log = createModuleLogger('UploadLogoUseCase');
+const log = createModuleLogger("UploadLogoUseCase");
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export class UploadLogoUseCase {
@@ -26,7 +26,7 @@ export class UploadLogoUseCase {
 
   async execute(userId: string, file: Express.Multer.File | undefined): Promise<{ url: string }> {
     if (file === null || file === undefined) {
-      throw new Error('No file provided');
+      throw new Error("No file provided");
     }
 
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
@@ -47,21 +47,21 @@ export class UploadLogoUseCase {
       throw new NotCompanyOwnerError();
     }
 
-    log.info({ companyId: company.id, userId, originalSize: file.size }, 'Processing logo upload');
+    log.info({ companyId: company.id, userId, originalSize: file.size }, "Processing logo upload");
 
     let dataBuffer = file.buffer;
     let mimeType = file.mimetype;
-    let ext = 'webp';
+    let ext = "webp";
 
-    if (file.mimetype === 'image/svg+xml') {
-      ext = 'svg';
+    if (file.mimetype === "image/svg+xml") {
+      ext = "svg";
     } else {
       dataBuffer = await sharp(file.buffer)
         .rotate()
-        .resize(512, 512, { fit: 'inside', withoutEnlargement: true })
+        .resize(512, 512, { fit: "inside", withoutEnlargement: true })
         .webp({ quality: 85 })
         .toBuffer();
-      mimeType = 'image/webp';
+      mimeType = "image/webp";
     }
 
     const timestamp = Date.now();
@@ -73,12 +73,15 @@ export class UploadLogoUseCase {
       mimeType,
       bucket: StorageBucket.PUBLIC,
       metadata: {
-        'x-amz-meta-company-id': company.id,
+        "x-amz-meta-company-id": company.id,
       },
     });
 
     await this.companyRepository.updateLogo(company.id, uploadResult.url);
-    log.info({ companyId: company.id, url: uploadResult.url }, 'Company logo uploaded successfully');
+    log.info(
+      { companyId: company.id, url: uploadResult.url },
+      "Company logo uploaded successfully",
+    );
 
     return { url: uploadResult.url };
   }

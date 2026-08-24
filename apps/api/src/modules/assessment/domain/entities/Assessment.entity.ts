@@ -1,10 +1,13 @@
-import { AssessmentStatus } from '@microintern/database';
+import { AssessmentStatus } from "@microintern/database";
 
-import { AssessmentCannotPublishWithoutTasksError, AssessmentImmutableWhenPublishedError } from '../errors/assessment.errors.js';
+import {
+  AssessmentCannotPublishWithoutTasksError,
+  AssessmentImmutableWhenPublishedError,
+} from "../errors/assessment.errors.js";
 
-import { AssessmentTask } from './AssessmentTask.entity.js';
+import { AssessmentTask } from "./AssessmentTask.entity.js";
 
-import type { ExperienceLevel } from '@microintern/database';
+import type { ExperienceLevel } from "@microintern/database";
 
 export class Assessment {
   constructor(
@@ -28,7 +31,7 @@ export class Assessment {
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
     public readonly tasks: AssessmentTask[] = [],
-    public readonly company?: { id: string; name: string; slug: string; logoUrl?: string | null }
+    public readonly company?: { id: string; name: string; slug: string; logoUrl?: string | null },
   ) {}
 
   isDraft(): boolean {
@@ -69,7 +72,9 @@ export class Assessment {
     return {
       id: this.id,
       companyId: this.companyId,
-      company: this.company ? { name: this.company.name, slug: this.company.slug, logoUrl: this.company.logoUrl } : undefined,
+      company: this.company
+        ? { name: this.company.name, slug: this.company.slug, logoUrl: this.company.logoUrl }
+        : undefined,
       title: this.title,
       slug: this.slug,
       description: this.description,
@@ -119,7 +124,7 @@ export class Assessment {
             slug: record.company.slug,
             logoUrl: record.company.logoUrl,
           }
-        : undefined
+        : undefined,
     );
   }
 }

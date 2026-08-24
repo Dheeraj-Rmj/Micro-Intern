@@ -1,9 +1,9 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { compilePrompt, PROMPTS } from '@/infrastructure/ai/PromptManager.js';
-import type { PrismaClient, Prisma, QuestionBank } from '@microintern/database';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { compilePrompt, PROMPTS } from "@/infrastructure/ai/PromptManager.js";
+import type { PrismaClient, Prisma, QuestionBank } from "@microintern/database";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('QuestionBankService');
+const log = createModuleLogger("QuestionBankService");
 
 export type CreateQuestionDTO = {
   companyId: string;
@@ -46,7 +46,10 @@ export class QuestionBankService {
     });
   }
 
-  async listQuestions(companyId: string, filters?: { difficulty?: string; type?: string; skill?: string }) {
+  async listQuestions(
+    companyId: string,
+    filters?: { difficulty?: string; type?: string; skill?: string },
+  ) {
     return this.db.questionBank.findMany({
       where: {
         companyId,
@@ -54,7 +57,7 @@ export class QuestionBankService {
         ...(filters?.type && { type: filters.type }),
         ...(filters?.skill && { skills: { has: filters.skill } }),
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -63,11 +66,11 @@ export class QuestionBankService {
   }
 
   async generateQuestions(dto: GenerateQuestionsDTO) {
-    log.info({ companyId: dto.companyId, count: dto.count }, 'Generating AI questions');
+    log.info({ companyId: dto.companyId, count: dto.count }, "Generating AI questions");
 
     const { systemMessage, userMessage } = compilePrompt(PROMPTS.QUESTION_GENERATOR, {
-      skills: dto.skills.join(', '),
-      competencies: dto.competencies.join(', '),
+      skills: dto.skills.join(", "),
+      competencies: dto.competencies.join(", "),
       questionType: dto.questionType,
       difficulty: dto.difficulty,
       count: dto.count,
@@ -75,10 +78,10 @@ export class QuestionBankService {
 
     const aiResponse = await this.aiEngine.complete({
       messages: [
-        { role: 'system', content: systemMessage },
-        { role: 'user', content: userMessage },
+        { role: "system", content: systemMessage },
+        { role: "user", content: userMessage },
       ],
-      responseFormat: { type: 'json_object' } as const,
+      responseFormat: { type: "json_object" } as const,
       temperature: 0.7,
     });
 
@@ -87,7 +90,7 @@ export class QuestionBankService {
       const parsed = JSON.parse(aiResponse.content);
       generated = Array.isArray(parsed) ? parsed : (parsed.questions ?? []);
     } catch {
-      log.warn('Failed to parse AI question generation response');
+      log.warn("Failed to parse AI question generation response");
       return [];
     }
 
@@ -109,7 +112,7 @@ export class QuestionBankService {
       ),
     );
 
-    log.info({ companyId: dto.companyId, generated: created.length }, 'Questions saved to bank');
+    log.info({ companyId: dto.companyId, generated: created.length }, "Questions saved to bank");
     return created;
   }
 

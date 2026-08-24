@@ -1,6 +1,6 @@
-'use client';
-import React, { useState, useEffect, useRef } from 'react';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import { useApp } from "../../context/AppContext";
 import {
   Users,
   MessageSquare,
@@ -31,10 +31,10 @@ import {
   GraduationCap,
   MapPin,
   Calendar,
-} from 'lucide-react';
-import { TechSkillIcon } from '../common/TechSkillIcon';
+} from "lucide-react";
+import { TechSkillIcon } from "../common/TechSkillIcon";
 
-export type ReactionType = 'like' | 'celebrate' | 'support' | 'love' | 'insightful' | 'curious';
+export type ReactionType = "like" | "celebrate" | "support" | "love" | "insightful" | "curious";
 
 export interface ReactionConfig {
   type: ReactionType;
@@ -46,46 +46,46 @@ export interface ReactionConfig {
 
 export const REACTIONS: Record<ReactionType, ReactionConfig> = {
   like: {
-    type: 'like',
-    emoji: '👍',
-    label: 'Like',
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
+    type: "like",
+    emoji: "👍",
+    label: "Like",
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
   },
   celebrate: {
-    type: 'celebrate',
-    emoji: '👏',
-    label: 'Celebrate',
-    color: 'text-emerald-500',
-    bgColor: 'bg-emerald-500/10',
+    type: "celebrate",
+    emoji: "👏",
+    label: "Celebrate",
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
   },
   support: {
-    type: 'support',
-    emoji: '🚀',
-    label: 'Support',
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500/10',
+    type: "support",
+    emoji: "🚀",
+    label: "Support",
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
   },
   love: {
-    type: 'love',
-    emoji: '❤️',
-    label: 'Love',
-    color: 'text-rose-500',
-    bgColor: 'bg-rose-500/10',
+    type: "love",
+    emoji: "❤️",
+    label: "Love",
+    color: "text-rose-500",
+    bgColor: "bg-rose-500/10",
   },
   insightful: {
-    type: 'insightful',
-    emoji: '💡',
-    label: 'Insightful',
-    color: 'text-amber-500',
-    bgColor: 'bg-amber-500/10',
+    type: "insightful",
+    emoji: "💡",
+    label: "Insightful",
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
   },
   curious: {
-    type: 'curious',
-    emoji: '🤔',
-    label: 'Curious',
-    color: 'text-indigo-500',
-    bgColor: 'bg-indigo-500/10',
+    type: "curious",
+    emoji: "🤔",
+    label: "Curious",
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
   },
 };
 
@@ -123,13 +123,13 @@ interface Peer {
   trustScore?: number;
   certifications?: Array<{ title: string; issuer: string; score: string }>;
   skills: Array<{ name: string; endorsedCount: number; endorsedByMe: boolean }>;
-  status: 'none' | 'pending' | 'connected';
+  status: "none" | "pending" | "connected";
   mutualCount: number;
 }
 
-const STORAGE_POSTS_KEY = 'microintern_network_posts_nomock_v1';
-const STORAGE_PEERS_KEY = 'microintern_network_peers_nomock_v1';
-const STORAGE_CHATS_KEY = 'microintern_network_chats_nomock_v1';
+const STORAGE_POSTS_KEY = "microintern_network_posts_nomock_v1";
+const STORAGE_PEERS_KEY = "microintern_network_peers_nomock_v1";
+const STORAGE_CHATS_KEY = "microintern_network_chats_nomock_v1";
 
 // Completely empty default state (zero mockup data)
 const INITIAL_POSTS: NetworkPost[] = [];
@@ -142,21 +142,21 @@ export const NetworkPage: React.FC = () => {
   const { userProfile, showToast, setCurrentRoute } = useApp();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'feed' | 'network'>('feed');
+  const [activeTab, setActiveTab] = useState<"feed" | "network">("feed");
 
   // Search and hashtag filters
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
 
   // Persistent Posts State
   const [posts, setPosts] = useState<NetworkPost[]>(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_POSTS_KEY);
       if (saved) {
         try {
           return JSON.parse(saved);
         } catch (e) {
-          console.error('Failed to parse saved network posts', e);
+          console.error("Failed to parse saved network posts", e);
         }
       }
     }
@@ -165,13 +165,13 @@ export const NetworkPage: React.FC = () => {
 
   // Persistent Peers State
   const [peers, setPeers] = useState<Peer[]>(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_PEERS_KEY);
       if (saved) {
         try {
           return JSON.parse(saved);
         } catch (e) {
-          console.error('Failed to parse saved network peers', e);
+          console.error("Failed to parse saved network peers", e);
         }
       }
     }
@@ -180,22 +180,26 @@ export const NetworkPage: React.FC = () => {
 
   // Save changes to localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(posts));
     }
   }, [posts]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_PEERS_KEY, JSON.stringify(peers));
     }
   }, [peers]);
 
   // Create Post input state
-  const [newPostText, setNewPostText] = useState('');
-  const [selectedPostSkills, setSelectedPostSkills] = useState<string[]>(['React', 'TypeScript', 'AI & LLM']);
-  const [newPostHashtag, setNewPostHashtag] = useState<string>('#AgenticAI');
-  const [newPostRepoUrl, setNewPostRepoUrl] = useState('');
+  const [newPostText, setNewPostText] = useState("");
+  const [selectedPostSkills, setSelectedPostSkills] = useState<string[]>([
+    "React",
+    "TypeScript",
+    "AI & LLM",
+  ]);
+  const [newPostHashtag, setNewPostHashtag] = useState<string>("#AgenticAI");
+  const [newPostRepoUrl, setNewPostRepoUrl] = useState("");
   const [showAdvancedPostFields, setShowAdvancedPostFields] = useState(false);
 
   // Reaction Picker Popover State
@@ -204,9 +208,9 @@ export const NetworkPage: React.FC = () => {
   // Direct Messaging Modal
   const [activeChatPeer, setActiveChatPeer] = useState<Peer | null>(null);
   const [chatMessages, setChatMessages] = useState<
-    Record<string, Array<{ id: string; sender: 'me' | 'peer'; text: string; time: string }>>
+    Record<string, Array<{ id: string; sender: "me" | "peer"; text: string; time: string }>>
   >(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_CHATS_KEY);
       if (saved) {
         try {
@@ -218,38 +222,38 @@ export const NetworkPage: React.FC = () => {
     }
     return {};
   });
-  const [chatInput, setChatInput] = useState('');
+  const [chatInput, setChatInput] = useState("");
 
   // LinkedIn Public Profile Modal state (for viewing another person's account)
   const [selectedPublicPeer, setSelectedPublicPeer] = useState<Peer | null>(null);
 
   // Comment Modal / Expand
   const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null);
-  const [commentInput, setCommentInput] = useState('');
+  const [commentInput, setCommentInput] = useState("");
 
   // Prevent body scroll when modals are open
   useEffect(() => {
     if (activeChatPeer || selectedPublicPeer) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [activeChatPeer, selectedPublicPeer]);
 
   // Save chats
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_CHATS_KEY, JSON.stringify(chatMessages));
     }
   }, [chatMessages]);
 
   // Handle LinkedIn Reaction click (toggle or change reaction)
   const handleSelectReaction = (postId: string, reactionType: ReactionType) => {
-    setPosts(prev =>
-      prev.map(p => {
+    setPosts((prev) =>
+      prev.map((p) => {
         if (p.id !== postId) return p;
         const currentReaction = p.userReaction;
         const newReactions = { ...p.reactions };
@@ -275,7 +279,7 @@ export const NetworkPage: React.FC = () => {
           reactions: newReactions,
           userReaction: reactionType,
         };
-      })
+      }),
     );
     setActiveReactionPickerId(null);
   };
@@ -283,19 +287,20 @@ export const NetworkPage: React.FC = () => {
   // Handle Create Post
   const handleCreatePost = () => {
     if (!newPostText.trim()) {
-      showToast('Empty Post', 'Please write something before posting.', 'warning');
+      showToast("Empty Post", "Please write something before posting.", "warning");
       return;
     }
     const newPost: NetworkPost = {
       id: `post-${Date.now()}`,
-      authorName: userProfile.fullName || 'Candidate',
-      authorHeadline: userProfile.headline || 'Software Engineer • MicroIntern Candidate',
-      authorAvatar: userProfile.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
-      timeAgo: 'Just now',
+      authorName: userProfile.fullName || "Candidate",
+      authorHeadline: userProfile.headline || "Software Engineer • MicroIntern Candidate",
+      authorAvatar:
+        userProfile.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+      timeAgo: "Just now",
       content: newPostText.trim(),
       skills: selectedPostSkills,
-      hashtag: newPostHashtag || '#AgenticAI',
-      aiVerifiedBadge: 'AI Verified Candidate Member ✓',
+      hashtag: newPostHashtag || "#AgenticAI",
+      aiVerifiedBadge: "AI Verified Candidate Member ✓",
       githubRepoUrl: newPostRepoUrl.trim() || undefined,
       reactions: {
         like: 1,
@@ -305,36 +310,44 @@ export const NetworkPage: React.FC = () => {
         insightful: 0,
         curious: 0,
       },
-      userReaction: 'like',
+      userReaction: "like",
       comments: [],
     };
     setPosts([newPost, ...posts]);
-    setNewPostText('');
-    setNewPostRepoUrl('');
+    setNewPostText("");
+    setNewPostRepoUrl("");
     setShowAdvancedPostFields(false);
-    showToast('Post Published 🚀', 'Your update is now live in the professional network feed.', 'success');
+    showToast(
+      "Post Published 🚀",
+      "Your update is now live in the professional network feed.",
+      "success",
+    );
   };
 
   // Handle Accept Request
   const handleAcceptPeer = (peerId: string) => {
-    setPeers(prev => prev.map(p => (p.id === peerId ? { ...p, status: 'connected' } : p)));
-    showToast('Connection Accepted ✓', 'You are now connected and can message directly.', 'success');
+    setPeers((prev) => prev.map((p) => (p.id === peerId ? { ...p, status: "connected" } : p)));
+    showToast(
+      "Connection Accepted ✓",
+      "You are now connected and can message directly.",
+      "success",
+    );
   };
 
   // Handle Connect Request
   const handleConnectPeer = (peerId: string) => {
-    setPeers(prev => prev.map(p => (p.id === peerId ? { ...p, status: 'pending' } : p)));
-    showToast('Request Sent', 'Connection request sent successfully.', 'info');
+    setPeers((prev) => prev.map((p) => (p.id === peerId ? { ...p, status: "pending" } : p)));
+    showToast("Request Sent", "Connection request sent successfully.", "info");
   };
 
   // Handle Endorse Skill on Peer
   const handleEndorseSkill = (peerId: string, skillName: string) => {
-    setPeers(prev =>
-      prev.map(p => {
+    setPeers((prev) =>
+      prev.map((p) => {
         if (p.id !== peerId) return p;
         return {
           ...p,
-          skills: p.skills.map(s => {
+          skills: p.skills.map((s) => {
             if (s.name !== skillName) return s;
             return {
               ...s,
@@ -343,15 +356,15 @@ export const NetworkPage: React.FC = () => {
             };
           }),
         };
-      })
+      }),
     );
     // Also update selectedPublicPeer if it happens to be open
     if (selectedPublicPeer && selectedPublicPeer.id === peerId) {
-      setSelectedPublicPeer(prev => {
+      setSelectedPublicPeer((prev) => {
         if (!prev) return null;
         return {
           ...prev,
-          skills: prev.skills.map(s => {
+          skills: prev.skills.map((s) => {
             if (s.name !== skillName) return s;
             return {
               ...s,
@@ -362,21 +375,21 @@ export const NetworkPage: React.FC = () => {
         };
       });
     }
-    showToast('Skill Endorsed 👏', `You endorsed ${skillName}. Endorsement saved!`, 'success');
+    showToast("Skill Endorsed 👏", `You endorsed ${skillName}. Endorsement saved!`, "success");
   };
 
   // Open Messaging
   const handleOpenChat = (peer: Peer) => {
     setActiveChatPeer(peer);
     if (!chatMessages[peer.id]) {
-      setChatMessages(prev => ({
+      setChatMessages((prev) => ({
         ...prev,
         [peer.id]: [
           {
             id: `m-init-${Date.now()}`,
-            sender: 'peer',
+            sender: "peer",
             text: `Hey! Thanks for connecting on MicroIntern. Let's discuss AI & Full Stack projects!`,
-            time: 'Just now',
+            time: "Just now",
           },
         ],
       }));
@@ -390,22 +403,22 @@ export const NetworkPage: React.FC = () => {
       ...currentList,
       {
         id: `m-${Date.now()}`,
-        sender: 'me' as const,
+        sender: "me" as const,
         text: chatInput.trim(),
-        time: 'Just now',
+        time: "Just now",
       },
     ];
-    setChatMessages(prev => ({
+    setChatMessages((prev) => ({
       ...prev,
       [activeChatPeer.id]: updatedList,
     }));
-    setChatInput('');
+    setChatInput("");
   };
 
   const handleAddComment = (postId: string) => {
     if (!commentInput.trim()) return;
-    setPosts(prev =>
-      prev.map(p => {
+    setPosts((prev) =>
+      prev.map((p) => {
         if (p.id !== postId) return p;
         return {
           ...p,
@@ -413,17 +426,17 @@ export const NetworkPage: React.FC = () => {
             ...p.comments,
             {
               id: `c-${Date.now()}`,
-              name: userProfile.fullName || 'You',
+              name: userProfile.fullName || "You",
               avatar: userProfile.avatar,
               text: commentInput.trim(),
-              timeAgo: 'Just now',
+              timeAgo: "Just now",
             },
           ],
         };
-      })
+      }),
     );
-    setCommentInput('');
-    showToast('Comment Added', 'Your comment has been posted.', 'success');
+    setCommentInput("");
+    showToast("Comment Added", "Your comment has been posted.", "success");
   };
 
   // Total reactions helper for a post
@@ -432,9 +445,14 @@ export const NetworkPage: React.FC = () => {
   };
 
   // Open LinkedIn Public Profile View for ANY person clicked
-  const handleOpenProfileByName = (authorName: string, authorHeadline: string, authorAvatar: string) => {
+  const handleOpenProfileByName = (
+    authorName: string,
+    authorHeadline: string,
+    authorAvatar: string,
+  ) => {
     const existingPeer =
-      peers.find(p => p.name === authorName) || DIRECTORY_PEERS.find(p => p.name === authorName);
+      peers.find((p) => p.name === authorName) ||
+      DIRECTORY_PEERS.find((p) => p.name === authorName);
     if (existingPeer) {
       setSelectedPublicPeer(existingPeer);
     } else {
@@ -447,14 +465,18 @@ export const NetworkPage: React.FC = () => {
         about: `${authorHeadline}. Verified candidate member on MicroIntern demonstrating engineering and AI competencies.`,
         trustScore: 94,
         certifications: [
-          { title: 'MicroIntern Core Competency', issuer: 'AI Credential Validator', score: 'Verified ✓' },
+          {
+            title: "MicroIntern Core Competency",
+            issuer: "AI Credential Validator",
+            score: "Verified ✓",
+          },
         ],
         skills: [
-          { name: 'React', endorsedCount: 14, endorsedByMe: false },
-          { name: 'TypeScript', endorsedCount: 18, endorsedByMe: false },
-          { name: 'AI & LLM', endorsedCount: 22, endorsedByMe: false },
+          { name: "React", endorsedCount: 14, endorsedByMe: false },
+          { name: "TypeScript", endorsedCount: 18, endorsedByMe: false },
+          { name: "AI & LLM", endorsedCount: 22, endorsedByMe: false },
         ],
-        status: 'none',
+        status: "none",
         mutualCount: 9,
       });
     }
@@ -464,19 +486,19 @@ export const NetworkPage: React.FC = () => {
   const handleDiscoverDirectory = () => {
     setPeers(DIRECTORY_PEERS);
     showToast(
-      'Directory Populated 🌟',
-      '4 real candidate profiles added to your network. Click on any name or avatar to inspect their full LinkedIn profile!',
-      'success'
+      "Directory Populated 🌟",
+      "4 real candidate profiles added to your network. Click on any name or avatar to inspect their full LinkedIn profile!",
+      "success",
     );
   };
 
   // Filtered Posts
-  const filteredPosts = posts.filter(post => {
+  const filteredPosts = posts.filter((post) => {
     const matchesSearch =
       !searchQuery.trim() ||
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.skills.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
+      post.skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesHashtag = !activeHashtag || post.hashtag === activeHashtag;
     return matchesSearch && matchesHashtag;
   });
@@ -491,40 +513,41 @@ export const NetworkPage: React.FC = () => {
             Professional Network & LinkedIn Feed
           </h1>
           <p className="text-xs text-black/50 dark:text-white/60 mt-1">
-            Real-time feed with LinkedIn multi-reactions, verified AI credentials, and full public candidate profiles.
+            Real-time feed with LinkedIn multi-reactions, verified AI credentials, and full public
+            candidate profiles.
           </p>
         </div>
 
         <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1.5 rounded-full">
           <button
-            onClick={() => setActiveTab('feed')}
+            onClick={() => setActiveTab("feed")}
             className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeTab === 'feed'
-                ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-                : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+              activeTab === "feed"
+                ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+                : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
             }`}
           >
             Community Feed
           </button>
           <button
-            onClick={() => setActiveTab('network')}
+            onClick={() => setActiveTab("network")}
             className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'network'
-                ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-                : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+              activeTab === "network"
+                ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+                : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
             }`}
           >
             My Network
-            {peers.filter(p => p.status === 'pending').length > 0 && (
+            {peers.filter((p) => p.status === "pending").length > 0 && (
               <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
-                {peers.filter(p => p.status === 'pending').length}
+                {peers.filter((p) => p.status === "pending").length}
               </span>
             )}
           </button>
         </div>
       </div>
 
-      {activeTab === 'feed' ? (
+      {activeTab === "feed" ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Feed Column */}
           <div className="lg:col-span-2 space-y-6">
@@ -541,7 +564,7 @@ export const NetworkPage: React.FC = () => {
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => setSearchQuery("")}
                     className="absolute right-3 top-2.5 text-black/40 hover:text-black"
                   >
                     <X className="w-4 h-4" />
@@ -549,7 +572,7 @@ export const NetworkPage: React.FC = () => {
                 )}
               </div>
               <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-                {['#AgenticAI', '#SystemDesign', '#NextJS', '#AWS'].map(tag => {
+                {["#AgenticAI", "#SystemDesign", "#NextJS", "#AWS"].map((tag) => {
                   const isActive = activeHashtag === tag;
                   return (
                     <button
@@ -557,8 +580,8 @@ export const NetworkPage: React.FC = () => {
                       onClick={() => setActiveHashtag(isActive ? null : tag)}
                       className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                         isActive
-                          ? 'bg-purple-600 text-white shadow-xs'
-                          : 'bg-black/5 dark:bg-white/10 text-black/70 dark:text-white/70 hover:bg-black/10'
+                          ? "bg-purple-600 text-white shadow-xs"
+                          : "bg-black/5 dark:bg-white/10 text-black/70 dark:text-white/70 hover:bg-black/10"
                       }`}
                     >
                       {tag}
@@ -580,7 +603,10 @@ export const NetworkPage: React.FC = () => {
             <div className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
               <div className="flex items-start gap-3">
                 <img
-                  src={userProfile.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'}
+                  src={
+                    userProfile.avatar ||
+                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150"
+                  }
                   alt="My Avatar"
                   className="w-11 h-11 rounded-full object-cover border border-black/10"
                 />
@@ -597,7 +623,9 @@ export const NetworkPage: React.FC = () => {
                 <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 space-y-3 border border-black/5 dark:border-white/10">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-semibold text-black/50 mb-1">Topic Hashtag</label>
+                      <label className="block text-[11px] font-semibold text-black/50 mb-1">
+                        Topic Hashtag
+                      </label>
                       <select
                         value={newPostHashtag}
                         onChange={(e) => setNewPostHashtag(e.target.value)}
@@ -629,8 +657,10 @@ export const NetworkPage: React.FC = () => {
               {/* Skills / Badges attached to post */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-black/5 dark:border-white/10">
                 <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-                  <span className="text-[11px] text-black/40 dark:text-white/40 font-semibold">Tag Skills:</span>
-                  {['React', 'TypeScript', 'AI & LLM', 'Next.js', 'AWS', 'Python'].map(skill => {
+                  <span className="text-[11px] text-black/40 dark:text-white/40 font-semibold">
+                    Tag Skills:
+                  </span>
+                  {["React", "TypeScript", "AI & LLM", "Next.js", "AWS", "Python"].map((skill) => {
                     const isSelected = selectedPostSkills.includes(skill);
                     return (
                       <button
@@ -638,15 +668,15 @@ export const NetworkPage: React.FC = () => {
                         type="button"
                         onClick={() => {
                           if (isSelected) {
-                            setSelectedPostSkills(selectedPostSkills.filter(s => s !== skill));
+                            setSelectedPostSkills(selectedPostSkills.filter((s) => s !== skill));
                           } else {
                             setSelectedPostSkills([...selectedPostSkills, skill]);
                           }
                         }}
                         className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-purple-600 text-white shadow-xs'
-                            : 'bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10'
+                            ? "bg-purple-600 text-white shadow-xs"
+                            : "bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10"
                         }`}
                       >
                         <TechSkillIcon skill={skill} size={13} />
@@ -685,12 +715,14 @@ export const NetworkPage: React.FC = () => {
                 <div className="bg-white dark:bg-[#0A0A0A] p-12 rounded-[32px] text-center border border-black/5 dark:border-white/10 space-y-3">
                   <Award className="w-10 h-10 text-black/20 dark:text-white/20 mx-auto" />
                   <p className="text-sm font-bold text-black dark:text-white">
-                    {posts.length === 0 ? 'No updates in your feed yet' : 'No matching network updates'}
+                    {posts.length === 0
+                      ? "No updates in your feed yet"
+                      : "No matching network updates"}
                   </p>
                   <p className="text-xs text-black/50 dark:text-white/50 max-w-sm mx-auto">
                     {posts.length === 0
-                      ? 'Write an update above or discover real community candidates to inspect full LinkedIn-style public accounts!'
-                      : 'Try clearing your search query or hashtag filter to see more community posts.'}
+                      ? "Write an update above or discover real community candidates to inspect full LinkedIn-style public accounts!"
+                      : "Try clearing your search query or hashtag filter to see more community posts."}
                   </p>
                   {posts.length === 0 && (
                     <button
@@ -704,9 +736,11 @@ export const NetworkPage: React.FC = () => {
                   )}
                 </div>
               ) : (
-                filteredPosts.map(post => {
+                filteredPosts.map((post) => {
                   const totalRx = getTotalReactions(post.reactions);
-                  const activeReactionConfig = post.userReaction ? REACTIONS[post.userReaction] : null;
+                  const activeReactionConfig = post.userReaction
+                    ? REACTIONS[post.userReaction]
+                    : null;
 
                   return (
                     <div
@@ -717,7 +751,11 @@ export const NetworkPage: React.FC = () => {
                       <div className="flex items-start justify-between">
                         <div
                           onClick={() =>
-                            handleOpenProfileByName(post.authorName, post.authorHeadline, post.authorAvatar)
+                            handleOpenProfileByName(
+                              post.authorName,
+                              post.authorHeadline,
+                              post.authorAvatar,
+                            )
                           }
                           className="flex items-start gap-3 cursor-pointer group/author"
                         >
@@ -738,8 +776,12 @@ export const NetworkPage: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">{post.authorHeadline}</p>
-                            <span className="text-[11px] text-black/40 dark:text-white/40">{post.timeAgo}</span>
+                            <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
+                              {post.authorHeadline}
+                            </p>
+                            <span className="text-[11px] text-black/40 dark:text-white/40">
+                              {post.timeAgo}
+                            </span>
                           </div>
                         </div>
 
@@ -767,7 +809,7 @@ export const NetworkPage: React.FC = () => {
                             <Code2 className="w-5 h-5 text-purple-500" />
                             <div>
                               <div className="text-xs font-bold text-black dark:text-white">
-                                {post.githubRepoUrl.replace('https://github.com/', '')}
+                                {post.githubRepoUrl.replace("https://github.com/", "")}
                               </div>
                               <div className="text-[10px] text-black/40 dark:text-white/40">
                                 Attached Code Repository • Click to inspect
@@ -799,14 +841,28 @@ export const NetworkPage: React.FC = () => {
                           {totalRx > 0 ? (
                             <>
                               <span className="flex items-center -space-x-1">
-                                {post.reactions.like > 0 && <span className="inline-block">👍</span>}
-                                {post.reactions.celebrate > 0 && <span className="inline-block">👏</span>}
-                                {post.reactions.insightful > 0 && <span className="inline-block">💡</span>}
-                                {post.reactions.support > 0 && <span className="inline-block">🚀</span>}
-                                {post.reactions.love > 0 && <span className="inline-block">❤️</span>}
-                                {post.reactions.curious > 0 && <span className="inline-block">🤔</span>}
+                                {post.reactions.like > 0 && (
+                                  <span className="inline-block">👍</span>
+                                )}
+                                {post.reactions.celebrate > 0 && (
+                                  <span className="inline-block">👏</span>
+                                )}
+                                {post.reactions.insightful > 0 && (
+                                  <span className="inline-block">💡</span>
+                                )}
+                                {post.reactions.support > 0 && (
+                                  <span className="inline-block">🚀</span>
+                                )}
+                                {post.reactions.love > 0 && (
+                                  <span className="inline-block">❤️</span>
+                                )}
+                                {post.reactions.curious > 0 && (
+                                  <span className="inline-block">🤔</span>
+                                )}
                               </span>
-                              <span className="font-bold text-black/70 dark:text-white/70">{totalRx} reactions</span>
+                              <span className="font-bold text-black/70 dark:text-white/70">
+                                {totalRx} reactions
+                              </span>
                             </>
                           ) : (
                             <span>Be the first to react</span>
@@ -829,7 +885,7 @@ export const NetworkPage: React.FC = () => {
                               onClick={(e) => e.stopPropagation()}
                               className="absolute -top-12 left-0 z-40 bg-white dark:bg-[#181818] px-3 py-1.5 rounded-full border border-black/10 dark:border-white/20 shadow-xl flex items-center gap-2 animate-scale-up"
                             >
-                              {(Object.keys(REACTIONS) as ReactionType[]).map(rType => {
+                              {(Object.keys(REACTIONS) as ReactionType[]).map((rType) => {
                                 const cfg = REACTIONS[rType];
                                 return (
                                   <button
@@ -849,24 +905,31 @@ export const NetworkPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() =>
-                              handleSelectReaction(post.id, post.userReaction ? post.userReaction : 'like')
+                              handleSelectReaction(
+                                post.id,
+                                post.userReaction ? post.userReaction : "like",
+                              )
                             }
                             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                               activeReactionConfig
                                 ? `${activeReactionConfig.bgColor} ${activeReactionConfig.color}`
-                                : 'hover:bg-black/5 dark:hover:bg-white/5 text-black/70 dark:text-white/70'
+                                : "hover:bg-black/5 dark:hover:bg-white/5 text-black/70 dark:text-white/70"
                             }`}
                           >
                             <span className="text-base leading-none">
-                              {activeReactionConfig ? activeReactionConfig.emoji : '👍'}
+                              {activeReactionConfig ? activeReactionConfig.emoji : "👍"}
                             </span>
-                            <span>{activeReactionConfig ? activeReactionConfig.label : 'React'}</span>
+                            <span>
+                              {activeReactionConfig ? activeReactionConfig.label : "React"}
+                            </span>
                           </button>
                         </div>
 
                         <button
                           type="button"
-                          onClick={() => setActiveCommentPostId(activeCommentPostId === post.id ? null : post.id)}
+                          onClick={() =>
+                            setActiveCommentPostId(activeCommentPostId === post.id ? null : post.id)
+                          }
                           className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold hover:bg-black/5 dark:hover:bg-white/5 text-black/70 dark:text-white/70 transition-all cursor-pointer"
                         >
                           <MessageSquare className="w-4 h-4" />
@@ -875,7 +938,9 @@ export const NetworkPage: React.FC = () => {
 
                         <button
                           type="button"
-                          onClick={() => showToast('Post Shared', 'Post link copied to clipboard.', 'info')}
+                          onClick={() =>
+                            showToast("Post Shared", "Post link copied to clipboard.", "info")
+                          }
                           className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold hover:bg-black/5 dark:hover:bg-white/5 text-black/70 dark:text-white/70 transition-all cursor-pointer"
                         >
                           <Share2 className="w-4 h-4" />
@@ -886,11 +951,20 @@ export const NetworkPage: React.FC = () => {
                       {/* Comments Section */}
                       {activeCommentPostId === post.id && (
                         <div className="pt-3 border-t border-black/5 dark:border-white/10 space-y-3">
-                          {post.comments.map(c => (
-                            <div key={c.id} className="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 space-y-1">
+                          {post.comments.map((c) => (
+                            <div
+                              key={c.id}
+                              className="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 space-y-1"
+                            >
                               <div className="flex items-center justify-between">
                                 <span
-                                  onClick={() => handleOpenProfileByName(c.name, 'Candidate Community Member', c.avatar || '')}
+                                  onClick={() =>
+                                    handleOpenProfileByName(
+                                      c.name,
+                                      "Candidate Community Member",
+                                      c.avatar || "",
+                                    )
+                                  }
                                   className="font-bold text-xs text-black dark:text-white hover:text-purple-600 cursor-pointer"
                                 >
                                   {c.name}
@@ -906,7 +980,7 @@ export const NetworkPage: React.FC = () => {
                               value={commentInput}
                               onChange={(e) => setCommentInput(e.target.value)}
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleAddComment(post.id);
+                                if (e.key === "Enter") handleAddComment(post.id);
                               }}
                               placeholder="Write a comment..."
                               className="flex-1 px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
@@ -936,14 +1010,19 @@ export const NetworkPage: React.FC = () => {
                 Your Verified Network Score
               </h3>
               <p className="text-xs text-black/60 dark:text-white/70">
-                Candidates with AI-validated certifications and active community posts get 3.2x more trial invitations.
+                Candidates with AI-validated certifications and active community posts get 3.2x more
+                trial invitations.
               </p>
               <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-center space-y-1">
-                <div className="text-2xl font-black text-purple-600 dark:text-purple-400">96 / 100</div>
-                <div className="text-xs font-bold text-black dark:text-white">Elite AI Trust Level</div>
+                <div className="text-2xl font-black text-purple-600 dark:text-purple-400">
+                  96 / 100
+                </div>
+                <div className="text-xs font-bold text-black dark:text-white">
+                  Elite AI Trust Level
+                </div>
               </div>
               <button
-                onClick={() => setCurrentRoute('profile')}
+                onClick={() => setCurrentRoute("profile")}
                 className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:opacity-90 transition-all cursor-pointer"
               >
                 Add Certification in Profile
@@ -958,10 +1037,14 @@ export const NetworkPage: React.FC = () => {
               </h3>
               <div className="space-y-2.5">
                 {[
-                  { tag: '#AgenticAI', posts: '48 updates', desc: 'Autonomous multi-agent trials' },
-                  { tag: '#SystemDesign', posts: '35 updates', desc: 'High throughput architecture' },
-                  { tag: '#NextJS', posts: '29 updates', desc: 'React 19 & server actions' },
-                  { tag: '#AWS', posts: '22 updates', desc: 'Verified cloud infrastructure' },
+                  { tag: "#AgenticAI", posts: "48 updates", desc: "Autonomous multi-agent trials" },
+                  {
+                    tag: "#SystemDesign",
+                    posts: "35 updates",
+                    desc: "High throughput architecture",
+                  },
+                  { tag: "#NextJS", posts: "29 updates", desc: "React 19 & server actions" },
+                  { tag: "#AWS", posts: "22 updates", desc: "Verified cloud infrastructure" },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -970,9 +1053,13 @@ export const NetworkPage: React.FC = () => {
                   >
                     <div>
                       <div className="font-bold text-xs text-black dark:text-white">{item.tag}</div>
-                      <div className="text-[10px] text-black/50 dark:text-white/50">{item.desc}</div>
+                      <div className="text-[10px] text-black/50 dark:text-white/50">
+                        {item.desc}
+                      </div>
                     </div>
-                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400">{item.posts}</span>
+                    <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400">
+                      {item.posts}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -983,16 +1070,16 @@ export const NetworkPage: React.FC = () => {
         /* MY NETWORK & CONNECTIONS TAB (Persistent with skill endorsements & Full LinkedIn Profile view) */
         <div className="space-y-6">
           {/* Pending Requests Section */}
-          {peers.filter(p => p.status === 'pending').length > 0 && (
+          {peers.filter((p) => p.status === "pending").length > 0 && (
             <div className="bg-white dark:bg-[#0A0A0A] p-6 rounded-[32px] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
               <h3 className="font-bold text-sm text-black dark:text-white flex items-center gap-2">
                 <UserPlus className="w-4 h-4 text-purple-500" />
-                Pending Connection Requests ({peers.filter(p => p.status === 'pending').length})
+                Pending Connection Requests ({peers.filter((p) => p.status === "pending").length})
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {peers
-                  .filter(p => p.status === 'pending')
-                  .map(peer => (
+                  .filter((p) => p.status === "pending")
+                  .map((peer) => (
                     <div
                       key={peer.id}
                       className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 flex items-center justify-between gap-4"
@@ -1001,13 +1088,21 @@ export const NetworkPage: React.FC = () => {
                         onClick={() => setSelectedPublicPeer(peer)}
                         className="flex items-center gap-3 cursor-pointer group/peer"
                       >
-                        <img src={peer.avatar} alt={peer.name} className="w-12 h-12 rounded-full object-cover" />
+                        <img
+                          src={peer.avatar}
+                          alt={peer.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
                         <div>
                           <div className="font-bold text-sm text-black dark:text-white group-hover/peer:text-purple-600">
                             {peer.name}
                           </div>
-                          <div className="text-xs text-black/60 dark:text-white/60">{peer.headline}</div>
-                          <div className="text-[11px] text-black/40 mt-1">{peer.mutualCount} mutual connections</div>
+                          <div className="text-xs text-black/60 dark:text-white/60">
+                            {peer.headline}
+                          </div>
+                          <div className="text-[11px] text-black/40 mt-1">
+                            {peer.mutualCount} mutual connections
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1021,7 +1116,9 @@ export const NetworkPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() =>
-                            setPeers(prev => prev.map(p => (p.id === peer.id ? { ...p, status: 'none' } : p)))
+                            setPeers((prev) =>
+                              prev.map((p) => (p.id === peer.id ? { ...p, status: "none" } : p)),
+                            )
                           }
                           className="px-3 py-2 rounded-xl bg-black/10 dark:bg-white/10 text-black dark:text-white font-bold text-xs hover:bg-black/20"
                         >
@@ -1055,9 +1152,12 @@ export const NetworkPage: React.FC = () => {
             {peers.length === 0 ? (
               <div className="p-12 rounded-[24px] bg-black/5 dark:bg-white/5 text-center space-y-3">
                 <Users className="w-10 h-10 text-black/20 dark:text-white/20 mx-auto" />
-                <p className="text-sm font-bold text-black dark:text-white">No connections or recommended peers yet</p>
+                <p className="text-sm font-bold text-black dark:text-white">
+                  No connections or recommended peers yet
+                </p>
                 <p className="text-xs text-black/50 dark:text-white/50 max-w-sm mx-auto">
-                  Click the discover button above to populate verified candidate profiles and inspect their full LinkedIn-style accounts!
+                  Click the discover button above to populate verified candidate profiles and
+                  inspect their full LinkedIn-style accounts!
                 </p>
                 <button
                   type="button"
@@ -1070,7 +1170,7 @@ export const NetworkPage: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {peers.map(peer => (
+                {peers.map((peer) => (
                   <div
                     key={peer.id}
                     className="p-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 flex flex-col justify-between space-y-4 hover:border-black/20 dark:hover:border-white/25 transition-all"
@@ -1088,8 +1188,12 @@ export const NetworkPage: React.FC = () => {
                         <div className="font-bold text-sm text-black dark:text-white group-hover/card:text-purple-600 transition-colors">
                           {peer.name}
                         </div>
-                        <p className="text-xs text-black/60 dark:text-white/60 mt-0.5">{peer.headline}</p>
-                        <span className="text-[11px] text-black/40 mt-1 block">{peer.mutualCount} mutual connections</span>
+                        <p className="text-xs text-black/60 dark:text-white/60 mt-0.5">
+                          {peer.headline}
+                        </p>
+                        <span className="text-[11px] text-black/40 mt-1 block">
+                          {peer.mutualCount} mutual connections
+                        </span>
                       </div>
                     </div>
 
@@ -1106,8 +1210,8 @@ export const NetworkPage: React.FC = () => {
                             onClick={() => handleEndorseSkill(peer.id, skill.name)}
                             className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                               skill.endorsedByMe
-                                ? 'bg-purple-600 text-white shadow-xs'
-                                : 'bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10'
+                                ? "bg-purple-600 text-white shadow-xs"
+                                : "bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10"
                             }`}
                             title={`Click to endorse ${skill.name}`}
                           >
@@ -1120,7 +1224,7 @@ export const NetworkPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2 pt-2 border-t border-black/5 dark:border-white/10">
-                      {peer.status === 'connected' ? (
+                      {peer.status === "connected" ? (
                         <>
                           <span className="flex-1 py-2 rounded-xl bg-emerald-500/10 text-emerald-500 font-bold text-xs text-center flex items-center justify-center gap-1">
                             <Check className="w-3.5 h-3.5" />
@@ -1135,7 +1239,7 @@ export const NetworkPage: React.FC = () => {
                             Message
                           </button>
                         </>
-                      ) : peer.status === 'pending' ? (
+                      ) : peer.status === "pending" ? (
                         <button
                           type="button"
                           onClick={() => handleAcceptPeer(peer.id)}
@@ -1225,7 +1329,7 @@ export const NetworkPage: React.FC = () => {
 
                 {/* Main Profile Action Buttons */}
                 <div className="flex items-center gap-2">
-                  {selectedPublicPeer.status === 'connected' ? (
+                  {selectedPublicPeer.status === "connected" ? (
                     <button
                       type="button"
                       onClick={() => {
@@ -1238,7 +1342,7 @@ export const NetworkPage: React.FC = () => {
                       <MessageSquare className="w-4 h-4" />
                       <span>Message</span>
                     </button>
-                  ) : selectedPublicPeer.status === 'pending' ? (
+                  ) : selectedPublicPeer.status === "pending" ? (
                     <button
                       type="button"
                       onClick={() => handleAcceptPeer(selectedPublicPeer.id)}
@@ -1280,8 +1384,16 @@ export const NetworkPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {(
                     selectedPublicPeer.certifications || [
-                      { title: 'AI Engineering & Prompt Evaluation', issuer: 'MicroIntern AI Validator', score: '98/100' },
-                      { title: 'Full Stack React & Next.js', issuer: 'Verified Competency Test', score: 'Elite' },
+                      {
+                        title: "AI Engineering & Prompt Evaluation",
+                        issuer: "MicroIntern AI Validator",
+                        score: "98/100",
+                      },
+                      {
+                        title: "Full Stack React & Next.js",
+                        issuer: "Verified Competency Test",
+                        score: "Elite",
+                      },
                     ]
                   ).map((cert, i) => (
                     <div
@@ -1289,8 +1401,12 @@ export const NetworkPage: React.FC = () => {
                       className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 flex items-start justify-between"
                     >
                       <div>
-                        <div className="font-bold text-xs text-black dark:text-white">{cert.title}</div>
-                        <div className="text-[10px] text-black/60 dark:text-white/60 mt-0.5">{cert.issuer}</div>
+                        <div className="font-bold text-xs text-black dark:text-white">
+                          {cert.title}
+                        </div>
+                        <div className="text-[10px] text-black/60 dark:text-white/60 mt-0.5">
+                          {cert.issuer}
+                        </div>
                       </div>
                       <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 text-[10px] font-bold">
                         {cert.score}
@@ -1319,8 +1435,8 @@ export const NetworkPage: React.FC = () => {
                       onClick={() => handleEndorseSkill(selectedPublicPeer.id, skill.name)}
                       className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                         skill.endorsedByMe
-                          ? 'bg-purple-600 text-white shadow-md'
-                          : 'bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10'
+                          ? "bg-purple-600 text-white shadow-md"
+                          : "bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10"
                       }`}
                       title={`Endorse ${selectedPublicPeer.name} on ${skill.name}`}
                     >
@@ -1340,23 +1456,27 @@ export const NetworkPage: React.FC = () => {
                 <h4 className="text-xs font-bold uppercase tracking-wider text-black/40 dark:text-white/40">
                   Recent Updates by {selectedPublicPeer.name}
                 </h4>
-                {posts.filter(p => p.authorName === selectedPublicPeer.name).length === 0 ? (
+                {posts.filter((p) => p.authorName === selectedPublicPeer.name).length === 0 ? (
                   <p className="text-xs text-black/50 dark:text-white/50 italic">
                     No recent public posts by this candidate in your feed.
                   </p>
                 ) : (
                   posts
-                    .filter(p => p.authorName === selectedPublicPeer.name)
-                    .map(post => (
+                    .filter((p) => p.authorName === selectedPublicPeer.name)
+                    .map((post) => (
                       <div
                         key={post.id}
                         className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 space-y-2"
                       >
                         <div className="flex items-center justify-between text-xs text-black/50">
                           <span>{post.timeAgo}</span>
-                          {post.hashtag && <span className="font-bold text-purple-500">{post.hashtag}</span>}
+                          {post.hashtag && (
+                            <span className="font-bold text-purple-500">{post.hashtag}</span>
+                          )}
                         </div>
-                        <p className="text-xs text-black dark:text-white line-clamp-2">{post.content}</p>
+                        <p className="text-xs text-black dark:text-white line-clamp-2">
+                          {post.content}
+                        </p>
                       </div>
                     ))
                 )}
@@ -1395,7 +1515,9 @@ export const NetworkPage: React.FC = () => {
                   <h4 className="font-bold text-sm text-black dark:text-white group-hover/chatpeer:text-purple-600">
                     {activeChatPeer.name}
                   </h4>
-                  <p className="text-xs text-black/50 dark:text-white/60">{activeChatPeer.headline}</p>
+                  <p className="text-xs text-black/50 dark:text-white/60">
+                    {activeChatPeer.headline}
+                  </p>
                 </div>
               </div>
               <button
@@ -1409,16 +1531,16 @@ export const NetworkPage: React.FC = () => {
 
             {/* Chat Messages Body */}
             <div className="p-5 flex-1 overflow-y-auto space-y-4 max-h-80 min-h-[250px]">
-              {(chatMessages[activeChatPeer.id] || []).map(msg => (
+              {(chatMessages[activeChatPeer.id] || []).map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
+                  className={`flex flex-col ${msg.sender === "me" ? "items-end" : "items-start"}`}
                 >
                   <div
                     className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm ${
-                      msg.sender === 'me'
-                        ? 'bg-[#111111] dark:bg-white text-white dark:text-black font-medium'
-                        : 'bg-black/5 dark:bg-white/10 text-black dark:text-white'
+                      msg.sender === "me"
+                        ? "bg-[#111111] dark:bg-white text-white dark:text-black font-medium"
+                        : "bg-black/5 dark:bg-white/10 text-black dark:text-white"
                     }`}
                   >
                     {msg.text}
@@ -1435,7 +1557,7 @@ export const NetworkPage: React.FC = () => {
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSendMessage();
+                  if (e.key === "Enter") handleSendMessage();
                 }}
                 placeholder={`Message ${activeChatPeer.name}...`}
                 className="flex-1 px-4 py-2.5 rounded-full bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"

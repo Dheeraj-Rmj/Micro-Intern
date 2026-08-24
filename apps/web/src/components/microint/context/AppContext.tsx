@@ -1,7 +1,7 @@
-'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
-import { assessmentApi } from '../../../lib/api/assessment';
+"use client";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { assessmentApi } from "../../../lib/api/assessment";
 import {
   PageRoute,
   UserRole,
@@ -15,7 +15,7 @@ import {
   InterviewSlot,
   CandidateSearchResult,
   RecruiterOffer,
-} from '../types';
+} from "../types";
 import {
   INITIAL_USER_PROFILE,
   INITIAL_COMPANY_PROFILE,
@@ -26,13 +26,13 @@ import {
   MOCK_ACHIEVEMENTS,
   MOCK_INTERVIEWS,
   MOCK_CANDIDATES_SEARCH_POOL,
-} from '../data/mockData';
+} from "../data/mockData";
 
 interface ToastInfo {
   id: string;
   title: string;
   desc?: string;
-  type?: 'success' | 'info' | 'warning' | 'error';
+  type?: "success" | "info" | "warning" | "error";
 }
 
 interface AppContextType {
@@ -55,7 +55,11 @@ interface AppContextType {
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
   toastMessage: ToastInfo | null;
-  showToast: (title: string, desc?: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
+  showToast: (
+    title: string,
+    desc?: string,
+    type?: "success" | "info" | "warning" | "error",
+  ) => void;
   activeWorkspaceTrial: Trial | null;
   setActiveWorkspaceTrial: (trial: Trial | null) => void;
   searchQuery: string;
@@ -67,14 +71,19 @@ interface AppContextType {
   unreadNotificationsCount: number;
 
   // Company Portal Operations
-  createTrial: (trialData: Omit<Trial, 'id' | 'applicantsCount'>) => void;
+  createTrial: (trialData: Omit<Trial, "id" | "applicantsCount">) => void;
   updateTrial: (id: string, updated: Partial<Trial>) => void;
   deleteTrial: (id: string) => void;
   duplicateTrial: (id: string) => void;
-  toggleTrialStatus: (id: string, status: 'open' | 'paused' | 'closed' | 'draft') => void;
-  updateApplicationStatus: (appId: string, status: Application['status'], stage?: string) => void;
-  updateSubmissionEvaluation: (subId: string, score: number, feedback: string, status: Submission['status']) => void;
-  scheduleInterview: (slot: Omit<InterviewSlot, 'id'>) => void;
+  toggleTrialStatus: (id: string, status: "open" | "paused" | "closed" | "draft") => void;
+  updateApplicationStatus: (appId: string, status: Application["status"], stage?: string) => void;
+  updateSubmissionEvaluation: (
+    subId: string,
+    score: number,
+    feedback: string,
+    status: Submission["status"],
+  ) => void;
+  scheduleInterview: (slot: Omit<InterviewSlot, "id">) => void;
   cancelInterview: (id: string) => void;
   bookmarkCandidate: (candidateId: string) => void;
   inviteCandidate: (candidateId: string, trialId: string) => void;
@@ -82,8 +91,8 @@ interface AppContextType {
 
   // Recruiter Operations
   recruiterOffers: RecruiterOffer[];
-  createOffer: (offer: Omit<RecruiterOffer, 'id'>) => void;
-  updateOfferStatus: (id: string, status: RecruiterOffer['status']) => void;
+  createOffer: (offer: Omit<RecruiterOffer, "id">) => void;
+  updateOfferStatus: (id: string, status: RecruiterOffer["status"]) => void;
   deleteOffer: (id: string) => void;
 }
 
@@ -91,24 +100,24 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMounted, setIsMounted] = useState(false);
-  
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   const [currentRoute, setCurrentRoute] = useState<PageRoute>(() => {
-    if (typeof window !== 'undefined') {
-      const savedRoute = sessionStorage.getItem('microintern_current_route') as PageRoute | null;
-      if (savedRoute && savedRoute !== 'loading') {
+    if (typeof window !== "undefined") {
+      const savedRoute = sessionStorage.getItem("microintern_current_route") as PageRoute | null;
+      if (savedRoute && savedRoute !== "loading") {
         return savedRoute;
       }
     }
-    return 'landing';
+    return "landing";
   });
-  const [role, setRole] = useState<UserRole>('candidate');
+  const [role, setRole] = useState<UserRole>("candidate");
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('microintern_user_profile');
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("microintern_user_profile");
       if (saved) {
         try {
           return { ...INITIAL_USER_PROFILE, ...JSON.parse(saved) };
@@ -125,39 +134,43 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     const fetchTrials = async () => {
       try {
-        const { assessments } = await assessmentApi.listPublicAssessments({ status: 'PUBLISHED' });
+        const { assessments } = await assessmentApi.listPublicAssessments({ status: "PUBLISHED" });
         if (assessments && assessments.length > 0) {
           const apiTrials = assessments.map((a: any) => ({
             id: a.id,
             title: a.title,
-            company: a.company?.name || 'Company',
-            roleTitle: a.roleTitle || 'Role',
-            difficulty: (a.complexityScore && a.complexityScore > 7 ? 'Advanced' : (a.complexityScore && a.complexityScore < 4 ? 'Beginner' : 'Intermediate')) as 'Beginner' | 'Intermediate' | 'Advanced',
-            category: a.category || 'All',
+            company: a.company?.name || "Company",
+            roleTitle: a.roleTitle || "Role",
+            difficulty: (a.complexityScore && a.complexityScore > 7
+              ? "Advanced"
+              : a.complexityScore && a.complexityScore < 4
+                ? "Beginner"
+                : "Intermediate") as "Beginner" | "Intermediate" | "Advanced",
+            category: a.category || "All",
             skillsRequired: a.skillsRequired || [],
             timeCommitment: `${a.durationMinutes || 120} mins`,
-            reward: '$0', // default mock
+            reward: "$0", // default mock
             applicantsCount: 0,
-            status: (a.status === 'PUBLISHED' ? 'open' : 'closed') as 'open' | 'closed',
+            status: (a.status === "PUBLISHED" ? "open" : "closed") as "open" | "closed",
             bookmarked: false,
             matchScore: 90, // mock score
             description: a.description,
             tasks: a.tasks?.map((t: any) => ({ title: t.title, description: t.description })) || [],
-            logo: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
-            stipend: '$0',
-            duration: '48 Hours',
-            deadline: 'Rolling',
-            deliverables: ['Code'],
+            logo: "https://cdn-icons-png.flaticon.com/512/25/25231.png",
+            stipend: "$0",
+            duration: "48 Hours",
+            deadline: "Rolling",
+            deliverables: ["Code"],
           }));
           // Merge with mock trials to not break UI if there are no assessments
           setTrials((prev) => {
             const apiIds = apiTrials.map((a: any) => a.id);
-            const filteredMocks = prev.filter(m => !apiIds.includes(m.id));
+            const filteredMocks = prev.filter((m) => !apiIds.includes(m.id));
             return [...apiTrials, ...filteredMocks];
           });
         }
       } catch (e) {
-        console.error('Failed to fetch public trials:', e);
+        console.error("Failed to fetch public trials:", e);
       }
     };
     fetchTrials();
@@ -167,43 +180,49 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [notifications, setNotifications] = useState<AppNotification[]>(MOCK_NOTIFICATIONS);
   const [achievements] = useState<AchievementBadge[]>(MOCK_ACHIEVEMENTS);
   const [interviews, setInterviews] = useState<InterviewSlot[]>(MOCK_INTERVIEWS);
-  const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>(MOCK_CANDIDATES_SEARCH_POOL);
+  const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>(
+    MOCK_CANDIDATES_SEARCH_POOL,
+  );
 
   const { theme, setTheme, systemTheme } = useTheme();
-  
+
   // Compute resolved theme to maintain compatibility with existing context consumers
   const [darkMode, setDarkModeState] = useState(false);
-  
+
   useEffect(() => {
     // Determine the active theme based on next-themes resolution
-    const currentTheme = theme === 'system' ? systemTheme : theme;
-    setDarkModeState(currentTheme === 'dark');
+    const currentTheme = theme === "system" ? systemTheme : theme;
+    setDarkModeState(currentTheme === "dark");
   }, [theme, systemTheme]);
 
   // Wrapper function to update next-themes while keeping the setDarkMode API intact
   const setDarkMode = (isDark: boolean) => {
-    setTheme(isDark ? 'dark' : 'light');
+    setTheme(isDark ? "dark" : "light");
   };
 
   const [toastMessage, setToastMessage] = useState<ToastInfo | null>(null);
   const [activeWorkspaceTrial, setActiveWorkspaceTrial] = useState<Trial | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Persist current route across browser refresh
   useEffect(() => {
-    if (typeof window !== 'undefined' && currentRoute !== 'loading') {
-      sessionStorage.setItem('microintern_current_route', currentRoute);
+    if (typeof window !== "undefined" && currentRoute !== "loading") {
+      sessionStorage.setItem("microintern_current_route", currentRoute);
     }
   }, [currentRoute]);
 
   // Persist user profile (avatar, resume, bio, skills, social links)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('microintern_user_profile', JSON.stringify(userProfile));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("microintern_user_profile", JSON.stringify(userProfile));
     }
   }, [userProfile]);
 
-  const showToast = (title: string, desc?: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
+  const showToast = (
+    title: string,
+    desc?: string,
+    type: "success" | "info" | "warning" | "error" = "success",
+  ) => {
     const id = Math.random().toString(36).substring(2, 9);
     setToastMessage({ id, title, desc, type });
     setTimeout(() => {
@@ -217,14 +236,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (t.id === trialId) {
           const nextVal = !t.isBookmarked;
           showToast(
-            nextVal ? 'Saved to Bookmarks' : 'Removed from Bookmarks',
+            nextVal ? "Saved to Bookmarks" : "Removed from Bookmarks",
             `Trial "${t.title}" bookmark status updated.`,
-            'info'
+            "info",
           );
           return { ...t, isBookmarked: nextVal };
         }
         return t;
-      })
+      }),
     );
   };
 
@@ -232,27 +251,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const targetTrial = trials.find((t) => t.id === trialId);
     if (!targetTrial) return;
 
-    if (targetTrial.status === 'applied' || targetTrial.status === 'in_progress') {
-      showToast('Already Applied', `You have an active status for "${targetTrial.title}".`, 'info');
+    if (targetTrial.status === "applied" || targetTrial.status === "in_progress") {
+      showToast("Already Applied", `You have an active status for "${targetTrial.title}".`, "info");
       return;
     }
 
     try {
-      if (!targetTrial.id.startsWith('mock')) {
+      if (!targetTrial.id.startsWith("mock")) {
         await assessmentApi.startAssessment(targetTrial.id);
       }
     } catch (err: any) {
-      if (err?.response?.data?.message === 'You have already started this assessment') {
+      if (err?.response?.data?.message === "You have already started this assessment") {
         // Ignored if already started
       } else {
-        console.error('Failed to start assessment:', err);
-        showToast('Error', 'Failed to start trial. Please try again.', 'error');
+        console.error("Failed to start assessment:", err);
+        showToast("Error", "Failed to start trial. Please try again.", "error");
         return;
       }
     }
 
     setTrials((prev) =>
-      prev.map((t) => (t.id === trialId ? { ...t, status: 'applied', applicantsCount: t.applicantsCount + 1 } : t))
+      prev.map((t) =>
+        t.id === trialId ? { ...t, status: "applied", applicantsCount: t.applicantsCount + 1 } : t,
+      ),
     );
 
     const newApp: Application = {
@@ -260,49 +281,57 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       trialId: targetTrial.id,
       trialTitle: targetTrial.title,
       company: targetTrial.company,
-      candidateName: userProfile.fullName || 'Anonymous Candidate',
-      candidateEmail: userProfile.email || 'candidate@example.com',
+      candidateName: userProfile.fullName || "Anonymous Candidate",
+      candidateEmail: userProfile.email || "candidate@example.com",
       candidateAvatar: userProfile.avatar,
-      appliedDate: new Date().toISOString().split('T')[0] || '',
-      status: 'applied',
+      appliedDate: new Date().toISOString().split("T")[0] || "",
+      status: "applied",
       matchScore: Math.floor(Math.random() * 12) + 88,
-      stage: 'Under Initial Screening',
+      stage: "Under Initial Screening",
     };
 
     setApplications((prev) => [newApp, ...prev]);
 
     const newNotif: AppNotification = {
       id: `notif-${Date.now()}`,
-      title: 'Application Submitted!',
+      title: "Application Submitted!",
       message: `Your application for "${targetTrial.title}" at ${targetTrial.company} was submitted successfully.`,
-      timestamp: 'Just now',
-      category: 'application',
+      timestamp: "Just now",
+      category: "application",
       read: false,
     };
     setNotifications((prev) => [newNotif, ...prev]);
 
-    showToast('Application Submitted!', `Successfully applied to ${targetTrial.company}.`, 'success');
+    showToast(
+      "Application Submitted!",
+      `Successfully applied to ${targetTrial.company}.`,
+      "success",
+    );
   };
 
-  const submitWorkspaceTask = async (trialId: string, solutionText: string, fileNames: string[]) => {
+  const submitWorkspaceTask = async (
+    trialId: string,
+    solutionText: string,
+    fileNames: string[],
+  ) => {
     const targetTrial = trials.find((t) => t.id === trialId) || activeWorkspaceTrial;
-    const title = targetTrial ? targetTrial.title : 'MicroIntern Trial Task';
-    const company = targetTrial ? targetTrial.company : 'Enterprise Partner';
+    const title = targetTrial ? targetTrial.title : "MicroIntern Trial Task";
+    const company = targetTrial ? targetTrial.company : "Enterprise Partner";
 
     try {
-      if (targetTrial && !targetTrial.id.startsWith('mock')) {
+      if (targetTrial && !targetTrial.id.startsWith("mock")) {
         await assessmentApi.submitAssessment(targetTrial.id, {
           tasks: [
             {
-              taskId: 'default',
-              output: solutionText
-            }
-          ]
+              taskId: "default",
+              output: solutionText,
+            },
+          ],
         });
       }
     } catch (err) {
-      console.error('Failed to submit assessment:', err);
-      showToast('Error', 'Failed to submit code. Using local fallback.', 'warning');
+      console.error("Failed to submit assessment:", err);
+      showToast("Error", "Failed to submit code. Using local fallback.", "warning");
     }
 
     const newSub: Submission = {
@@ -310,18 +339,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       trialId: trialId,
       trialTitle: title,
       company: company,
-      candidateName: userProfile.fullName || 'Alex Vance',
-      submittedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      status: 'Under Review',
+      candidateName: userProfile.fullName || "Alex Vance",
+      submittedAt: new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      status: "Under Review",
       score: 95,
-      feedback: 'Automated evaluation complete. Code passed all unit tests and static syntax analysis.',
-      fileNames: fileNames.length > 0 ? fileNames : ['workspace_solution.ts', 'readme.md'],
+      feedback:
+        "Automated evaluation complete. Code passed all unit tests and static syntax analysis.",
+      fileNames: fileNames.length > 0 ? fileNames : ["workspace_solution.ts", "readme.md"],
     };
 
     setSubmissions((prev) => [newSub, ...prev]);
 
     if (targetTrial) {
-      setTrials((prev) => prev.map((t) => (t.id === targetTrial.id ? { ...t, status: 'completed' } : t)));
+      setTrials((prev) =>
+        prev.map((t) => (t.id === targetTrial.id ? { ...t, status: "completed" } : t)),
+      );
     }
 
     setUserProfile((prev) => ({
@@ -329,7 +365,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       trustScore: Math.min(100, prev.trustScore + 2),
     }));
 
-    showToast('Trial Submitted Successfully!', 'Your submission is now under review. +2 Trust Score!', 'success');
+    showToast(
+      "Trial Submitted Successfully!",
+      "Your submission is now under review. +2 Trust Score!",
+      "success",
+    );
   };
 
   const [recruiterOffers, setRecruiterOffers] = useState<RecruiterOffer[]>([]);
@@ -340,37 +380,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const clearAllNotifications = () => {
     setNotifications([]);
-    showToast('Notifications Cleared', 'All notifications deleted', 'info');
+    showToast("Notifications Cleared", "All notifications deleted", "info");
   };
 
-  const createOffer = (offer: Omit<RecruiterOffer, 'id'>) => {
+  const createOffer = (offer: Omit<RecruiterOffer, "id">) => {
     const newOffer: RecruiterOffer = {
       ...offer,
       id: `offer-${Date.now()}`,
     };
     setRecruiterOffers((prev) => [newOffer, ...prev]);
-    showToast('Offer Created', `Official offer generated for ${offer.candidateName}`, 'success');
+    showToast("Offer Created", `Official offer generated for ${offer.candidateName}`, "success");
   };
 
-  const updateOfferStatus = (id: string, status: RecruiterOffer['status']) => {
-    setRecruiterOffers((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, status } : o))
-    );
-    showToast('Offer Status Updated', `Offer status changed to ${status}`, 'info');
+  const updateOfferStatus = (id: string, status: RecruiterOffer["status"]) => {
+    setRecruiterOffers((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+    showToast("Offer Status Updated", `Offer status changed to ${status}`, "info");
   };
 
   const deleteOffer = (id: string) => {
     setRecruiterOffers((prev) => prev.filter((o) => o.id !== id));
-    showToast('Offer Revoked', 'The offer has been removed', 'warning');
+    showToast("Offer Revoked", "The offer has been removed", "warning");
   };
 
   const unreadNotificationsCount = notifications.filter((n) => !n.read).length;
 
   // --- Company Actions ---
-  const createTrial = (trialData: Omit<Trial, 'id' | 'applicantsCount'>) => {
+  const createTrial = (trialData: Omit<Trial, "id" | "applicantsCount">) => {
     const newId = `trial-${Date.now()}`;
-    const companyName = companyProfile.companyName || 'Your Company';
-    const logoUrl = companyProfile.logo || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80';
+    const companyName = companyProfile.companyName || "Your Company";
+    const logoUrl =
+      companyProfile.logo ||
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80";
 
     const newTrial: Trial = {
       ...trialData,
@@ -378,25 +418,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       company: companyName,
       logo: logoUrl,
       applicantsCount: 0,
-      status: trialData.status || 'open',
+      status: trialData.status || "open",
     };
 
     setTrials((prev) => [newTrial, ...prev]);
     showToast(
-      trialData.status === 'draft' ? 'Trial Saved as Draft' : 'Skill Trial Published!',
+      trialData.status === "draft" ? "Trial Saved as Draft" : "Skill Trial Published!",
       `"${trialData.title}" is now active in your company workspace.`,
-      'success'
+      "success",
     );
   };
 
   const updateTrial = (id: string, updated: Partial<Trial>) => {
     setTrials((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t)));
-    showToast('Trial Updated', 'Changes saved successfully.', 'info');
+    showToast("Trial Updated", "Changes saved successfully.", "info");
   };
 
   const deleteTrial = (id: string) => {
     setTrials((prev) => prev.filter((t) => t.id !== id));
-    showToast('Trial Deleted', 'The trial has been removed.', 'warning');
+    showToast("Trial Deleted", "The trial has been removed.", "warning");
   };
 
   const duplicateTrial = (id: string) => {
@@ -407,43 +447,60 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: `trial-${Date.now()}`,
       title: `${target.title} (Copy)`,
       applicantsCount: 0,
-      status: 'draft',
+      status: "draft",
     };
     setTrials((prev) => [duplicated, ...prev]);
-    showToast('Trial Duplicated', `Created draft copy "${duplicated.title}".`, 'info');
+    showToast("Trial Duplicated", `Created draft copy "${duplicated.title}".`, "info");
   };
 
-  const toggleTrialStatus = (id: string, status: 'open' | 'paused' | 'closed' | 'draft') => {
+  const toggleTrialStatus = (id: string, status: "open" | "paused" | "closed" | "draft") => {
     setTrials((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
-    showToast('Status Updated', `Trial status changed to ${status.toUpperCase()}.`, 'info');
+    showToast("Status Updated", `Trial status changed to ${status.toUpperCase()}.`, "info");
   };
 
-  const updateApplicationStatus = (appId: string, status: Application['status'], stage?: string) => {
+  const updateApplicationStatus = (
+    appId: string,
+    status: Application["status"],
+    stage?: string,
+  ) => {
     setApplications((prev) =>
-      prev.map((a) => (a.id === appId ? { ...a, status, stage: stage || a.stage } : a))
+      prev.map((a) => (a.id === appId ? { ...a, status, stage: stage || a.stage } : a)),
     );
-    showToast('Candidate Status Updated', `Application moved to ${status.toUpperCase()}.`, 'success');
+    showToast(
+      "Candidate Status Updated",
+      `Application moved to ${status.toUpperCase()}.`,
+      "success",
+    );
   };
 
-  const updateSubmissionEvaluation = (subId: string, score: number, feedback: string, status: Submission['status']) => {
+  const updateSubmissionEvaluation = (
+    subId: string,
+    score: number,
+    feedback: string,
+    status: Submission["status"],
+  ) => {
     setSubmissions((prev) =>
-      prev.map((s) => (s.id === subId ? { ...s, score, feedback, status } : s))
+      prev.map((s) => (s.id === subId ? { ...s, score, feedback, status } : s)),
     );
-    showToast('Evaluation Saved', `Submission marked as ${status}. Score: ${score}/100`, 'success');
+    showToast("Evaluation Saved", `Submission marked as ${status}. Score: ${score}/100`, "success");
   };
 
-  const scheduleInterview = (slot: Omit<InterviewSlot, 'id'>) => {
+  const scheduleInterview = (slot: Omit<InterviewSlot, "id">) => {
     const newSlot: InterviewSlot = {
       ...slot,
       id: `interview-${Date.now()}`,
     };
     setInterviews((prev) => [newSlot, ...prev]);
-    showToast('Interview Scheduled', `Meeting with ${slot.candidateName} scheduled for ${slot.date} at ${slot.time}.`, 'success');
+    showToast(
+      "Interview Scheduled",
+      `Meeting with ${slot.candidateName} scheduled for ${slot.date} at ${slot.time}.`,
+      "success",
+    );
   };
 
   const cancelInterview = (id: string) => {
-    setInterviews((prev) => prev.map((i) => (i.id === id ? { ...i, status: 'cancelled' } : i)));
-    showToast('Interview Cancelled', 'The scheduled session was marked as cancelled.', 'warning');
+    setInterviews((prev) => prev.map((i) => (i.id === id ? { ...i, status: "cancelled" } : i)));
+    showToast("Interview Cancelled", "The scheduled session was marked as cancelled.", "warning");
   };
 
   const bookmarkCandidate = (candidateId: string) => {
@@ -451,11 +508,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       prev.map((c) => {
         if (c.id === candidateId) {
           const nextState = !c.isBookmarked;
-          showToast(nextState ? 'Candidate Bookmarked' : 'Candidate Unbookmarked', `${c.fullName}`, 'info');
+          showToast(
+            nextState ? "Candidate Bookmarked" : "Candidate Unbookmarked",
+            `${c.fullName}`,
+            "info",
+          );
           return { ...c, isBookmarked: nextState };
         }
         return c;
-      })
+      }),
     );
   };
 
@@ -465,7 +526,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!candidate || !trial) return;
 
     setCandidateSearchPool((prev) =>
-      prev.map((c) => (c.id === candidateId ? { ...c, isInvited: true } : c))
+      prev.map((c) => (c.id === candidateId ? { ...c, isInvited: true } : c)),
     );
 
     // Create application entry
@@ -477,14 +538,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       candidateName: candidate.fullName,
       candidateEmail: candidate.email,
       candidateAvatar: candidate.avatar,
-      appliedDate: new Date().toISOString().split('T')[0] || '',
-      status: 'shortlisted',
+      appliedDate: new Date().toISOString().split("T")[0] || "",
+      status: "shortlisted",
       matchScore: candidate.matchScore,
-      stage: 'Company Invited Candidate',
+      stage: "Company Invited Candidate",
     };
 
     setApplications((prev) => [newApp, ...prev]);
-    showToast('Invitation Sent!', `Invited ${candidate.fullName} to trial "${trial.title}".`, 'success');
+    showToast(
+      "Invitation Sent!",
+      `Invited ${candidate.fullName} to trial "${trial.title}".`,
+      "success",
+    );
   };
 
   if (!isMounted) return null;
@@ -551,8 +616,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 };
-

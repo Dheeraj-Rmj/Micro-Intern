@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, DollarSign, ArrowUpRight, Search, ShieldCheck, Loader2 } from 'lucide-react';
-import { adminApi } from '../../../../lib/api/admin';
+import React, { useState, useEffect } from "react";
+import { Sparkles, DollarSign, ArrowUpRight, Search, ShieldCheck, Loader2 } from "lucide-react";
+import { adminApi } from "../../../../lib/api/admin";
 
 export const SuperAdminEscrowTrialsPage: React.FC = () => {
   const [metrics, setMetrics] = useState<any>(null);
@@ -12,7 +12,7 @@ export const SuperAdminEscrowTrialsPage: React.FC = () => {
         const data = await adminApi.getEscrowMetrics();
         setMetrics(data);
       } catch (err) {
-        console.error('Failed to fetch escrow metrics', err);
+        console.error("Failed to fetch escrow metrics", err);
       } finally {
         setLoading(false);
       }
@@ -42,9 +42,15 @@ export const SuperAdminEscrowTrialsPage: React.FC = () => {
               <DollarSign className="w-6 h-6" />
             </div>
           </div>
-          <span className="text-xs font-mono uppercase text-black/50 dark:text-white/50 mb-1 block">Total Value Locked (TVL)</span>
-          {loading ? <Loader2 className="w-6 h-6 animate-spin text-black/20 dark:text-white/20 mt-2" /> : (
-            <span className="text-3xl font-serif text-black dark:text-white">${metrics?.totalValueLocked?.toLocaleString() ?? 0}</span>
+          <span className="text-xs font-mono uppercase text-black/50 dark:text-white/50 mb-1 block">
+            Total Value Locked (TVL)
+          </span>
+          {loading ? (
+            <Loader2 className="w-6 h-6 animate-spin text-black/20 dark:text-white/20 mt-2" />
+          ) : (
+            <span className="text-3xl font-serif text-black dark:text-white">
+              ${metrics?.totalValueLocked?.toLocaleString() ?? 0}
+            </span>
           )}
         </div>
 
@@ -54,9 +60,15 @@ export const SuperAdminEscrowTrialsPage: React.FC = () => {
               <ShieldCheck className="w-6 h-6" />
             </div>
           </div>
-          <span className="text-xs font-mono uppercase text-black/50 dark:text-white/50 mb-1 block">Active Escrow Contracts</span>
-          {loading ? <Loader2 className="w-6 h-6 animate-spin text-black/20 dark:text-white/20 mt-2" /> : (
-            <span className="text-3xl font-serif text-black dark:text-white">{metrics?.activeContracts?.toLocaleString() ?? 0}</span>
+          <span className="text-xs font-mono uppercase text-black/50 dark:text-white/50 mb-1 block">
+            Active Escrow Contracts
+          </span>
+          {loading ? (
+            <Loader2 className="w-6 h-6 animate-spin text-black/20 dark:text-white/20 mt-2" />
+          ) : (
+            <span className="text-3xl font-serif text-black dark:text-white">
+              {metrics?.activeContracts?.toLocaleString() ?? 0}
+            </span>
           )}
         </div>
 
@@ -66,9 +78,15 @@ export const SuperAdminEscrowTrialsPage: React.FC = () => {
               <Sparkles className="w-6 h-6" />
             </div>
           </div>
-          <span className="text-xs font-mono uppercase text-black/50 dark:text-white/50 mb-1 block">Payouts Pending</span>
-          {loading ? <Loader2 className="w-6 h-6 animate-spin text-black/20 dark:text-white/20 mt-2" /> : (
-            <span className="text-3xl font-serif text-black dark:text-white">${metrics?.payoutsPending?.toLocaleString() ?? 0}</span>
+          <span className="text-xs font-mono uppercase text-black/50 dark:text-white/50 mb-1 block">
+            Payouts Pending
+          </span>
+          {loading ? (
+            <Loader2 className="w-6 h-6 animate-spin text-black/20 dark:text-white/20 mt-2" />
+          ) : (
+            <span className="text-3xl font-serif text-black dark:text-white">
+              ${metrics?.payoutsPending?.toLocaleString() ?? 0}
+            </span>
           )}
         </div>
       </div>
@@ -85,7 +103,7 @@ export const SuperAdminEscrowTrialsPage: React.FC = () => {
           </div>
           <div className="relative">
             <Search className="w-4 h-4 text-black/40 dark:text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input 
+            <input
               type="text"
               placeholder="Search contracts..."
               className="pl-9 pr-4 py-2 rounded-full bg-black/5 dark:bg-white/5 text-xs border border-transparent focus:border-black/20 dark:focus:border-white/20 outline-none w-48 transition-all font-mono"
@@ -95,34 +113,72 @@ export const SuperAdminEscrowTrialsPage: React.FC = () => {
 
         <div className="space-y-4">
           {[
-            { id: 'ESC-9481', company: 'Google', title: 'Kubernetes Reliability Engineer', amount: '$4,500', status: 'LOCKED' },
-            { id: 'ESC-7721', company: 'Stripe', title: 'Payments Core Infrastructure', amount: '$6,200', status: 'IN_PROGRESS' },
-            { id: 'ESC-4492', company: 'Linear', title: 'React Performance Optimization', amount: '$2,800', status: 'LOCKED' },
-            { id: 'ESC-1104', company: 'Vercel', title: 'Edge Network Routing', amount: '$5,000', status: 'PAYOUT_READY' },
+            {
+              id: "ESC-9481",
+              company: "Google",
+              title: "Kubernetes Reliability Engineer",
+              amount: "$4,500",
+              status: "LOCKED",
+            },
+            {
+              id: "ESC-7721",
+              company: "Stripe",
+              title: "Payments Core Infrastructure",
+              amount: "$6,200",
+              status: "IN_PROGRESS",
+            },
+            {
+              id: "ESC-4492",
+              company: "Linear",
+              title: "React Performance Optimization",
+              amount: "$2,800",
+              status: "LOCKED",
+            },
+            {
+              id: "ESC-1104",
+              company: "Vercel",
+              title: "Edge Network Routing",
+              amount: "$5,000",
+              status: "PAYOUT_READY",
+            },
           ].map((trial, i) => (
-            <div key={i} className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between group hover:border-black/20 dark:hover:border-white/20 transition-all cursor-pointer">
+            <div
+              key={i}
+              className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between group hover:border-black/20 dark:hover:border-white/20 transition-all cursor-pointer"
+            >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#181818] border border-black/5 dark:border-white/10 flex items-center justify-center font-serif text-sm font-bold text-black dark:text-white shadow-sm">
                   {trial.company[0]}
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-black dark:text-white">{trial.title}</div>
+                  <div className="text-sm font-semibold text-black dark:text-white">
+                    {trial.title}
+                  </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-black/50 dark:text-white/50 font-mono">{trial.company}</span>
+                    <span className="text-xs text-black/50 dark:text-white/50 font-mono">
+                      {trial.company}
+                    </span>
                     <span className="w-1 h-1 rounded-full bg-black/20 dark:bg-white/20" />
-                    <span className="text-[10px] font-mono text-black/40 dark:text-white/40">{trial.id}</span>
+                    <span className="text-[10px] font-mono text-black/40 dark:text-white/40">
+                      {trial.id}
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{trial.amount}</div>
-                  <span className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full mt-1 inline-block ${
-                    trial.status === 'PAYOUT_READY' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' :
-                    'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
-                  }`}>
-                    {trial.status.replace('_', ' ')}
+                  <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                    {trial.amount}
+                  </div>
+                  <span
+                    className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full mt-1 inline-block ${
+                      trial.status === "PAYOUT_READY"
+                        ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                        : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+                    }`}
+                  >
+                    {trial.status.replace("_", " ")}
                   </span>
                 </div>
                 <ArrowUpRight className="w-4 h-4 text-black/30 dark:text-white/30 group-hover:text-black dark:group-hover:text-white transition-colors" />

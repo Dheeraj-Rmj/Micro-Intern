@@ -1,81 +1,81 @@
-'use client';
+"use client";
 export type PageRoute =
-  | 'loading'
-  | 'landing'
-  | 'role-selection'
-  | 'signin'
-  | 'login'
-  | 'enterprise-login'
-  | 'system-ops'
-  | 'signup'
-  | 'forgot-password'
+  | "loading"
+  | "landing"
+  | "role-selection"
+  | "signin"
+  | "login"
+  | "enterprise-login"
+  | "system-ops"
+  | "signup"
+  | "forgot-password"
   // Candidate Routes
-  | 'dashboard'
-  | 'network'
-  | 'profile'
-  | 'discover-trials'
-  | 'my-applications'
-  | 'workspace'
-  | 'submissions'
-  | 'notifications'
-  | 'achievements'
-  | 'settings'
+  | "dashboard"
+  | "network"
+  | "profile"
+  | "discover-trials"
+  | "my-applications"
+  | "workspace"
+  | "submissions"
+  | "notifications"
+  | "achievements"
+  | "settings"
   // Company Portal Routes
-  | 'company-dashboard'
-  | 'company-recruiters'
-  | 'company-departments'
-  | 'company-hiring-analytics'
-  | 'company-billing'
-  | 'company-ai-insights'
-  | 'company-ai-generator'
-  | 'company-profile'
-  | 'company-create-trial'
-  | 'company-manage-trials'
-  | 'company-applications'
-  | 'company-candidate-search'
-  | 'company-evaluations'
-  | 'company-interviews'
-  | 'company-reports'
-  | 'company-notifications'
-  | 'company-settings'
+  | "company-dashboard"
+  | "company-recruiters"
+  | "company-departments"
+  | "company-hiring-analytics"
+  | "company-billing"
+  | "company-ai-insights"
+  | "company-ai-generator"
+  | "company-profile"
+  | "company-create-trial"
+  | "company-manage-trials"
+  | "company-applications"
+  | "company-candidate-search"
+  | "company-evaluations"
+  | "company-interviews"
+  | "company-reports"
+  | "company-notifications"
+  | "company-settings"
   // Recruiter Portal Routes
-  | 'recruiter-dashboard'
-  | 'recruiter-pipeline'
-  | 'recruiter-candidates'
-  | 'recruiter-interviews'
-  | 'recruiter-offers'
-  | 'recruiter-notifications'
-  | 'recruiter-settings'
+  | "recruiter-dashboard"
+  | "recruiter-pipeline"
+  | "recruiter-candidates"
+  | "recruiter-interviews"
+  | "recruiter-offers"
+  | "recruiter-notifications"
+  | "recruiter-settings"
   // Super Admin Portal Routes
-  | 'admin-dashboard'
-  | 'admin-organization'
-  | 'admin-subscriptions'
-  | 'admin-ai-analytics'
-  | 'admin-payments'
-  | 'admin-global-analytics'
-  | 'admin-system'
-  | 'admin-trials'
-  | 'admin-users'
-  | 'admin-trust-ai';
+  | "admin-dashboard"
+  | "admin-organization"
+  | "admin-subscriptions"
+  | "admin-ai-analytics"
+  | "admin-payments"
+  | "admin-global-analytics"
+  | "admin-system"
+  | "admin-trials"
+  | "admin-users"
+  | "admin-trust-ai";
 
-export type UserRole = 'candidate' | 'recruiter' | 'company' | 'admin';
+export type UserRole = "candidate" | "recruiter" | "company" | "admin";
 
 export interface Trial {
   id: string;
   title: string;
   company: string;
   logo: string;
-  category: 'Full Stack' | 'Frontend' | 'AI / ML' | 'Backend' | 'UI/UX Design' | 'DevOps';
+  category: "Full Stack" | "Frontend" | "AI / ML" | "Backend" | "UI/UX Design" | "DevOps";
   stipend: string;
   duration: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   deadline: string;
   applicantsCount: number;
   skillsRequired: string[];
   description: string;
   deliverables: string[];
   isBookmarked?: boolean;
-  status?: 'open' | 'applied' | 'in_progress' | 'completed' | 'draft' | 'paused' | 'closed';
+  status?: "open" | "applied" | "in_progress" | "completed" | "draft" | "paused" | "closed";
   evaluationCriteria?: string[];
 }
 
@@ -88,7 +88,7 @@ export interface Application {
   candidateEmail?: string;
   candidateAvatar?: string;
   appliedDate: string;
-  status: 'applied' | 'shortlisted' | 'rejected' | 'accepted' | 'interviewing';
+  status: "applied" | "shortlisted" | "rejected" | "accepted" | "interviewing";
   matchScore: number;
   stage: string;
 }
@@ -100,7 +100,7 @@ export interface Submission {
   company: string;
   candidateName?: string;
   submittedAt: string;
-  status: 'Under Review' | 'Evaluated' | 'Approved' | 'Revision Requested' | 'Rejected';
+  status: "Under Review" | "Evaluated" | "Approved" | "Revision Requested" | "Rejected";
   score?: number;
   feedback?: string;
   fileNames: string[];
@@ -112,7 +112,7 @@ export interface AppNotification {
   title: string;
   message: string;
   timestamp: string;
-  category: 'trial' | 'application' | 'system' | 'achievement' | 'interview' | 'evaluation';
+  category: "trial" | "application" | "system" | "achievement" | "interview" | "evaluation";
   read: boolean;
 }
 
@@ -123,7 +123,7 @@ export interface AchievementBadge {
   description: string;
   iconName: string;
   unlockedAt: string;
-  level: 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
+  level: "Bronze" | "Silver" | "Gold" | "Platinum";
 }
 
 export interface UserProfile {
@@ -160,7 +160,8 @@ export interface CompanyProfile {
   linkedinUrl: string;
   twitterUrl: string;
   githubUrl: string;
-  ekycStatus?: 'UNVERIFIED' | 'PENDING_MANUAL_REVIEW' | 'VERIFIED_STRIPE' | 'VERIFIED_MANUAL' | 'REJECTED';
+  ekycStatus?:
+    "UNVERIFIED" | "PENDING_MANUAL_REVIEW" | "VERIFIED_STRIPE" | "VERIFIED_MANUAL" | "REJECTED";
 }
 
 export interface CandidateSearchResult {
@@ -188,11 +189,12 @@ export interface InterviewSlot {
   time: string;
   interviewer: string;
   meetingUrl: string;
-  status: 'upcoming' | 'completed' | 'cancelled';
+  status: "upcoming" | "completed" | "cancelled";
   notes?: string;
 }
 
-export type PipelineStage = 'Applied' | 'Shortlisted' | 'Interview' | 'Offer' | 'Hired' | 'Rejected';
+export type PipelineStage =
+  "Applied" | "Shortlisted" | "Interview" | "Offer" | "Hired" | "Rejected";
 
 export interface RecruiterOffer {
   id: string;
@@ -205,8 +207,7 @@ export interface RecruiterOffer {
   salary: string;
   startDate: string;
   expirationDate: string;
-  status: 'Draft' | 'Sent' | 'Accepted' | 'Declined' | 'Pending Review';
+  status: "Draft" | "Sent" | "Accepted" | "Declined" | "Pending Review";
   sentDate?: string;
   notes?: string;
 }
-

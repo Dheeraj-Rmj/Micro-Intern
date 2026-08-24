@@ -1,8 +1,10 @@
+import { Evaluation } from "../../domain/entities/Evaluation.entity.js";
 
-import { Evaluation } from '../../domain/entities/Evaluation.entity.js';
-
-import type { IEvaluationRepository, SaveEvaluationData } from '../../application/ports/IEvaluationRepository.js';
-import type { EvaluationStatus , PrismaClient, Prisma } from '@microintern/database';
+import type {
+  IEvaluationRepository,
+  SaveEvaluationData,
+} from "../../application/ports/IEvaluationRepository.js";
+import type { EvaluationStatus, PrismaClient, Prisma } from "@microintern/database";
 
 export class PrismaEvaluationRepository implements IEvaluationRepository {
   constructor(private readonly db: PrismaClient) {}

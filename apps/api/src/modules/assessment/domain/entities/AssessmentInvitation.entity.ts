@@ -1,4 +1,4 @@
-import { SubmissionStatus } from '@microintern/database';
+import { SubmissionStatus } from "@microintern/database";
 
 export class AssessmentInvitation {
   constructor(
@@ -9,7 +9,7 @@ export class AssessmentInvitation {
     public readonly invitedAt: Date,
     public readonly expiresAt: Date | null,
     public readonly assessmentTitle?: string,
-    public readonly companyName?: string
+    public readonly companyName?: string,
   ) {}
 
   isPending(): boolean {
@@ -31,7 +31,7 @@ export class AssessmentInvitation {
       record.invitedAt,
       record.expiresAt ?? null,
       record.assessment?.title,
-      record.assessment?.company?.name
+      record.assessment?.company?.name,
     );
   }
 }

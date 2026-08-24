@@ -1,6 +1,6 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
 import {
   Sparkles,
   Plus,
@@ -11,7 +11,7 @@ import {
   Lock,
   Building2,
   FileText,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface CompanyTrialItem {
   id: string;
@@ -19,7 +19,7 @@ interface CompanyTrialItem {
   category: string;
   stipend: string;
   applicantsCount: number;
-  status: 'ACTIVE' | 'DRAFT' | 'COMPLETED';
+  status: "ACTIVE" | "DRAFT" | "COMPLETED";
   deadline: string;
 }
 
@@ -29,14 +29,14 @@ export const CompanyTrialsPage: React.FC = () => {
   const { showToast } = useApp();
   const [trials, setTrials] = useState<CompanyTrialItem[]>(INITIAL_ENTERPRISE_TRIALS);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [title, setTitle] = useState('');
-  const [stipend, setStipend] = useState('$3,500');
-  const [category, setCategory] = useState('Full Stack');
+  const [title, setTitle] = useState("");
+  const [stipend, setStipend] = useState("$3,500");
+  const [category, setCategory] = useState("Full Stack");
 
   const handleCreateTrial = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      showToast('Missing Title', 'Please enter a skill trial title.', 'warning');
+      showToast("Missing Title", "Please enter a skill trial title.", "warning");
       return;
     }
 
@@ -46,17 +46,17 @@ export const CompanyTrialsPage: React.FC = () => {
       category,
       stipend,
       applicantsCount: 0,
-      status: 'ACTIVE',
-      deadline: '10 days left',
+      status: "ACTIVE",
+      deadline: "10 days left",
     };
 
     setTrials([newTrial, ...trials]);
-    setTitle('');
+    setTitle("");
     setShowCreateModal(false);
     showToast(
-      'Trial Published & Escrow Locked',
+      "Trial Published & Escrow Locked",
       `"${title}" is now live for verified candidates to apply. ${stipend} escrow pool deposited.`,
-      'success'
+      "success",
     );
   };
 
@@ -124,18 +124,16 @@ export const CompanyTrialsPage: React.FC = () => {
               </span>
               <span
                 className={`px-2.5 py-1 rounded-full font-mono text-xs font-bold ${
-                  t.status === 'ACTIVE'
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                    : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                  t.status === "ACTIVE"
+                    ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                    : "bg-amber-500/15 text-amber-600 dark:text-amber-400"
                 }`}
               >
                 {t.status}
               </span>
             </div>
 
-            <h3 className="text-xl font-bold font-serif text-black dark:text-white">
-              {t.title}
-            </h3>
+            <h3 className="text-xl font-bold font-serif text-black dark:text-white">{t.title}</h3>
 
             <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5 text-xs text-black/70 dark:text-white/70 font-mono">
               <div className="flex items-center gap-1.5">

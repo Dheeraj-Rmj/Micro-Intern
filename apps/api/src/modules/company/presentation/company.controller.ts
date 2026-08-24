@@ -1,5 +1,5 @@
-import { UnauthorizedError } from '@/shared/errors/index.js';
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
+import { UnauthorizedError } from "@/shared/errors/index.js";
+import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
 
 import type {
   CreateCompanyUseCase,
@@ -14,9 +14,13 @@ import type {
   GetBillingUseCase,
   GetAIInsightsUseCase,
   ListCompanySubmissionsUseCase,
-} from '../application/index.js';
-import type { CreateCompanyInput, UpdateCompanyInput, InviteTeamMemberInput } from '@microintern/shared';
-import type { Request, Response, NextFunction } from 'express';
+} from "../application/index.js";
+import type {
+  CreateCompanyInput,
+  UpdateCompanyInput,
+  InviteTeamMemberInput,
+} from "@microintern/shared";
+import type { Request, Response, NextFunction } from "express";
 
 export class CompanyController {
   constructor(
@@ -36,8 +40,8 @@ export class CompanyController {
 
   private getAuthenticatedUserId(req: Request): string {
     const user = req.user as { id?: string } | undefined;
-    if (user?.id === undefined || typeof user.id !== 'string') {
-      throw new UnauthorizedError('Authentication required to access company profile');
+    if (user?.id === undefined || typeof user.id !== "string") {
+      throw new UnauthorizedError("Authentication required to access company profile");
     }
     return user.id;
   }
@@ -88,9 +92,14 @@ export class CompanyController {
   listMembers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = this.getAuthenticatedUserId(req);
-      const page = typeof req.query['page'] === 'string' ? parseInt(req.query['page'], 10) : undefined;
-      const limit = typeof req.query['limit'] === 'string' ? parseInt(req.query['limit'], 10) : undefined;
-      const { members, pagination } = await this.listTeamMembersUseCase.execute(userId, { page, limit });
+      const page =
+        typeof req.query["page"] === "string" ? parseInt(req.query["page"], 10) : undefined;
+      const limit =
+        typeof req.query["limit"] === "string" ? parseInt(req.query["limit"], 10) : undefined;
+      const { members, pagination } = await this.listTeamMembersUseCase.execute(userId, {
+        page,
+        limit,
+      });
       ResponseFormatter.paginated(res, members, pagination);
     } catch (error) {
       next(error);
@@ -111,10 +120,10 @@ export class CompanyController {
   removeMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = this.getAuthenticatedUserId(req);
-      const rawId = req.params['userId'];
+      const rawId = req.params["userId"];
       const targetUserId = Array.isArray(rawId) ? rawId[0] : rawId;
       if (targetUserId === undefined) {
-        throw new Error('User ID parameter is required');
+        throw new Error("User ID parameter is required");
       }
       await this.removeTeamMemberUseCase.execute(userId, targetUserId);
       ResponseFormatter.noContent(res);
@@ -171,7 +180,10 @@ export class CompanyController {
     try {
       const userId = this.getAuthenticatedUserId(req);
       const company = await this.getContextCompanyUseCase.execute(userId);
-      const { submissions, pagination } = await this.listCompanySubmissionsUseCase.execute(company.id, req.query);
+      const { submissions, pagination } = await this.listCompanySubmissionsUseCase.execute(
+        company.id,
+        req.query,
+      );
       ResponseFormatter.paginated(res, submissions, pagination);
     } catch (error) {
       next(error);

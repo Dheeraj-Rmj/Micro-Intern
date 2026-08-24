@@ -9,12 +9,14 @@ This guide ensures that the MicroIntern Modular Monolith remains clean, scalable
 Our most critical invariant is the strict separation of concerns across architectural layers.
 
 ### The Rules:
+
 1. **Domain Layer**: Independent of everything. No imports from `application`, `infrastructure`, `presentation`, or any external libraries (except standard utilities like `zod` for schemas, if deemed part of the domain).
 2. **Application Layer**: Orchestrates business logic. Can only import from the `domain` layer and internal `application` files. No HTTP request/response objects, no Prisma client.
-3. **Infrastructure Layer**: Implements interfaces defined in the application/domain layers. Can import from `domain` and `application`. This is the *only* place where database calls (Prisma), external APIs (Groq, Resend), or Cache (Redis) can happen.
+3. **Infrastructure Layer**: Implements interfaces defined in the application/domain layers. Can import from `domain` and `application`. This is the _only_ place where database calls (Prisma), external APIs (Groq, Resend), or Cache (Redis) can happen.
 4. **Presentation Layer**: Thin HTTP adapters (Express controllers). Can only import from `application` (to call Use Cases) and `shared` (for response formatters). No business logic lives here.
 
 ### Automated Enforcement:
+
 We use ESLint `import/no-restricted-paths` to enforce this. If you violate a boundary, your build will fail.
 
 ---
@@ -75,6 +77,7 @@ We use ESLint `import/no-restricted-paths` to enforce this. If you violate a bou
 ## 8. Code Review Checklist for Approvers
 
 When reviewing code, explicitly check for:
+
 1. **Layer Leakage:** Is there SQL in a controller? HTTP in a Use Case? Reject.
 2. **Missing Validation:** Is a new endpoint missing Zod validation? Reject.
 3. **Hardcoded Secrets:** Are there API keys in the code? Reject and revoke immediately.

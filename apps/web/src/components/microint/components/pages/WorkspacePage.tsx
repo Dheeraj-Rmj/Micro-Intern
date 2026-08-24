@@ -1,9 +1,9 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
-import { Breadcrumbs } from '../common/Breadcrumbs';
+"use client";
+import React, { useState, useEffect } from "react";
+import { useApp } from "../../context/AppContext";
+import { Breadcrumbs } from "../common/Breadcrumbs";
 const safeConfetti = () => {
-  if (typeof window !== 'undefined' && (window as unknown as { confetti?: () => void }).confetti) {
+  if (typeof window !== "undefined" && (window as unknown as { confetti?: () => void }).confetti) {
     (window as unknown as { confetti: (opt?: object) => void }).confetti({
       particleCount: 100,
       spread: 70,
@@ -24,10 +24,11 @@ import {
   Sparkles,
   Copy,
   Check,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const WorkspacePage: React.FC = () => {
-  const { activeWorkspaceTrial, submitWorkspaceTask, showToast, setCurrentRoute, trials } = useApp();
+  const { activeWorkspaceTrial, submitWorkspaceTask, showToast, setCurrentRoute, trials } =
+    useApp();
 
   const trial = activeWorkspaceTrial || trials[0];
 
@@ -35,8 +36,8 @@ export const WorkspacePage: React.FC = () => {
   const [secondsLeft, setSecondsLeft] = useState(9930); // ~2h 45m 30s
   const [codeContent, setCodeContent] = useState(`/**
  * MicroIntern Skill Trial Deliverable
- * Company: ${trial ? trial.company : 'TechCorp'}
- * Task: ${trial ? trial.title : 'Fullstack Feature'}
+ * Company: ${trial ? trial.company : "TechCorp"}
+ * Task: ${trial ? trial.title : "Fullstack Feature"}
  */
 
 import React, { useState } from 'react';
@@ -63,7 +64,10 @@ export default function SubscriptionBillingEngine() {
   );
 }`);
 
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>(['subscription_engine.tsx', 'package.json']);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([
+    "subscription_engine.tsx",
+    "package.json",
+  ]);
   const [isTestRunning, setIsTestRunning] = useState(false);
   const [testLog, setTestLog] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -83,12 +87,15 @@ export default function SubscriptionBillingEngine() {
           <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 text-black dark:text-white flex items-center justify-center mx-auto mb-6">
             <Code2 className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl tracking-tight text-black dark:text-white font-serif">No Active Trial</h2>
+          <h2 className="text-2xl tracking-tight text-black dark:text-white font-serif">
+            No Active Trial
+          </h2>
           <p className="text-sm text-black/50 dark:text-white/60 max-w-sm mx-auto mt-2 leading-relaxed">
-            Select an open trial from the Discover catalog or open a shortlisted workspace from My Applications.
+            Select an open trial from the Discover catalog or open a shortlisted workspace from My
+            Applications.
           </p>
           <button
-            onClick={() => setCurrentRoute('discover-trials')}
+            onClick={() => setCurrentRoute("discover-trials")}
             className="mt-8 px-6 py-3 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm shadow-sm transition-transform hover:scale-105 cursor-pointer inline-flex items-center gap-2"
           >
             Discover Trials
@@ -102,18 +109,18 @@ export default function SubscriptionBillingEngine() {
     const h = Math.floor(totalSec / 3600);
     const m = Math.floor((totalSec % 3600) / 60);
     const s = totalSec % 60;
-    return `${h.toString().padStart(2, '0')}h : ${m.toString().padStart(2, '0')}m : ${s.toString().padStart(2, '0')}s`;
+    return `${h.toString().padStart(2, "0")}h : ${m.toString().padStart(2, "0")}m : ${s.toString().padStart(2, "0")}s`;
   };
 
   const handleRunTests = () => {
     setIsTestRunning(true);
-    setTestLog('Initializing candidate test suite sandbox...');
+    setTestLog("Initializing candidate test suite sandbox...");
     setTimeout(() => {
       setTestLog(
-        `[PASS] static_syntax_check.ts\n[PASS] component_render_test.tsx (14ms)\n[PASS] subscription_upgrade_state.test.ts (28ms)\nAll 3 test suites passed! Ready for final submission.`
+        `[PASS] static_syntax_check.ts\n[PASS] component_render_test.tsx (14ms)\n[PASS] subscription_upgrade_state.test.ts (28ms)\nAll 3 test suites passed! Ready for final submission.`,
       );
       setIsTestRunning(false);
-      showToast('Tests Passed!', '100% test assertions satisfied.', 'success');
+      showToast("Tests Passed!", "100% test assertions satisfied.", "success");
     }, 1200);
   };
 
@@ -122,7 +129,7 @@ export default function SubscriptionBillingEngine() {
     if (files && files.length > 0) {
       const names = Array.from(files).map((f: File) => f.name);
       setUploadedFiles((prev) => [...prev, ...names]);
-      showToast('Files Attached', `Added ${names.length} file(s) to submission bundle.`, 'info');
+      showToast("Files Attached", `Added ${names.length} file(s) to submission bundle.`, "info");
     }
   };
 
@@ -130,7 +137,7 @@ export default function SubscriptionBillingEngine() {
     safeConfetti();
 
     submitWorkspaceTask(trial.id, codeContent, uploadedFiles);
-    setTimeout(() => setCurrentRoute('submissions'), 1200);
+    setTimeout(() => setCurrentRoute("submissions"), 1200);
   };
 
   const handleCopy = () => {
@@ -159,7 +166,9 @@ export default function SubscriptionBillingEngine() {
             <p className="text-[10px] text-black/40 dark:text-white/50 uppercase font-bold tracking-widest">
               Submission Deadline
             </p>
-            <p className="text-base font-black font-mono text-black dark:text-white">{formatTime(secondsLeft)}</p>
+            <p className="text-base font-black font-mono text-black dark:text-white">
+              {formatTime(secondsLeft)}
+            </p>
           </div>
           <div className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center">
             <Clock className="w-4 h-4 text-black dark:text-white" />
@@ -188,7 +197,10 @@ export default function SubscriptionBillingEngine() {
               </h4>
               <ul className="space-y-3 text-sm">
                 {trial.deliverables?.map((d, i) => (
-                  <li key={i} className="flex items-start gap-3 text-black/70 dark:text-white/80 font-medium">
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 text-black/70 dark:text-white/80 font-medium"
+                  >
                     <CheckCircle2 className="w-5 h-5 text-black dark:text-white flex-shrink-0" />
                     <span>{d}</span>
                   </li>
@@ -213,7 +225,9 @@ export default function SubscriptionBillingEngine() {
               <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Upload className="w-5 h-5 text-black dark:text-white" />
               </div>
-              <p className="text-sm font-bold text-black dark:text-white">Click or drag files here</p>
+              <p className="text-sm font-bold text-black dark:text-white">
+                Click or drag files here
+              </p>
               <p className="text-xs text-black/40 dark:text-white/50 mt-1 font-medium">
                 .zip, .ts, .tsx, .json (Max 25MB)
               </p>
@@ -230,7 +244,9 @@ export default function SubscriptionBillingEngine() {
                   >
                     <span className="flex items-center gap-3">
                       <FileCheck className="w-4 h-4 text-black dark:text-white" />
-                      <span className="font-mono text-black dark:text-white tracking-tight">{f}</span>
+                      <span className="font-mono text-black dark:text-white tracking-tight">
+                        {f}
+                      </span>
                     </span>
                     <span className="text-[10px] text-black/40 dark:text-white/50 uppercase font-bold tracking-widest">
                       Ready
@@ -259,7 +275,11 @@ export default function SubscriptionBillingEngine() {
                   className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-white/60 hover:text-white transition-colors cursor-pointer"
                   title="Copy code"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5 text-white" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
                 </button>
                 <button
                   onClick={handleRunTests}
@@ -267,7 +287,7 @@ export default function SubscriptionBillingEngine() {
                   className="px-5 py-2.5 rounded-full bg-white hover:opacity-90 text-black font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <Play className="w-3 h-3 fill-black" />
-                  <span>{isTestRunning ? 'Running Tests...' : 'Run Suite'}</span>
+                  <span>{isTestRunning ? "Running Tests..." : "Run Suite"}</span>
                 </button>
               </div>
             </div>

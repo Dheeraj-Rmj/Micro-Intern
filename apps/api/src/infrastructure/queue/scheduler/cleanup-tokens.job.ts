@@ -1,10 +1,12 @@
-import type { PrismaClient } from '@microintern/database';
-import { createModuleLogger } from '@/core/logger.js';
+import type { PrismaClient } from "@microintern/database";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('CleanupTokensJob');
+const log = createModuleLogger("CleanupTokensJob");
 
-export async function cleanupExpiredTokens(prisma: PrismaClient): Promise<{ deletedCount: number }> {
-  log.info('Executing scheduled job: cleanupExpiredTokens');
+export async function cleanupExpiredTokens(
+  prisma: PrismaClient,
+): Promise<{ deletedCount: number }> {
+  log.info("Executing scheduled job: cleanupExpiredTokens");
   const now = new Date();
 
   const result = await prisma.session.deleteMany({
@@ -15,6 +17,6 @@ export async function cleanupExpiredTokens(prisma: PrismaClient): Promise<{ dele
     },
   });
 
-  log.info({ deletedCount: result.count }, 'cleanupExpiredTokens completed');
+  log.info({ deletedCount: result.count }, "cleanupExpiredTokens completed");
   return { deletedCount: result.count };
 }

@@ -1,24 +1,24 @@
-'use client';
-import React, { useState } from 'react';
-import { AppProvider, useApp } from './context/AppContext';
-import { LoadingScreen } from './components/common/LoadingScreen';
-import { Toast } from './components/common/Toast';
-import { LandingPage } from './components/pages/LandingPage';
-import { SignInPage } from './components/auth/SignInPage';
-import { SignUpPage } from './components/auth/SignUpPage';
-import { ForgotPasswordPage } from './components/auth/ForgotPasswordPage';
-import { Sidebar } from './components/dashboard/Sidebar';
-import { DashboardHeader } from './components/dashboard/DashboardHeader';
-import { CandidateDashboard } from './components/pages/CandidateDashboard';
-import { ProfilePage } from './components/pages/ProfilePage';
-import { DiscoverTrialsPage } from './components/pages/DiscoverTrialsPage';
-import { MyApplicationsPage } from './components/pages/MyApplicationsPage';
-import { WorkspacePage } from './components/pages/WorkspacePage';
-import { SubmissionsPage } from './components/pages/SubmissionsPage';
-import { NotificationsPage } from './components/pages/NotificationsPage';
-import { AchievementsPage } from './components/pages/AchievementsPage';
-import { SettingsPage } from './components/pages/SettingsPage';
-import { NetworkPage } from './components/pages/NetworkPage';
+"use client";
+import React, { useState } from "react";
+import { AppProvider, useApp } from "./context/AppContext";
+import { LoadingScreen } from "./components/common/LoadingScreen";
+import { Toast } from "./components/common/Toast";
+import { LandingPage } from "./components/pages/LandingPage";
+import { SignInPage } from "./components/auth/SignInPage";
+import { SignUpPage } from "./components/auth/SignUpPage";
+import { ForgotPasswordPage } from "./components/auth/ForgotPasswordPage";
+import { Sidebar } from "./components/dashboard/Sidebar";
+import { DashboardHeader } from "./components/dashboard/DashboardHeader";
+import { CandidateDashboard } from "./components/pages/CandidateDashboard";
+import { ProfilePage } from "./components/pages/ProfilePage";
+import { DiscoverTrialsPage } from "./components/pages/DiscoverTrialsPage";
+import { MyApplicationsPage } from "./components/pages/MyApplicationsPage";
+import { WorkspacePage } from "./components/pages/WorkspacePage";
+import { SubmissionsPage } from "./components/pages/SubmissionsPage";
+import { NotificationsPage } from "./components/pages/NotificationsPage";
+import { AchievementsPage } from "./components/pages/AchievementsPage";
+import { SettingsPage } from "./components/pages/SettingsPage";
+import { NetworkPage } from "./components/pages/NetworkPage";
 import {
   SuperAdminDashboard,
   SuperAdminOrganizationPage,
@@ -28,7 +28,7 @@ import {
   SuperAdminGlobalAnalyticsPage,
   SuperAdminSystemPage,
   SuperAdminEscrowTrialsPage,
-} from './components/admin';
+} from "./components/admin";
 import {
   CompanyDashboard,
   CompanyApplicationsPage,
@@ -39,19 +39,19 @@ import {
   CompanyBillingPage,
   CompanyAIInsightsPage,
   CompanyAIGeneratorPage,
-} from './components/company';
+} from "./components/company";
 
 const MainRouter: React.FC = () => {
   const { currentRoute, setCurrentRoute, role, setRole, showToast } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // 1. Fullscreen Loading Screen
-  if (currentRoute === 'loading') {
+  if (currentRoute === "loading") {
     return <LoadingScreen />;
   }
 
   // 2. Fullscreen Landing Page
-  if (currentRoute === 'landing') {
+  if (currentRoute === "landing") {
     return (
       <>
         <LandingPage />
@@ -61,7 +61,7 @@ const MainRouter: React.FC = () => {
   }
 
   // 3. Fullscreen Candidate Auth Views
-  if (currentRoute === 'signup' || currentRoute === 'role-selection') {
+  if (currentRoute === "signup" || currentRoute === "role-selection") {
     return (
       <>
         <SignUpPage />
@@ -71,7 +71,7 @@ const MainRouter: React.FC = () => {
   }
 
   // Public Candidate Login
-  if (currentRoute === 'signin' || currentRoute === 'login') {
+  if (currentRoute === "signin" || currentRoute === "login") {
     return (
       <>
         <SignInPage initialPortal="candidate" />
@@ -81,7 +81,7 @@ const MainRouter: React.FC = () => {
   }
 
   // Private Enterprise Portal Login (/enterprise/login — Recruiters & Company Admins share this page)
-  if (currentRoute === 'enterprise-login') {
+  if (currentRoute === "enterprise-login") {
     return (
       <>
         <SignInPage initialPortal="enterprise" />
@@ -91,7 +91,7 @@ const MainRouter: React.FC = () => {
   }
 
   // Private Super Admin Ops Portal Login (/system-ops — Hidden, MFA Enforced)
-  if (currentRoute === 'system-ops') {
+  if (currentRoute === "system-ops") {
     return (
       <>
         <SignInPage initialPortal="ops" />
@@ -100,7 +100,7 @@ const MainRouter: React.FC = () => {
     );
   }
 
-  if (currentRoute === 'forgot-password') {
+  if (currentRoute === "forgot-password") {
     return (
       <>
         <ForgotPasswordPage />
@@ -113,68 +113,68 @@ const MainRouter: React.FC = () => {
   const renderDashboardView = () => {
     switch (currentRoute) {
       // Candidate Routes
-      case 'dashboard':
+      case "dashboard":
         return <CandidateDashboard />;
-      case 'network':
+      case "network":
         return <NetworkPage />;
-      case 'profile':
+      case "profile":
         return <ProfilePage />;
-      case 'discover-trials':
+      case "discover-trials":
         return <DiscoverTrialsPage />;
-      case 'my-applications':
+      case "my-applications":
         return <MyApplicationsPage />;
-      case 'workspace':
+      case "workspace":
         return <WorkspacePage />;
-      case 'submissions':
+      case "submissions":
         return <SubmissionsPage />;
-      case 'notifications':
+      case "notifications":
         return <NotificationsPage />;
-      case 'achievements':
+      case "achievements":
         return <AchievementsPage />;
-      case 'settings':
+      case "settings":
         return <SettingsPage />;
       // Company Portal (Enterprise Admin - Zoho Corp)
-      case 'company-dashboard':
+      case "company-dashboard":
         return <CompanyDashboard />;
-      case 'company-recruiters':
+      case "company-recruiters":
         return <CompanyRecruitersPage />;
-      case 'company-departments':
+      case "company-departments":
         return <CompanyDepartmentsPage />;
-      case 'company-hiring-analytics':
+      case "company-hiring-analytics":
         return <CompanyHiringAnalyticsPage />;
-      case 'company-billing':
+      case "company-billing":
         return <CompanyBillingPage />;
-      case 'company-ai-insights':
+      case "company-ai-insights":
         return <CompanyAIInsightsPage />;
-      case 'company-ai-generator':
+      case "company-ai-generator":
         return <CompanyAIGeneratorPage />;
       // Kept for backward compatibility/internal routing if needed
-      case 'company-applications':
-      case 'company-evaluations':
-      case 'company-interviews':
+      case "company-applications":
+      case "company-evaluations":
+      case "company-interviews":
         return <CompanyApplicationsPage />;
-      case 'company-settings':
+      case "company-settings":
         return <CompanyRecruitersPage />;
-      case 'company-create-trial':
-      case 'company-manage-trials':
+      case "company-create-trial":
+      case "company-manage-trials":
         return <CompanyTrialsPage />;
-      case 'admin-dashboard':
+      case "admin-dashboard":
         return <SuperAdminDashboard />;
-      case 'admin-trials':
+      case "admin-trials":
         return <SuperAdminEscrowTrialsPage />;
-      case 'admin-users':
-      case 'admin-organization':
+      case "admin-users":
+      case "admin-organization":
         return <SuperAdminOrganizationPage />;
-      case 'admin-subscriptions':
+      case "admin-subscriptions":
         return <SuperAdminSubscriptionsPage />;
-      case 'admin-trust-ai':
-      case 'admin-ai-analytics':
+      case "admin-trust-ai":
+      case "admin-ai-analytics":
         return <SuperAdminAIAnalyticsPage />;
-      case 'admin-payments':
+      case "admin-payments":
         return <SuperAdminPaymentsPage />;
-      case 'admin-global-analytics':
+      case "admin-global-analytics":
         return <SuperAdminGlobalAnalyticsPage />;
-      case 'admin-system':
+      case "admin-system":
         return <SuperAdminSystemPage />;
       default:
         return <CandidateDashboard />;

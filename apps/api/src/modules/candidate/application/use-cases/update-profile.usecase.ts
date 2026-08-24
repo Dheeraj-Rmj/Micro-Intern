@@ -1,21 +1,22 @@
-import { AuditAction } from '@microintern/shared';
+import { AuditAction } from "@microintern/shared";
 
-import { createModuleLogger } from '@/core/logger.js';
+import { createModuleLogger } from "@/core/logger.js";
 
-import { CandidateProfileNotFoundError, CandidateProfileConflictError } from '../../domain/candidate.errors.js';
+import {
+  CandidateProfileNotFoundError,
+  CandidateProfileConflictError,
+} from "../../domain/candidate.errors.js";
 
-import type { CalculateCompletionUseCase } from './calculate-completion.usecase.js';
-import type { PrismaClient } from '@microintern/database';
-import type { UpdateCandidateGraphDto } from '@microintern/shared';
+import type { CalculateCompletionUseCase } from "./calculate-completion.usecase.js";
+import type { PrismaClient } from "@microintern/database";
+import type { UpdateCandidateGraphDto } from "@microintern/shared";
 
-
-
-const log = createModuleLogger('UpdateProfileUseCase');
+const log = createModuleLogger("UpdateProfileUseCase");
 
 export class UpdateProfileUseCase {
   constructor(
     private readonly db: PrismaClient,
-    private readonly calculateCompletion: CalculateCompletionUseCase
+    private readonly calculateCompletion: CalculateCompletionUseCase,
   ) {}
 
   /**
@@ -37,10 +38,13 @@ export class UpdateProfileUseCase {
     if (profile.updatedAt !== null && profile.updatedAt !== undefined) {
       const clientUpdatedAt = new Date(profile.updatedAt).getTime();
       const serverUpdatedAt = new Date(currentProfile.updatedAt).getTime();
-      
+
       // If the server has a newer version than what the client sent, abort to prevent overwrite.
       if (serverUpdatedAt > clientUpdatedAt) {
-        log.warn({ userId, clientUpdatedAt, serverUpdatedAt }, 'Optimistic concurrency conflict detected');
+        log.warn(
+          { userId, clientUpdatedAt, serverUpdatedAt },
+          "Optimistic concurrency conflict detected",
+        );
         throw new CandidateProfileConflictError();
       }
     }
@@ -130,7 +134,10 @@ export class UpdateProfileUseCase {
               name: c.name,
               issuer: c.issuer,
               issueDate: new Date(c.issueDate),
-              expirationDate: c.expirationDate !== null && c.expirationDate !== undefined ? new Date(c.expirationDate) : null,
+              expirationDate:
+                c.expirationDate !== null && c.expirationDate !== undefined
+                  ? new Date(c.expirationDate)
+                  : null,
               url: c.url,
             })),
           });
@@ -177,9 +184,9 @@ export class UpdateProfileUseCase {
         data: {
           actorId: userId,
           action: AuditAction.UPDATE,
-          entityType: 'CandidateProfile',
+          entityType: "CandidateProfile",
           entityId: currentProfile.id,
-          metadata: { message: 'Profile updated' },
+          metadata: { message: "Profile updated" },
         },
       });
 
@@ -188,7 +195,7 @@ export class UpdateProfileUseCase {
 
     // Recalculate completion async (no need to block response)
     void this.calculateCompletion.execute(userId).catch((err: unknown) => {
-      log.error({ err, userId }, 'Failed to recalculate profile completion');
+      log.error({ err, userId }, "Failed to recalculate profile completion");
     });
 
     return updatedProfile;

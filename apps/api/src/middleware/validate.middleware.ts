@@ -1,10 +1,9 @@
-import { ValidationError } from '@/shared/errors/index.js';
+import { ValidationError } from "@/shared/errors/index.js";
 
-import type { Request, Response, NextFunction } from 'express';
-import type { ZodSchema, ZodError } from 'zod';
+import type { Request, Response, NextFunction } from "express";
+import type { ZodSchema, ZodError } from "zod";
 
-
-type ValidationTarget = 'body' | 'query' | 'params';
+type ValidationTarget = "body" | "query" | "params";
 
 /**
  * Zod validation middleware factory.
@@ -29,7 +28,7 @@ export function validate<T>(target: ValidationTarget, schema: ZodSchema<T>) {
 
     if (!result.success) {
       const details = formatZodErrors(result.error);
-      next(new ValidationError('Request validation failed', details));
+      next(new ValidationError("Request validation failed", details));
       return;
     }
 
@@ -44,8 +43,8 @@ export function validate<T>(target: ValidationTarget, schema: ZodSchema<T>) {
  */
 function formatZodErrors(error: ZodError): Record<string, unknown>[] {
   return error.issues.map((issue) => ({
-// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    field: issue.path.join('.') || 'root',
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    field: issue.path.join(".") || "root",
     message: issue.message,
     code: issue.code,
   }));
@@ -64,12 +63,10 @@ function formatZodErrors(error: ZodError): Record<string, unknown>[] {
  *   controller.list,
  * );
  */
-export function validateAll(schemas: Partial<Record<ValidationTarget, ZodSchema>>): (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => void {
-  const validationOrder: ValidationTarget[] = ['params', 'query', 'body'];
+export function validateAll(
+  schemas: Partial<Record<ValidationTarget, ZodSchema>>,
+): (req: Request, res: Response, next: NextFunction) => void {
+  const validationOrder: ValidationTarget[] = ["params", "query", "body"];
 
   return (req: Request, res: Response, next: NextFunction): void => {
     for (const target of validationOrder) {

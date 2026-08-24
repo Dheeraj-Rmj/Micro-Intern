@@ -1,7 +1,7 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
-import { companyApi } from '../../../../lib/api/company';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
+import { companyApi } from "../../../../lib/api/company";
 import {
   Users,
   CheckCircle2,
@@ -13,7 +13,7 @@ import {
   Filter,
   ArrowUpRight,
   ShieldCheck,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface ApplicationRow {
   id: string;
@@ -23,8 +23,8 @@ interface ApplicationRow {
   trustScore: number;
   submittedAt: string;
   githubUrl: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  aiRecommendation: 'STRONG_HIRE' | 'INTERVIEW' | 'REVIEW_NEEDED';
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  aiRecommendation: "STRONG_HIRE" | "INTERVIEW" | "REVIEW_NEEDED";
 }
 
 const INITIAL_APPS: ApplicationRow[] = [];
@@ -32,8 +32,10 @@ const INITIAL_APPS: ApplicationRow[] = [];
 export const CompanyApplicationsPage: React.FC = () => {
   const { showToast } = useApp();
   const [apps, setApps] = useState<ApplicationRow[]>(INITIAL_APPS);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "APPROVED" | "REJECTED">(
+    "ALL",
+  );
   const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
@@ -46,8 +48,8 @@ export const CompanyApplicationsPage: React.FC = () => {
           setApps([]);
         }
       } catch (err) {
-        console.error('Failed to fetch submissions:', err);
-        showToast('Error', 'Failed to load applications', 'error');
+        console.error("Failed to fetch submissions:", err);
+        showToast("Error", "Failed to load applications", "error");
       } finally {
         setLoading(false);
       }
@@ -56,7 +58,7 @@ export const CompanyApplicationsPage: React.FC = () => {
   }, []);
 
   const filteredApps = apps.filter((a) => {
-    const matchesStatus = statusFilter === 'ALL' || a.status === statusFilter;
+    const matchesStatus = statusFilter === "ALL" || a.status === statusFilter;
     const matchesSearch =
       a.candidateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -65,13 +67,13 @@ export const CompanyApplicationsPage: React.FC = () => {
   });
 
   const handleApprove = (id: string, name: string) => {
-    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'APPROVED' } : a)));
-    showToast('Candidate Approved', `${name} approved for direct interview & stipend!`, 'success');
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: "APPROVED" } : a)));
+    showToast("Candidate Approved", `${name} approved for direct interview & stipend!`, "success");
   };
 
   const handleReject = (id: string, name: string) => {
-    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'REJECTED' } : a)));
-    showToast('Candidate Rejected', `${name}'s submission marked as reviewed.`, 'info');
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: "REJECTED" } : a)));
+    showToast("Candidate Rejected", `${name}'s submission marked as reviewed.`, "info");
   };
 
   return (
@@ -91,7 +93,8 @@ export const CompanyApplicationsPage: React.FC = () => {
             Candidate Skill Trial Applications
           </h1>
           <p className="text-sm text-black/60 dark:text-white/70 mt-1">
-            Review completed code submissions from candidates applying to your enterprise apprenticeship trials.
+            Review completed code submissions from candidates applying to your enterprise
+            apprenticeship trials.
           </p>
         </div>
       </div>
@@ -100,10 +103,10 @@ export const CompanyApplicationsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center p-1.5 rounded-2xl bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm overflow-x-auto w-full sm:w-auto">
           {[
-            { id: 'ALL', label: 'All Submissions' },
-            { id: 'PENDING', label: 'Pending Review' },
-            { id: 'APPROVED', label: 'Approved & Invited' },
-            { id: 'REJECTED', label: 'Rejected' },
+            { id: "ALL", label: "All Submissions" },
+            { id: "PENDING", label: "Pending Review" },
+            { id: "APPROVED", label: "Approved & Invited" },
+            { id: "REJECTED", label: "Rejected" },
           ].map((tab) => {
             const isActive = statusFilter === tab.id;
             return (
@@ -112,8 +115,8 @@ export const CompanyApplicationsPage: React.FC = () => {
                 onClick={() => setStatusFilter(tab.id as any)}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-md'
-                    : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+                    ? "bg-black dark:bg-white text-white dark:text-black shadow-md"
+                    : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -150,10 +153,15 @@ export const CompanyApplicationsPage: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-black/5 dark:divide-white/10 text-xs">
               {filteredApps.map((a) => (
-                <tr key={a.id} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors">
+                <tr
+                  key={a.id}
+                  className="hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors"
+                >
                   <td className="py-4 px-6">
                     <div className="font-bold text-black dark:text-white">{a.candidateName}</div>
-                    <div className="font-mono text-[11px] text-black/50 dark:text-white/50">{a.email}</div>
+                    <div className="font-mono text-[11px] text-black/50 dark:text-white/50">
+                      {a.email}
+                    </div>
                   </td>
                   <td className="py-4 px-4 font-semibold text-black dark:text-white">
                     {a.trialTitle}
@@ -162,8 +170,8 @@ export const CompanyApplicationsPage: React.FC = () => {
                     <span
                       className={`px-2.5 py-1 rounded-full font-mono text-xs font-bold ${
                         a.trustScore >= 95
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                          : 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
+                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                          : "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
                       }`}
                     >
                       {a.trustScore} / 100
@@ -172,14 +180,14 @@ export const CompanyApplicationsPage: React.FC = () => {
                   <td className="py-4 px-4">
                     <span
                       className={`px-2.5 py-1 rounded-full font-mono text-[11px] font-bold ${
-                        a.aiRecommendation === 'STRONG_HIRE'
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                          : a.aiRecommendation === 'INTERVIEW'
-                          ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
-                          : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                        a.aiRecommendation === "STRONG_HIRE"
+                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                          : a.aiRecommendation === "INTERVIEW"
+                            ? "bg-blue-500/15 text-blue-600 dark:text-blue-400"
+                            : "bg-amber-500/15 text-amber-600 dark:text-amber-400"
                       }`}
                     >
-                      {a.aiRecommendation.replace('_', ' ')}
+                      {a.aiRecommendation.replace("_", " ")}
                     </span>
                   </td>
                   <td className="py-4 px-4">
@@ -190,12 +198,12 @@ export const CompanyApplicationsPage: React.FC = () => {
                       className="text-indigo-500 hover:underline flex items-center gap-1 font-mono text-[11px]"
                     >
                       <FileCode className="w-3.5 h-3.5" />
-                      {a.githubUrl.split('/')[2] || 'repo'}
+                      {a.githubUrl.split("/")[2] || "repo"}
                       <ArrowUpRight className="w-3 h-3" />
                     </a>
                   </td>
                   <td className="py-4 px-6 text-right">
-                    {a.status === 'PENDING' ? (
+                    {a.status === "PENDING" ? (
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleApprove(a.id, a.candidateName)}
@@ -210,7 +218,7 @@ export const CompanyApplicationsPage: React.FC = () => {
                           Reject
                         </button>
                       </div>
-                    ) : a.status === 'APPROVED' ? (
+                    ) : a.status === "APPROVED" ? (
                       <span className="font-bold text-emerald-500 font-mono text-xs">APPROVED</span>
                     ) : (
                       <span className="font-bold text-rose-500 font-mono text-xs">REJECTED</span>

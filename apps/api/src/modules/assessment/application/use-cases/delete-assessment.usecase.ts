@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { AssessmentNotFoundError } from '../../domain/errors/assessment.errors.js';
-import type { IAssessmentRepository } from '../ports/IAssessmentRepository.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { AssessmentNotFoundError } from "../../domain/errors/assessment.errors.js";
+import type { IAssessmentRepository } from "../ports/IAssessmentRepository.js";
 
-const log = createModuleLogger('DeleteAssessmentUseCase');
+const log = createModuleLogger("DeleteAssessmentUseCase");
 
 export class DeleteAssessmentUseCase {
   constructor(private readonly assessmentRepository: IAssessmentRepository) {}
@@ -13,7 +13,7 @@ export class DeleteAssessmentUseCase {
       throw new AssessmentNotFoundError(assessmentId);
     }
 
-    log.info({ assessmentId, deletedBy }, 'Soft-deleting assessment');
+    log.info({ assessmentId, deletedBy }, "Soft-deleting assessment");
     await this.assessmentRepository.delete(assessmentId, deletedBy);
   }
 }

@@ -1,7 +1,7 @@
-import type { IRoleProfileRepository } from '@/modules/skill-framework/domain/IRoleProfileRepository.js';
-import type { ISkillVerificationRepository } from '@/modules/skill-verification/domain/ISkillVerificationRepository.js';
-import type { ISkillRepository } from '@/modules/skill-framework/domain/ISkillRepository.js';
-import { SkillVerificationStatus } from '@microintern/database';
+import type { IRoleProfileRepository } from "@/modules/skill-framework/domain/IRoleProfileRepository.js";
+import type { ISkillVerificationRepository } from "@/modules/skill-verification/domain/ISkillVerificationRepository.js";
+import type { ISkillRepository } from "@/modules/skill-framework/domain/ISkillRepository.js";
+import { SkillVerificationStatus } from "@microintern/database";
 
 export interface LearningRecommendationResult {
   candidateId: string;
@@ -14,7 +14,7 @@ export interface LearningRecommendationResult {
   }>;
   recommendedResources: Array<{
     title: string;
-    type: 'TUTORIAL' | 'DOCUMENTATION' | 'COURSE' | 'PRACTICE_PROJECT';
+    type: "TUTORIAL" | "DOCUMENTATION" | "COURSE" | "PRACTICE_PROJECT";
     url: string;
     skillName: string;
     description: string;
@@ -37,20 +37,23 @@ export class GenerateLearningRecommendationsUseCase {
   constructor(
     private readonly roleProfileRepo: IRoleProfileRepository,
     private readonly verificationRepo: ISkillVerificationRepository,
-    private readonly skillRepo: ISkillRepository
+    private readonly skillRepo: ISkillRepository,
   ) {}
 
-  async execute(candidateId: string, roleProfileId?: string): Promise<LearningRecommendationResult> {
+  async execute(
+    candidateId: string,
+    roleProfileId?: string,
+  ): Promise<LearningRecommendationResult> {
     const verifications = await this.verificationRepo.listByCandidate(candidateId);
     const verificationMap = new Map<string, SkillVerificationStatus>();
     for (const v of verifications) {
       verificationMap.set(v.skillId, v.status);
     }
 
-    const missingSkills: LearningRecommendationResult['missingSkills'] = [];
-    const recommendedResources: LearningRecommendationResult['recommendedResources'] = [];
-    const practiceProjects: LearningRecommendationResult['practiceProjects'] = [];
-    const improvementRoadmap: LearningRecommendationResult['improvementRoadmap'] = [];
+    const missingSkills: LearningRecommendationResult["missingSkills"] = [];
+    const recommendedResources: LearningRecommendationResult["recommendedResources"] = [];
+    const practiceProjects: LearningRecommendationResult["practiceProjects"] = [];
+    const improvementRoadmap: LearningRecommendationResult["improvementRoadmap"] = [];
 
     if (roleProfileId) {
       const requiredSkills = await this.roleProfileRepo.getRequiredSkills(roleProfileId);
@@ -65,7 +68,7 @@ export class GenerateLearningRecommendationsUseCase {
         else if (currentStatus === SkillVerificationStatus.CLAIMED) currentScore = 30;
 
         if (currentScore < req.minimumScore) {
-          const skillName = (req as any).skill?.name || 'Technical Skill';
+          const skillName = (req as any).skill?.name || "Technical Skill";
           missingSkills.push({
             skillId: req.skillId,
             skillName,
@@ -75,7 +78,7 @@ export class GenerateLearningRecommendationsUseCase {
 
           recommendedResources.push({
             title: `Advanced ${skillName} Masterclass`,
-            type: 'COURSE',
+            type: "COURSE",
             url: `https://docs.microintern.com/learning/${encodeURIComponent(skillName.toLowerCase())}`,
             skillName,
             description: `Deep-dive tutorial on real-world ${skillName} architecture and best practices.`,
@@ -103,7 +106,7 @@ export class GenerateLearningRecommendationsUseCase {
 
           recommendedResources.push({
             title: `${skill.name} Fundamentals & Architecture`,
-            type: 'DOCUMENTATION',
+            type: "DOCUMENTATION",
             url: `https://docs.microintern.com/learning/${encodeURIComponent(skill.name.toLowerCase())}`,
             skillName: skill.name,
             description: `Official MicroIntern learning guide for ${skill.name}.`,

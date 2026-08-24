@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Offset-based pagination query schema.
@@ -8,15 +8,15 @@ export const PaginationQuerySchema = z.object({
   page: z
     .string()
     .optional()
-    .default('1')
+    .default("1")
     .transform(Number)
-    .refine((n) => n >= 1, { message: 'Page must be >= 1' }),
+    .refine((n) => n >= 1, { message: "Page must be >= 1" }),
   limit: z
     .string()
     .optional()
-    .default('20')
+    .default("20")
     .transform(Number)
-    .refine((n) => n >= 1 && n <= 100, { message: 'Limit must be between 1 and 100' }),
+    .refine((n) => n >= 1 && n <= 100, { message: "Limit must be between 1 and 100" }),
 });
 
 export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
@@ -30,10 +30,10 @@ export const CursorPaginationQuerySchema = z.object({
   limit: z
     .string()
     .optional()
-    .default('20')
+    .default("20")
     .transform(Number)
-    .refine((n) => n >= 1 && n <= 100, { message: 'Limit must be between 1 and 100' }),
-  direction: z.enum(['forward', 'backward']).optional().default('forward'),
+    .refine((n) => n >= 1 && n <= 100, { message: "Limit must be between 1 and 100" }),
+  direction: z.enum(["forward", "backward"]).optional().default("forward"),
 });
 
 export type CursorPaginationQuery = z.infer<typeof CursorPaginationQuerySchema>;
@@ -49,9 +49,9 @@ export const SortQuerySchema = z.object({
     .optional()
     .transform((sort) => {
       if (sort === undefined) return undefined;
-      return sort.split(',').map((field) => {
-        const direction = field.startsWith('-') ? 'desc' : 'asc';
-        const column = field.replace(/^-/, '');
+      return sort.split(",").map((field) => {
+        const direction = field.startsWith("-") ? "desc" : "asc";
+        const column = field.replace(/^-/, "");
         return { column, direction } as const;
       });
     }),
@@ -72,6 +72,7 @@ export type SearchQuery = z.infer<typeof SearchQuerySchema>;
  * Combined list query schema.
  * Extend this in domain-specific list endpoints to add filter fields.
  */
-export const ListQuerySchema = PaginationQuerySchema.merge(SortQuerySchema).merge(SearchQuerySchema);
+export const ListQuerySchema =
+  PaginationQuerySchema.merge(SortQuerySchema).merge(SearchQuerySchema);
 
 export type ListQuery = z.infer<typeof ListQuerySchema>;

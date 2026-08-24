@@ -1,16 +1,18 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { randomBytes } from 'node:crypto';
-import type { PrismaClient } from '@microintern/database';
+import { createModuleLogger } from "@/core/logger.js";
+import { randomBytes } from "node:crypto";
+import type { PrismaClient } from "@microintern/database";
 
-const log = createModuleLogger('ReferralService');
+const log = createModuleLogger("ReferralService");
 
 export class ReferralService {
   constructor(private readonly db: PrismaClient) {}
 
-  async generateReferralCode(userId: string): Promise<{ referralCode: string; referralUrl: string }> {
+  async generateReferralCode(
+    userId: string,
+  ): Promise<{ referralCode: string; referralUrl: string }> {
     // Check if user already has a code
     const existing = await this.db.candidateReferral.findFirst({
-      where: { referrerId: userId, status: 'PENDING' },
+      where: { referrerId: userId, status: "PENDING" },
     });
 
     if (existing) {
@@ -20,12 +22,12 @@ export class ReferralService {
       };
     }
 
-    const referralCode = randomBytes(6).toString('hex').toUpperCase();
+    const referralCode = randomBytes(6).toString("hex").toUpperCase();
     await this.db.candidateReferral.create({
-      data: { referrerId: userId, referralCode, status: 'PENDING' },
+      data: { referrerId: userId, referralCode, status: "PENDING" },
     });
 
-    log.info({ userId, referralCode }, 'Referral code generated');
+    log.info({ userId, referralCode }, "Referral code generated");
     return {
       referralCode,
       referralUrl: `https://microintern.com/join?ref=${referralCode}`,
@@ -37,7 +39,7 @@ export class ReferralService {
       where: { referralCode },
     });
 
-    if (!referral || referral.status !== 'PENDING') {
+    if (!referral || referral.status !== "PENDING") {
       return false;
     }
 
@@ -45,19 +47,19 @@ export class ReferralService {
       where: { referralCode },
       data: {
         refereeId,
-        status: 'CONVERTED',
+        status: "CONVERTED",
         convertedAt: new Date(),
       },
     });
 
-    log.info({ referralCode, refereeId }, 'Referral converted');
+    log.info({ referralCode, refereeId }, "Referral converted");
     return true;
   }
 
   async getUserReferrals(userId: string) {
     return this.db.candidateReferral.findMany({
       where: { referrerId: userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -68,9 +70,9 @@ export class ReferralService {
 
     return {
       total: referrals.length,
-      pending: referrals.filter((r) => r.status === 'PENDING').length,
-      converted: referrals.filter((r) => r.status === 'CONVERTED').length,
-      rewarded: referrals.filter((r) => r.status === 'REWARDED').length,
+      pending: referrals.filter((r) => r.status === "PENDING").length,
+      converted: referrals.filter((r) => r.status === "CONVERTED").length,
+      rewarded: referrals.filter((r) => r.status === "REWARDED").length,
     };
   }
 }

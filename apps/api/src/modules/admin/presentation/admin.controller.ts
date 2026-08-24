@@ -1,5 +1,5 @@
-import { ConfigManager } from '../infrastructure/services/ConfigManager.js';
-import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
+import { ConfigManager } from "../infrastructure/services/ConfigManager.js";
+import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
 import type {
   GetPlatformStatsUseCase,
   ListPendingCompaniesUseCase,
@@ -12,8 +12,8 @@ import type {
   GetSubscriptionMetricsUseCase,
   GetPaymentMetricsUseCase,
   GetGlobalAnalyticsUseCase,
-} from '../application/index.js';
-import type { Request, Response, NextFunction } from 'express';
+} from "../application/index.js";
+import type { Request, Response, NextFunction } from "express";
 
 export class AdminController {
   constructor(
@@ -27,7 +27,7 @@ export class AdminController {
     private readonly getEscrowMetricsUseCase: GetEscrowMetricsUseCase,
     private readonly getSubscriptionMetricsUseCase: GetSubscriptionMetricsUseCase,
     private readonly getPaymentMetricsUseCase: GetPaymentMetricsUseCase,
-    private readonly getGlobalAnalyticsUseCase: GetGlobalAnalyticsUseCase
+    private readonly getGlobalAnalyticsUseCase: GetGlobalAnalyticsUseCase,
   ) {}
 
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -41,34 +41,34 @@ export class AdminController {
   }
 
   async verifyCompany(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const companyId = req.params['id'] as string;
+    const companyId = req.params["id"] as string;
     const verified = await this.verifyCompanyUseCase.execute(req.user!.id, companyId);
     ResponseFormatter.success(res, verified);
   }
 
   async suspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const targetUserId = req.params['id'] as string;
+    const targetUserId = req.params["id"] as string;
     const suspended = await this.suspendUserUseCase.execute(req.user!.id, targetUserId);
     ResponseFormatter.success(res, suspended);
   }
 
   async listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const search = req.query['search'] as string | undefined;
-    const role = req.query['role'] as string | undefined;
+    const search = req.query["search"] as string | undefined;
+    const role = req.query["role"] as string | undefined;
     const users = await this.listUsersUseCase.execute({ search, role });
     ResponseFormatter.success(res, users);
   }
 
   async listTrials(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const search = req.query['search'] as string | undefined;
-    const status = req.query['status'] as string | undefined;
+    const search = req.query["search"] as string | undefined;
+    const status = req.query["status"] as string | undefined;
     const trials = await this.listTrialsUseCase.execute({ search, status });
     ResponseFormatter.success(res, trials);
   }
 
   async listAuditLogs(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const search = req.query['search'] as string | undefined;
-    const severity = req.query['severity'] as string | undefined;
+    const search = req.query["search"] as string | undefined;
+    const severity = req.query["severity"] as string | undefined;
     const logs = await this.listAuditLogsUseCase.execute({ search, severity });
     ResponseFormatter.success(res, logs);
   }

@@ -9,7 +9,7 @@ All API responses use a consistent JSON envelope.
 ```json
 {
   "success": true,
-  "data": { },
+  "data": {},
   "meta": {
     "requestId": "550e8400-e29b-41d4-a716-446655440000",
     "timestamp": "2026-07-24T11:51:55.000Z",
@@ -33,9 +33,7 @@ All API responses use a consistent JSON envelope.
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "Request validation failed",
-    "details": [
-      { "field": "email", "message": "Invalid email address", "code": "invalid_string" }
-    ],
+    "details": [{ "field": "email", "message": "Invalid email address", "code": "invalid_string" }],
     "requestId": "550e8400-e29b-41d4-a716-446655440000",
     "timestamp": "2026-07-24T11:51:55.000Z"
   }
@@ -58,6 +56,7 @@ GET /api/v1/trials?filter[status]=PUBLISHED&filter[level]=MID
 ```
 GET /api/v1/trials?sort=-createdAt,title
 ```
+
 Prefix `-` for descending. Multiple fields comma-separated.
 
 ## Pagination
@@ -65,6 +64,7 @@ Prefix `-` for descending. Multiple fields comma-separated.
 ```
 GET /api/v1/trials?page=2&limit=20
 ```
+
 - `page`: 1-indexed (default: 1)
 - `limit`: 1-100 (default: 20)
 
@@ -76,20 +76,20 @@ GET /api/v1/trials?q=typescript+developer
 
 ## HTTP Status Codes
 
-| Code | Meaning |
-|------|---------|
-| 200 | Success |
-| 201 | Created |
-| 204 | No Content (DELETE) |
-| 400 | Bad Request |
-| 401 | Unauthorized (no token) |
-| 403 | Forbidden (insufficient role) |
-| 404 | Not Found |
-| 409 | Conflict (duplicate) |
-| 422 | Validation Error |
-| 429 | Rate Limited |
-| 500 | Internal Server Error |
-| 503 | Service Unavailable |
+| Code | Meaning                       |
+| ---- | ----------------------------- |
+| 200  | Success                       |
+| 201  | Created                       |
+| 204  | No Content (DELETE)           |
+| 400  | Bad Request                   |
+| 401  | Unauthorized (no token)       |
+| 403  | Forbidden (insufficient role) |
+| 404  | Not Found                     |
+| 409  | Conflict (duplicate)          |
+| 422  | Validation Error              |
+| 429  | Rate Limited                  |
+| 500  | Internal Server Error         |
+| 503  | Service Unavailable           |
 
 ## Authentication
 

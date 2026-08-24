@@ -1,13 +1,13 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { checkSubmissionDeadlines } from './submission-deadlines.job.js';
-import { sendInterviewReminders } from './interview-reminders.job.js';
-import { cleanupExpiredTokens } from './cleanup-tokens.job.js';
-import { archiveOldAssessments } from './archive-old-assessments.job.js';
-import { refreshAnalytics } from './refresh-analytics.job.js';
-import { retryFailedJobs } from './retry-failed-jobs.job.js';
-import type { PrismaClient } from '@microintern/database';
+import { createModuleLogger } from "@/core/logger.js";
+import { checkSubmissionDeadlines } from "./submission-deadlines.job.js";
+import { sendInterviewReminders } from "./interview-reminders.job.js";
+import { cleanupExpiredTokens } from "./cleanup-tokens.job.js";
+import { archiveOldAssessments } from "./archive-old-assessments.job.js";
+import { refreshAnalytics } from "./refresh-analytics.job.js";
+import { retryFailedJobs } from "./retry-failed-jobs.job.js";
+import type { PrismaClient } from "@microintern/database";
 
-const log = createModuleLogger('Scheduler');
+const log = createModuleLogger("Scheduler");
 
 export interface CronScheduleDefinition {
   name: string;
@@ -17,33 +17,33 @@ export interface CronScheduleDefinition {
 
 export const CRON_SCHEDULES: CronScheduleDefinition[] = [
   {
-    name: 'submission-deadlines',
-    cron: '*/5 * * * *', // every 5 minutes
+    name: "submission-deadlines",
+    cron: "*/5 * * * *", // every 5 minutes
     handler: checkSubmissionDeadlines,
   },
   {
-    name: 'interview-reminders',
-    cron: '0 9 * * *', // every day at 9 AM
+    name: "interview-reminders",
+    cron: "0 9 * * *", // every day at 9 AM
     handler: sendInterviewReminders,
   },
   {
-    name: 'cleanup-tokens',
-    cron: '0 3 * * *', // every day at 3 AM
+    name: "cleanup-tokens",
+    cron: "0 3 * * *", // every day at 3 AM
     handler: cleanupExpiredTokens,
   },
   {
-    name: 'archive-old-assessments',
-    cron: '0 2 * * *', // every day at 2 AM
+    name: "archive-old-assessments",
+    cron: "0 2 * * *", // every day at 2 AM
     handler: archiveOldAssessments,
   },
   {
-    name: 'refresh-analytics',
-    cron: '0 */4 * * *', // every 4 hours
+    name: "refresh-analytics",
+    cron: "0 */4 * * *", // every 4 hours
     handler: refreshAnalytics,
   },
   {
-    name: 'retry-failed-jobs',
-    cron: '*/15 * * * *', // every 15 minutes
+    name: "retry-failed-jobs",
+    cron: "*/15 * * * *", // every 15 minutes
     handler: async () => retryFailedJobs(),
   },
 ];
@@ -60,7 +60,7 @@ export async function runScheduledJob(name: string, prisma: PrismaClient): Promi
     await prisma.scheduledJobLog.create({
       data: {
         jobName: name,
-        status: 'COMPLETED',
+        status: "COMPLETED",
         durationMs,
         itemsProcessed: result?.count || result?.expiredCount || result?.deletedCount || 0,
       },
@@ -71,7 +71,7 @@ export async function runScheduledJob(name: string, prisma: PrismaClient): Promi
     await prisma.scheduledJobLog.create({
       data: {
         jobName: name,
-        status: 'FAILED',
+        status: "FAILED",
         durationMs,
         errorMessage: err?.message || String(err),
       },

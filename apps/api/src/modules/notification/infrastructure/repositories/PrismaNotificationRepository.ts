@@ -1,8 +1,11 @@
-import { Notification } from '../../domain/entities/Notification.entity.js';
+import { Notification } from "../../domain/entities/Notification.entity.js";
 
-import type { INotificationRepository, PaginatedNotifications } from '../../application/ports/INotificationRepository.js';
-import type { PrismaClient } from '@microintern/database';
-import type { NotificationChannel } from '@microintern/shared';
+import type {
+  INotificationRepository,
+  PaginatedNotifications,
+} from "../../application/ports/INotificationRepository.js";
+import type { PrismaClient } from "@microintern/database";
+import type { NotificationChannel } from "@microintern/shared";
 
 export class PrismaNotificationRepository implements INotificationRepository {
   constructor(private readonly db: PrismaClient) {}
@@ -12,11 +15,11 @@ export class PrismaNotificationRepository implements INotificationRepository {
       data: {
         id: notification.id,
         userId: notification.userId,
-        channel: (notification.channel as unknown) as any,
+        channel: notification.channel as unknown as any,
         type: notification.type,
         title: notification.title,
         body: notification.body,
-        data: (notification.data as unknown) as any,
+        data: notification.data as unknown as any,
         isRead: notification.isRead,
         readAt: notification.readAt,
         sentAt: notification.sentAt,
@@ -34,7 +37,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
     return Notification.create({
       id: record.id,
       userId: record.userId,
-      channel: (record.channel as unknown) as NotificationChannel,
+      channel: record.channel as unknown as NotificationChannel,
       type: record.type,
       title: record.title,
       body: record.body,
@@ -50,7 +53,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
     userId: string,
     page: number,
     limit: number,
-    unreadOnly?: boolean
+    unreadOnly?: boolean,
   ): Promise<PaginatedNotifications> {
     const where: { userId: string; isRead?: boolean } = { userId };
     if (unreadOnly) {
@@ -63,7 +66,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }),
       this.db.notification.count({ where }),
     ]);
@@ -72,7 +75,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
       Notification.create({
         id: r.id,
         userId: r.userId,
-        channel: (r.channel as unknown) as NotificationChannel,
+        channel: r.channel as unknown as NotificationChannel,
         type: r.type,
         title: r.title,
         body: r.body,
@@ -81,7 +84,7 @@ export class PrismaNotificationRepository implements INotificationRepository {
         readAt: r.readAt,
         sentAt: r.sentAt,
         createdAt: r.createdAt,
-      }).toJSON()
+      }).toJSON(),
     );
 
     const totalPages = Math.ceil(total / limit) || 1;

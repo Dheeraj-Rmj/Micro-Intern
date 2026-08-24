@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
-import { apiClient } from '@/lib/api/client';
-import { startRegistration } from '@simplewebauthn/browser';
-import { Shield, Key, CheckCircle2, QrCode, Fingerprint } from 'lucide-react';
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
+import { apiClient } from "@/lib/api/client";
+import { startRegistration } from "@simplewebauthn/browser";
+import { Shield, Key, CheckCircle2, QrCode, Fingerprint } from "lucide-react";
 
 export const SuperAdminSecurityTab: React.FC = () => {
   const { showToast } = useApp();
-  const [setupStep, setSetupStep] = useState<'idle' | 'qr' | 'success'>('idle');
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const [mfaSecret, setMfaSecret] = useState<string>('');
-  const [verificationCode, setVerificationCode] = useState('');
+  const [setupStep, setSetupStep] = useState<"idle" | "qr" | "success">("idle");
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [mfaSecret, setMfaSecret] = useState<string>("");
+  const [verificationCode, setVerificationCode] = useState("");
   const [isSettingUp, setIsSettingUp] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSettingUpPasskey, setIsSettingUpPasskey] = useState(false);
@@ -18,14 +18,14 @@ export const SuperAdminSecurityTab: React.FC = () => {
     setIsSettingUp(true);
     try {
       // Calls the real backend API route we just implemented
-      const response = await apiClient.post('/auth/mfa/setup/totp');
+      const response = await apiClient.post("/auth/mfa/setup/totp");
       const { qrCodeUrl, secret } = response.data.data;
       setQrCodeUrl(qrCodeUrl);
       setMfaSecret(secret);
-      setSetupStep('qr');
-      showToast('MFA Initialized', 'Scan the QR code with your authenticator app.', 'info');
+      setSetupStep("qr");
+      showToast("MFA Initialized", "Scan the QR code with your authenticator app.", "info");
     } catch (err: any) {
-      showToast('Error', err.message || 'Failed to initialize MFA setup', 'warning');
+      showToast("Error", err.message || "Failed to initialize MFA setup", "warning");
     } finally {
       setIsSettingUp(false);
     }
@@ -33,17 +33,21 @@ export const SuperAdminSecurityTab: React.FC = () => {
 
   const handleVerifyMfa = async () => {
     if (!verificationCode || verificationCode.length !== 6) {
-      showToast('Invalid Code', 'Please enter a 6-digit code', 'warning');
+      showToast("Invalid Code", "Please enter a 6-digit code", "warning");
       return;
     }
 
     setIsVerifying(true);
     try {
-      await apiClient.post('/auth/mfa/verify/totp', { token: verificationCode });
-      setSetupStep('success');
-      showToast('MFA Enabled', 'Multi-Factor Authentication has been successfully enabled on your account.', 'success');
+      await apiClient.post("/auth/mfa/verify/totp", { token: verificationCode });
+      setSetupStep("success");
+      showToast(
+        "MFA Enabled",
+        "Multi-Factor Authentication has been successfully enabled on your account.",
+        "success",
+      );
     } catch (err: any) {
-      showToast('Error', err.message || 'Invalid verification code', 'warning');
+      showToast("Error", err.message || "Invalid verification code", "warning");
     } finally {
       setIsVerifying(false);
     }
@@ -53,21 +57,25 @@ export const SuperAdminSecurityTab: React.FC = () => {
     setIsSettingUpPasskey(true);
     try {
       // 1. Get registration options from server
-      const optionsResponse = await apiClient.post('/auth/webauthn/register/generate');
+      const optionsResponse = await apiClient.post("/auth/webauthn/register/generate");
       const options = optionsResponse.data.data;
 
       // 2. Prompt user to interact with authenticator (YubiKey / Touch ID)
       const attestationResponse = await startRegistration({ optionsJSON: options });
 
       // 3. Send the signature back to server to verify and save
-      await apiClient.post('/auth/webauthn/register/verify', attestationResponse);
+      await apiClient.post("/auth/webauthn/register/verify", attestationResponse);
 
-      showToast('Passkey Registered', 'Your hardware key/passkey has been successfully registered.', 'success');
+      showToast(
+        "Passkey Registered",
+        "Your hardware key/passkey has been successfully registered.",
+        "success",
+      );
     } catch (err: any) {
-      if (err.name === 'NotAllowedError') {
-        showToast('Cancelled', 'Passkey registration was cancelled.', 'info');
+      if (err.name === "NotAllowedError") {
+        showToast("Cancelled", "Passkey registration was cancelled.", "info");
       } else {
-        showToast('Error', err.message || 'Failed to register passkey', 'warning');
+        showToast("Error", err.message || "Failed to register passkey", "warning");
       }
     } finally {
       setIsSettingUpPasskey(false);
@@ -83,13 +91,14 @@ export const SuperAdminSecurityTab: React.FC = () => {
             <span>MFA & Zero-Trust Security</span>
           </h3>
           <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
-            Configure Multi-Factor Authentication (TOTP / Google Authenticator) for your Super Admin account
+            Configure Multi-Factor Authentication (TOTP / Google Authenticator) for your Super Admin
+            account
           </p>
         </div>
       </div>
 
       <div className="max-w-2xl">
-        {setupStep === 'idle' && (
+        {setupStep === "idle" && (
           <div className="space-y-4">
             <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
@@ -98,7 +107,8 @@ export const SuperAdminSecurityTab: React.FC = () => {
                   Authenticator App (TOTP)
                 </div>
                 <p className="text-xs text-black/60 dark:text-white/70">
-                  Use an app like Google Authenticator, Authy, or 1Password to generate 6-digit verification codes.
+                  Use an app like Google Authenticator, Authy, or 1Password to generate 6-digit
+                  verification codes.
                 </p>
               </div>
               <button
@@ -106,7 +116,7 @@ export const SuperAdminSecurityTab: React.FC = () => {
                 disabled={isSettingUp}
                 className="shrink-0 px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs shadow-sm hover:opacity-90 transition-opacity"
               >
-                {isSettingUp ? 'Initializing...' : 'Setup Authenticator'}
+                {isSettingUp ? "Initializing..." : "Setup Authenticator"}
               </button>
             </div>
 
@@ -125,13 +135,13 @@ export const SuperAdminSecurityTab: React.FC = () => {
                 disabled={isSettingUpPasskey}
                 className="shrink-0 px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs shadow-sm hover:opacity-90 transition-opacity"
               >
-                {isSettingUpPasskey ? 'Registering...' : 'Register Passkey'}
+                {isSettingUpPasskey ? "Registering..." : "Register Passkey"}
               </button>
             </div>
           </div>
         )}
 
-        {setupStep === 'qr' && (
+        {setupStep === "qr" && (
           <div className="p-6 rounded-3xl border border-black/10 dark:border-white/10 flex flex-col items-center text-center space-y-6">
             <div className="p-3 bg-white rounded-2xl inline-block shadow-sm">
               <img src={qrCodeUrl} alt="MFA QR Code" className="w-48 h-48" />
@@ -139,7 +149,8 @@ export const SuperAdminSecurityTab: React.FC = () => {
             <div className="space-y-2">
               <h4 className="font-semibold text-black dark:text-white">Scan this QR Code</h4>
               <p className="text-xs text-black/60 dark:text-white/60 max-w-sm mx-auto">
-                Open your authenticator app and scan the QR code above. If you can&apos;t scan it, enter this setup key manually:
+                Open your authenticator app and scan the QR code above. If you can&apos;t scan it,
+                enter this setup key manually:
               </p>
               <div className="font-mono text-sm tracking-widest p-2 bg-black/5 dark:bg-white/5 rounded-lg text-black dark:text-white selection:bg-indigo-500/30">
                 {mfaSecret}
@@ -163,23 +174,27 @@ export const SuperAdminSecurityTab: React.FC = () => {
                 disabled={isVerifying || verificationCode.length !== 6}
                 className="w-full py-3 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold text-sm transition-colors disabled:opacity-50"
               >
-                {isVerifying ? 'Verifying...' : 'Verify & Enable'}
+                {isVerifying ? "Verifying..." : "Verify & Enable"}
               </button>
             </div>
           </div>
         )}
 
-        {setupStep === 'success' && (
+        {setupStep === "success" && (
           <div className="p-8 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col items-center text-center space-y-4">
             <CheckCircle2 className="w-16 h-16 text-emerald-500" />
             <div>
-              <h4 className="text-lg font-semibold text-black dark:text-white mb-1">MFA is Active</h4>
+              <h4 className="text-lg font-semibold text-black dark:text-white mb-1">
+                MFA is Active
+              </h4>
               <p className="text-xs text-black/60 dark:text-white/60">
-                Your account is now protected with Two-Factor Authentication. You will be required to enter a code from your authenticator app every time you sign in to the Operations portal.
+                Your account is now protected with Two-Factor Authentication. You will be required
+                to enter a code from your authenticator app every time you sign in to the Operations
+                portal.
               </p>
             </div>
             <button
-              onClick={() => setSetupStep('idle')}
+              onClick={() => setSetupStep("idle")}
               className="mt-4 px-6 py-2 rounded-full border border-black/10 dark:border-white/10 text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
               Done

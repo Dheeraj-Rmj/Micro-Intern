@@ -1,10 +1,10 @@
-import { PrismaClient, SkillRelationshipType } from '@microintern/database';
-import type { Skill, SkillCategory, SubSkill, SkillRelationship } from '@microintern/database';
+import { PrismaClient, SkillRelationshipType } from "@microintern/database";
+import type { Skill, SkillCategory, SubSkill, SkillRelationship } from "@microintern/database";
 import type {
   ISkillRepository,
   CreateSkillDTO,
   CreateSkillRelationshipDTO,
-} from '../domain/ISkillRepository.js';
+} from "../domain/ISkillRepository.js";
 
 export class PrismaSkillRepository implements ISkillRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -35,7 +35,7 @@ export class PrismaSkillRepository implements ISkillRepository {
     }
     return this.prisma.skill.findMany({
       where,
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
   }
 
@@ -78,7 +78,7 @@ export class PrismaSkillRepository implements ISkillRepository {
 
   async listCategories(): Promise<SkillCategory[]> {
     return this.prisma.skillCategory.findMany({
-      orderBy: { sortOrder: 'asc' },
+      orderBy: { sortOrder: "asc" },
     });
   }
 
@@ -86,7 +86,7 @@ export class PrismaSkillRepository implements ISkillRepository {
     skillId: string,
     name: string,
     difficulty?: number,
-    description?: string
+    description?: string,
   ): Promise<SubSkill> {
     return this.prisma.subSkill.create({
       data: {
@@ -101,7 +101,7 @@ export class PrismaSkillRepository implements ISkillRepository {
   async listSubSkills(skillId: string): Promise<SubSkill[]> {
     return this.prisma.subSkill.findMany({
       where: { skillId },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
   }
 

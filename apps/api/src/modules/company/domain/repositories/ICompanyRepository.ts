@@ -1,6 +1,6 @@
-import type { Company } from '../entities/Company.entity.js';
-import type { CompanyMember } from '../entities/CompanyMember.entity.js';
-import type { CreateCompanyInput, UpdateCompanyInput } from '@microintern/shared';
+import type { Company } from "../entities/Company.entity.js";
+import type { CompanyMember } from "../entities/CompanyMember.entity.js";
+import type { CreateCompanyInput, UpdateCompanyInput } from "@microintern/shared";
 
 /**
  * Company Repository Interface — domain layer contract.

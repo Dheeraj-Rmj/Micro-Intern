@@ -3,6 +3,7 @@
 This directory contains the detailed implementation specifications for the remaining modules of the MicroIntern platform.
 
 **Target Audience:**
+
 - **Vyshavi (Backend Engineer):** Use the API & Backend Requirements to implement the Clean Architecture layers.
 - **Mustab (Frontend Engineer):** Use the UI & Frontend Requirements to build the user interfaces in the Next.js portals.
 - **Padmashree (QA):** Use the Acceptance Criteria to build test plans.

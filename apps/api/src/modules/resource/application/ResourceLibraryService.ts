@@ -1,18 +1,15 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('ResourceLibraryService');
+const log = createModuleLogger("ResourceLibraryService");
 
 export class ResourceLibraryService {
   public async listResources(companyId?: string, includeGlobal = true): Promise<any[]> {
     return prisma.resourceLibraryItem.findMany({
       where: {
-        OR: [
-          ...(includeGlobal ? [{ isGlobal: true }] : []),
-          ...(companyId ? [{ companyId }] : []),
-        ],
+        OR: [...(includeGlobal ? [{ isGlobal: true }] : []), ...(companyId ? [{ companyId }] : [])],
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -36,7 +33,7 @@ export class ResourceLibraryService {
         metadata: data.metadata || {},
       },
     });
-    log.info({ id: res.id, type: res.resourceType }, 'Created reusable resource library item');
+    log.info({ id: res.id, type: res.resourceType }, "Created reusable resource library item");
     return res;
   }
 

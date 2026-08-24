@@ -1,16 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import {
-  BookOpen,
-  Sparkles,
-  Plus,
-  Trash2,
-  GripVertical,
-  Eye,
-  CheckCircle2,
-} from 'lucide-react';
-import { apiClient } from '@/lib/api/client';
+import React, { useState } from "react";
+import { BookOpen, Sparkles, Plus, Trash2, GripVertical, Eye, CheckCircle2 } from "lucide-react";
+import { apiClient } from "@/lib/api/client";
 
 interface LearningOutcomesEditorProps {
   assessmentId: string;
@@ -20,23 +12,23 @@ interface LearningOutcomesEditorProps {
 }
 
 const DEFAULT_OUTCOMES = [
-  'RESTful API Design & HTTP Status Code conventions',
-  'Clean Architecture & Domain-Driven Design layer separation',
-  'Authentication & Authorization (JWT / OAuth Token Security)',
-  'Database Schema Modeling, Indexing, and Query Optimization',
-  'Comprehensive Automated Testing (Unit & Integration suites)',
+  "RESTful API Design & HTTP Status Code conventions",
+  "Clean Architecture & Domain-Driven Design layer separation",
+  "Authentication & Authorization (JWT / OAuth Token Security)",
+  "Database Schema Modeling, Indexing, and Query Optimization",
+  "Comprehensive Automated Testing (Unit & Integration suites)",
 ];
 
 export function LearningOutcomesEditor({
   assessmentId,
-  roleTitle = 'Full Stack Engineer',
+  roleTitle = "Full Stack Engineer",
   initialOutcomes,
   onUpdate,
 }: LearningOutcomesEditorProps) {
   const [outcomes, setOutcomes] = useState<string[]>(
     initialOutcomes && initialOutcomes.length > 0 ? initialOutcomes : DEFAULT_OUTCOMES,
   );
-  const [newItem, setNewItem] = useState('');
+  const [newItem, setNewItem] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCandidatePreview, setShowCandidatePreview] = useState(false);
 
@@ -45,7 +37,7 @@ export function LearningOutcomesEditor({
     if (!newItem.trim()) return;
     const updated = [...outcomes, newItem.trim()];
     setOutcomes(updated);
-    setNewItem('');
+    setNewItem("");
     onUpdate?.(updated);
   };
 
@@ -58,16 +50,19 @@ export function LearningOutcomesEditor({
   const handleGenerateAI = async () => {
     setIsGenerating(true);
     try {
-      const response = await apiClient.post(`/management/assessments/${assessmentId}/learning-outcomes/generate`, {
-        roleTitle,
-        description: `Generate enterprise learning outcomes for ${roleTitle}`,
-      });
+      const response = await apiClient.post(
+        `/management/assessments/${assessmentId}/learning-outcomes/generate`,
+        {
+          roleTitle,
+          description: `Generate enterprise learning outcomes for ${roleTitle}`,
+        },
+      );
       if (response.data?.success && Array.isArray(response.data.data)) {
         setOutcomes(response.data.data);
         onUpdate?.(response.data.data);
       }
     } catch (err) {
-      console.error('Failed to generate learning outcomes with AI:', err);
+      console.error("Failed to generate learning outcomes with AI:", err);
     } finally {
       setIsGenerating(false);
     }
@@ -83,7 +78,8 @@ export function LearningOutcomesEditor({
           <div>
             <h3 className="text-lg font-bold tracking-tight text-white">Learning Outcomes</h3>
             <p className="text-xs text-slate-400">
-              Key competencies & skills the candidate will demonstrate during this enterprise assessment
+              Key competencies & skills the candidate will demonstrate during this enterprise
+              assessment
             </p>
           </div>
         </div>
@@ -95,7 +91,7 @@ export function LearningOutcomesEditor({
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition-colors"
           >
             <Eye className="w-4 h-4 text-slate-400" />
-            <span>{showCandidatePreview ? 'Edit Mode' : 'Candidate Preview'}</span>
+            <span>{showCandidatePreview ? "Edit Mode" : "Candidate Preview"}</span>
           </button>
 
           <button
@@ -105,7 +101,7 @@ export function LearningOutcomesEditor({
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 disabled:opacity-50 transition-all"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>{isGenerating ? 'Generating...' : 'Generate AI Outcomes'}</span>
+            <span>{isGenerating ? "Generating..." : "Generate AI Outcomes"}</span>
           </button>
         </div>
       </div>
@@ -118,7 +114,8 @@ export function LearningOutcomesEditor({
           </div>
           <h4 className="text-xl font-bold text-white mb-2">What You Will Demonstrate</h4>
           <p className="text-sm text-slate-400 mb-6">
-            By completing this assessment assessment, you will prove real-world competency across these critical areas:
+            By completing this assessment assessment, you will prove real-world competency across
+            these critical areas:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -145,7 +142,7 @@ export function LearningOutcomesEditor({
                 <div className="flex items-center gap-3">
                   <GripVertical className="w-4 h-4 text-slate-600 cursor-grab group-hover:text-slate-400 transition-colors" />
                   <span className="text-xs font-mono font-bold text-purple-400">
-                    {(idx + 1).toString().padStart(2, '0')}
+                    {(idx + 1).toString().padStart(2, "0")}
                   </span>
                   <span className="text-sm font-medium text-slate-200">{item}</span>
                 </div>

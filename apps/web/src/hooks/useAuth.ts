@@ -1,23 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-import { apiClient, setAccessToken, clearAccessToken } from '@/lib/api/client';
-import { useAuthStore } from '@/stores/auth.store';
+import { apiClient, setAccessToken, clearAccessToken } from "@/lib/api/client";
+import { useAuthStore } from "@/stores/auth.store";
 
 import type {
   LoginDto,
   RegisterCandidateDto,
   LoginResponse,
   AuthUserResponse,
-} from '@microintern/shared';
+} from "@microintern/shared";
 
 /**
  * Auth query keys — consistent key factory.
  */
 export const authKeys = {
-  all: ['auth'] as const,
-  me: () => [...authKeys.all, 'me'] as const,
+  all: ["auth"] as const,
+  me: () => [...authKeys.all, "me"] as const,
 };
 
 /**
@@ -30,7 +30,7 @@ export function useCurrentUser() {
   return useQuery({
     queryKey: authKeys.me(),
     queryFn: async () => {
-      const response = await apiClient.get<{ data: AuthUserResponse }>('/auth/me');
+      const response = await apiClient.get<{ data: AuthUserResponse }>("/auth/me");
       const user = response.data.data;
       setUser(user);
       setAuthenticated(true);
@@ -51,7 +51,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (dto: LoginDto) => {
-      const response = await apiClient.post<{ data: LoginResponse }>('/auth/login', dto);
+      const response = await apiClient.post<{ data: LoginResponse }>("/auth/login", dto);
       return response.data.data;
     },
     onSuccess: (data) => {
@@ -62,22 +62,22 @@ export function useLogin() {
       // Seed the cache with user data
       queryClient.setQueryData(authKeys.me(), data.user);
 
-      toast.success('Welcome back!');
+      toast.success("Welcome back!");
 
       // Role-based redirect
       const redirectMap: Record<string, string> = {
-        CANDIDATE: '/dashboard',
-        COMPANY_OWNER: '/company/dashboard',
-        RECRUITER: '/recruiter/dashboard',
-        ADMIN: '/admin/dashboard',
-        SUPER_ADMIN: '/admin/dashboard',
+        CANDIDATE: "/dashboard",
+        COMPANY_OWNER: "/company/dashboard",
+        RECRUITER: "/recruiter/dashboard",
+        ADMIN: "/admin/dashboard",
+        SUPER_ADMIN: "/admin/dashboard",
       };
 
-      const destination = redirectMap[data.user.role] ?? '/dashboard';
+      const destination = redirectMap[data.user.role] ?? "/dashboard";
       router.push(destination);
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? 'Login failed. Please check your credentials.');
+      toast.error(error.message ?? "Login failed. Please check your credentials.");
     },
   });
 }
@@ -93,7 +93,7 @@ export function useRegisterCandidate() {
   return useMutation({
     mutationFn: async (dto: RegisterCandidateDto) => {
       const response = await apiClient.post<{ data: LoginResponse }>(
-        '/auth/register/candidate',
+        "/auth/register/candidate",
         dto,
       );
       return response.data.data;
@@ -104,11 +104,11 @@ export function useRegisterCandidate() {
       setAuthenticated(true);
       queryClient.setQueryData(authKeys.me(), data.user);
 
-      toast.success('Account created! Welcome to MicroIntern.');
-      router.push('/dashboard/onboarding');
+      toast.success("Account created! Welcome to MicroIntern.");
+      router.push("/dashboard/onboarding");
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? 'Registration failed. Please try again.');
+      toast.error(error.message ?? "Registration failed. Please try again.");
     },
   });
 }
@@ -123,14 +123,14 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      await apiClient.post('/auth/logout');
+      await apiClient.post("/auth/logout");
     },
     onSettled: () => {
       // Always clear local state, even if API call fails
       clearAccessToken();
       reset();
       queryClient.clear();
-      router.push('/auth/login');
+      router.push("/auth/login");
     },
   });
 }

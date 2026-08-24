@@ -12,6 +12,6 @@ export class CompanyBilling {
     public readonly storageUsedBytes: bigint,
     public readonly storageMaxBytes: bigint,
     public readonly createdAt: Date,
-    public readonly updatedAt: Date
+    public readonly updatedAt: Date,
   ) {}
 }

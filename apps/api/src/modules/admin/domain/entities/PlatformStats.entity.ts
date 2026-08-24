@@ -43,7 +43,8 @@ export class PlatformStats {
     this.aiMetrics = {
       totalEvaluations: props.aiMetrics.totalEvaluations,
       passedEvaluations: props.aiMetrics.passedEvaluations,
-      averagePercentageScore: Math.round((props.aiMetrics.averagePercentageScore + Number.EPSILON) * 100) / 100,
+      averagePercentageScore:
+        Math.round((props.aiMetrics.averagePercentageScore + Number.EPSILON) * 100) / 100,
     };
     this.timestamp = props.timestamp ?? new Date();
   }

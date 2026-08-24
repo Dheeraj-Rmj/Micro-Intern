@@ -3,7 +3,7 @@ export interface CandidateUser {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'CANDIDATE';
+  role: "CANDIDATE";
   avatarUrl?: string | null;
   isEmailVerified: boolean;
   createdAt: string;

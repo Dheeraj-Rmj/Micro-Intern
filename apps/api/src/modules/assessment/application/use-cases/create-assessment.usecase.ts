@@ -1,28 +1,31 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { CompanyNotFoundError } from '@/modules/company/domain/errors/company.errors.js';
-import { eventBus, DOMAIN_EVENTS } from '@/shared/events/EventBus.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { CompanyNotFoundError } from "@/modules/company/domain/errors/company.errors.js";
+import { eventBus, DOMAIN_EVENTS } from "@/shared/events/EventBus.js";
 
-import type { Assessment } from '../../domain/entities/Assessment.entity.js';
-import type { IAssessmentRepository, CreateAssessmentData } from '../ports/IAssessmentRepository.js';
-import type { ICompanyRepository } from '@/modules/company/domain/repositories/ICompanyRepository.js';
-import type { ExperienceLevel } from '@microintern/database';
+import type { Assessment } from "../../domain/entities/Assessment.entity.js";
+import type {
+  IAssessmentRepository,
+  CreateAssessmentData,
+} from "../ports/IAssessmentRepository.js";
+import type { ICompanyRepository } from "@/modules/company/domain/repositories/ICompanyRepository.js";
+import type { ExperienceLevel } from "@microintern/database";
 
-const log = createModuleLogger('CreateAssessmentUseCase');
+const log = createModuleLogger("CreateAssessmentUseCase");
 
 function slugify(text: string): string {
   return text
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-');
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
 }
 
 export class CreateAssessmentUseCase {
   constructor(
     private readonly assessmentRepository: IAssessmentRepository,
-    private readonly companyRepository: ICompanyRepository
+    private readonly companyRepository: ICompanyRepository,
   ) {}
 
   async execute(
@@ -47,9 +50,9 @@ export class CreateAssessmentUseCase {
         sortOrder: number;
         config?: Record<string, unknown>;
       }>;
-    }
+    },
   ): Promise<Assessment> {
-    log.info({ userId, title: input.title }, 'Creating new assessment assessment');
+    log.info({ userId, title: input.title }, "Creating new assessment assessment");
 
     const company = await this.companyRepository.findByUserId(userId);
     if (!company) {
@@ -81,7 +84,10 @@ export class CreateAssessmentUseCase {
     };
 
     const assessment = await this.assessmentRepository.create(assessmentData);
-    log.info({ assessmentId: assessment.id, companyId: company.id }, 'Assessment created in DRAFT status');
+    log.info(
+      { assessmentId: assessment.id, companyId: company.id },
+      "Assessment created in DRAFT status",
+    );
 
     await eventBus.emit(DOMAIN_EVENTS.ASSESSMENT_CREATED, {
       assessmentId: assessment.id,

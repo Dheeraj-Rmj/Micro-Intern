@@ -1,4 +1,4 @@
-import { AUTH } from '@microintern/shared';
+import { AUTH } from "@microintern/shared";
 
 /**
  * User Domain Entity.
@@ -71,7 +71,7 @@ export class User {
    * Check if user is active and can authenticate.
    */
   canAuthenticate(): boolean {
-    return this.status === 'ACTIVE' && !this.isLocked();
+    return this.status === "ACTIVE" && !this.isLocked();
   }
 
   /**

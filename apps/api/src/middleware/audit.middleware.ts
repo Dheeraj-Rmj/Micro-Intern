@@ -1,10 +1,10 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-import type { AuditAction } from '@microintern/shared';
-import type { Request, Response, NextFunction } from 'express';
+import type { AuditAction } from "@microintern/shared";
+import type { Request, Response, NextFunction } from "express";
 
-const log = createModuleLogger('AuditMiddleware');
+const log = createModuleLogger("AuditMiddleware");
 
 /**
  * Audit trail middleware factory.
@@ -25,7 +25,7 @@ const log = createModuleLogger('AuditMiddleware');
 export function audit(action: AuditAction, entityType: string) {
   return (req: Request, _res: Response, next: NextFunction): void => {
     // Extract entity ID from params or response body
-    const entityId = req.params['id'] ?? req.params[`${entityType.toLowerCase()}Id`];
+    const entityId = req.params["id"] ?? req.params[`${entityType.toLowerCase()}Id`];
 
     // Fire-and-forget async audit write
     const writeAudit = async () => {
@@ -37,8 +37,8 @@ export function audit(action: AuditAction, entityType: string) {
             action,
             entityType,
             entityId: (entityId as string | undefined) ?? null,
-            ipAddress: (req.ip) ?? null,
-            userAgent: (req.headers['user-agent']) ?? null,
+            ipAddress: req.ip ?? null,
+            userAgent: req.headers["user-agent"] ?? null,
             requestId: ((req as Request & { id?: string }).id as string | undefined) ?? null,
             metadata: {
               method: req.method,
@@ -49,12 +49,12 @@ export function audit(action: AuditAction, entityType: string) {
         });
       } catch (error) {
         // Audit failure must never break the main flow
-        log.error({ err: error, action, entityType }, 'Audit log write failed');
+        log.error({ err: error, action, entityType }, "Audit log write failed");
       }
     };
 
     // Don't await — async fire-and-forget
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     void writeAudit();
 
     next();

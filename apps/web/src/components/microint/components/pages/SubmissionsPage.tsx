@@ -1,8 +1,8 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
-import { Breadcrumbs } from '../common/Breadcrumbs';
-import { Submission } from '../../types';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
+import { Breadcrumbs } from "../common/Breadcrumbs";
+import { Submission } from "../../types";
 import {
   Send,
   Clock,
@@ -13,27 +13,27 @@ import {
   AlertCircle,
   FileText,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const SubmissionsPage: React.FC = () => {
   const { submissions, trials } = useApp();
   const [selectedSub, setSelectedSub] = useState<Submission | null>(null);
 
-  const getStatusBadge = (status: Submission['status']) => {
+  const getStatusBadge = (status: Submission["status"]) => {
     switch (status) {
-      case 'Evaluated':
+      case "Evaluated":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#111111] text-white dark:bg-white dark:text-black font-bold text-[11px] uppercase tracking-wider">
             <CheckCircle2 className="w-3.5 h-3.5" /> Evaluated
           </span>
         );
-      case 'Under Review':
+      case "Under Review":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 text-black/60 dark:text-white/70 font-bold text-[11px] uppercase tracking-wider">
             <Clock className="w-3.5 h-3.5" /> Under Review
           </span>
         );
-      case 'Approved':
+      case "Approved":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#111111] text-white dark:bg-white dark:text-black font-bold text-[11px] uppercase tracking-wider">
             <CheckCircle2 className="w-3.5 h-3.5" /> Approved
@@ -73,7 +73,8 @@ export const SubmissionsPage: React.FC = () => {
           <Send className="w-12 h-12 text-black/20 dark:text-white/30 mx-auto mb-4" />
           <h3 className="text-2xl font-serif text-black dark:text-white">No submissions yet</h3>
           <p className="text-sm text-black/50 dark:text-white/60 max-w-sm mx-auto mt-2 leading-relaxed">
-            When you complete tasks inside an active skill trial workspace and submit your code, they will appear here.
+            When you complete tasks inside an active skill trial workspace and submit your code,
+            they will appear here.
           </p>
         </div>
       ) : (
@@ -88,7 +89,7 @@ export const SubmissionsPage: React.FC = () => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <span className="text-xs font-bold text-black/40 dark:text-white/50 uppercase tracking-widest">
-                      {trial?.company || 'Company'}
+                      {trial?.company || "Company"}
                     </span>
                     <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/60">
                       Submitted {sub.submittedAt}
@@ -96,7 +97,7 @@ export const SubmissionsPage: React.FC = () => {
                   </div>
 
                   <h3 className="text-2xl font-serif text-black dark:text-white">
-                    {trial?.title || 'Trial Deliverable'}
+                    {trial?.title || "Trial Deliverable"}
                   </h3>
 
                   {sub.repoUrl && (
@@ -145,7 +146,10 @@ export const SubmissionsPage: React.FC = () => {
       {/* Submission Details Modal */}
       {selectedSub && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedSub(null)} />
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setSelectedSub(null)}
+          />
           <div className="bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[40px] max-w-lg w-full p-8 shadow-2xl relative z-10 text-black dark:text-white">
             <button
               onClick={() => setSelectedSub(null)}
@@ -157,12 +161,18 @@ export const SubmissionsPage: React.FC = () => {
             <span className="text-xs font-bold text-black/40 dark:text-white/50 uppercase tracking-widest block mb-2">
               Submission Report
             </span>
-            <h3 className="text-2xl font-serif text-black dark:text-white mb-6">Evaluation Details</h3>
+            <h3 className="text-2xl font-serif text-black dark:text-white mb-6">
+              Evaluation Details
+            </h3>
 
             <div className="space-y-4 mb-8">
               <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-between">
-                <span className="text-sm font-semibold text-black/60 dark:text-white/70">Automated Score</span>
-                <span className="font-bold text-2xl text-black dark:text-white">{selectedSub.score}%</span>
+                <span className="text-sm font-semibold text-black/60 dark:text-white/70">
+                  Automated Score
+                </span>
+                <span className="font-bold text-2xl text-black dark:text-white">
+                  {selectedSub.score}%
+                </span>
               </div>
 
               {selectedSub.feedback && (
@@ -170,7 +180,9 @@ export const SubmissionsPage: React.FC = () => {
                   <span className="text-xs font-bold text-black/40 dark:text-white/50 uppercase tracking-widest block mb-1">
                     Feedback Note
                   </span>
-                  <p className="text-sm text-black/80 dark:text-white/80 leading-relaxed">{selectedSub.feedback}</p>
+                  <p className="text-sm text-black/80 dark:text-white/80 leading-relaxed">
+                    {selectedSub.feedback}
+                  </p>
                 </div>
               )}
             </div>

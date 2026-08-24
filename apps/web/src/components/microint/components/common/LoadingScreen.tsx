@@ -1,13 +1,13 @@
-'use client';
-import React, { useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React, { useEffect } from "react";
+import { useApp } from "../../context/AppContext";
 
 export const LoadingScreen: React.FC = () => {
   const { setCurrentRoute } = useApp();
 
   useEffect(() => {
     // A much shorter artificial delay for a professional feel
-    const timer = setTimeout(() => setCurrentRoute('landing'), 800);
+    const timer = setTimeout(() => setCurrentRoute("landing"), 800);
     return () => clearTimeout(timer);
   }, [setCurrentRoute]);
 
@@ -19,4 +19,3 @@ export const LoadingScreen: React.FC = () => {
     </div>
   );
 };
-

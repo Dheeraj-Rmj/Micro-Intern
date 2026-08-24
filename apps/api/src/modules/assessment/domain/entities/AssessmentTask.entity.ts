@@ -1,4 +1,4 @@
-import type { TaskType } from '@microintern/database';
+import type { TaskType } from "@microintern/database";
 
 export class AssessmentTask {
   constructor(
@@ -12,18 +12,18 @@ export class AssessmentTask {
     public readonly maxPoints: number,
     public readonly config: Record<string, unknown>,
     public readonly createdAt: Date,
-    public readonly updatedAt: Date
+    public readonly updatedAt: Date,
   ) {}
 
   /**
    * Returns a clean copy of the task with evaluation secrets or answers masked for public candidate view.
    */
-  toPublicView(): Omit<AssessmentTask, 'config'> & { config: Record<string, unknown> } {
+  toPublicView(): Omit<AssessmentTask, "config"> & { config: Record<string, unknown> } {
     const safeConfig = { ...this.config };
-    delete safeConfig['answerKey'];
-    delete safeConfig['solution'];
-    delete safeConfig['correctAnswer'];
-    delete safeConfig['privateRubric'];
+    delete safeConfig["answerKey"];
+    delete safeConfig["solution"];
+    delete safeConfig["correctAnswer"];
+    delete safeConfig["privateRubric"];
 
     return {
       id: this.id,
@@ -42,7 +42,8 @@ export class AssessmentTask {
   }
 
   static fromPrisma(record: any): AssessmentTask {
-    const configObj = typeof record.config === 'string' ? JSON.parse(record.config) : (record.config || {});
+    const configObj =
+      typeof record.config === "string" ? JSON.parse(record.config) : record.config || {};
     return new AssessmentTask(
       record.id,
       record.assessmentId,
@@ -54,7 +55,7 @@ export class AssessmentTask {
       record.maxPoints ?? 100,
       configObj,
       record.createdAt,
-      record.updatedAt
+      record.updatedAt,
     );
   }
 }

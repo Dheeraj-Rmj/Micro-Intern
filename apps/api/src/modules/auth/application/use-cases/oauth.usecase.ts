@@ -1,12 +1,12 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { AuthDomainError } from '@/shared/errors/DomainError.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { AuthDomainError } from "@/shared/errors/DomainError.js";
 
-import type { IUserRepository } from '../../domain/repositories/IUserRepository.js';
-import type { IJwtService } from '../interfaces/IJwtService.js';
-import type { ISessionService } from '../interfaces/ISessionService.js';
-import type { ParsedDeviceInfo } from '@/shared/utils/device-parser.js';
+import type { IUserRepository } from "../../domain/repositories/IUserRepository.js";
+import type { IJwtService } from "../interfaces/IJwtService.js";
+import type { ISessionService } from "../interfaces/ISessionService.js";
+import type { ParsedDeviceInfo } from "@/shared/utils/device-parser.js";
 
-const log = createModuleLogger('OAuthLoginUseCase');
+const log = createModuleLogger("OAuthLoginUseCase");
 
 export interface OAuthProfile {
   provider: string; // 'LINKEDIN', 'MICROSOFT', etc.
@@ -23,13 +23,16 @@ export class OAuthLoginUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly jwtService: IJwtService,
-    private readonly sessionService: ISessionService
+    private readonly sessionService: ISessionService,
   ) {}
 
   async execute(profile: OAuthProfile, metadata?: Partial<ParsedDeviceInfo>) {
     try {
       // 1. Check if OAuth account already exists
-      let user = await this.userRepository.findByOAuthAccount(profile.provider, profile.providerAccountId);
+      let user = await this.userRepository.findByOAuthAccount(
+        profile.provider,
+        profile.providerAccountId,
+      );
 
       if (!user) {
         // 2. If not, check if a user with this email already exists
@@ -58,18 +61,34 @@ export class OAuthLoginUseCase {
       }
 
       // 4. Optionally update avatar if we have a new one and user doesn't
-      if (profile.avatarUrl !== undefined && profile.avatarUrl !== null && profile.avatarUrl !== '' && (user.avatarUrl === undefined || user.avatarUrl === null || user.avatarUrl === '')) {
+      if (
+        profile.avatarUrl !== undefined &&
+        profile.avatarUrl !== null &&
+        profile.avatarUrl !== "" &&
+        (user.avatarUrl === undefined || user.avatarUrl === null || user.avatarUrl === "")
+      ) {
         await this.userRepository.updateAvatar(user.id, profile.avatarUrl);
       }
 
       // 5. Create Session with device telemetry & Tokens
       const sessionId = await this.sessionService.createSession(user.id, metadata);
-      const { accessToken, refreshToken } = await this.jwtService.generateTokenPair(user, sessionId);
+      const { accessToken, refreshToken } = await this.jwtService.generateTokenPair(
+        user,
+        sessionId,
+      );
 
-      await this.userRepository.updateLastLogin(user.id, metadata?.ipAddress ?? 'OAuth');
+      await this.userRepository.updateLastLogin(user.id, metadata?.ipAddress ?? "OAuth");
       await this.userRepository.resetLoginAttempts(user.id);
 
-      log.info({ userId: user.id, provider: profile.provider, browser: metadata?.browser, os: metadata?.os }, `OAuth login successful`);
+      log.info(
+        {
+          userId: user.id,
+          provider: profile.provider,
+          browser: metadata?.browser,
+          os: metadata?.os,
+        },
+        `OAuth login successful`,
+      );
 
       return {
         tokens: {
@@ -83,11 +102,11 @@ export class OAuthLoginUseCase {
           lastName: user.lastName,
           role: user.role,
           avatarUrl: user.avatarUrl,
-        }
+        },
       };
     } catch (error) {
-      log.error({ error }, 'OAuth Login failed');
-      throw new AuthDomainError('UNAUTHORIZED', 'Failed to process OAuth login');
+      log.error({ error }, "OAuth Login failed");
+      throw new AuthDomainError("UNAUTHORIZED", "Failed to process OAuth login");
     }
   }
 }

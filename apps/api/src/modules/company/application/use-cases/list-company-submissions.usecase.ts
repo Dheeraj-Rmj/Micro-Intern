@@ -1,11 +1,11 @@
-import { UnauthorizedError } from '@/shared/errors/index.js';
-import { buildPaginationMeta } from '@/shared/response/ResponseFormatter.js';
+import { UnauthorizedError } from "@/shared/errors/index.js";
+import { buildPaginationMeta } from "@/shared/response/ResponseFormatter.js";
 
 export class ListCompanySubmissionsUseCase {
   constructor(private readonly prisma: any) {}
 
   async execute(companyId: string, query: any) {
-    if (!companyId) throw new UnauthorizedError('Company ID required');
+    if (!companyId) throw new UnauthorizedError("Company ID required");
 
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
@@ -37,7 +37,7 @@ export class ListCompanySubmissionsUseCase {
           },
           evaluation: true,
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         skip,
         take: limit,
       }),
@@ -51,9 +51,15 @@ export class ListCompanySubmissionsUseCase {
       trialTitle: sub.assessment.title,
       trustScore: sub.integrityScore || 95,
       submittedAt: sub.submittedAt || sub.createdAt,
-      githubUrl: 'https://github.com/candidate', // mock until github integration
-      status: sub.status === 'EVALUATED' || sub.status === 'PASSED' ? 'APPROVED' : (sub.status === 'REJECTED' ? 'REJECTED' : 'PENDING'),
-      aiRecommendation: sub.evaluation?.aiRecommendation || (sub.isPassed ? 'STRONG_HIRE' : 'REVIEW_NEEDED'),
+      githubUrl: "https://github.com/candidate", // mock until github integration
+      status:
+        sub.status === "EVALUATED" || sub.status === "PASSED"
+          ? "APPROVED"
+          : sub.status === "REJECTED"
+            ? "REJECTED"
+            : "PENDING",
+      aiRecommendation:
+        sub.evaluation?.aiRecommendation || (sub.isPassed ? "STRONG_HIRE" : "REVIEW_NEEDED"),
     }));
 
     return {

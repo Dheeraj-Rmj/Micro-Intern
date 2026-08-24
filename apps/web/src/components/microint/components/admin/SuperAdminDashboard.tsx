@@ -1,8 +1,8 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
-import { adminApi, type AdminStats, type AdminAuditLog } from '@/lib/api/admin';
-import { apiClient } from '@/lib/api/client';
+"use client";
+import React, { useState, useEffect } from "react";
+import { useApp } from "../../context/AppContext";
+import { adminApi, type AdminStats, type AdminAuditLog } from "@/lib/api/admin";
+import { apiClient } from "@/lib/api/client";
 import {
   ShieldAlert,
   Users,
@@ -35,7 +35,7 @@ import {
   Plus,
   User,
   Compass,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface MotivationalQuote {
   q: string;
@@ -43,19 +43,24 @@ interface MotivationalQuote {
 }
 
 const GOVERNANCE_INSIGHT_QUOTES: MotivationalQuote[] = [
-  { q: 'Trust is not an assumption; it is an algorithmic invariant verified across every transaction and commit.', a: 'MicroIntern Core Governance RFC-01' },
-  { q: 'Security is a process, not a product.', a: 'Bruce Schneier' },
-  { q: 'Simplicity is prerequisite for reliability.', a: 'Edsger W. Dijkstra' },
-  { q: 'In God we trust, all others must bring data.', a: 'W. Edwards Deming' },
+  {
+    q: "Trust is not an assumption; it is an algorithmic invariant verified across every transaction and commit.",
+    a: "MicroIntern Core Governance RFC-01",
+  },
+  { q: "Security is a process, not a product.", a: "Bruce Schneier" },
+  { q: "Simplicity is prerequisite for reliability.", a: "Edsger W. Dijkstra" },
+  { q: "In God we trust, all others must bring data.", a: "W. Edwards Deming" },
 ];
 
 export const SuperAdminDashboard: React.FC = () => {
   const { setCurrentRoute, showToast, darkMode } = useApp();
-  const [activeTab, setActiveTab] = useState<'overview' | 'escrow' | 'security' | 'users' | 'ekyc'>('overview');
+  const [activeTab, setActiveTab] = useState<"overview" | "escrow" | "security" | "users" | "ekyc">(
+    "overview",
+  );
   const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
   const [selectedQuickActionModal, setSelectedQuickActionModal] = useState<string | null>(null);
-  const [impersonateUserEmail, setImpersonateUserEmail] = useState('');
-  const [systemAlertMessage, setSystemAlertMessage] = useState('');
+  const [impersonateUserEmail, setImpersonateUserEmail] = useState("");
+  const [systemAlertMessage, setSystemAlertMessage] = useState("");
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [logs, setLogs] = useState<AdminAuditLog[]>([]);
   const [topEnterprises, setTopEnterprises] = useState<any[]>([]);
@@ -65,7 +70,9 @@ export const SuperAdminDashboard: React.FC = () => {
 
   // Live Ticking Clock state (matching CandidatePortal)
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [currentQuote, setCurrentQuote] = useState<MotivationalQuote>(GOVERNANCE_INSIGHT_QUOTES[0] as MotivationalQuote);
+  const [currentQuote, setCurrentQuote] = useState<MotivationalQuote>(
+    GOVERNANCE_INSIGHT_QUOTES[0] as MotivationalQuote,
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -89,33 +96,39 @@ export const SuperAdminDashboard: React.FC = () => {
         const results = await Promise.allSettled([
           adminApi.getStats(),
           adminApi.getAuditLogs(),
-          adminApi.getUsers({ role: 'company' }),
+          adminApi.getUsers({ role: "company" }),
           adminApi.getOnboardings(),
         ]);
 
-        if (results[0].status === 'fulfilled') setStats(results[0].value);
-        if (results[1].status === 'fulfilled') setLogs(results[1].value);
-        if (results[3].status === 'fulfilled') setOnboardings(results[3].value);
-        
-        if (results[2].status === 'fulfilled') {
+        if (results[0].status === "fulfilled") setStats(results[0].value);
+        if (results[1].status === "fulfilled") setLogs(results[1].value);
+        if (results[3].status === "fulfilled") setOnboardings(results[3].value);
+
+        if (results[2].status === "fulfilled") {
           setTopEnterprises(
             results[2].value.slice(0, 4).map((c) => ({
               name: c.name,
               logo: c.name.charAt(0),
               activeTrials: c.activeTrials || 0,
-              status: c.status === 'active' ? 'eKYC Approved' : 'Pending',
-              escrowLocked: c.escrowLocked ? `$${c.escrowLocked}` : '$0',
-            }))
+              status: c.status === "active" ? "eKYC Approved" : "Pending",
+              escrowLocked: c.escrowLocked ? `$${c.escrowLocked}` : "$0",
+            })),
           );
         }
 
         // Only show fatal error if ALL calls failed (Network Error / Down)
-        if (results.every(r => r.status === 'rejected')) {
-          throw new Error((results[0] as PromiseRejectedResult).reason?.message || 'Platform Telemetry Disconnected');
+        if (results.every((r) => r.status === "rejected")) {
+          throw new Error(
+            (results[0] as PromiseRejectedResult).reason?.message ||
+              "Platform Telemetry Disconnected",
+          );
         }
       } catch (err: any) {
-        console.error('Failed to fetch admin dashboard telemetry data', err);
-        setFetchError(err.message || 'Failed to establish secure connection to AI telemetry backend. Please try again.');
+        console.error("Failed to fetch admin dashboard telemetry data", err);
+        setFetchError(
+          err.message ||
+            "Failed to establish secure connection to AI telemetry backend. Please try again.",
+        );
       } finally {
         setLoading(false);
       }
@@ -128,9 +141,9 @@ export const SuperAdminDashboard: React.FC = () => {
     setTimeout(() => {
       setIsDiagnosticRunning(false);
       showToast(
-        'AI Sandbox Diagnostics Complete',
-        'All 14 GitHub runner nodes & LLM evaluation evaluators are healthy (99.98% uptime).',
-        'success'
+        "AI Sandbox Diagnostics Complete",
+        "All 14 GitHub runner nodes & LLM evaluation evaluators are healthy (99.98% uptime).",
+        "success",
       );
     }, 1500);
   };
@@ -141,14 +154,14 @@ export const SuperAdminDashboard: React.FC = () => {
     try {
       await adminApi.impersonateUser(impersonateUserEmail);
       showToast(
-        'Impersonation Session Active',
+        "Impersonation Session Active",
         `You are now viewing MicroIntern as: ${impersonateUserEmail}. Admin audit trail logged.`,
-        'info'
+        "info",
       );
       setSelectedQuickActionModal(null);
-      setImpersonateUserEmail('');
+      setImpersonateUserEmail("");
     } catch (err: any) {
-      showToast('Error', err.message || 'Impersonation failed.', 'warning');
+      showToast("Error", err.message || "Impersonation failed.", "warning");
     }
   };
 
@@ -158,21 +171,21 @@ export const SuperAdminDashboard: React.FC = () => {
     try {
       await adminApi.broadcastAlert(systemAlertMessage);
       showToast(
-        'System-Wide Broadcast Sent',
+        "System-Wide Broadcast Sent",
         `Notification dispatched to all active users: "${systemAlertMessage}"`,
-        'success'
+        "success",
       );
       setSelectedQuickActionModal(null);
-      setSystemAlertMessage('');
+      setSystemAlertMessage("");
     } catch (err: any) {
-      showToast('Error', err.message || 'Broadcast failed.', 'warning');
+      showToast("Error", err.message || "Broadcast failed.", "warning");
     }
   };
 
-  const dateString = currentTime.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
+  const dateString = currentTime.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
   });
 
   const recentSecurityLogs: any[] = logs.slice(0, 5);
@@ -188,12 +201,18 @@ export const SuperAdminDashboard: React.FC = () => {
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 text-red-500 mb-6">
           <AlertTriangle className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-serif text-black dark:text-white mb-3">Platform Telemetry Disconnected</h2>
+        <h2 className="text-2xl font-serif text-black dark:text-white mb-3">
+          Platform Telemetry Disconnected
+        </h2>
         <p className="text-sm text-black/60 dark:text-white/60 mb-8 leading-relaxed">
           {fetchError}
         </p>
         <button
-          onClick={() => { setLoading(true); setFetchError(null); /* would re-trigger effect in real app but simple reload suffices here */ window.location.reload(); }}
+          onClick={() => {
+            setLoading(true);
+            setFetchError(null);
+            /* would re-trigger effect in real app but simple reload suffices here */ window.location.reload();
+          }}
           className="px-6 py-3 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-sm shadow-md hover:scale-105 transition-transform flex items-center justify-center gap-2 mx-auto cursor-pointer"
         >
           <RefreshCw className="w-4 h-4" />
@@ -226,10 +245,10 @@ export const SuperAdminDashboard: React.FC = () => {
           <div className="px-4 py-2.5 rounded-full bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 text-xs font-mono font-semibold text-black dark:text-white flex items-center gap-2">
             <Clock className="w-3.5 h-3.5 text-amber-500" />
             <span>
-              {currentTime.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
+              {currentTime.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
                 hour12: true,
               })}
             </span>
@@ -239,8 +258,10 @@ export const SuperAdminDashboard: React.FC = () => {
             disabled={isDiagnosticRunning}
             className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isDiagnosticRunning ? 'animate-spin text-amber-400' : ''}`} />
-            <span>{isDiagnosticRunning ? 'Running Checks...' : 'Run Diagnostics'}</span>
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isDiagnosticRunning ? "animate-spin text-amber-400" : ""}`}
+            />
+            <span>{isDiagnosticRunning ? "Running Checks..." : "Run Diagnostics"}</span>
           </button>
         </div>
       </div>
@@ -249,9 +270,9 @@ export const SuperAdminDashboard: React.FC = () => {
       <div
         className="p-7 rounded-[36px] bg-white/70 dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm relative overflow-hidden group"
         style={{
-          clipPath: 'inset(0 round 36px)',
+          clipPath: "inset(0 round 36px)",
           background:
-            'radial-gradient(circle 350px at 90% 10%, rgba(225, 224, 204, 0.15) 0%, transparent 70%), radial-gradient(circle 350px at 10% 90%, rgba(99, 102, 241, 0.08) 0%, transparent 70%)',
+            "radial-gradient(circle 350px at 90% 10%, rgba(225, 224, 204, 0.15) 0%, transparent 70%), radial-gradient(circle 350px at 10% 90%, rgba(99, 102, 241, 0.08) 0%, transparent 70%)",
         }}
       >
         <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto py-2">
@@ -274,43 +295,43 @@ export const SuperAdminDashboard: React.FC = () => {
       {/* ── Pill Switcher Tabs (Matching CandidatePortal Pill Style) ── */}
       <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1.5 rounded-full w-fit">
         <button
-          onClick={() => setActiveTab('overview')}
+          onClick={() => setActiveTab("overview")}
           className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === 'overview'
-              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+            activeTab === "overview"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >
           Platform Telemetry
         </button>
         <button
-          onClick={() => setActiveTab('users')}
+          onClick={() => setActiveTab("users")}
           className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === 'users'
-              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+            activeTab === "users"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >
           Users
         </button>
         <button
-          onClick={() => setActiveTab('ekyc')}
+          onClick={() => setActiveTab("ekyc")}
           className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === 'ekyc'
-              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+            activeTab === "ekyc"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >
           eKYC
         </button>
         <button
-          onClick={() => setCurrentRoute('admin-organization' as any)}
+          onClick={() => setCurrentRoute("admin-organization" as any)}
           className="px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
         >
           Organization Management
         </button>
         <button
-          onClick={() => setCurrentRoute('admin-subscriptions' as any)}
+          onClick={() => setCurrentRoute("admin-subscriptions" as any)}
           className="px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
         >
           Subscription Management
@@ -320,18 +341,31 @@ export const SuperAdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Metric Cards */}
         {[
-          { label: 'Total Companies', value: stats?.totalCompanies ?? '0', icon: Building2 },
-          { label: 'Total Users', value: stats?.totalUsers ?? '0', icon: Users },
-          { label: 'Total Assessments', value: stats?.totalAssessments ?? '0', icon: ShieldCheck },
-          { label: 'Active Assessments', value: stats?.activeAssessments ?? '0', icon: User },
-          { label: 'Active Companies', value: stats?.activeCompanies ?? '0', icon: DollarSign },
-          { label: 'Active Users', value: stats?.activeUsers ?? '0', icon: Compass },
-          { label: 'Total AI Evaluations', value: stats?.aiMetrics?.totalEvaluations ?? '0', icon: Sparkles },
-          { label: 'Avg AI Score', value: stats?.aiMetrics?.averagePercentageScore ? `${stats.aiMetrics.averagePercentageScore}%` : 'N/A', icon: Activity },
+          { label: "Total Companies", value: stats?.totalCompanies ?? "0", icon: Building2 },
+          { label: "Total Users", value: stats?.totalUsers ?? "0", icon: Users },
+          { label: "Total Assessments", value: stats?.totalAssessments ?? "0", icon: ShieldCheck },
+          { label: "Active Assessments", value: stats?.activeAssessments ?? "0", icon: User },
+          { label: "Active Companies", value: stats?.activeCompanies ?? "0", icon: DollarSign },
+          { label: "Active Users", value: stats?.activeUsers ?? "0", icon: Compass },
+          {
+            label: "Total AI Evaluations",
+            value: stats?.aiMetrics?.totalEvaluations ?? "0",
+            icon: Sparkles,
+          },
+          {
+            label: "Avg AI Score",
+            value: stats?.aiMetrics?.averagePercentageScore
+              ? `${stats.aiMetrics.averagePercentageScore}%`
+              : "N/A",
+            icon: Activity,
+          },
         ].map((metric, idx) => {
           const Icon = metric.icon;
           return (
-            <div key={idx} className="p-6 rounded-[24px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm flex items-center justify-between">
+            <div
+              key={idx}
+              className="p-6 rounded-[24px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm flex items-center justify-between"
+            >
               <div>
                 <span className="text-xs font-mono uppercase text-black/50 dark:text-white/50 block mb-1">
                   {metric.label}
@@ -348,127 +382,127 @@ export const SuperAdminDashboard: React.FC = () => {
         })}
       </div>
 
-      {activeTab === 'overview' && (
+      {activeTab === "overview" && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-        {/* Bento Card 4 (md:col-span-5) - Executive Action Console */}
-        <div className="md:col-span-5 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-500">
-                <Sliders className="w-5 h-5" />
-              </div>
-              <span className="text-[11px] font-mono uppercase font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full">
-                ADMIN CONSOLE
-              </span>
-            </div>
-            <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
-              Executive Governance Actions
-            </h3>
-            <p className="text-xs text-black/50 dark:text-white/50 mt-1 leading-relaxed">
-              Impersonate any candidate or enterprise admin session for audit inspection, or broadcast real-time system alerts.
-            </p>
-          </div>
-
-          <div className="my-6 space-y-3">
-
-            <button
-              onClick={() => setSelectedQuickActionModal('impersonate')}
-              className="w-full p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/5 dark:hover:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between transition-all cursor-pointer"
-            >
-              <div className="flex items-center gap-3">
-                <Eye className="w-4 h-4 text-amber-500" />
-                <span className="text-xs font-semibold text-black dark:text-white">
-                  Impersonate User Session
-                </span>
-              </div>
-              <ArrowUpRight className="w-4 h-4 text-black/40 dark:text-white/40" />
-            </button>
-
-            <button
-              onClick={() => setSelectedQuickActionModal('broadcast')}
-              className="w-full p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/5 dark:hover:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between transition-all cursor-pointer"
-            >
-              <div className="flex items-center gap-3">
-                <Zap className="w-4 h-4 text-indigo-500" />
-                <span className="text-xs font-semibold text-black dark:text-white">
-                  Broadcast System-Wide Alert
-                </span>
-              </div>
-              <ArrowUpRight className="w-4 h-4 text-black/40 dark:text-white/40" />
-            </button>
-          </div>
-
-          <button
-            onClick={() => setCurrentRoute('admin-users' as any)}
-            className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <Users className="w-4 h-4" />
-            <span>Open User Governance Console →</span>
-          </button>
-        </div>
-
-        {/* Bento Card 5 (md:col-span-12) - Live SOC-2 Audit & Security Stream */}
-        <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          {/* Bento Card 4 (md:col-span-5) - Executive Action Console */}
+          <div className="md:col-span-5 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
             <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-500">
+                  <Sliders className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] font-mono uppercase font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full">
+                  ADMIN CONSOLE
+                </span>
+              </div>
               <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
-                Live SOC-2 Compliance & Security Audit Trail
+                Executive Governance Actions
               </h3>
-              <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">
-                Real-time cryptographic audit log of eKYC verifications, recruiter seat creations, and token consumption
+              <p className="text-xs text-black/50 dark:text-white/50 mt-1 leading-relaxed">
+                Impersonate any candidate or enterprise admin session for audit inspection, or
+                broadcast real-time system alerts.
               </p>
             </div>
+
+            <div className="my-6 space-y-3">
+              <button
+                onClick={() => setSelectedQuickActionModal("impersonate")}
+                className="w-full p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/5 dark:hover:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <Eye className="w-4 h-4 text-amber-500" />
+                  <span className="text-xs font-semibold text-black dark:text-white">
+                    Impersonate User Session
+                  </span>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-black/40 dark:text-white/40" />
+              </button>
+
+              <button
+                onClick={() => setSelectedQuickActionModal("broadcast")}
+                className="w-full p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/5 dark:hover:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <Zap className="w-4 h-4 text-indigo-500" />
+                  <span className="text-xs font-semibold text-black dark:text-white">
+                    Broadcast System-Wide Alert
+                  </span>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-black/40 dark:text-white/40" />
+              </button>
+            </div>
+
             <button
-              onClick={() => setCurrentRoute('admin-audit-logs' as any)}
-              className="text-xs font-semibold text-black dark:text-white hover:underline flex items-center gap-1 cursor-pointer"
+              onClick={() => setCurrentRoute("admin-users" as any)}
+              className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>View Full SOC-2 Log</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <Users className="w-4 h-4" />
+              <span>Open User Governance Console →</span>
             </button>
           </div>
 
-          <div className="space-y-3">
-            {recentSecurityLogs.length === 0 ? (
-              <div className="p-6 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-center text-xs opacity-60">
-                No SOC-2 compliance audit logs recorded yet in current session.
+          {/* Bento Card 5 (md:col-span-12) - Live SOC-2 Audit & Security Stream */}
+          <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
+                  Live SOC-2 Compliance & Security Audit Trail
+                </h3>
+                <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">
+                  Real-time cryptographic audit log of eKYC verifications, recruiter seat creations,
+                  and token consumption
+                </p>
               </div>
-            ) : (
-              recentSecurityLogs.map((log) => (
-                <div
-                  key={log.id}
-                  className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs font-bold text-black/40 dark:text-white/40">
-                      {log.id}
-                    </span>
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] font-semibold ${
-                        log.severity === 'warning'
-                          ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                          : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                      }`}
-                    >
-                      {log.action}
-                    </span>
-                    <span className="text-xs text-black dark:text-white font-medium">
-                      {log.details}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 shrink-0 text-xs font-mono text-black/50 dark:text-white/50">
-                    <span>{log.actor}</span>
-                    <span>{log.time || log.timestamp}</span>
-                  </div>
+              <button
+                onClick={() => setCurrentRoute("admin-audit-logs" as any)}
+                className="text-xs font-semibold text-black dark:text-white hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>View Full SOC-2 Log</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {recentSecurityLogs.length === 0 ? (
+                <div className="p-6 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-center text-xs opacity-60">
+                  No SOC-2 compliance audit logs recorded yet in current session.
                 </div>
-              ))
-            )}
-          </div>
+              ) : (
+                recentSecurityLogs.map((log) => (
+                  <div
+                    key={log.id}
+                    className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs font-bold text-black/40 dark:text-white/40">
+                        {log.id}
+                      </span>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full font-mono text-[10px] font-semibold ${
+                          log.severity === "warning"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        }`}
+                      >
+                        {log.action}
+                      </span>
+                      <span className="text-xs text-black dark:text-white font-medium">
+                        {log.details}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0 text-xs font-mono text-black/50 dark:text-white/50">
+                      <span>{log.actor}</span>
+                      <span>{log.time || log.timestamp}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}
 
-      {activeTab === 'users' && (
+      {activeTab === "users" && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
             <div className="flex items-center justify-between mb-4">
@@ -484,7 +518,7 @@ export const SuperAdminDashboard: React.FC = () => {
 
             <div className="my-6 space-y-3">
               <button
-                onClick={() => setSelectedQuickActionModal('onboarding')}
+                onClick={() => setSelectedQuickActionModal("onboarding")}
                 className="w-full max-w-md p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/5 dark:hover:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3">
@@ -500,7 +534,7 @@ export const SuperAdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'ekyc' && (
+      {activeTab === "ekyc" && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -527,28 +561,43 @@ export const SuperAdminDashboard: React.FC = () => {
                   >
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-3">
-                        <span className="font-semibold text-sm">{ob.companyName || 'Pending Submission'}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${ob.status === 'AUTO_VERIFIED' ? 'bg-emerald-500/10 text-emerald-600' : ob.status === 'SUBMITTED' ? 'bg-amber-500/10 text-amber-600' : 'bg-black/10 text-black/60'}`}>{ob.status}</span>
-                        {ob.docVerificationScore?.status === 'AUTO_VERIFIED' && (
-                          <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded-full text-[10px] font-mono font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> MRZ Verified</span>
+                        <span className="font-semibold text-sm">
+                          {ob.companyName || "Pending Submission"}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${ob.status === "AUTO_VERIFIED" ? "bg-emerald-500/10 text-emerald-600" : ob.status === "SUBMITTED" ? "bg-amber-500/10 text-amber-600" : "bg-black/10 text-black/60"}`}
+                        >
+                          {ob.status}
+                        </span>
+                        {ob.docVerificationScore?.status === "AUTO_VERIFIED" && (
+                          <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded-full text-[10px] font-mono font-bold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> MRZ Verified
+                          </span>
                         )}
                       </div>
                       <span className="text-xs text-black/50 font-mono">Token: {ob.token}</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
-                      {(ob.status === 'SUBMITTED' || ob.status === 'AUTO_VERIFIED') && (
-                        <button onClick={async () => {
-                          if (confirm(`Approve onboarding for ${ob.companyName}?`)) {
-                            try {
-                              await apiClient.post(`/ekyc/admin/${ob.id}/approve`);
-                              showToast('Approved', 'Company approved and MoU generated.', 'success');
-                              adminApi.getOnboardings().then(setOnboardings);
-                            } catch (e: any) {
-                              showToast('Error', e.message || 'Failed to approve', 'error');
+                      {(ob.status === "SUBMITTED" || ob.status === "AUTO_VERIFIED") && (
+                        <button
+                          onClick={async () => {
+                            if (confirm(`Approve onboarding for ${ob.companyName}?`)) {
+                              try {
+                                await apiClient.post(`/ekyc/admin/${ob.id}/approve`);
+                                showToast(
+                                  "Approved",
+                                  "Company approved and MoU generated.",
+                                  "success",
+                                );
+                                adminApi.getOnboardings().then(setOnboardings);
+                              } catch (e: any) {
+                                showToast("Error", e.message || "Failed to approve", "error");
+                              }
                             }
-                          }
-                        }} className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-semibold rounded-lg hover:scale-105 transition-transform cursor-pointer">
+                          }}
+                          className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-semibold rounded-lg hover:scale-105 transition-transform cursor-pointer"
+                        >
                           Approve & Generate MoU
                         </button>
                       )}
@@ -562,7 +611,7 @@ export const SuperAdminDashboard: React.FC = () => {
       )}
 
       {/* ── Generate Onboarding Link Modal ── */}
-      {selectedQuickActionModal === 'onboarding' && (
+      {selectedQuickActionModal === "onboarding" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md p-6 rounded-[32px] bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
@@ -577,7 +626,8 @@ export const SuperAdminDashboard: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-black/60 dark:text-white/60">
-              Generate a secure, one-time URL to invite a new company to complete their eKYC and MoU onboarding.
+              Generate a secure, one-time URL to invite a new company to complete their eKYC and MoU
+              onboarding.
             </p>
             <div className="pt-4 flex justify-end gap-3">
               <button
@@ -590,11 +640,14 @@ export const SuperAdminDashboard: React.FC = () => {
                 onClick={async () => {
                   try {
                     const res = await adminApi.generateOnboardingLink();
-                    showToast('Link Generated', 'Onboarding URL created successfully.', 'success');
-                    prompt('Copy this secure onboarding URL and send it to the Company Admin:', res.url);
+                    showToast("Link Generated", "Onboarding URL created successfully.", "success");
+                    prompt(
+                      "Copy this secure onboarding URL and send it to the Company Admin:",
+                      res.url,
+                    );
                     setSelectedQuickActionModal(null);
                   } catch (e: any) {
-                    showToast('Error', e.message || 'Failed to generate link', 'error');
+                    showToast("Error", e.message || "Failed to generate link", "error");
                   }
                 }}
                 className="px-4 py-2 rounded-xl bg-emerald-500 text-white font-semibold text-xs shadow-sm hover:scale-105 transition-transform"
@@ -607,7 +660,7 @@ export const SuperAdminDashboard: React.FC = () => {
       )}
 
       {/* ── Impersonate User Session Modal ── */}
-      {selectedQuickActionModal === 'impersonate' && (
+      {selectedQuickActionModal === "impersonate" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md p-6 rounded-[32px] bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
@@ -622,7 +675,8 @@ export const SuperAdminDashboard: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-black/60 dark:text-white/60">
-              Enter the exact email address of the Candidate, Company Admin, or Recruiter to inspect their view.
+              Enter the exact email address of the Candidate, Company Admin, or Recruiter to inspect
+              their view.
             </p>
             <form onSubmit={handleImpersonate} className="space-y-4">
               <input
@@ -654,7 +708,7 @@ export const SuperAdminDashboard: React.FC = () => {
       )}
 
       {/* ── Broadcast Alert Modal ── */}
-      {selectedQuickActionModal === 'broadcast' && (
+      {selectedQuickActionModal === "broadcast" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md p-6 rounded-[32px] bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
@@ -669,7 +723,8 @@ export const SuperAdminDashboard: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-black/60 dark:text-white/60">
-              Send a priority system notification broadcast to all active candidates and enterprises.
+              Send a priority system notification broadcast to all active candidates and
+              enterprises.
             </p>
             <form onSubmit={handleBroadcastAlert} className="space-y-4">
               <textarea

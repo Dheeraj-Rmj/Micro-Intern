@@ -1,4 +1,9 @@
-import type { CandidatePortfolio, PortfolioProject, PortfolioAchievement, SkillTimelineEntry } from '@microintern/database';
+import type {
+  CandidatePortfolio,
+  PortfolioProject,
+  PortfolioAchievement,
+  SkillTimelineEntry,
+} from "@microintern/database";
 
 export interface CreatePortfolioDTO {
   candidateId: string;

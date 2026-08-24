@@ -1,14 +1,14 @@
-import { SubmissionStatus } from '@microintern/database';
+import { SubmissionStatus } from "@microintern/database";
 
-import { Submission } from '../../domain/entities/Submission.entity.js';
-import { SubmissionAnswer } from '../../domain/entities/SubmissionAnswer.entity.js';
+import { Submission } from "../../domain/entities/Submission.entity.js";
+import { SubmissionAnswer } from "../../domain/entities/SubmissionAnswer.entity.js";
 
 import type {
   ISubmissionRepository,
   CreateSubmissionData,
   SaveAnswerData,
-} from '../../application/ports/ISubmissionRepository.js';
-import type { PrismaClient, Prisma } from '@microintern/database';
+} from "../../application/ports/ISubmissionRepository.js";
+import type { PrismaClient, Prisma } from "@microintern/database";
 
 export class PrismaSubmissionRepository implements ISubmissionRepository {
   constructor(private readonly db: PrismaClient) {}
@@ -26,7 +26,10 @@ export class PrismaSubmissionRepository implements ISubmissionRepository {
     return record ? Submission.fromPrisma(record) : null;
   }
 
-  async findActiveByCandidateAndAssessment(candidateId: string, assessmentId: string): Promise<Submission | null> {
+  async findActiveByCandidateAndAssessment(
+    candidateId: string,
+    assessmentId: string,
+  ): Promise<Submission | null> {
     const record = await this.db.submission.findFirst({
       where: {
         candidateId,
@@ -36,7 +39,7 @@ export class PrismaSubmissionRepository implements ISubmissionRepository {
           in: [SubmissionStatus.IN_PROGRESS, SubmissionStatus.INVITED],
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: this.standardInclude,
     });
     return record ? Submission.fromPrisma(record) : null;
@@ -66,7 +69,7 @@ export class PrismaSubmissionRepository implements ISubmissionRepository {
   async updateStatus(
     id: string,
     status: SubmissionStatus,
-    metadata?: { submittedAt?: Date; totalScore?: number; isPassed?: boolean }
+    metadata?: { submittedAt?: Date; totalScore?: number; isPassed?: boolean },
   ): Promise<Submission> {
     const record = await this.db.submission.update({
       where: { id },
@@ -113,7 +116,7 @@ export class PrismaSubmissionRepository implements ISubmissionRepository {
 
   async listByCandidate(
     candidateId: string,
-    pagination: { skip: number; take: number }
+    pagination: { skip: number; take: number },
   ): Promise<{ submissions: Submission[]; total: number }> {
     const where: Prisma.SubmissionWhereInput = {
       candidateId,
@@ -126,7 +129,7 @@ export class PrismaSubmissionRepository implements ISubmissionRepository {
         where,
         skip: pagination.skip,
         take: pagination.take,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         include: this.standardInclude,
       }),
     ]);

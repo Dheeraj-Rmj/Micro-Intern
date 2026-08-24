@@ -1,6 +1,6 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React, { useState, useEffect } from "react";
+import { useApp } from "../../context/AppContext";
 import {
   Building2,
   Users,
@@ -30,7 +30,7 @@ import {
   BarChart2,
   Layers,
   Zap,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface CandidateApplication {
   id: string;
@@ -40,7 +40,7 @@ interface CandidateApplication {
   trustScore: number;
   submittedAt: string;
   githubUrl: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
 interface MotivationalQuote {
@@ -49,11 +49,14 @@ interface MotivationalQuote {
 }
 
 const FALLBACK_LEADERSHIP_QUOTES: MotivationalQuote[] = [
-  { q: 'Hire for demonstrated competence, not keywords. Evidence is the only true currency of talent.', a: 'MicroIntern Enterprise AI Protocol' },
-  { q: 'The secret of getting ahead is getting started.', a: 'Mark Twain' },
-  { q: 'Quality is not an act, it is a habit.', a: 'Aristotle' },
-  { q: 'Great vision without great people is irrelevant.', a: 'Jim Collins' },
-  { q: 'Simplicity is the prerequisite for reliability.', a: 'Edsger W. Dijkstra' },
+  {
+    q: "Hire for demonstrated competence, not keywords. Evidence is the only true currency of talent.",
+    a: "MicroIntern Enterprise AI Protocol",
+  },
+  { q: "The secret of getting ahead is getting started.", a: "Mark Twain" },
+  { q: "Quality is not an act, it is a habit.", a: "Aristotle" },
+  { q: "Great vision without great people is irrelevant.", a: "Jim Collins" },
+  { q: "Simplicity is the prerequisite for reliability.", a: "Edsger W. Dijkstra" },
 ];
 
 const INITIAL_APPLICATIONS: CandidateApplication[] = [];
@@ -62,11 +65,13 @@ export const CompanyDashboard: React.FC = () => {
   const { setCurrentRoute, showToast, trials, companyProfile } = useApp();
   const [applications, setApplications] = useState<CandidateApplication[]>(INITIAL_APPLICATIONS);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
-  const [activeTabFilter, setActiveTabFilter] = useState<'all' | 'pending' | 'approved'>('all');
+  const [activeTabFilter, setActiveTabFilter] = useState<"all" | "pending" | "approved">("all");
 
   // Live Ticking Clock state (matching CandidatePortal)
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [currentQuote, setCurrentQuote] = useState<MotivationalQuote>(FALLBACK_LEADERSHIP_QUOTES[0] as MotivationalQuote);
+  const [currentQuote, setCurrentQuote] = useState<MotivationalQuote>(
+    FALLBACK_LEADERSHIP_QUOTES[0] as MotivationalQuote,
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -86,39 +91,39 @@ export const CompanyDashboard: React.FC = () => {
 
   const handleApprove = (id: string, name: string) => {
     setApplications((prev) =>
-      prev.map((app) => (app.id === id ? { ...app, status: 'APPROVED' } : app))
+      prev.map((app) => (app.id === id ? { ...app, status: "APPROVED" } : app)),
     );
     showToast(
-      'Candidate Approved',
+      "Candidate Approved",
       `${name} has been approved! An interview & internship offer invite has been dispatched.`,
-      'success'
+      "success",
     );
   };
 
   const handleReject = (id: string, name: string) => {
     setApplications((prev) =>
-      prev.map((app) => (app.id === id ? { ...app, status: 'REJECTED' } : app))
+      prev.map((app) => (app.id === id ? { ...app, status: "REJECTED" } : app)),
     );
-    showToast('Application Rejected', `${name}'s submission marked as reviewed.`, 'info');
+    showToast("Application Rejected", `${name}'s submission marked as reviewed.`, "info");
   };
 
   const handleCopyEmail = (email: string) => {
     navigator.clipboard.writeText(email);
     setCopiedEmail(email);
-    showToast('Recruiter Login Copied', `Copied ${email} to clipboard.`, 'success');
+    showToast("Recruiter Login Copied", `Copied ${email} to clipboard.`, "success");
     setTimeout(() => setCopiedEmail(null), 2000);
   };
 
   // Date String formatted
-  const dateString = currentTime.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
+  const dateString = currentTime.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
   });
 
   const filteredApplications = applications.filter((app) => {
-    if (activeTabFilter === 'pending') return app.status === 'PENDING';
-    if (activeTabFilter === 'approved') return app.status === 'APPROVED';
+    if (activeTabFilter === "pending") return app.status === "PENDING";
+    if (activeTabFilter === "approved") return app.status === "APPROVED";
     return true;
   });
 
@@ -150,16 +155,16 @@ export const CompanyDashboard: React.FC = () => {
           <div className="px-4 py-2.5 rounded-full bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 text-xs font-mono font-semibold text-black dark:text-white flex items-center gap-2">
             <Clock className="w-3.5 h-3.5 text-amber-500" />
             <span>
-              {currentTime.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
+              {currentTime.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
                 hour12: true,
               })}
             </span>
           </div>
           <button
-            onClick={() => setCurrentRoute('company-create-trial' as any)}
+            onClick={() => setCurrentRoute("company-create-trial" as any)}
             className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -172,9 +177,9 @@ export const CompanyDashboard: React.FC = () => {
       <div
         className="p-7 rounded-[36px] bg-white/70 dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm relative overflow-hidden group"
         style={{
-          clipPath: 'inset(0 round 36px)',
+          clipPath: "inset(0 round 36px)",
           background:
-            'radial-gradient(circle 350px at 90% 10%, rgba(225, 224, 204, 0.15) 0%, transparent 70%), radial-gradient(circle 350px at 10% 90%, rgba(245, 158, 11, 0.05) 0%, transparent 70%)',
+            "radial-gradient(circle 350px at 90% 10%, rgba(225, 224, 204, 0.15) 0%, transparent 70%), radial-gradient(circle 350px at 10% 90%, rgba(245, 158, 11, 0.05) 0%, transparent 70%)",
         }}
       >
         <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto py-2">
@@ -200,11 +205,12 @@ export const CompanyDashboard: React.FC = () => {
         <div
           className="md:col-span-4 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 relative overflow-hidden flex flex-col justify-between group hover:border-black/20 dark:hover:border-white/30 transition-all"
           style={{
-            clipPath: 'inset(0 round 40px)',
+            clipPath: "inset(0 round 40px)",
             background:
-              companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
-                ? 'radial-gradient(circle 320px at 90% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 70%), radial-gradient(circle 280px at 10% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 70%)'
-                : 'radial-gradient(circle 320px at 90% 10%, rgba(245, 158, 11, 0.08) 0%, transparent 70%), radial-gradient(circle 280px at 10% 90%, rgba(239, 68, 68, 0.05) 0%, transparent 70%)',
+              companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+              companyProfile.ekycStatus === "VERIFIED_MANUAL"
+                ? "radial-gradient(circle 320px at 90% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 70%), radial-gradient(circle 280px at 10% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 70%)"
+                : "radial-gradient(circle 320px at 90% 10%, rgba(245, 158, 11, 0.08) 0%, transparent 70%), radial-gradient(circle 280px at 10% 90%, rgba(239, 68, 68, 0.05) 0%, transparent 70%)",
           }}
         >
           <div className="relative z-10 flex justify-between items-start">
@@ -215,27 +221,30 @@ export const CompanyDashboard: React.FC = () => {
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span
                   className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                    companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
-                      ? 'bg-emerald-500'
-                      : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
-                      ? 'bg-amber-500'
-                      : 'bg-red-500'
+                    companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+                    companyProfile.ekycStatus === "VERIFIED_MANUAL"
+                      ? "bg-emerald-500"
+                      : companyProfile.ekycStatus === "PENDING_MANUAL_REVIEW"
+                        ? "bg-amber-500"
+                        : "bg-red-500"
                   }`}
                 />
                 <span className="text-[10px] text-black/60 dark:text-white/70 font-mono uppercase tracking-wider">
-                  {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
-                    ? 'eKYC VERIFIED'
-                    : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
-                    ? 'PENDING REVIEW'
-                    : 'UNVERIFIED'}
+                  {companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+                  companyProfile.ekycStatus === "VERIFIED_MANUAL"
+                    ? "eKYC VERIFIED"
+                    : companyProfile.ekycStatus === "PENDING_MANUAL_REVIEW"
+                      ? "PENDING REVIEW"
+                      : "UNVERIFIED"}
                 </span>
               </div>
             </div>
             <div
               className={`w-8 h-8 rounded-full border flex items-center justify-center ${
-                companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
-                  ? 'border-emerald-500/20 text-emerald-500'
-                  : 'border-red-500/20 text-red-500'
+                companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+                companyProfile.ekycStatus === "VERIFIED_MANUAL"
+                  ? "border-emerald-500/20 text-emerald-500"
+                  : "border-red-500/20 text-red-500"
               }`}
             >
               <ShieldCheck className="w-4 h-4" />
@@ -245,11 +254,12 @@ export const CompanyDashboard: React.FC = () => {
           <div className="relative my-auto py-6">
             <div className="flex items-baseline gap-2 mb-3">
               <span className="text-6xl sm:text-7xl font-serif font-light tracking-tighter text-black dark:text-white">
-                {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
-                  ? '99'
-                  : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
-                  ? '50'
-                  : '10'}
+                {companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+                companyProfile.ekycStatus === "VERIFIED_MANUAL"
+                  ? "99"
+                  : companyProfile.ekycStatus === "PENDING_MANUAL_REVIEW"
+                    ? "50"
+                    : "10"}
               </span>
               <span className="text-xl font-mono text-black/40 dark:text-white/40 font-light">
                 / 100
@@ -259,33 +269,40 @@ export const CompanyDashboard: React.FC = () => {
             <div className="w-full h-2 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden mb-3">
               <div
                 className={`h-full rounded-full transition-all duration-1000 ${
-                  companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
-                    ? 'w-[99%] bg-gradient-to-r from-emerald-500 to-indigo-500'
-                    : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
-                    ? 'w-[50%] bg-gradient-to-r from-amber-500 to-amber-400'
-                    : 'w-[10%] bg-gradient-to-r from-red-500 to-orange-500'
+                  companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+                  companyProfile.ekycStatus === "VERIFIED_MANUAL"
+                    ? "w-[99%] bg-gradient-to-r from-emerald-500 to-indigo-500"
+                    : companyProfile.ekycStatus === "PENDING_MANUAL_REVIEW"
+                      ? "w-[50%] bg-gradient-to-r from-amber-500 to-amber-400"
+                      : "w-[10%] bg-gradient-to-r from-red-500 to-orange-500"
                 }`}
               />
             </div>
 
             <p className="text-xs text-black/50 dark:text-white/50 leading-relaxed">
-              {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL'
-                ? 'Corporate eKYC compliance & active AI evaluation nodes verified.'
-                : companyProfile.ekycStatus === 'PENDING_MANUAL_REVIEW'
-                ? 'Your uploaded documents are currently under manual review by our team.'
-                : 'Action required: Complete eKYC verification to access full enterprise features.'}
+              {companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+              companyProfile.ekycStatus === "VERIFIED_MANUAL"
+                ? "Corporate eKYC compliance & active AI evaluation nodes verified."
+                : companyProfile.ekycStatus === "PENDING_MANUAL_REVIEW"
+                  ? "Your uploaded documents are currently under manual review by our team."
+                  : "Action required: Complete eKYC verification to access full enterprise features."}
             </p>
           </div>
 
           <div className="relative z-10 space-y-3 pt-4 border-t border-black/5 dark:border-white/10">
-            {companyProfile.ekycStatus === 'VERIFIED_STRIPE' || companyProfile.ekycStatus === 'VERIFIED_MANUAL' ? (
+            {companyProfile.ekycStatus === "VERIFIED_STRIPE" ||
+            companyProfile.ekycStatus === "VERIFIED_MANUAL" ? (
               <>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-black/50 dark:text-white/50 font-mono">Domain Registration</span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">VERIFIED</span>
+                  <span className="text-black/50 dark:text-white/50 font-mono">
+                    Domain Registration
+                  </span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                    VERIFIED
+                  </span>
                 </div>
                 <button
-                  onClick={() => setCurrentRoute('company-manage-trials' as any)}
+                  onClick={() => setCurrentRoute("company-manage-trials" as any)}
                   className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 font-semibold text-xs text-black dark:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <span>View Escrow Ledger</span>
@@ -297,14 +314,22 @@ export const CompanyDashboard: React.FC = () => {
                 <button
                   onClick={async () => {
                     try {
-                      const { ekycApi } = await import('@/lib/api/ekyc');
+                      const { ekycApi } = await import("@/lib/api/ekyc");
                       const { data } = await ekycApi.createStripeSession();
                       if (data?.clientSecret) {
                         // In a real app, we'd initialize Stripe.js and call stripe.verifyIdentity(clientSecret)
-                        showToast('Stripe Identity Initiated', 'Redirecting to verification flow...', 'info');
+                        showToast(
+                          "Stripe Identity Initiated",
+                          "Redirecting to verification flow...",
+                          "info",
+                        );
                       }
                     } catch (e: any) {
-                      showToast('Verification Error', e.message || 'Failed to start Stripe verification.', 'error');
+                      showToast(
+                        "Verification Error",
+                        e.message || "Failed to start Stripe verification.",
+                        "error",
+                      );
                     }
                   }}
                   className="w-full py-2.5 rounded-2xl bg-[#635BFF] hover:bg-[#5249E5] text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
@@ -315,7 +340,11 @@ export const CompanyDashboard: React.FC = () => {
                 <button
                   onClick={() => {
                     // Logic to open manual upload modal
-                    showToast('Manual Upload', 'Please upload your business registration documents.', 'info');
+                    showToast(
+                      "Manual Upload",
+                      "Please upload your business registration documents.",
+                      "info",
+                    );
                   }}
                   className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-black/10 dark:border-white/10"
                 >
@@ -346,25 +375,33 @@ export const CompanyDashboard: React.FC = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10">
-              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">Total Applied</span>
+              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">
+                Total Applied
+              </span>
               <span className="text-2xl font-serif font-bold text-black dark:text-white mt-1 block">
                 {applications.length}
               </span>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10">
-              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">Pending AI Review</span>
+              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">
+                Pending AI Review
+              </span>
               <span className="text-2xl font-serif font-bold text-amber-500 mt-1 block">
-                {applications.filter((a) => a.status === 'PENDING').length}
+                {applications.filter((a) => a.status === "PENDING").length}
               </span>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10">
-              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">Approved / Offers</span>
+              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">
+                Approved / Offers
+              </span>
               <span className="text-2xl font-serif font-bold text-emerald-500 mt-1 block">
-                {applications.filter((a) => a.status === 'APPROVED').length}
+                {applications.filter((a) => a.status === "APPROVED").length}
               </span>
             </div>
             <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10">
-              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">Active Trials</span>
+              <span className="text-[11px] font-mono text-black/50 dark:text-white/50 uppercase block">
+                Active Trials
+              </span>
               <span className="text-2xl font-serif font-bold text-indigo-500 mt-1 block">
                 {trials.length}
               </span>
@@ -373,7 +410,11 @@ export const CompanyDashboard: React.FC = () => {
 
           {/* Custom SVG Curve Chart (Matching CandidatePortal SVG Visuals) */}
           <div className="h-28 w-full relative overflow-hidden rounded-2xl bg-black/[0.01] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 p-3 flex items-end">
-            <svg className="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
+            <svg
+              className="w-full h-full overflow-visible"
+              viewBox="0 0 100 40"
+              preserveAspectRatio="none"
+            >
               <defs>
                 <linearGradient id="appGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.3" />
@@ -381,8 +422,21 @@ export const CompanyDashboard: React.FC = () => {
                 </linearGradient>
               </defs>
               <path d={`${appPathD} L100 40 L0 40 Z`} fill="url(#appGradient)" />
-              <path d={appPathD} fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
-              <path d={appDashD} fill="none" stroke="#6366F1" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.7" />
+              <path
+                d={appPathD}
+                fill="none"
+                stroke="#F59E0B"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+              <path
+                d={appDashD}
+                fill="none"
+                stroke="#6366F1"
+                strokeWidth="1.5"
+                strokeDasharray="3 3"
+                opacity="0.7"
+              />
             </svg>
             <div className="absolute top-3 right-4 text-[10px] font-mono text-black/40 dark:text-white/40 flex items-center gap-3">
               <span className="flex items-center gap-1">
@@ -410,7 +464,12 @@ export const CompanyDashboard: React.FC = () => {
               Recruiter Seats
             </h3>
             <p className="text-xs text-black/50 dark:text-white/50 mt-1 leading-relaxed">
-              Generate credentials for recruiters representing your organization. Recruiter logins follow format <span className="font-mono text-amber-600 dark:text-amber-400">name@company.microintern</span>.
+              Generate credentials for recruiters representing your organization. Recruiter logins
+              follow format{" "}
+              <span className="font-mono text-amber-600 dark:text-amber-400">
+                name@company.microintern
+              </span>
+              .
             </p>
           </div>
 
@@ -421,7 +480,7 @@ export const CompanyDashboard: React.FC = () => {
           </div>
 
           <button
-            onClick={() => setCurrentRoute('company-recruiters' as any)}
+            onClick={() => setCurrentRoute("company-recruiters" as any)}
             className="w-full py-3 rounded-2xl bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center justify-center gap-2 cursor-pointer"
           >
             <Key className="w-4 h-4" />
@@ -437,37 +496,38 @@ export const CompanyDashboard: React.FC = () => {
                 Candidate Submissions
               </h3>
               <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">
-                Review verified skill trial submissions. Approve to invite for direct interview & stipend.
+                Review verified skill trial submissions. Approve to invite for direct interview &
+                stipend.
               </p>
             </div>
 
             <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 p-1 rounded-full">
               <button
-                onClick={() => setActiveTabFilter('all')}
+                onClick={() => setActiveTabFilter("all")}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                  activeTabFilter === 'all'
-                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+                  activeTabFilter === "all"
+                    ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+                    : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
                 }`}
               >
                 All
               </button>
               <button
-                onClick={() => setActiveTabFilter('pending')}
+                onClick={() => setActiveTabFilter("pending")}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                  activeTabFilter === 'pending'
-                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+                  activeTabFilter === "pending"
+                    ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+                    : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
                 }`}
               >
                 Pending
               </button>
               <button
-                onClick={() => setActiveTabFilter('approved')}
+                onClick={() => setActiveTabFilter("approved")}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                  activeTabFilter === 'approved'
-                    ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+                  activeTabFilter === "approved"
+                    ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+                    : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
                 }`}
               >
                 Approved
@@ -483,7 +543,8 @@ export const CompanyDashboard: React.FC = () => {
                   No applicant submissions matching this filter
                 </p>
                 <p className="text-[11px] text-black/40 dark:text-white/40 mt-1">
-                  Once candidates submit solutions to your skill trials, AI trust evaluations will appear here.
+                  Once candidates submit solutions to your skill trials, AI trust evaluations will
+                  appear here.
                 </p>
               </div>
             ) : (
@@ -508,7 +569,7 @@ export const CompanyDashboard: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    {app.status === 'PENDING' ? (
+                    {app.status === "PENDING" ? (
                       <>
                         <button
                           onClick={() => handleApprove(app.id, app.candidateName)}
@@ -526,9 +587,9 @@ export const CompanyDashboard: React.FC = () => {
                     ) : (
                       <span
                         className={`px-3 py-1 rounded-full font-mono text-xs font-bold uppercase ${
-                          app.status === 'APPROVED'
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                            : 'bg-red-500/10 text-red-600 dark:text-red-400'
+                          app.status === "APPROVED"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                            : "bg-red-500/10 text-red-600 dark:text-red-400"
                         }`}
                       >
                         {app.status}
@@ -545,7 +606,7 @@ export const CompanyDashboard: React.FC = () => {
               Showing {filteredApplications.length} of {applications.length} applications
             </span>
             <button
-              onClick={() => setCurrentRoute('company-applications' as any)}
+              onClick={() => setCurrentRoute("company-applications" as any)}
               className="text-xs font-semibold text-black dark:text-white hover:underline flex items-center gap-1 cursor-pointer"
             >
               <span>View Applicant Pipeline Console</span>
@@ -565,21 +626,22 @@ export const CompanyDashboard: React.FC = () => {
                 Escrow Skill Trials & Bounty Architecture
               </h3>
               <p className="text-xs text-black/50 dark:text-white/50 mt-1 max-w-xl leading-relaxed">
-                Skill trials are backed by automated Stripe Connect escrow. Candidates only access your GitHub trial repositories after algorithmic trust validation.
+                Skill trials are backed by automated Stripe Connect escrow. Candidates only access
+                your GitHub trial repositories after algorithmic trust validation.
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
-              onClick={() => setCurrentRoute('company-manage-trials' as any)}
+              onClick={() => setCurrentRoute("company-manage-trials" as any)}
               className="px-5 py-2.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer"
             >
               <Layers className="w-4 h-4" />
               <span>Manage Escrow Trials ({trials.length})</span>
             </button>
             <button
-              onClick={() => setCurrentRoute('company-create-trial' as any)}
+              onClick={() => setCurrentRoute("company-create-trial" as any)}
               className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />

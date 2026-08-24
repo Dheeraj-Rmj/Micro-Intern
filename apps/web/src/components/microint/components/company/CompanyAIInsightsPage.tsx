@@ -1,8 +1,17 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { Sparkles, BrainCircuit, TrendingUp, AlertTriangle, Lightbulb, Zap, Activity, Loader2 } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
-import { companyApi } from '../../../../lib/api/company';
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Sparkles,
+  BrainCircuit,
+  TrendingUp,
+  AlertTriangle,
+  Lightbulb,
+  Zap,
+  Activity,
+  Loader2,
+} from "lucide-react";
+import { useApp } from "../../context/AppContext";
+import { companyApi } from "../../../../lib/api/company";
 
 export const CompanyAIInsightsPage: React.FC = () => {
   const { showToast } = useApp();
@@ -20,7 +29,7 @@ export const CompanyAIInsightsPage: React.FC = () => {
           setInsights([]);
         }
       } catch (err) {
-        console.error('Failed to fetch insights:', err);
+        console.error("Failed to fetch insights:", err);
         setInsights([]);
       } finally {
         setLoading(false);
@@ -33,7 +42,11 @@ export const CompanyAIInsightsPage: React.FC = () => {
     setAnalyzing(true);
     setTimeout(() => {
       setAnalyzing(false);
-      showToast('Analysis Complete', 'Generated new insights from current pipeline data.', 'success');
+      showToast(
+        "Analysis Complete",
+        "Generated new insights from current pipeline data.",
+        "success",
+      );
     }, 2000);
   };
 
@@ -52,7 +65,7 @@ export const CompanyAIInsightsPage: React.FC = () => {
           </h1>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <button 
+          <button
             onClick={handleRunAnalysis}
             disabled={analyzing}
             className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50"
@@ -62,7 +75,7 @@ export const CompanyAIInsightsPage: React.FC = () => {
             ) : (
               <Zap className="w-4 h-4" />
             )}
-            <span>{analyzing ? 'Crunching Data...' : 'Run Deep Analysis'}</span>
+            <span>{analyzing ? "Crunching Data..." : "Run Deep Analysis"}</span>
           </button>
         </div>
       </div>
@@ -76,29 +89,42 @@ export const CompanyAIInsightsPage: React.FC = () => {
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
               <AlertTriangle className="w-5 h-5" />
             </div>
-            <h3 className="text-xl font-serif text-black dark:text-white">Skill Shortages Detected</h3>
+            <h3 className="text-xl font-serif text-black dark:text-white">
+              Skill Shortages Detected
+            </h3>
           </div>
-          
+
           <div className="space-y-4 relative z-10">
             {loading ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-black/30 dark:text-white/30" />
               </div>
-            ) : insights.map((item, i) => (
-              <div key={i} className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-amber-500/30 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-black dark:text-white">{item.title}</h4>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                    item.severity === 'Critical' ? 'bg-red-500/10 text-red-500' : 
-                    item.severity === 'High' ? 'bg-amber-500/10 text-amber-500' : 
-                    'bg-blue-500/10 text-blue-500'
-                  }`}>
-                    {item.severity} Gap
-                  </span>
+            ) : (
+              insights.map((item, i) => (
+                <div
+                  key={i}
+                  className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-transparent hover:border-amber-500/30 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-bold text-black dark:text-white">{item.title}</h4>
+                    <span
+                      className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        item.severity === "Critical"
+                          ? "bg-red-500/10 text-red-500"
+                          : item.severity === "High"
+                            ? "bg-amber-500/10 text-amber-500"
+                            : "bg-blue-500/10 text-blue-500"
+                      }`}
+                    >
+                      {item.severity} Gap
+                    </span>
+                  </div>
+                  <p className="text-xs text-black/60 dark:text-white/60 font-mono">
+                    {item.description}
+                  </p>
                 </div>
-                <p className="text-xs text-black/60 dark:text-white/60 font-mono">{item.description}</p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -112,11 +138,13 @@ export const CompanyAIInsightsPage: React.FC = () => {
             </div>
             <h3 className="text-xl font-serif text-black dark:text-white">Market Hiring Trends</h3>
           </div>
-          
+
           <div className="space-y-6 relative z-10">
             <div>
               <div className="flex justify-between text-xs font-mono mb-2">
-                <span className="text-black/70 dark:text-white/70">AI/ML Engineering Salaries (YoY)</span>
+                <span className="text-black/70 dark:text-white/70">
+                  AI/ML Engineering Salaries (YoY)
+                </span>
                 <span className="text-emerald-500 font-bold">+18.4%</span>
               </div>
               <div className="w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
@@ -125,7 +153,9 @@ export const CompanyAIInsightsPage: React.FC = () => {
             </div>
             <div>
               <div className="flex justify-between text-xs font-mono mb-2">
-                <span className="text-black/70 dark:text-white/70">Remote Flexibility Preference</span>
+                <span className="text-black/70 dark:text-white/70">
+                  Remote Flexibility Preference
+                </span>
                 <span className="text-emerald-500 font-bold">92%</span>
               </div>
               <div className="w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
@@ -134,7 +164,9 @@ export const CompanyAIInsightsPage: React.FC = () => {
             </div>
             <div>
               <div className="flex justify-between text-xs font-mono mb-2">
-                <span className="text-black/70 dark:text-white/70">Average Time-to-Fill (Tech Roles)</span>
+                <span className="text-black/70 dark:text-white/70">
+                  Average Time-to-Fill (Tech Roles)
+                </span>
                 <span className="text-amber-500 font-bold">42 Days</span>
               </div>
               <div className="w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
@@ -150,14 +182,20 @@ export const CompanyAIInsightsPage: React.FC = () => {
           <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
             <Lightbulb className="w-5 h-5" />
           </div>
-          <h3 className="text-xl font-serif text-black dark:text-white">Recommended Hiring Strategy</h3>
+          <h3 className="text-xl font-serif text-black dark:text-white">
+            Recommended Hiring Strategy
+          </h3>
         </div>
-        
+
         <div className="prose prose-sm dark:prose-invert max-w-none font-mono text-black/70 dark:text-white/70 leading-relaxed">
           <p>
-            Based on current pipeline telemetry, MicroIntern AI recommends shifting focus to <strong className="text-indigo-600 dark:text-indigo-400">Mid-Level React Developers</strong>. 
-            Your current applicant pool shows a high concentration of entry-level candidates, but internal performance metrics indicate that 
-            teams are bottlenecked on architecture decisions typically handled by mid-to-senior roles.
+            Based on current pipeline telemetry, MicroIntern AI recommends shifting focus to{" "}
+            <strong className="text-indigo-600 dark:text-indigo-400">
+              Mid-Level React Developers
+            </strong>
+            . Your current applicant pool shows a high concentration of entry-level candidates, but
+            internal performance metrics indicate that teams are bottlenecked on architecture
+            decisions typically handled by mid-to-senior roles.
           </p>
           <ul className="mt-4 space-y-2">
             <li className="flex items-center gap-2">

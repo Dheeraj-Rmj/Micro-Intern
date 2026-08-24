@@ -1,6 +1,6 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
 import {
   Search,
   Bell,
@@ -19,7 +19,7 @@ import {
   Terminal,
   Key,
   Building2,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface DashboardHeaderProps {
   onToggleMobileSidebar: () => void;
@@ -47,44 +47,43 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
 
   const handleLogout = () => {
     setProfileDropdownOpen(false);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('microintern_current_route');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("microintern_current_route");
     }
-    showToast('Logged Out', 'Signed out safely.', 'info');
-    setCurrentRoute('landing');
+    showToast("Logged Out", "Signed out safely.", "info");
+    setCurrentRoute("landing");
   };
 
-
   const candidateNavTabs = [
-    { id: 'dashboard', label: 'Apprentice Hub', icon: Home },
-    { id: 'discover-trials', label: 'Explore Skill Trials', icon: Sparkles },
-    { id: 'workspace', label: 'IDE & Environment', icon: CheckCircle2 },
-    { id: 'profile', label: 'Profile & Portfolio', icon: User },
+    { id: "dashboard", label: "Apprentice Hub", icon: Home },
+    { id: "discover-trials", label: "Explore Skill Trials", icon: Sparkles },
+    { id: "workspace", label: "IDE & Environment", icon: CheckCircle2 },
+    { id: "profile", label: "Profile & Portfolio", icon: User },
   ];
 
   const companyNavTabs = [
-    { id: 'company-dashboard', label: 'Enterprise Hub', icon: LayoutDashboard },
-    { id: 'company-applications', label: 'Applicant Pipeline', icon: Users },
-    { id: 'company-recruiters', label: 'Recruiter Logins', icon: Key },
-    { id: 'company-manage-trials', label: 'Skill Trials', icon: Sparkles },
+    { id: "company-dashboard", label: "Enterprise Hub", icon: LayoutDashboard },
+    { id: "company-applications", label: "Applicant Pipeline", icon: Users },
+    { id: "company-recruiters", label: "Recruiter Logins", icon: Key },
+    { id: "company-manage-trials", label: "Skill Trials", icon: Sparkles },
   ];
 
   const adminNavTabs = [
-    { id: 'admin-dashboard', label: 'Command Center', icon: LayoutDashboard },
-    { id: 'admin-users', label: 'Users & eKYC', icon: Users },
-    { id: 'admin-trials', label: 'Escrow Trials', icon: Sparkles },
-    { id: 'admin-trust-ai', label: 'AI Engine', icon: ShieldCheck },
+    { id: "admin-dashboard", label: "Command Center", icon: LayoutDashboard },
+    { id: "admin-users", label: "Users & eKYC", icon: Users },
+    { id: "admin-trials", label: "Escrow Trials", icon: Sparkles },
+    { id: "admin-trust-ai", label: "AI Engine", icon: ShieldCheck },
   ];
 
-  const isSuperAdminView = currentRoute.startsWith('admin-') || role === 'admin';
-  const isCompanyView = currentRoute.startsWith('company-') || role === 'company';
+  const isSuperAdminView = currentRoute.startsWith("admin-") || role === "admin";
+  const isCompanyView = currentRoute.startsWith("company-") || role === "company";
   const isAdminView = isSuperAdminView || isCompanyView;
 
   const navTabs = isSuperAdminView
     ? adminNavTabs
     : isCompanyView
-    ? companyNavTabs
-    : candidateNavTabs;
+      ? companyNavTabs
+      : candidateNavTabs;
 
   return (
     <header className="w-full px-4 sm:px-6 pt-6 pb-2 flex items-center justify-between z-30 relative gap-4">
@@ -109,8 +108,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
               onClick={() => setCurrentRoute(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full font-serif text-xs transition-all duration-300 cursor-pointer ${
                 isActive
-                  ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-md font-bold'
-                  : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+                  ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-md font-bold"
+                  : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -122,14 +121,17 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
 
       {/* Right Controls */}
       <div className="flex items-center gap-2.5">
-
         {/* Theme Toggle Pill */}
         <button
           onClick={() => setDarkMode(!darkMode)}
           className="p-3.5 rounded-full bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm hover:scale-105 transition-transform cursor-pointer"
-          title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
         >
-          {darkMode ? <Sun className="w-4 h-4 text-white" /> : <Moon className="w-4 h-4 text-black" />}
+          {darkMode ? (
+            <Sun className="w-4 h-4 text-white" />
+          ) : (
+            <Moon className="w-4 h-4 text-black" />
+          )}
         </button>
 
         {/* Notifications */}
@@ -152,7 +154,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
               <h4 className="font-bold text-base text-black dark:text-white mb-4">Notifications</h4>
               <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                 {notifications.length === 0 ? (
-                  <p className="text-black/40 dark:text-white/40 text-sm text-center py-4">No notifications.</p>
+                  <p className="text-black/40 dark:text-white/40 text-sm text-center py-4">
+                    No notifications.
+                  </p>
                 ) : (
                   notifications.slice(0, 4).map((n) => (
                     <div
@@ -160,8 +164,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
                       onClick={() => markNotificationRead(n.id)}
                       className={`p-4 rounded-2xl cursor-pointer transition-colors ${
                         n.read
-                          ? 'bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60'
-                          : 'bg-white/15 dark:bg-white/15 border border-white/20/30 text-black dark:text-white'
+                          ? "bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60"
+                          : "bg-white/15 dark:bg-white/15 border border-white/20/30 text-black dark:text-white"
                       }`}
                     >
                       <div className="font-bold text-sm mb-1">{n.title}</div>
@@ -184,21 +188,21 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
             className="w-11 h-11 rounded-full p-0.5 bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm hover:scale-105 transition-transform overflow-hidden cursor-pointer"
           >
             {userProfile.avatar && !imgError ? (
-              <img 
-                src={userProfile.avatar} 
-                alt="Avatar" 
-                className="w-full h-full rounded-full object-cover" 
+              <img
+                src={userProfile.avatar}
+                alt="Avatar"
+                className="w-full h-full rounded-full object-cover"
                 onError={() => setImgError(true)}
               />
             ) : (
               <div className="w-full h-full rounded-full bg-white text-black font-bold flex items-center justify-center text-sm">
-                {userProfile.fullName && userProfile.fullName !== 'Avatar'
+                {userProfile.fullName && userProfile.fullName !== "Avatar"
                   ? userProfile.fullName.charAt(0).toUpperCase()
                   : isSuperAdminView
-                  ? 'S'
-                  : isCompanyView
-                  ? 'E'
-                  : 'C'}
+                    ? "S"
+                    : isCompanyView
+                      ? "E"
+                      : "C"}
               </div>
             )}
           </button>
@@ -207,13 +211,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
             <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[24px] shadow-2xl p-3 z-50">
               <div className="p-3 mb-2">
                 <p className="font-bold text-sm text-black dark:text-white">
-                  {userProfile.fullName && userProfile.fullName !== 'Avatar'
+                  {userProfile.fullName && userProfile.fullName !== "Avatar"
                     ? userProfile.fullName
                     : isSuperAdminView
-                    ? 'Super Admin'
-                    : isCompanyView
-                    ? 'Enterprise Admin'
-                    : 'Candidate'}
+                      ? "Super Admin"
+                      : isCompanyView
+                        ? "Enterprise Admin"
+                        : "Candidate"}
                 </p>
                 <p className="text-xs text-black/50 dark:text-white/50">{userProfile.email}</p>
               </div>
@@ -221,12 +225,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
                 <button
                   onClick={() => {
                     setProfileDropdownOpen(false);
-                    if (isSuperAdminView || (role as string) === 'admin') {
-                      setCurrentRoute('admin-organization');
-                    } else if (isCompanyView || (role as string) === 'company') {
-                      setCurrentRoute('company-settings');
+                    if (isSuperAdminView || (role as string) === "admin") {
+                      setCurrentRoute("admin-organization");
+                    } else if (isCompanyView || (role as string) === "company") {
+                      setCurrentRoute("company-settings");
                     } else {
-                      setCurrentRoute('profile');
+                      setCurrentRoute("profile");
                     }
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"

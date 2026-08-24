@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 interface UIState {
   isSidebarOpen: boolean;
@@ -13,15 +13,11 @@ export const useUIStore = create<UIState>((set) => ({
   isSidebarOpen: true,
   isNotificationsOpen: false,
 
-  toggleSidebar: () =>
-    set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+  toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
-  setSidebarOpen: (open: boolean) =>
-    set({ isSidebarOpen: open }),
+  setSidebarOpen: (open: boolean) => set({ isSidebarOpen: open }),
 
-  toggleNotifications: () =>
-    set((state) => ({ isNotificationsOpen: !state.isNotificationsOpen })),
+  toggleNotifications: () => set((state) => ({ isNotificationsOpen: !state.isNotificationsOpen })),
 
-  setNotificationsOpen: (open: boolean) =>
-    set({ isNotificationsOpen: open })
+  setNotificationsOpen: (open: boolean) => set({ isNotificationsOpen: open }),
 }));

@@ -1,11 +1,13 @@
-import type { PrismaClient } from '@microintern/database';
-import { SubmissionStatus } from '@microintern/database';
-import { createModuleLogger } from '@/core/logger.js';
+import type { PrismaClient } from "@microintern/database";
+import { SubmissionStatus } from "@microintern/database";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('SubmissionDeadlinesJob');
+const log = createModuleLogger("SubmissionDeadlinesJob");
 
-export async function checkSubmissionDeadlines(prisma: PrismaClient): Promise<{ expiredCount: number }> {
-  log.info('Executing scheduled job: checkSubmissionDeadlines');
+export async function checkSubmissionDeadlines(
+  prisma: PrismaClient,
+): Promise<{ expiredCount: number }> {
+  log.info("Executing scheduled job: checkSubmissionDeadlines");
   const now = new Date();
 
   // Find submissions that are IN_PROGRESS and past deadline
@@ -30,10 +32,10 @@ export async function checkSubmissionDeadlines(prisma: PrismaClient): Promise<{ 
       });
       expiredCount++;
     } catch (err) {
-      log.error({ err, submissionId: sub.id }, 'Failed to mark submission as EXPIRED');
+      log.error({ err, submissionId: sub.id }, "Failed to mark submission as EXPIRED");
     }
   }
 
-  log.info({ expiredCount }, 'checkSubmissionDeadlines completed');
+  log.info({ expiredCount }, "checkSubmissionDeadlines completed");
   return { expiredCount };
 }

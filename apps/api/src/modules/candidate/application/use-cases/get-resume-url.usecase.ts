@@ -1,19 +1,19 @@
-import { StorageBucket , ErrorCode } from '@microintern/shared';
+import { StorageBucket, ErrorCode } from "@microintern/shared";
 
-import { createModuleLogger } from '@/core/logger.js';
-import { AppError } from '@/shared/errors/AppError.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { AppError } from "@/shared/errors/AppError.js";
 
-import { CandidateProfileNotFoundError } from '../../domain/candidate.errors.js';
+import { CandidateProfileNotFoundError } from "../../domain/candidate.errors.js";
 
-import type { StorageService } from '@/infrastructure/storage/StorageService.js';
-import type { PrismaClient } from '@microintern/database';
+import type { StorageService } from "@/infrastructure/storage/StorageService.js";
+import type { PrismaClient } from "@microintern/database";
 
-const log = createModuleLogger('GetResumeUrlUseCase');
+const log = createModuleLogger("GetResumeUrlUseCase");
 
 export class GetResumeUrlUseCase {
   constructor(
     private readonly db: PrismaClient,
-    private readonly storage: StorageService
+    private readonly storage: StorageService,
   ) {}
 
   /**
@@ -29,14 +29,22 @@ export class GetResumeUrlUseCase {
       throw new CandidateProfileNotFoundError(userId);
     }
 
-    if (typeof profile.resumeUrl !== 'string' || profile.resumeUrl === '') {
-      throw new AppError({ message: 'Resume not uploaded', code: ErrorCode.NOT_FOUND, statusCode: 404 });
+    if (typeof profile.resumeUrl !== "string" || profile.resumeUrl === "") {
+      throw new AppError({
+        message: "Resume not uploaded",
+        code: ErrorCode.NOT_FOUND,
+        statusCode: 404,
+      });
     }
 
-    log.info({ userId }, 'Generating signed URL for resume');
+    log.info({ userId }, "Generating signed URL for resume");
 
     // 15 minute expiry (900 seconds)
-    const result = await this.storage.getSignedDownloadUrl(profile.resumeUrl, StorageBucket.PRIVATE, 900);
+    const result = await this.storage.getSignedDownloadUrl(
+      profile.resumeUrl,
+      StorageBucket.PRIVATE,
+      900,
+    );
 
     return result;
   }

@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { GetPlatformStatsUseCase } from '@/modules/admin/application/index.js';
+import { GetPlatformStatsUseCase } from "@/modules/admin/application/index.js";
 
-import type { IAdminRepository } from '@/modules/admin/application/index.js';
+import type { IAdminRepository } from "@/modules/admin/application/index.js";
 
-describe('GetPlatformStatsUseCase', () => {
+describe("GetPlatformStatsUseCase", () => {
   let useCase: GetPlatformStatsUseCase;
   let mockRepository: any;
 
@@ -21,7 +21,7 @@ describe('GetPlatformStatsUseCase', () => {
     useCase = new GetPlatformStatsUseCase(mockRepository);
   });
 
-  it('should retrieve metrics from repository and return formatted JSON output', async () => {
+  it("should retrieve metrics from repository and return formatted JSON output", async () => {
     mockRepository.getPlatformStatsProps.mockResolvedValue({
       totalUsers: 100,
       activeUsers: 95,
@@ -36,7 +36,7 @@ describe('GetPlatformStatsUseCase', () => {
         passedEvaluations: 40,
         averagePercentageScore: 88.5,
       },
-      timestamp: new Date('2026-07-26T15:00:00.000Z'),
+      timestamp: new Date("2026-07-26T15:00:00.000Z"),
     });
 
     const result = await useCase.execute();
@@ -52,7 +52,7 @@ describe('GetPlatformStatsUseCase', () => {
         passRate: 80,
         averagePercentageScore: 88.5,
       },
-      generatedAt: '2026-07-26T15:00:00.000Z',
+      generatedAt: "2026-07-26T15:00:00.000Z",
     });
   });
 });

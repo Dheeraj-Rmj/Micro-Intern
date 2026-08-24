@@ -1,21 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import {
-  Zap,
-  Bell,
-  Sun,
-  Moon,
-  LogOut,
-  User,
-  Menu,
-  Search
-} from 'lucide-react';
-import { useAuthStore } from '@/stores/auth.store';
-import { useUIStore } from '@/stores/ui.store';
-import { authService } from '@/features/auth/services/auth.service';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { Zap, Bell, Sun, Moon, LogOut, User, Menu, Search } from "lucide-react";
+import { useAuthStore } from "@/stores/auth.store";
+import { useUIStore } from "@/stores/ui.store";
+import { authService } from "@/features/auth/services/auth.service";
 
 export function Topbar() {
   const router = useRouter();
@@ -31,12 +22,12 @@ export function Topbar() {
       // Ignore network errors on logout
     } finally {
       clearAuth();
-      router.replace('/auth/login');
+      router.replace("/auth/login");
     }
   };
 
   const getInitials = () => {
-    if (!user) return 'C';
+    if (!user) return "C";
     return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
   };
 
@@ -56,9 +47,7 @@ export function Topbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600">
             <Zap className="h-4 w-4 text-white" />
           </div>
-          <span className="hidden text-base font-bold text-white sm:inline-block">
-            MicroIntern
-          </span>
+          <span className="hidden text-base font-bold text-white sm:inline-block">MicroIntern</span>
           <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-400">
             CANDIDATE
           </span>
@@ -79,15 +68,11 @@ export function Topbar() {
       <div className="flex items-center gap-3">
         <button
           type="button"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           aria-label="Toggle theme"
           className="rounded-xl p-2 text-slate-400 transition-colors hover:bg-slate-900 hover:text-white"
         >
-          {theme === 'dark' ? (
-            <Sun className="h-4 w-4" />
-          ) : (
-            <Moon className="h-4 w-4" />
-          )}
+          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
 
         <Link
@@ -106,10 +91,10 @@ export function Topbar() {
           </div>
           <div className="hidden flex-col text-left sm:flex">
             <span className="text-xs font-semibold text-white">
-              {user ? `${user.firstName} ${user.lastName}` : 'Candidate'}
+              {user ? `${user.firstName} ${user.lastName}` : "Candidate"}
             </span>
             <span className="text-[10px] text-slate-400">
-              {user?.email ?? 'candidate@microintern.com'}
+              {user?.email ?? "candidate@microintern.com"}
             </span>
           </div>
 

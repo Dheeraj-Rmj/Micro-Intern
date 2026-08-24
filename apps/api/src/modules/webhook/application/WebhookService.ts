@@ -1,7 +1,7 @@
-import { createModuleLogger } from '@/core/logger.js';
-import type { PrismaClient, Prisma } from '@microintern/database';
+import { createModuleLogger } from "@/core/logger.js";
+import type { PrismaClient, Prisma } from "@microintern/database";
 
-const log = createModuleLogger('WebhookService');
+const log = createModuleLogger("WebhookService");
 
 export type CreateWebhookDTO = {
   companyId: string;
@@ -14,7 +14,7 @@ export class WebhookService {
   constructor(private readonly db: PrismaClient) {}
 
   async createWebhook(dto: CreateWebhookDTO) {
-    log.info({ companyId: dto.companyId }, 'Creating webhook');
+    log.info({ companyId: dto.companyId }, "Creating webhook");
     return this.db.webhook.create({ data: dto });
   }
 
@@ -22,7 +22,7 @@ export class WebhookService {
     return this.db.webhook.findMany({
       where: { companyId },
       include: { _count: { select: { deliveries: true } } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -37,12 +37,16 @@ export class WebhookService {
   async getDeliveries(webhookId: string) {
     return this.db.webhookDelivery.findMany({
       where: { webhookId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: 50,
     });
   }
 
-  async dispatch(companyId: string, event: string, payload: Record<string, unknown>): Promise<void> {
+  async dispatch(
+    companyId: string,
+    event: string,
+    payload: Record<string, unknown>,
+  ): Promise<void> {
     const webhooks = await this.db.webhook.findMany({
       where: { companyId, isActive: true, events: { has: event } },
     });
@@ -67,30 +71,33 @@ export class WebhookService {
 
     try {
       const response = await fetch(webhook.url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-MicroIntern-Signature': signature,
-          'X-MicroIntern-Event': event,
+          "Content-Type": "application/json",
+          "X-MicroIntern-Signature": signature,
+          "X-MicroIntern-Event": event,
         },
         body,
         signal: AbortSignal.timeout(10_000),
       });
 
       responseCode = response.status;
-      responseBody = await response.text().catch(() => '');
+      responseBody = await response.text().catch(() => "");
 
       if (response.ok) {
         deliveredAt = new Date();
-        log.info({ webhookId: webhook.id, event, statusCode: responseCode }, 'Webhook delivered');
+        log.info({ webhookId: webhook.id, event, statusCode: responseCode }, "Webhook delivered");
       } else {
         failedAt = new Date();
-        log.warn({ webhookId: webhook.id, event, statusCode: responseCode }, 'Webhook delivery failed (non-2xx)');
+        log.warn(
+          { webhookId: webhook.id, event, statusCode: responseCode },
+          "Webhook delivery failed (non-2xx)",
+        );
       }
     } catch (err) {
       failedAt = new Date();
-      responseBody = err instanceof Error ? err.message : 'Network error';
-      log.error({ webhookId: webhook.id, event, err }, 'Webhook delivery error');
+      responseBody = err instanceof Error ? err.message : "Network error";
+      log.error({ webhookId: webhook.id, event, err }, "Webhook delivery error");
     }
 
     await this.db.webhookDelivery.create({
@@ -110,8 +117,14 @@ export class WebhookService {
     const encoder = new TextEncoder();
     const keyData = encoder.encode(secret);
     const msgData = encoder.encode(body);
-    const cryptoKey = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-    const sig = await crypto.subtle.sign('HMAC', cryptoKey, msgData);
-    return 'sha256=' + Buffer.from(sig).toString('hex');
+    const cryptoKey = await crypto.subtle.importKey(
+      "raw",
+      keyData,
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"],
+    );
+    const sig = await crypto.subtle.sign("HMAC", cryptoKey, msgData);
+    return "sha256=" + Buffer.from(sig).toString("hex");
   }
 }

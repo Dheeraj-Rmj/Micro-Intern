@@ -1,47 +1,39 @@
-'use client';
-import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
-import { Breadcrumbs } from '../common/Breadcrumbs';
-import { Application } from '../../types';
-import {
-  FileCheck,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Award,
-  ArrowRight,
-  Sparkles,
-} from 'lucide-react';
+"use client";
+import React, { useState } from "react";
+import { useApp } from "../../context/AppContext";
+import { Breadcrumbs } from "../common/Breadcrumbs";
+import { Application } from "../../types";
+import { FileCheck, Clock, CheckCircle2, XCircle, Award, ArrowRight, Sparkles } from "lucide-react";
 
 export const MyApplicationsPage: React.FC = () => {
   const { applications, setCurrentRoute, setActiveWorkspaceTrial, trials } = useApp();
-  const [selectedStatus, setSelectedStatus] = useState<string>('All');
+  const [selectedStatus, setSelectedStatus] = useState<string>("All");
 
   const filteredApps = applications.filter(
-    (a) => selectedStatus === 'All' || a.status === selectedStatus.toLowerCase()
+    (a) => selectedStatus === "All" || a.status === selectedStatus.toLowerCase(),
   );
 
-  const getStatusBadge = (status: Application['status']) => {
+  const getStatusBadge = (status: Application["status"]) => {
     switch (status) {
-      case 'accepted':
+      case "accepted":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#111111] text-white dark:bg-white dark:text-black font-bold text-xs">
             <CheckCircle2 className="w-3.5 h-3.5" /> Accepted
           </span>
         );
-      case 'shortlisted':
+      case "shortlisted":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#111111] text-white dark:bg-white dark:text-black font-bold text-xs">
             <Sparkles className="w-3.5 h-3.5" /> Workspace Ready
           </span>
         );
-      case 'applied':
+      case "applied":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/10 text-black/60 dark:text-white/70 font-bold text-xs">
             <Clock className="w-3.5 h-3.5" /> Under Review
           </span>
         );
-      case 'rejected':
+      case "rejected":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 text-red-600 font-bold text-xs">
             <XCircle className="w-3.5 h-3.5" /> Not Selected
@@ -72,14 +64,14 @@ export const MyApplicationsPage: React.FC = () => {
 
         {/* Quick Filter Tabs */}
         <div className="flex items-center gap-2 p-1.5 bg-black/5 dark:bg-[#0A0A0A] rounded-full overflow-x-auto border border-black/5 dark:border-white/10 shadow-sm">
-          {['All', 'Shortlisted', 'Applied', 'Accepted', 'Rejected'].map((status) => (
+          {["All", "Shortlisted", "Applied", "Accepted", "Rejected"].map((status) => (
             <button
               key={status}
               onClick={() => setSelectedStatus(status)}
               className={`px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 selectedStatus === status
-                  ? 'bg-[#111111] text-white dark:bg-white dark:text-black shadow-sm'
-                  : 'text-black/40 dark:text-white/50 hover:text-black dark:hover:text-white'
+                  ? "bg-[#111111] text-white dark:bg-white dark:text-black shadow-sm"
+                  : "text-black/40 dark:text-white/50 hover:text-black dark:hover:text-white"
               }`}
             >
               {status}
@@ -94,12 +86,15 @@ export const MyApplicationsPage: React.FC = () => {
           <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 text-black dark:text-white flex items-center justify-center mx-auto mb-6">
             <FileCheck className="w-6 h-6" />
           </div>
-          <h3 className="text-2xl tracking-tight text-black dark:text-white font-serif">No applications yet</h3>
+          <h3 className="text-2xl tracking-tight text-black dark:text-white font-serif">
+            No applications yet
+          </h3>
           <p className="text-sm text-black/50 dark:text-white/60 max-w-sm mx-auto mt-2 leading-relaxed">
-            You haven&apos;t submitted any applications for micro-trials. Explore available company trials to get started.
+            You haven&apos;t submitted any applications for micro-trials. Explore available company
+            trials to get started.
           </p>
           <button
-            onClick={() => setCurrentRoute('discover-trials')}
+            onClick={() => setCurrentRoute("discover-trials")}
             className="mt-8 px-6 py-3 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-sm shadow-sm transition-transform hover:scale-105 cursor-pointer inline-flex items-center gap-2"
           >
             Discover Trials <ArrowRight className="w-4 h-4" />
@@ -129,7 +124,8 @@ export const MyApplicationsPage: React.FC = () => {
                   </h3>
 
                   <p className="text-sm text-black/60 dark:text-white/70 font-medium flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#111111] dark:bg-white" /> Stage: {app.stage}
+                    <span className="w-2 h-2 rounded-full bg-[#111111] dark:bg-white" /> Stage:{" "}
+                    {app.stage}
                   </p>
                 </div>
 
@@ -146,11 +142,11 @@ export const MyApplicationsPage: React.FC = () => {
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                     {getStatusBadge(app.status)}
 
-                    {(app.status === 'shortlisted' || app.status === 'applied') && (
+                    {(app.status === "shortlisted" || app.status === "applied") && (
                       <button
                         onClick={() => {
                           if (associatedTrial) setActiveWorkspaceTrial(associatedTrial);
-                          setCurrentRoute('workspace');
+                          setCurrentRoute("workspace");
                         }}
                         className="px-6 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center justify-center gap-2"
                       >

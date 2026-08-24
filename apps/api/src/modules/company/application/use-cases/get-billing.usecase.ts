@@ -1,5 +1,5 @@
-import { ICompanyRepository } from '../ports/ICompanyRepository';
-import { CompanyBilling } from '../../domain/entities/CompanyBilling.entity';
+import { ICompanyRepository } from "../ports/ICompanyRepository";
+import { CompanyBilling } from "../../domain/entities/CompanyBilling.entity";
 
 export class GetBillingUseCase {
   constructor(private companyRepo: ICompanyRepository) {}

@@ -1,19 +1,15 @@
-'use client';
-import React from 'react';
-import Image from 'next/image';
-import { useApp } from '../../context/AppContext';
+"use client";
+import React from "react";
+import Image from "next/image";
+import { useApp } from "../../context/AppContext";
 
 interface LogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
   onClick?: () => void;
 }
 
-export const Logo: React.FC<LogoProps> = ({
-  size = 'md',
-  className = '',
-  onClick,
-}) => {
+export const Logo: React.FC<LogoProps> = ({ size = "md", className = "", onClick }) => {
   const { darkMode } = useApp();
   const sizeMap = {
     sm: 24,
@@ -28,7 +24,7 @@ export const Logo: React.FC<LogoProps> = ({
       tabIndex={0}
       onClick={onClick}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onClick?.();
         }

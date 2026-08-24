@@ -1,10 +1,10 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { queues } from '../queues.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { queues } from "../queues.js";
 
-const log = createModuleLogger('RetryFailedJobsJob');
+const log = createModuleLogger("RetryFailedJobsJob");
 
 export async function retryFailedJobs(): Promise<{ retriedCount: number }> {
-  log.info('Executing scheduled job: retryFailedJobs');
+  log.info("Executing scheduled job: retryFailedJobs");
   let retriedCount = 0;
 
   for (const [name, queue] of Object.entries(queues)) {
@@ -17,10 +17,10 @@ export async function retryFailedJobs(): Promise<{ retriedCount: number }> {
         }
       }
     } catch (err) {
-      log.error({ err, queue: name }, 'Failed to inspect or retry failed jobs in queue');
+      log.error({ err, queue: name }, "Failed to inspect or retry failed jobs in queue");
     }
   }
 
-  log.info({ retriedCount }, 'retryFailedJobs completed');
+  log.info({ retriedCount }, "retryFailedJobs completed");
   return { retriedCount };
 }

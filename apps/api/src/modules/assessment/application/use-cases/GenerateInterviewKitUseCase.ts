@@ -1,8 +1,8 @@
-import { createModuleLogger } from '@/core/logger.js';
-import { PROMPTS, compilePrompt } from '@/infrastructure/ai/PromptManager.js';
-import type { AIFallbackEngine } from '@/infrastructure/ai/AIFallbackEngine.js';
+import { createModuleLogger } from "@/core/logger.js";
+import { PROMPTS, compilePrompt } from "@/infrastructure/ai/PromptManager.js";
+import type { AIFallbackEngine } from "@/infrastructure/ai/AIFallbackEngine.js";
 
-const log = createModuleLogger('GenerateInterviewKitUseCase');
+const log = createModuleLogger("GenerateInterviewKitUseCase");
 
 export type GenerateInterviewKitInput = {
   roleProfile: string;
@@ -10,11 +10,11 @@ export type GenerateInterviewKitInput = {
 };
 
 export type InterviewQuestion = {
-  type: 'Technical' | 'Behavioral' | 'Situational';
+  type: "Technical" | "Behavioral" | "Situational";
   question: string;
   expectedAnswer: string;
   rubric: string[];
-  difficulty: 'Medium' | 'Hard';
+  difficulty: "Medium" | "Hard";
   competencyTargeted: string;
   timeEstimateMins: number;
 };
@@ -34,7 +34,7 @@ export class GenerateInterviewKitUseCase {
   constructor(private readonly aiEngine: AIFallbackEngine) {}
 
   async execute(input: GenerateInterviewKitInput): Promise<GenerateInterviewKitOutput> {
-    log.info({ roleProfile: input.roleProfile }, 'Generating AI Interview Kit');
+    log.info({ roleProfile: input.roleProfile }, "Generating AI Interview Kit");
 
     try {
       const prompt = compilePrompt(PROMPTS.INTERVIEW_KIT_GENERATOR, {
@@ -44,23 +44,23 @@ export class GenerateInterviewKitUseCase {
 
       const response = await this.aiEngine.complete({
         messages: [
-          { role: 'system', content: prompt.systemMessage },
-          { role: 'user', content: prompt.userMessage },
+          { role: "system", content: prompt.systemMessage },
+          { role: "user", content: prompt.userMessage },
         ],
-        responseFormat: { type: 'json_object' },
+        responseFormat: { type: "json_object" },
       });
 
       const parsed = JSON.parse(response.content) as GenerateInterviewKitOutput;
 
       if (!parsed.interviewKit || !Array.isArray(parsed.interviewKit.questions)) {
-        throw new Error('AI returned invalid JSON structure for Interview Kit');
+        throw new Error("AI returned invalid JSON structure for Interview Kit");
       }
 
-      log.info('Successfully generated interview kit');
+      log.info("Successfully generated interview kit");
       return parsed;
     } catch (error) {
-      log.error({ err: error }, 'Failed to generate interview kit');
-      throw new Error('Failed to generate interview kit using AI');
+      log.error({ err: error }, "Failed to generate interview kit");
+      throw new Error("Failed to generate interview kit using AI");
     }
   }
 }

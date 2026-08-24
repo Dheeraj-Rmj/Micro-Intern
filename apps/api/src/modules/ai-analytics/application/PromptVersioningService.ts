@@ -1,7 +1,7 @@
-import { prisma } from '@/core/database.js';
-import { createModuleLogger } from '@/core/logger.js';
+import { prisma } from "@/core/database.js";
+import { createModuleLogger } from "@/core/logger.js";
 
-const log = createModuleLogger('PromptVersioningService');
+const log = createModuleLogger("PromptVersioningService");
 
 export interface IPromptExecutionRecord {
   assessmentId?: string;
@@ -41,7 +41,7 @@ export class PromptVersioningService {
         },
       });
     } catch (err) {
-      log.error({ err, action: record.action }, 'Failed to record AI prompt version log');
+      log.error({ err, action: record.action }, "Failed to record AI prompt version log");
       return null;
     }
   }
@@ -55,7 +55,7 @@ export class PromptVersioningService {
         ...(assessmentId ? { assessmentId } : {}),
         ...(action ? { action } : {}),
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: 50,
     });
   }

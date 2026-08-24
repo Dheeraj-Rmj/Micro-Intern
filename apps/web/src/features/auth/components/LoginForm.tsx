@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { Loader2, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '@/stores/auth.store';
-import { authService } from '../services/auth.service';
-import { loginSchema, type LoginFormData } from '../schemas';
-import { OAuthButtons } from './OAuthButtons';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { useAuthStore } from "@/stores/auth.store";
+import { authService } from "../services/auth.service";
+import { loginSchema, type LoginFormData } from "../schemas";
+import { OAuthButtons } from "./OAuthButtons";
 
 export function LoginForm() {
   const router = useRouter();
@@ -21,13 +21,13 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: ''
-    }
+      email: "",
+      password: "",
+    },
   });
 
   const loginMutation = useMutation({
@@ -35,15 +35,11 @@ export function LoginForm() {
     onSuccess: (response) => {
       setApiError(null);
       setAuth(response.user, response.accessToken);
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     },
     onError: (error: unknown) => {
-      let message = 'Invalid email or password. Please try again.';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'response' in error
-      ) {
+      let message = "Invalid email or password. Please try again.";
+      if (typeof error === "object" && error !== null && "response" in error) {
         const errObj = error as {
           response?: { data?: { message?: string } };
         };
@@ -52,7 +48,7 @@ export function LoginForm() {
         }
       }
       setApiError(message);
-    }
+    },
   });
 
   const onSubmit = (data: LoginFormData) => {
@@ -81,14 +77,12 @@ export function LoginForm() {
               id="email"
               type="email"
               placeholder="candidate@example.com"
-              {...register('email')}
+              {...register("email")}
               disabled={loginMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
             {errors.email !== undefined && (
-              <p className="mt-1.5 text-xs font-medium text-red-400">
-                {errors.email.message}
-              </p>
+              <p className="mt-1.5 text-xs font-medium text-red-400">{errors.email.message}</p>
             )}
           </div>
         </div>
@@ -111,9 +105,9 @@ export function LoginForm() {
           <div className="relative mt-1.5">
             <input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
-              {...register('password')}
+              {...register("password")}
               disabled={loginMutation.isPending}
               className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 pr-11 text-sm text-white placeholder-slate-500 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50"
             />
@@ -122,17 +116,11 @@ export function LoginForm() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-200"
             >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           {errors.password !== undefined && (
-            <p className="mt-1.5 text-xs font-medium text-red-400">
-              {errors.password.message}
-            </p>
+            <p className="mt-1.5 text-xs font-medium text-red-400">{errors.password.message}</p>
           )}
         </div>
 
@@ -157,16 +145,14 @@ export function LoginForm() {
           <div className="w-full border-t border-slate-800" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-slate-950 px-3 text-slate-500">
-            Or continue with
-          </span>
+          <span className="bg-slate-950 px-3 text-slate-500">Or continue with</span>
         </div>
       </div>
 
       <OAuthButtons />
 
       <p className="mt-8 text-center text-sm text-slate-400">
-        New to MicroIntern?{' '}
+        New to MicroIntern?{" "}
         <Link
           href="/auth/register"
           className="font-semibold text-blue-400 transition-colors hover:text-blue-300 hover:underline"

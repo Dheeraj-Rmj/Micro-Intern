@@ -1,18 +1,21 @@
-import { createModuleLogger } from '@/core/logger.js';
-import type { PrismaClient } from '@microintern/database';
+import { createModuleLogger } from "@/core/logger.js";
+import type { PrismaClient } from "@microintern/database";
 
-const log = createModuleLogger('DiversityAnalyticsService');
+const log = createModuleLogger("DiversityAnalyticsService");
 
 export class DiversityAnalyticsService {
   constructor(private readonly db: PrismaClient) {}
 
-  async submitDiversityData(candidateId: string, data: {
-    gender?: string;
-    ageRange?: string;
-    ethnicity?: string;
-    disability?: boolean;
-    veteranStatus?: boolean;
-  }) {
+  async submitDiversityData(
+    candidateId: string,
+    data: {
+      gender?: string;
+      ageRange?: string;
+      ethnicity?: string;
+      disability?: boolean;
+      veteranStatus?: boolean;
+    },
+  ) {
     return this.db.diversityAnalytics.upsert({
       where: { candidateId },
       create: { candidateId, ...data },
@@ -21,7 +24,7 @@ export class DiversityAnalyticsService {
   }
 
   async getCompanyDiversityReport(companyId: string) {
-    log.info({ companyId }, 'Generating diversity report');
+    log.info({ companyId }, "Generating diversity report");
 
     // Get all candidates who applied to this company
     const journeys = await this.db.candidateJourney.findMany({
@@ -38,9 +41,9 @@ export class DiversityAnalyticsService {
     const withData = datapoints.length;
 
     // Aggregate gender breakdown
-    const genderBreakdown = this.aggregate(datapoints, 'gender');
-    const ageRangeBreakdown = this.aggregate(datapoints, 'ageRange');
-    const ethnicityBreakdown = this.aggregate(datapoints, 'ethnicity');
+    const genderBreakdown = this.aggregate(datapoints, "gender");
+    const ageRangeBreakdown = this.aggregate(datapoints, "ageRange");
+    const ethnicityBreakdown = this.aggregate(datapoints, "ethnicity");
 
     // Pipeline funnel by stage
     const funnelByStage = this.buildFunnel(journeys);
@@ -49,7 +52,8 @@ export class DiversityAnalyticsService {
       summary: {
         totalCandidates,
         candidatesWithDiversityData: withData,
-        dataCompletionRate: totalCandidates > 0 ? Math.round((withData / totalCandidates) * 100) : 0,
+        dataCompletionRate:
+          totalCandidates > 0 ? Math.round((withData / totalCandidates) * 100) : 0,
       },
       breakdown: {
         gender: genderBreakdown,
@@ -59,7 +63,8 @@ export class DiversityAnalyticsService {
         veteranCount: datapoints.filter((d) => d.veteranStatus).length,
       },
       pipelineFunnel: funnelByStage,
-      disclaimer: 'All data is anonymized and aggregated. Individual candidates are never identified in this report.',
+      disclaimer:
+        "All data is anonymized and aggregated. Individual candidates are never identified in this report.",
     };
   }
 
@@ -67,17 +72,17 @@ export class DiversityAnalyticsService {
     const datapoints = await this.db.diversityAnalytics.findMany();
     return {
       total: datapoints.length,
-      gender: this.aggregate(datapoints, 'gender'),
-      ageRange: this.aggregate(datapoints, 'ageRange'),
-      ethnicity: this.aggregate(datapoints, 'ethnicity'),
-      disclaimer: 'Platform-wide anonymized aggregate data.',
+      gender: this.aggregate(datapoints, "gender"),
+      ageRange: this.aggregate(datapoints, "ageRange"),
+      ethnicity: this.aggregate(datapoints, "ethnicity"),
+      disclaimer: "Platform-wide anonymized aggregate data.",
     };
   }
 
   private aggregate(data: any[], field: string): Record<string, number> {
     const result: Record<string, number> = {};
     for (const item of data) {
-      const val = item[field] ?? 'Not specified';
+      const val = item[field] ?? "Not specified";
       result[val] = (result[val] ?? 0) + 1;
     }
     return result;

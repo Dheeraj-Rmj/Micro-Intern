@@ -1,7 +1,7 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
-import { adminApi } from '@/lib/api/admin';
+"use client";
+import React, { useState, useEffect } from "react";
+import { useApp } from "../../context/AppContext";
+import { adminApi } from "@/lib/api/admin";
 import {
   Settings,
   Shield,
@@ -21,8 +21,8 @@ import {
   Key,
   Save,
   ShieldAlert,
-} from 'lucide-react';
-import { SuperAdminSecurityTab } from './SuperAdminSecurityTab';
+} from "lucide-react";
+import { SuperAdminSecurityTab } from "./SuperAdminSecurityTab";
 
 interface FeatureFlags {
   aiReader: boolean;
@@ -49,7 +49,7 @@ interface ApiKeyConfig {
 
 export const SuperAdminSystemPage: React.FC = () => {
   const { showToast } = useApp();
-  const [activeTab, setActiveTab] = useState<'flags' | 'emails' | 'gateways' | 'security'>('flags');
+  const [activeTab, setActiveTab] = useState<"flags" | "emails" | "gateways" | "security">("flags");
 
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
     aiReader: true,
@@ -65,9 +65,9 @@ export const SuperAdminSystemPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   // Email Template Editor State
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('candidate_onboarding');
-  const [editSubject, setEditSubject] = useState('');
-  const [editBody, setEditBody] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("candidate_onboarding");
+  const [editSubject, setEditSubject] = useState("");
+  const [editBody, setEditBody] = useState("");
 
   const fetchSettings = async () => {
     setLoading(true);
@@ -77,13 +77,14 @@ export const SuperAdminSystemPage: React.FC = () => {
       setEmailTemplates(data.emailTemplates);
       setApiKeys(data.apiKeys);
 
-      const defaultTemplate = data.emailTemplates.find((t: any) => t.id === selectedTemplateId) || data.emailTemplates[0];
+      const defaultTemplate =
+        data.emailTemplates.find((t: any) => t.id === selectedTemplateId) || data.emailTemplates[0];
       if (defaultTemplate) {
         setEditSubject(defaultTemplate.subject);
         setEditBody(defaultTemplate.body);
       }
     } catch (err) {
-      console.error('Failed to fetch platform configurations', err);
+      console.error("Failed to fetch platform configurations", err);
     } finally {
       setLoading(false);
     }
@@ -109,12 +110,12 @@ export const SuperAdminSystemPage: React.FC = () => {
     try {
       await adminApi.updateSettings({ featureFlags: updatedFlags });
       showToast(
-        newVal ? 'Feature Enabled' : 'Feature Disabled',
-        `Platform feature flag "${label}" has been ${newVal ? 'turned on' : 'disabled'} system-wide.`,
-        newVal ? 'success' : 'warning'
+        newVal ? "Feature Enabled" : "Feature Disabled",
+        `Platform feature flag "${label}" has been ${newVal ? "turned on" : "disabled"} system-wide.`,
+        newVal ? "success" : "warning",
       );
     } catch (err: any) {
-      showToast('Error', err.message || 'Failed to save flag change', 'warning');
+      showToast("Error", err.message || "Failed to save flag change", "warning");
       setFeatureFlags(featureFlags); // revert
     }
   };
@@ -122,28 +123,58 @@ export const SuperAdminSystemPage: React.FC = () => {
   const handleSaveTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
     const updatedTemplates = emailTemplates.map((t) =>
-      t.id === selectedTemplateId ? { ...t, subject: editSubject, body: editBody } : t
+      t.id === selectedTemplateId ? { ...t, subject: editSubject, body: editBody } : t,
     );
     setEmailTemplates(updatedTemplates);
 
     try {
       await adminApi.updateSettings({ emailTemplates: updatedTemplates });
       showToast(
-        'Template Saved',
-        'Notification / Email template layout updated and synced successfully.',
-        'success'
+        "Template Saved",
+        "Notification / Email template layout updated and synced successfully.",
+        "success",
       );
     } catch (err: any) {
-      showToast('Error', err.message || 'Failed to save template changes', 'warning');
+      showToast("Error", err.message || "Failed to save template changes", "warning");
     }
   };
 
   const apiGateways = [
-    { name: 'Stripe Connect Escrow API', status: 'HEALTHY', latency: '42ms', uptime: '99.99%', lastPing: '1 min ago' },
-    { name: 'GitHub Docker Sandbox Runners', status: 'HEALTHY', latency: '180ms', uptime: '99.98%', lastPing: '30 sec ago' },
-    { name: 'OpenAI / Anthropic Evaluation Endpoints', status: 'HEALTHY', latency: '310ms', uptime: '99.95%', lastPing: '2 mins ago' },
-    { name: 'Tavily Live Web Search API', status: 'HEALTHY', latency: '120ms', uptime: '100.0%', lastPing: '45 sec ago' },
-    { name: 'Jina Markdown Reader API v1', status: 'HEALTHY', latency: '95ms', uptime: '100.0%', lastPing: '1 min ago' },
+    {
+      name: "Stripe Connect Escrow API",
+      status: "HEALTHY",
+      latency: "42ms",
+      uptime: "99.99%",
+      lastPing: "1 min ago",
+    },
+    {
+      name: "GitHub Docker Sandbox Runners",
+      status: "HEALTHY",
+      latency: "180ms",
+      uptime: "99.98%",
+      lastPing: "30 sec ago",
+    },
+    {
+      name: "OpenAI / Anthropic Evaluation Endpoints",
+      status: "HEALTHY",
+      latency: "310ms",
+      uptime: "99.95%",
+      lastPing: "2 mins ago",
+    },
+    {
+      name: "Tavily Live Web Search API",
+      status: "HEALTHY",
+      latency: "120ms",
+      uptime: "100.0%",
+      lastPing: "45 sec ago",
+    },
+    {
+      name: "Jina Markdown Reader API v1",
+      status: "HEALTHY",
+      latency: "95ms",
+      uptime: "100.0%",
+      lastPing: "1 min ago",
+    },
   ];
 
   return (
@@ -163,12 +194,15 @@ export const SuperAdminSystemPage: React.FC = () => {
             System Management
           </h1>
           <p className="text-sm text-black/60 dark:text-white/70 mt-1">
-            Manage Email/Notification Templates, Feature Flags, API Keys, Integrations, and Audit Logs.
+            Manage Email/Notification Templates, Feature Flags, API Keys, Integrations, and Audit
+            Logs.
           </p>
         </div>
 
         <div className="px-4 py-2 rounded-2xl bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm text-center">
-          <div className="text-[10px] font-mono uppercase text-black/40 dark:text-white/40">Global Status</div>
+          <div className="text-[10px] font-mono uppercase text-black/40 dark:text-white/40">
+            Global Status
+          </div>
           <div className="text-base font-bold font-mono text-emerald-500">PROD-ACTIVE</div>
         </div>
       </div>
@@ -176,44 +210,44 @@ export const SuperAdminSystemPage: React.FC = () => {
       {/* ── Sub Navigation Tabs ── */}
       <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1.5 rounded-full w-fit">
         <button
-          onClick={() => setActiveTab('flags')}
+          onClick={() => setActiveTab("flags")}
           className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === 'flags'
-              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+            activeTab === "flags"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >
           <Zap className="w-3.5 h-3.5 inline mr-1.5" />
           Feature Flags
         </button>
         <button
-          onClick={() => setActiveTab('emails')}
+          onClick={() => setActiveTab("emails")}
           className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === 'emails'
-              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+            activeTab === "emails"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >
           <Mail className="w-3.5 h-3.5 inline mr-1.5" />
           Email Templates
         </button>
         <button
-          onClick={() => setActiveTab('gateways')}
+          onClick={() => setActiveTab("gateways")}
           className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === 'gateways'
-              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+            activeTab === "gateways"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >
           <Server className="w-3.5 h-3.5 inline mr-1.5" />
           API Gateways
         </button>
         <button
-          onClick={() => setActiveTab('security')}
+          onClick={() => setActiveTab("security")}
           className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === 'security'
-              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
-              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+            activeTab === "security"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
           }`}
         >
           <ShieldAlert className="w-3.5 h-3.5 inline mr-1.5" />
@@ -228,7 +262,7 @@ export const SuperAdminSystemPage: React.FC = () => {
       ) : (
         <>
           {/* ── Feature Flag Toggles Tab ── */}
-          {activeTab === 'flags' && (
+          {activeTab === "flags" && (
             <div className="p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
               <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-4">
                 <div>
@@ -237,7 +271,8 @@ export const SuperAdminSystemPage: React.FC = () => {
                     <span>Global Toggles</span>
                   </h3>
                   <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
-                    Enable or disable widgets and integrations in real time across Candidate and Enterprise portals
+                    Enable or disable widgets and integrations in real time across Candidate and
+                    Enterprise portals
                   </p>
                 </div>
               </div>
@@ -245,61 +280,127 @@ export const SuperAdminSystemPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">AI Web Reader (Jina Markdown)</div>
-                    <p className="text-xs text-black/60 dark:text-white/70">Convert candidate links to LLM-ready markdown</p>
+                    <div className="font-semibold text-sm text-black dark:text-white">
+                      AI Web Reader (Jina Markdown)
+                    </div>
+                    <p className="text-xs text-black/60 dark:text-white/70">
+                      Convert candidate links to LLM-ready markdown
+                    </p>
                   </div>
-                  <button onClick={() => toggleFlag('aiReader', 'AI Web Reader')} className="hover:scale-105 transition-transform cursor-pointer">
-                    {featureFlags.aiReader ? <ToggleRight className="w-8 h-8 text-emerald-500" /> : <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />}
+                  <button
+                    onClick={() => toggleFlag("aiReader", "AI Web Reader")}
+                    className="hover:scale-105 transition-transform cursor-pointer"
+                  >
+                    {featureFlags.aiReader ? (
+                      <ToggleRight className="w-8 h-8 text-emerald-500" />
+                    ) : (
+                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
+                    )}
                   </button>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">AI Web Search (Tavily Engine)</div>
-                    <p className="text-xs text-black/60 dark:text-white/70">Real-time code search and citations in workspace</p>
+                    <div className="font-semibold text-sm text-black dark:text-white">
+                      AI Web Search (Tavily Engine)
+                    </div>
+                    <p className="text-xs text-black/60 dark:text-white/70">
+                      Real-time code search and citations in workspace
+                    </p>
                   </div>
-                  <button onClick={() => toggleFlag('aiSearch', 'AI Web Search')} className="hover:scale-105 transition-transform cursor-pointer">
-                    {featureFlags.aiSearch ? <ToggleRight className="w-8 h-8 text-emerald-500" /> : <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />}
+                  <button
+                    onClick={() => toggleFlag("aiSearch", "AI Web Search")}
+                    className="hover:scale-105 transition-transform cursor-pointer"
+                  >
+                    {featureFlags.aiSearch ? (
+                      <ToggleRight className="w-8 h-8 text-emerald-500" />
+                    ) : (
+                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
+                    )}
                   </button>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">Daily Motivational Quotes API</div>
-                    <p className="text-xs text-black/60 dark:text-white/70">Displays live motivational banner on dashboard</p>
+                    <div className="font-semibold text-sm text-black dark:text-white">
+                      Daily Motivational Quotes API
+                    </div>
+                    <p className="text-xs text-black/60 dark:text-white/70">
+                      Displays live motivational banner on dashboard
+                    </p>
                   </div>
-                  <button onClick={() => toggleFlag('zenQuotes', 'Daily Quotes')} className="hover:scale-105 transition-transform cursor-pointer">
-                    {featureFlags.zenQuotes ? <ToggleRight className="w-8 h-8 text-emerald-500" /> : <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />}
+                  <button
+                    onClick={() => toggleFlag("zenQuotes", "Daily Quotes")}
+                    className="hover:scale-105 transition-transform cursor-pointer"
+                  >
+                    {featureFlags.zenQuotes ? (
+                      <ToggleRight className="w-8 h-8 text-emerald-500" />
+                    ) : (
+                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
+                    )}
                   </button>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">Stripe Connect Escrow Payouts</div>
-                    <p className="text-xs text-black/60 dark:text-white/70">Hold and disburse trial stipends to candidates</p>
+                    <div className="font-semibold text-sm text-black dark:text-white">
+                      Stripe Connect Escrow Payouts
+                    </div>
+                    <p className="text-xs text-black/60 dark:text-white/70">
+                      Hold and disburse trial stipends to candidates
+                    </p>
                   </div>
-                  <button onClick={() => toggleFlag('stripeLiveMode', 'Stripe Escrow')} className="hover:scale-105 transition-transform cursor-pointer">
-                    {featureFlags.stripeLiveMode ? <ToggleRight className="w-8 h-8 text-emerald-500" /> : <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />}
+                  <button
+                    onClick={() => toggleFlag("stripeLiveMode", "Stripe Escrow")}
+                    className="hover:scale-105 transition-transform cursor-pointer"
+                  >
+                    {featureFlags.stripeLiveMode ? (
+                      <ToggleRight className="w-8 h-8 text-emerald-500" />
+                    ) : (
+                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
+                    )}
                   </button>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">AI Plagiarism Anti-Cheat Engine</div>
-                    <p className="text-xs text-black/60 dark:text-white/70">VPN detection and code similarity check daemon</p>
+                    <div className="font-semibold text-sm text-black dark:text-white">
+                      AI Plagiarism Anti-Cheat Engine
+                    </div>
+                    <p className="text-xs text-black/60 dark:text-white/70">
+                      VPN detection and code similarity check daemon
+                    </p>
                   </div>
-                  <button onClick={() => toggleFlag('antiCheatDaemon', 'Anti-Cheat Engine')} className="hover:scale-105 transition-transform cursor-pointer">
-                    {featureFlags.antiCheatDaemon ? <ToggleRight className="w-8 h-8 text-emerald-500" /> : <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />}
+                  <button
+                    onClick={() => toggleFlag("antiCheatDaemon", "Anti-Cheat Engine")}
+                    className="hover:scale-105 transition-transform cursor-pointer"
+                  >
+                    {featureFlags.antiCheatDaemon ? (
+                      <ToggleRight className="w-8 h-8 text-emerald-500" />
+                    ) : (
+                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
+                    )}
                   </button>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">System Maintenance Mode</div>
-                    <p className="text-xs text-black/60 dark:text-white/70">Lock active workspaces for platform migration</p>
+                    <div className="font-semibold text-sm text-black dark:text-white">
+                      System Maintenance Mode
+                    </div>
+                    <p className="text-xs text-black/60 dark:text-white/70">
+                      Lock active workspaces for platform migration
+                    </p>
                   </div>
-                  <button onClick={() => toggleFlag('maintenanceMode', 'Maintenance Mode')} className="hover:scale-105 transition-transform cursor-pointer">
-                    {featureFlags.maintenanceMode ? <ToggleRight className="w-8 h-8 text-red-500" /> : <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />}
+                  <button
+                    onClick={() => toggleFlag("maintenanceMode", "Maintenance Mode")}
+                    className="hover:scale-105 transition-transform cursor-pointer"
+                  >
+                    {featureFlags.maintenanceMode ? (
+                      <ToggleRight className="w-8 h-8 text-red-500" />
+                    ) : (
+                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -307,7 +408,7 @@ export const SuperAdminSystemPage: React.FC = () => {
           )}
 
           {/* ── Email & Notification Templates Tab ── */}
-          {activeTab === 'emails' && (
+          {activeTab === "emails" && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Template List Selector */}
               <div className="lg:col-span-4 p-6 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
@@ -319,8 +420,8 @@ export const SuperAdminSystemPage: React.FC = () => {
                       onClick={() => setSelectedTemplateId(t.id)}
                       className={`w-full p-4 rounded-xl text-left text-xs font-semibold border transition-all ${
                         selectedTemplateId === t.id
-                          ? 'bg-[#111111] dark:bg-white text-white dark:text-black border-transparent'
-                          : 'bg-black/[0.015] dark:bg-white/[0.02] hover:bg-black/5 dark:hover:bg-white/5 border-black/5 dark:border-white/5 text-black/80 dark:text-white/80'
+                          ? "bg-[#111111] dark:bg-white text-white dark:text-black border-transparent"
+                          : "bg-black/[0.015] dark:bg-white/[0.02] hover:bg-black/5 dark:hover:bg-white/5 border-black/5 dark:border-white/5 text-black/80 dark:text-white/80"
                       }`}
                     >
                       {t.name}
@@ -333,7 +434,9 @@ export const SuperAdminSystemPage: React.FC = () => {
               <div className="lg:col-span-8 p-7 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
                 <form onSubmit={handleSaveTemplate} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[11px] font-mono uppercase tracking-wider text-black/50 dark:text-white/50">Email Subject</label>
+                    <label className="text-[11px] font-mono uppercase tracking-wider text-black/50 dark:text-white/50">
+                      Email Subject
+                    </label>
                     <input
                       type="text"
                       className="w-full px-4 py-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-sm text-black dark:text-white outline-none"
@@ -344,7 +447,9 @@ export const SuperAdminSystemPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[11px] font-mono uppercase tracking-wider text-black/50 dark:text-white/50">Email Body content</label>
+                    <label className="text-[11px] font-mono uppercase tracking-wider text-black/50 dark:text-white/50">
+                      Email Body content
+                    </label>
                     <textarea
                       rows={8}
                       className="w-full px-4 py-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-sm text-black dark:text-white outline-none resize-none font-mono leading-relaxed"
@@ -353,7 +458,10 @@ export const SuperAdminSystemPage: React.FC = () => {
                       required
                     />
                     <span className="text-[10px] text-black/40 dark:text-white/40 block leading-normal mt-1">
-                      Supported variables: <code>{"{{name}}"}</code>, <code>{"{{trialTitle}}"}</code>, <code>{"{{dateTime}}"}</code>, <code>{"{{meetingLink}}"}</code>, <code>{"{{score}}"}</code>, <code>{"{{feedback}}"}</code>
+                      Supported variables: <code>{"{{name}}"}</code>,{" "}
+                      <code>{"{{trialTitle}}"}</code>, <code>{"{{dateTime}}"}</code>,{" "}
+                      <code>{"{{meetingLink}}"}</code>, <code>{"{{score}}"}</code>,{" "}
+                      <code>{"{{feedback}}"}</code>
                     </span>
                   </div>
 
@@ -370,7 +478,7 @@ export const SuperAdminSystemPage: React.FC = () => {
           )}
 
           {/* ── API Gateways Tab ── */}
-          {activeTab === 'gateways' && (
+          {activeTab === "gateways" && (
             <div className="space-y-6">
               {/* API Keys Masked List */}
               <div className="p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
@@ -391,8 +499,12 @@ export const SuperAdminSystemPage: React.FC = () => {
                       className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
                       <div>
-                        <h4 className="text-sm font-semibold text-black dark:text-white">{key.name}</h4>
-                        <span className="font-mono text-xs text-black/40 dark:text-white/40 block mt-0.5">{key.keyMasked}</span>
+                        <h4 className="text-sm font-semibold text-black dark:text-white">
+                          {key.name}
+                        </h4>
+                        <span className="font-mono text-xs text-black/40 dark:text-white/40 block mt-0.5">
+                          {key.keyMasked}
+                        </span>
                       </div>
                       <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 font-mono text-[10px] font-bold tracking-wider self-start sm:self-center">
                         {key.status}
@@ -412,7 +524,13 @@ export const SuperAdminSystemPage: React.FC = () => {
                     </h3>
                   </div>
                   <button
-                    onClick={() => showToast('Gateways Pinged', 'All 5 external API endpoints returned 200 OK.', 'success')}
+                    onClick={() =>
+                      showToast(
+                        "Gateways Pinged",
+                        "All 5 external API endpoints returned 200 OK.",
+                        "success",
+                      )
+                    }
                     className="px-4 py-2 rounded-xl bg-black/[0.05] dark:bg-white/[0.1] hover:bg-black/10 dark:hover:bg-white/20 text-xs font-semibold text-black dark:text-white transition-colors cursor-pointer flex items-center gap-1.5"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
@@ -433,7 +551,10 @@ export const SuperAdminSystemPage: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-black/5 dark:divide-white/10 font-mono">
                       {apiGateways.map((gw, idx) => (
-                        <tr key={idx} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors">
+                        <tr
+                          key={idx}
+                          className="hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors"
+                        >
                           <td className="py-4 px-4 font-sans font-semibold text-black dark:text-white">
                             {gw.name}
                           </td>
@@ -445,9 +566,7 @@ export const SuperAdminSystemPage: React.FC = () => {
                           <td className="py-4 px-4 font-bold text-black dark:text-white">
                             {gw.latency}
                           </td>
-                          <td className="py-4 px-4 text-emerald-500 font-bold">
-                            {gw.uptime}
-                          </td>
+                          <td className="py-4 px-4 text-emerald-500 font-bold">{gw.uptime}</td>
                           <td className="py-4 px-4 text-right text-black/40 dark:text-white/40">
                             {gw.lastPing}
                           </td>
@@ -460,7 +579,7 @@ export const SuperAdminSystemPage: React.FC = () => {
             </div>
           )}
           {/* ── Security & MFA Tab ── */}
-          {activeTab === 'security' && <SuperAdminSecurityTab />}
+          {activeTab === "security" && <SuperAdminSecurityTab />}
         </>
       )}
     </div>

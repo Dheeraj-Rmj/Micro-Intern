@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/stores/auth.store';
-import { Loader2 } from 'lucide-react';
+import { useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/auth.store";
+import { Loader2 } from "lucide-react";
 
 interface GuestRouteProps {
   children: ReactNode;
@@ -16,7 +16,7 @@ export function GuestRoute({ children }: GuestRouteProps) {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
   }, [isLoading, isAuthenticated, router]);
 

@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: deploy-staging
-  cancel-in-progress: false  # Don't cancel in-flight deployments
+  cancel-in-progress: false # Don't cancel in-flight deployments
 
 env:
   NODE_VERSION: "20.18.0"

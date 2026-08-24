@@ -1,9 +1,9 @@
-import { Redis } from 'ioredis';
+import { Redis } from "ioredis";
 
-import { config } from './config.js';
-import { createModuleLogger } from './logger.js';
+import { config } from "./config.js";
+import { createModuleLogger } from "./logger.js";
 
-const log = createModuleLogger('Redis');
+const log = createModuleLogger("Redis");
 
 /**
  * Redis client singleton with connection lifecycle management.
@@ -19,29 +19,30 @@ const log = createModuleLogger('Redis');
 let redisClient: Redis | null = null;
 
 export function createRedisClient(options?: { maxRetriesPerRequest?: null }): Redis {
-  console.log('createRedisClient options:', options);
+  console.log("createRedisClient options:", options);
   const client = new Redis(config.REDIS_URL, {
     password: config.REDIS_PASSWORD ?? undefined,
     db: config.REDIS_DB,
     lazyConnect: true,
     enableReadyCheck: true,
-    maxRetriesPerRequest: options?.maxRetriesPerRequest === null ? null : (options?.maxRetriesPerRequest ?? 3),
+    maxRetriesPerRequest:
+      options?.maxRetriesPerRequest === null ? null : (options?.maxRetriesPerRequest ?? 3),
     retryStrategy: (times: number) => {
       const delay = Math.min(times * 500, 5000); // Max 5s backoff
-      log.warn({ attempt: times, delayMs: delay }, 'Redis reconnecting...');
+      log.warn({ attempt: times, delayMs: delay }, "Redis reconnecting...");
       return delay;
     },
     reconnectOnError: (error: Error) => {
-      const targetErrors = ['READONLY', 'ECONNRESET', 'ECONNREFUSED'];
+      const targetErrors = ["READONLY", "ECONNRESET", "ECONNREFUSED"];
       return targetErrors.some((e) => error.message.includes(e));
     },
   });
 
-  client.on('connect', () => log.info('Redis connected'));
-  client.on('ready', () => log.info('Redis ready'));
-  client.on('error', (error: Error) => log.error({ err: error }, 'Redis error'));
-  client.on('close', () => log.warn('Redis connection closed'));
-  client.on('reconnecting', () => log.info('Redis reconnecting'));
+  client.on("connect", () => log.info("Redis connected"));
+  client.on("ready", () => log.info("Redis ready"));
+  client.on("error", (error: Error) => log.error({ err: error }, "Redis error"));
+  client.on("close", () => log.warn("Redis connection closed"));
+  client.on("reconnecting", () => log.info("Redis reconnecting"));
 
   return client;
 }
@@ -50,7 +51,7 @@ export function createRedisClient(options?: { maxRetriesPerRequest?: null }): Re
  * Singleton Redis client for general application use.
  */
 export function getRedisClient(): Redis {
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   if (redisClient === null) {
     redisClient = createRedisClient();
   }
@@ -63,10 +64,10 @@ export function getRedisClient(): Redis {
  */
 export async function connectRedis(): Promise<void> {
   const client = getRedisClient();
-  if (client.status === 'wait' || client.status === 'close') {
+  if (client.status === "wait" || client.status === "close") {
     await client.connect();
   }
-  log.info('Redis client connected successfully');
+  log.info("Redis client connected successfully");
 }
 
 /**
@@ -77,7 +78,7 @@ export async function disconnectRedis(): Promise<void> {
   if (redisClient !== null) {
     await redisClient.quit();
     redisClient = null;
-    log.info('Redis disconnected');
+    log.info("Redis disconnected");
   }
 }
 
@@ -85,7 +86,7 @@ export async function disconnectRedis(): Promise<void> {
  * Redis health check.
  */
 export async function checkRedisHealth(): Promise<{
-  status: 'healthy' | 'unhealthy';
+  status: "healthy" | "unhealthy";
   latencyMs: number;
   error?: string;
 }> {
@@ -93,12 +94,12 @@ export async function checkRedisHealth(): Promise<{
   try {
     const client = getRedisClient();
     await client.ping();
-    return { status: 'healthy', latencyMs: Date.now() - start };
+    return { status: "healthy", latencyMs: Date.now() - start };
   } catch (error) {
     return {
-      status: 'unhealthy',
+      status: "unhealthy",
       latencyMs: Date.now() - start,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 }

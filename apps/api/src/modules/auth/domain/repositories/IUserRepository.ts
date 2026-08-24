@@ -1,4 +1,4 @@
-import type { User } from '../entities/User.entity.js';
+import type { User } from "../entities/User.entity.js";
 
 /**
  * User Repository Interface — domain layer contract.
@@ -31,12 +31,15 @@ export interface IUserRepository {
     refreshToken?: string;
   }): Promise<User>;
 
-  linkOAuthAccount(userId: string, data: {
-    provider: string;
-    providerAccountId: string;
-    accessToken?: string;
-    refreshToken?: string;
-  }): Promise<void>;
+  linkOAuthAccount(
+    userId: string,
+    data: {
+      provider: string;
+      providerAccountId: string;
+      accessToken?: string;
+      refreshToken?: string;
+    },
+  ): Promise<void>;
 
   // ── Management User Creation ──────────────────────────────────────────────
   createCompanyOwner(data: {
@@ -74,21 +77,21 @@ export interface IUserRepository {
   // ── Verification Tokens ───────────────────────────────────────────────────
   createVerificationToken(data: {
     userId: string;
-    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
     tokenHash: string;
     expiresAt: Date;
   }): Promise<void>;
 
   findVerificationToken(data: {
     tokenHash: string;
-    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
   }): Promise<{ id: string; userId: string; expiresAt: Date; usedAt: Date | null } | null>;
 
   markVerificationTokenUsed(tokenId: string): Promise<void>;
 
   invalidateVerificationTokens(data: {
     userId: string;
-    type: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET';
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
   }): Promise<void>;
 
   // ── Invitations ───────────────────────────────────────────────────────────
@@ -115,18 +118,23 @@ export interface IUserRepository {
 
   // ── WebAuthn ──────────────────────────────────────────────────────────────
   updateWebAuthnCurrentChallenge(userId: string, challenge: string | null): Promise<void>;
-  saveWebAuthnCredential(userId: string, credential: {
-    id: string;
-    publicKey: Buffer;
-    counter: bigint;
-    deviceType: string;
-    backedUp: boolean;
-    transports: string[];
-  }): Promise<void>;
-  getWebAuthnCredentials(userId: string): Promise<Array<{
-    id: string;
-    publicKey: Buffer;
-    counter: bigint;
-    transports: string[];
-  }>>;
+  saveWebAuthnCredential(
+    userId: string,
+    credential: {
+      id: string;
+      publicKey: Buffer;
+      counter: bigint;
+      deviceType: string;
+      backedUp: boolean;
+      transports: string[];
+    },
+  ): Promise<void>;
+  getWebAuthnCredentials(userId: string): Promise<
+    Array<{
+      id: string;
+      publicKey: Buffer;
+      counter: bigint;
+      transports: string[];
+    }>
+  >;
 }

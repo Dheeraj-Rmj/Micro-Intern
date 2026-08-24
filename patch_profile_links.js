@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = 'apps/web/src/components/microint/components/pages/ProfilePage.tsx';
-let content = fs.readFileSync(path, 'utf8');
+const fs = require("fs");
+const path = "apps/web/src/components/microint/components/pages/ProfilePage.tsx";
+let content = fs.readFileSync(path, "utf8");
 
 const validationFunction = `            // Validate Link Helper
             const validateLink = async (url: string, type: 'github' | 'linkedin' | 'portfolio', expectedName: string) => {
@@ -43,9 +43,9 @@ const oldLinkLogic = `            setValue('githubUrl', github || \`https://gith
             setValue('portfolioUrl', portfolio || \`https://\${rawName.replace(/\\s/g, '')}.dev\`, { shouldValidate: true, shouldDirty: true });`;
 
 if (content.includes(oldLinkLogic)) {
-    content = content.replace(oldLinkLogic, newLinkLogic);
-    fs.writeFileSync(path, content, 'utf8');
-    console.log('Successfully patched ProfilePage.tsx to use validation API');
+  content = content.replace(oldLinkLogic, newLinkLogic);
+  fs.writeFileSync(path, content, "utf8");
+  console.log("Successfully patched ProfilePage.tsx to use validation API");
 } else {
-    console.log('Could not find old link logic in ProfilePage.tsx');
+  console.log("Could not find old link logic in ProfilePage.tsx");
 }

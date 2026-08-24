@@ -14,6 +14,7 @@ MicroIntern needs a service architecture strategy.
 ## Module Boundaries
 
 Each domain (auth, candidate, company, trial, evaluation, pipeline) is a self-contained module with its own:
+
 - Domain entities and business logic
 - Repository interfaces
 - Use cases
@@ -25,6 +26,7 @@ Cross-module dependencies go through **application layer interfaces** only — n
 ## Migration Path to Microservices
 
 If a domain needs independent scaling, it can be extracted:
+
 1. Module already has clean interfaces — extract the repository to a remote call
 2. Add a thin gRPC/HTTP client implementing the same interface
 3. Zero changes to domain/application layer
@@ -34,6 +36,7 @@ The AI Evaluation module is the most likely candidate for extraction if evaluati
 ## Rejection of Microservices
 
 At founding stage:
+
 - No team large enough to own separate services independently
 - No traffic requiring independent scaling
 - Distributed transactions would require sagas or 2PC — enormous complexity for ZERO benefit

@@ -1,12 +1,17 @@
-import { PrismaClient } from '@microintern/database';
-import type { CandidatePortfolio, PortfolioProject, PortfolioAchievement, SkillTimelineEntry } from '@microintern/database';
+import { PrismaClient } from "@microintern/database";
+import type {
+  CandidatePortfolio,
+  PortfolioProject,
+  PortfolioAchievement,
+  SkillTimelineEntry,
+} from "@microintern/database";
 import type {
   IPortfolioRepository,
   CreatePortfolioDTO,
   AddProjectDTO,
   AddAchievementDTO,
   AddTimelineEntryDTO,
-} from '../domain/IPortfolioRepository.js';
+} from "../domain/IPortfolioRepository.js";
 
 export class PrismaPortfolioRepository implements IPortfolioRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -15,9 +20,9 @@ export class PrismaPortfolioRepository implements IPortfolioRepository {
     return this.prisma.candidatePortfolio.findUnique({
       where: { candidateId },
       include: {
-        projects: { orderBy: { sortOrder: 'asc' } },
-        achievements: { orderBy: { issuedAt: 'desc' } },
-        timeline: { orderBy: { timestamp: 'desc' } },
+        projects: { orderBy: { sortOrder: "asc" } },
+        achievements: { orderBy: { issuedAt: "desc" } },
+        timeline: { orderBy: { timestamp: "desc" } },
       } as any,
     });
   }
@@ -26,9 +31,9 @@ export class PrismaPortfolioRepository implements IPortfolioRepository {
     return this.prisma.candidatePortfolio.findUnique({
       where: { publicSlug: slug },
       include: {
-        projects: { orderBy: { sortOrder: 'asc' } },
-        achievements: { orderBy: { issuedAt: 'desc' } },
-        timeline: { orderBy: { timestamp: 'desc' } },
+        projects: { orderBy: { sortOrder: "asc" } },
+        achievements: { orderBy: { issuedAt: "desc" } },
+        timeline: { orderBy: { timestamp: "desc" } },
       } as any,
     });
   }
@@ -61,7 +66,10 @@ export class PrismaPortfolioRepository implements IPortfolioRepository {
     });
   }
 
-  async update(candidateId: string, data: Partial<CreatePortfolioDTO>): Promise<CandidatePortfolio> {
+  async update(
+    candidateId: string,
+    data: Partial<CreatePortfolioDTO>,
+  ): Promise<CandidatePortfolio> {
     return this.prisma.candidatePortfolio.update({
       where: { candidateId },
       data: {
@@ -97,7 +105,7 @@ export class PrismaPortfolioRepository implements IPortfolioRepository {
   async listProjects(portfolioId: string): Promise<PortfolioProject[]> {
     return this.prisma.portfolioProject.findMany({
       where: { portfolioId },
-      orderBy: { sortOrder: 'asc' },
+      orderBy: { sortOrder: "asc" },
     });
   }
 
@@ -121,7 +129,7 @@ export class PrismaPortfolioRepository implements IPortfolioRepository {
   async listAchievements(portfolioId: string): Promise<PortfolioAchievement[]> {
     return this.prisma.portfolioAchievement.findMany({
       where: { portfolioId },
-      orderBy: { issuedAt: 'desc' },
+      orderBy: { issuedAt: "desc" },
     });
   }
 
@@ -140,7 +148,7 @@ export class PrismaPortfolioRepository implements IPortfolioRepository {
   async getTimeline(portfolioId: string): Promise<SkillTimelineEntry[]> {
     return this.prisma.skillTimelineEntry.findMany({
       where: { portfolioId },
-      orderBy: { timestamp: 'desc' },
+      orderBy: { timestamp: "desc" },
     });
   }
 }

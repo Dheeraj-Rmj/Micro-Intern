@@ -1,25 +1,25 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 import type {
   AssessmentDto,
   AssessmentTaskDto,
   AssessmentDeliverableDto,
   AssessmentValidationResult,
-} from '@/lib/api/assessment';
+} from "@/lib/api/assessment";
 
 export type AssessmentSectionKey =
-  | 'OVERVIEW'
-  | 'COMPETENCY'
-  | 'LEARNING_OUTCOMES'
-  | 'TECHNICAL'
-  | 'COMMUNICATION'
-  | 'RESEARCH'
-  | 'BONUS'
-  | 'SUBMISSION';
+  | "OVERVIEW"
+  | "COMPETENCY"
+  | "LEARNING_OUTCOMES"
+  | "TECHNICAL"
+  | "COMMUNICATION"
+  | "RESEARCH"
+  | "BONUS"
+  | "SUBMISSION";
 
 export interface AIJobStatusState {
   jobId: string;
   action: string;
-  status: 'idle' | 'running' | 'completed' | 'error';
+  status: "idle" | "running" | "completed" | "error";
   message?: string;
 }
 
@@ -51,7 +51,7 @@ interface AssessmentEditorState {
 
 const initialAssessmentState = {
   assessment: null,
-  activeSection: 'OVERVIEW' as AssessmentSectionKey,
+  activeSection: "OVERVIEW" as AssessmentSectionKey,
   isDirty: false,
   isSaving: false,
   lastSavedAt: null,
@@ -87,7 +87,10 @@ export const useAssessmentEditorStore = create<AssessmentEditorState>((set, get)
     const { assessment } = get();
     if (!assessment) return;
 
-    const tasks = [...(assessment.tasks || []), { ...task, sortOrder: (assessment.tasks?.length || 0) + 1 }];
+    const tasks = [
+      ...(assessment.tasks || []),
+      { ...task, sortOrder: (assessment.tasks?.length || 0) + 1 },
+    ];
     set({
       assessment: { ...assessment, tasks },
       isDirty: true,
@@ -112,7 +115,9 @@ export const useAssessmentEditorStore = create<AssessmentEditorState>((set, get)
     const { assessment } = get();
     if (!assessment || !assessment.tasks) return;
 
-    const tasks = assessment.tasks.filter((_, idx) => idx !== index).map((t, idx) => ({ ...t, sortOrder: idx + 1 }));
+    const tasks = assessment.tasks
+      .filter((_, idx) => idx !== index)
+      .map((t, idx) => ({ ...t, sortOrder: idx + 1 }));
     set({
       assessment: { ...assessment, tasks },
       isDirty: true,
