@@ -86,24 +86,33 @@ export const SuperAdminDashboard: React.FC = () => {
     const fetchData = async () => {
       try {
         setFetchError(null);
-        const [statsData, logsData, companiesData, onboardingsData] = await Promise.all([
+        const results = await Promise.allSettled([
           adminApi.getStats(),
           adminApi.getAuditLogs(),
           adminApi.getUsers({ role: 'company' }),
           adminApi.getOnboardings(),
         ]);
-        setStats(statsData);
-        setLogs(logsData);
-        setOnboardings(onboardingsData);
-        setTopEnterprises(
-          companiesData.slice(0, 4).map((c) => ({
-            name: c.name,
-            logo: c.name.charAt(0),
-            activeTrials: c.activeTrials || 0,
-            status: c.status === 'active' ? 'eKYC Approved' : 'Pending',
-            escrowLocked: c.escrowLocked ? `$${c.escrowLocked}` : '$0',
-          }))
-        );
+
+        if (results[0].status === 'fulfilled') setStats(results[0].value);
+        if (results[1].status === 'fulfilled') setLogs(results[1].value);
+        if (results[3].status === 'fulfilled') setOnboardings(results[3].value);
+        
+        if (results[2].status === 'fulfilled') {
+          setTopEnterprises(
+            results[2].value.slice(0, 4).map((c) => ({
+              name: c.name,
+              logo: c.name.charAt(0),
+              activeTrials: c.activeTrials || 0,
+              status: c.status === 'active' ? 'eKYC Approved' : 'Pending',
+              escrowLocked: c.escrowLocked ? `$${c.escrowLocked}` : '$0',
+            }))
+          );
+        }
+
+        // Only show fatal error if ALL calls failed (Network Error / Down)
+        if (results.every(r => r.status === 'rejected')) {
+          throw new Error((results[0] as PromiseRejectedResult).reason?.message || 'Platform Telemetry Disconnected');
+        }
       } catch (err: any) {
         console.error('Failed to fetch admin dashboard telemetry data', err);
         setFetchError(err.message || 'Failed to establish secure connection to AI telemetry backend. Please try again.');
