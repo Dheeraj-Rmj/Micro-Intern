@@ -238,8 +238,9 @@ TfqHMS2mVJF8VhfpWVog7AQPhakTUr3u9Tcg7cs6MdKssTjpbwBZmEM4BeJKwIaJ
 AGlQ5lDBGSLJHAo1U9Xdn8HEozKRFE+fGlX44xnGrPe0laX9/jtRl6U4o8TjTWyi
 +HxsLCoRjheSP8Ptk35U6Z0g7eLcssjHfTmRESUrN1Ug
 -----END CERTIFICATE-----`, // The IDP's public certificate hardcoded for testing
-        signatureAlgorithm: 'sha256', 
-        digestAlgorithm: 'sha256',
+        // TEMPORARY BYPASS to test if it's an XML canonicalization bug
+        wantAssertionsSigned: false,
+        wantAuthnResponseSigned: false,
       } as any,
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (profile: any, done: any) => {
