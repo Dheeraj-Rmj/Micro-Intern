@@ -220,8 +220,8 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
         entryPoint: config.SAML_ENTRY_POINT,
         issuer: config.SAML_ISSUER,
         idpCert: config.SAML_CERT, // The IDP's public certificate
-        signatureAlgorithm: 'sha1', // Required because Auth0 defaults to rsa-sha1 but node-saml v5 defaults to sha256
-        digestAlgorithm: 'sha1',
+        signatureAlgorithm: 'sha256', 
+        digestAlgorithm: 'sha256',
       } as any,
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       async (profile: any, done: any) => {
