@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useApp } from '../../../context/AppContext';
+import { useApp } from '../../context/AppContext';
 import { apiClient } from '@/lib/api/client';
 import { Shield, Key, CheckCircle2, QrCode } from 'lucide-react';
 
