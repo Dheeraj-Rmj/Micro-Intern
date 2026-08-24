@@ -18,6 +18,10 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
+  
+  // Real API MFA State
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [mfaToken, setMfaToken] = useState('');
 
   // ── Hidden Private Shortcuts State (ONLY active when initialPortal === 'candidate' on /login) ──
   const [activeModal, setActiveModal] = useState<'none' | 'recruiter' | 'company' | 'superadmin'>('none');
@@ -57,48 +61,97 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!identifier || !password) {
-      showToast('Missing Credentials', 'Please enter your email and password.', 'warning');
+    
+    // For Candidate and Enterprise, keep the dummy auth experience for the mockup
+    if (initialPortal !== 'ops') {
+      if (!identifier || !password) {
+        showToast('Missing Credentials', 'Please enter your email and password.', 'warning');
+        return;
+      }
+
+      setIsLoading(true);
+      await new Promise((r) => setTimeout(r, 800));
+      setIsLoading(false);
+
+      setUserProfile((prev: any) => ({
+        ...prev,
+        email: identifier.includes('@') ? identifier : prev.email,
+        username: !identifier.includes('@') ? identifier : prev.username,
+      }));
+
+      if (identifier === 'admin' || identifier === 'admin@microintern.com') {
+        setRole('admin');
+        showToast('Admin Session Active', 'Authenticated as Admin.', 'success');
+        setCurrentRoute('admin-dashboard');
+      } else if (initialPortal === 'candidate') {
+        setRole('candidate');
+        showToast('Candidate Session Active', 'Authenticated to app.microintern.com (Candidate Portal).', 'success');
+        setCurrentRoute('dashboard');
+      } else if (initialPortal === 'enterprise') {
+        setRole('company');
+        showToast('Enterprise Session Active', 'Authenticated to enterprise.microintern.com (Enterprise Tenant).', 'success');
+        setCurrentRoute('company-dashboard');
+      }
       return;
     }
 
-    // Password Strength Validation
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      showToast('Weak Password', 'Password must be at least 8 characters, contain uppercase, lowercase, number, and special character.', 'warning');
-      return;
-    }
+    // Real API integration for Super Admin (ops portal)
+    try {
+      setIsLoading(true);
+      
+      // Step 2: Handle MFA Token Submission
+      if (mfaRequired) {
+        if (!mfaCode) {
+          showToast('Missing MFA Code', 'Please enter the 6-digit MFA token.', 'warning');
+          return;
+        }
 
-    if (initialPortal === 'ops' && !mfaCode) {
-      showToast('MFA Token Required', 'Please enter your 6-digit MFA code or YubiKey passkey to access Operations.', 'warning');
-      return;
-    }
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setIsLoading(false);
+        const response = await apiClient.post('/auth/login/mfa', {
+          mfaToken,
+          code: mfaCode,
+        });
 
-    setUserProfile((prev: any) => ({
-      ...prev,
-      email: identifier.includes('@') ? identifier : prev.email,
-      username: !identifier.includes('@') ? identifier : prev.username,
-    }));
+        // Setup real session context
+        const user = response.data.data.user;
+        setUserProfile(user);
+        setRole('admin');
+        showToast('Super Admin Authenticated', 'MFA Verification successful.', 'success');
+        setCurrentRoute('admin-dashboard');
+        return;
+      }
 
-    if (identifier === 'admin' || identifier === 'admin@microintern.com') {
+      // Step 1: Initial Login
+      if (!identifier || !password) {
+        showToast('Missing Credentials', 'Please enter your email and password.', 'warning');
+        return;
+      }
+
+      const response = await apiClient.post('/auth/login', {
+        email: identifier,
+        password,
+      });
+
+      const data = response.data.data;
+
+      // Handle MFA Challenge
+      if (data.mfaRequired) {
+        setMfaRequired(true);
+        setMfaToken(data.mfaToken);
+        showToast('MFA Required', 'Please enter the 6-digit code from your authenticator app.', 'info');
+        return; // Wait for user to input MFA code
+      }
+
+      // If no MFA required (not fully setup yet), proceed directly
+      const user = data.user;
+      setUserProfile(user);
       setRole('admin');
-      showToast('Admin Session Active', 'Authenticated as Admin.', 'success');
+      showToast('Super Admin Session Active', 'Authenticated to ops.microintern.com', 'success');
       setCurrentRoute('admin-dashboard');
-    } else if (initialPortal === 'candidate') {
-      setRole('candidate');
-      showToast('Candidate Session Active', 'Authenticated to app.microintern.com (Candidate Portal).', 'success');
-      setCurrentRoute('dashboard');
-    } else if (initialPortal === 'enterprise') {
-      setRole('company');
-      showToast('Enterprise Session Active', 'Authenticated to enterprise.microintern.com (Enterprise Tenant).', 'success');
-      setCurrentRoute('company-dashboard');
-    } else if (initialPortal === 'ops') {
-      setRole('admin');
-      showToast('Super Admin Session Active', 'Authenticated to ops.microintern.com with MFA verification.', 'success');
-      setCurrentRoute('admin-dashboard');
+
+    } catch (err: any) {
+      showToast('Authentication Failed', err.message || 'Invalid credentials or network error.', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -229,64 +282,69 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
         )}
 
         <form onSubmit={handleSignIn} className="space-y-3">
-          {/* Email Address */}
-          <div>
-            <input
-              type="text"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              placeholder={
-                initialPortal === 'candidate'
-                  ? 'Candidate Email Address'
-                  : initialPortal === 'enterprise'
-                  ? 'Corporate Work Email (e.g., admin@google.com)'
-                  : 'Platform Owner Email Address'
-              }
-              className={`w-full px-4 py-3.5 rounded-2xl text-sm transition-all focus:outline-none border ${
-                darkMode
-                  ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
-              }`}
-            />
-          </div>
+          {/* If MFA is required, we hide the password field and show the MFA input instead */}
+          {!mfaRequired && (
+            <>
+              {/* Email Address */}
+              <div>
+                <input
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder={
+                    initialPortal === 'candidate'
+                      ? 'Candidate Email Address'
+                      : initialPortal === 'enterprise'
+                      ? 'Corporate Work Email (e.g., admin@google.com)'
+                      : 'Platform Owner Email Address'
+                  }
+                  className={`w-full px-4 py-3.5 rounded-2xl text-sm transition-all focus:outline-none border ${
+                    darkMode
+                      ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
+                      : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
+                  }`}
+                />
+              </div>
 
-          {/* Prevent browser password autofill / default password injection */}
-          <input type="text" name="fake-username-prevent-autofill" autoComplete="username" style={{ display: 'none' }} />
-          <input type="password" name="fake-password-prevent-autofill" autoComplete="new-password" style={{ display: 'none' }} />
+              {/* Prevent browser password autofill / default password injection */}
+              <input type="text" name="fake-username-prevent-autofill" autoComplete="username" style={{ display: 'none' }} />
+              <input type="password" name="fake-password-prevent-autofill" autoComplete="new-password" style={{ display: 'none' }} />
 
-          {/* Password */}
-          <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              autoComplete="new-password"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
-              className={`w-full px-4 py-3.5 pr-14 rounded-2xl text-sm transition-all focus:outline-none border ${
-                darkMode
-                  ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
-                  : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
-              }`}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all cursor-pointer ${
-                darkMode
-                  ? 'text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-sm'
-                  : 'text-black bg-black/10 hover:bg-black/15 border border-black/10 shadow-sm'
-              }`}
-              title={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
+              {/* Password */}
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  className={`w-full px-4 py-3.5 pr-14 rounded-2xl text-sm transition-all focus:outline-none border ${
+                    darkMode
+                      ? 'bg-transparent border-white/20 text-white placeholder:text-white/40 focus:border-white/60 focus:bg-white/[0.03]'
+                      : 'bg-white/60 border-black/15 text-black placeholder:text-black/40 focus:border-black focus:bg-white'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all cursor-pointer ${
+                    darkMode
+                      ? 'text-white bg-white/15 hover:bg-white/25 border border-white/20 shadow-sm'
+                      : 'text-black bg-black/10 hover:bg-black/15 border border-black/10 shadow-sm'
+                  }`}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </>
+          )}
 
-          {/* Mandatory MFA Code (Operations Portal Only) */}
-          {initialPortal === 'ops' && (
+          {/* Mandatory MFA Code Input */}
+          {(initialPortal === 'ops' && mfaRequired) && (
             <div className="pt-1">
               <input
                 type="text"
@@ -303,17 +361,19 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
           )}
 
           {/* Forgot Password Link */}
-          <div className="pt-1 pb-1 text-center">
-            <button
-              type="button"
-              onClick={() => setCurrentRoute('forgot-password')}
-              className={`text-xs font-semibold hover:underline cursor-pointer ${
-                darkMode ? 'text-white/80 hover:text-white' : 'text-black'
-              }`}
-            >
-              Forgot your password?
-            </button>
-          </div>
+          {!mfaRequired && (
+            <div className="pt-1 pb-1 text-center">
+              <button
+                type="button"
+                onClick={() => setCurrentRoute('forgot-password')}
+                className={`text-xs font-semibold hover:underline cursor-pointer ${
+                  darkMode ? 'text-white/80 hover:text-white' : 'text-black'
+                }`}
+              >
+                Forgot your password?
+              </button>
+            </div>
+          )}
 
           {/* ── Sign In Pill + Circular White Social Buttons Row ────── */}
           <div className="flex items-center gap-2 pt-2">
@@ -337,7 +397,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
               ) : null}
-              <span>{isLoading ? 'Signing in...' : 'Sign in'}</span>
+              <span>{isLoading ? 'Signing in...' : mfaRequired ? 'Verify MFA' : 'Sign in'}</span>
             </button>
 
             {/* Social OAuth Icons (ONLY for Candidate Portal - app.microintern.com) */}

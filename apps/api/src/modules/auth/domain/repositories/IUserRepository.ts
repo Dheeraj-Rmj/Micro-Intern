@@ -69,6 +69,7 @@ export interface IUserRepository {
   setEmailVerified(userId: string): Promise<void>;
   setPasswordHash(userId: string, passwordHash: string): Promise<void>;
   updateAvatar(userId: string, avatarUrl: string): Promise<void>;
+  updateMfaSettings(userId: string, mfaEnabled: boolean, totpSecret?: string | null): Promise<void>;
 
   // ── Verification Tokens ───────────────────────────────────────────────────
   createVerificationToken(data: {

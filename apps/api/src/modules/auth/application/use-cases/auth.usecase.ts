@@ -87,6 +87,13 @@ export class LoginUseCase {
     // Create session with full device telemetry
     const sessionId = await this.sessionService.createSession(user.id, metadata);
 
+    // If MFA is enabled, issue a temporary MFA token instead of full session tokens
+    if (user.mfaEnabled) {
+      const mfaToken = await this.jwtService.generateMfaToken(user.id);
+      log.info({ userId: user.id }, 'MFA required for login');
+      return { mfaRequired: true, mfaToken };
+    }
+
     // Generate tokens
     const tokens = await this.jwtService.generateTokenPair(user, sessionId);
 

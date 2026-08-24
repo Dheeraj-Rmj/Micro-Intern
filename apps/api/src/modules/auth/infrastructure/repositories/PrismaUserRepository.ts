@@ -290,6 +290,16 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
+  async updateMfaSettings(userId: string, mfaEnabled: boolean, totpSecret?: string | null): Promise<void> {
+    await this.db.user.update({
+      where: { id: userId },
+      data: {
+        mfaEnabled,
+        ...(totpSecret !== undefined && { totpSecret }),
+      },
+    });
+  }
+
   // ── Verification Tokens ───────────────────────────────────────────────────
 
   async createVerificationToken(data: {

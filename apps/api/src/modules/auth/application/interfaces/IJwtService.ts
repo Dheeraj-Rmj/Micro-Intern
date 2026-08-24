@@ -30,4 +30,7 @@ export interface IJwtService {
     sub: string;
     sessionId: string;
   }>;
+
+  generateMfaToken(userId: string): Promise<string>;
+  verifyMfaToken(token: string): Promise<{ sub: string }>;
 }

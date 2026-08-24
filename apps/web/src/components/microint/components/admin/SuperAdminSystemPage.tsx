@@ -20,7 +20,9 @@ import {
   Mail,
   Key,
   Save,
+  ShieldAlert,
 } from 'lucide-react';
+import { SuperAdminSecurityTab } from './SuperAdminSecurityTab';
 
 interface FeatureFlags {
   aiReader: boolean;
@@ -47,7 +49,7 @@ interface ApiKeyConfig {
 
 export const SuperAdminSystemPage: React.FC = () => {
   const { showToast } = useApp();
-  const [activeTab, setActiveTab] = useState<'flags' | 'emails' | 'gateways'>('flags');
+  const [activeTab, setActiveTab] = useState<'flags' | 'emails' | 'gateways' | 'security'>('flags');
 
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
     aiReader: true,
@@ -205,6 +207,17 @@ export const SuperAdminSystemPage: React.FC = () => {
         >
           <Server className="w-3.5 h-3.5 inline mr-1.5" />
           API Gateways
+        </button>
+        <button
+          onClick={() => setActiveTab('security')}
+          className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            activeTab === 'security'
+              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
+              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+          }`}
+        >
+          <ShieldAlert className="w-3.5 h-3.5 inline mr-1.5" />
+          Security & MFA
         </button>
       </div>
 
@@ -446,6 +459,8 @@ export const SuperAdminSystemPage: React.FC = () => {
               </div>
             </div>
           )}
+          {/* ── Security & MFA Tab ── */}
+          {activeTab === 'security' && <SuperAdminSecurityTab />}
         </>
       )}
     </div>

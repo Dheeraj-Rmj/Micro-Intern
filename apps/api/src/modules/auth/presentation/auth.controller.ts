@@ -18,6 +18,7 @@ import type {
   RefreshTokenUseCase,
   LogoutUseCase,
 } from '../application/use-cases/auth.usecase.js';
+import type { MfaLoginUseCase } from '../application/use-cases/mfa-login.usecase.js';
 import type {
   VerifyEmailUseCase,
   ResendVerificationEmailUseCase,
@@ -87,6 +88,7 @@ export class AuthController {
     private readonly listSessionsUseCase: ListSessionsUseCase,
     private readonly revokeSessionUseCase: RevokeSessionUseCase,
     private readonly revokeOtherSessionsUseCase: RevokeOtherSessionsUseCase,
+    private readonly mfaLoginUseCase: MfaLoginUseCase,
   ) {}
 
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -98,7 +100,37 @@ export class AuthController {
       );
 
       // Set httpOnly cookie for CSRF and XSS protection
-      if (result.tokens && result.tokens.refreshToken) {
+      if ('tokens' in result && result.tokens && result.tokens.refreshToken) {
+        res.cookie('refreshToken', result.tokens.refreshToken, {
+          httpOnly: true,
+          secure: process.env['NODE_ENV'] === 'production',
+          sameSite: 'strict',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+        
+        // Remove refreshToken from the payload so it doesn't get stored in JS memory
+        result.tokens.refreshToken = undefined as any;
+      }
+
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  loginMfa = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const metadata = parseDeviceFromRequest(req);
+      const { mfaToken, code } = req.body;
+      
+      if (!mfaToken || !code) {
+        throw new Error('mfaToken and code are required');
+      }
+
+      const result = await this.mfaLoginUseCase.execute(mfaToken, code, metadata);
+
+      // Set httpOnly cookie for CSRF and XSS protection
+      if ('tokens' in result && result.tokens && result.tokens.refreshToken) {
         res.cookie('refreshToken', result.tokens.refreshToken, {
           httpOnly: true,
           secure: process.env['NODE_ENV'] === 'production',
@@ -125,7 +157,7 @@ export class AuthController {
       );
 
       // Set httpOnly cookie for CSRF and XSS protection
-      if (result.tokens && result.tokens.refreshToken) {
+      if ('tokens' in result && result.tokens && result.tokens.refreshToken) {
         res.cookie('refreshToken', result.tokens.refreshToken, {
           httpOnly: true,
           secure: process.env['NODE_ENV'] === 'production',

@@ -17,18 +17,20 @@ import {
   ResetPasswordSchema,
   VerifyEmailSchema,
 } from '../application/dtos/auth.dto.js';
+import { AuthController } from './auth.controller.js';
+import { MfaController } from './mfa.controller.js';
 import { LoginUseCase, RefreshTokenUseCase, LogoutUseCase, RegisterCandidateUseCase } from '../application/use-cases/auth.usecase.js';
 import { VerifyEmailUseCase, ResendVerificationEmailUseCase } from '../application/use-cases/email-verification.usecase.js';
 import { ForgotPasswordUseCase, ResetPasswordUseCase } from '../application/use-cases/password-reset.usecase.js';
 import { OAuthLoginUseCase } from '../application/use-cases/oauth.usecase.js';
 import { ListSessionsUseCase, RevokeSessionUseCase, RevokeOtherSessionsUseCase } from '../application/use-cases/session.usecase.js';
+import { SetupTotpUseCase, VerifyTotpUseCase } from '../application/use-cases/mfa.usecase.js';
+import { MfaLoginUseCase } from '../application/use-cases/mfa-login.usecase.js';
 import { PrismaUserRepository } from '../infrastructure/repositories/PrismaUserRepository.js';
 import { BcryptPasswordService, RedisSessionService } from '../infrastructure/services/AuthServices.js';
 import { JwtService } from '../infrastructure/services/JwtService.js';
 import { TokenService } from '../infrastructure/services/TokenService.js';
 import { QueueEmailAuthService } from '../infrastructure/services/QueueEmailAuthService.js';
-
-import { AuthController } from './auth.controller.js';
 
 const ResendVerificationSchema = z.object({
   email: z.string().email(),
@@ -110,6 +112,12 @@ export function createAuthRouter(): Router {
       container.get('ISessionService')
     ));
 
+    container.register('MfaLoginUseCase', () => new MfaLoginUseCase(
+      container.get('IUserRepository'),
+      container.get('JwtService'),
+      container.get('ISessionService')
+    ));
+
     container.register('AuthController', (_infra: InfrastructureDependencies) => new AuthController(
       container.get('LoginUseCase'),
       container.get('RegisterCandidateUseCase'),
@@ -121,11 +129,25 @@ export function createAuthRouter(): Router {
       container.get('ResetPasswordUseCase'),
       container.get('ListSessionsUseCase'),
       container.get('RevokeSessionUseCase'),
-      container.get('RevokeOtherSessionsUseCase')
+      container.get('RevokeOtherSessionsUseCase'),
+      container.get('MfaLoginUseCase')
+    ));
+
+    // MFA
+    container.register('SetupTotpUseCase', () => new SetupTotpUseCase(
+      container.get('IUserRepository')
+    ));
+    container.register('VerifyTotpUseCase', () => new VerifyTotpUseCase(
+      container.get('IUserRepository')
+    ));
+    container.register('MfaController', () => new MfaController(
+      container.get('SetupTotpUseCase'),
+      container.get('VerifyTotpUseCase')
     ));
   }
   
   const controller = container.get<AuthController>('AuthController');
+  const mfaController = container.get<MfaController>('MfaController');
 
   const router = Router();
 
@@ -153,6 +175,27 @@ export function createAuthRouter(): Router {
     validate('body', LoginSchema),
     audit(AuditAction.LOGIN, 'User'),
     (req, res, next) => { controller.login(req, res, next).catch(next); },
+  );
+
+  // POST /auth/login/mfa
+  router.post(
+    '/login/mfa',
+    authRateLimiter,
+    // Add validation schema later
+    (req, res, next) => { controller.loginMfa(req, res, next).catch(next); },
+  );
+
+  // MFA Routes
+  router.post(
+    '/mfa/setup/totp',
+    authMiddleware,
+    (req, res, next) => { mfaController.setupTotp(req, res, next).catch(next); },
+  );
+
+  router.post(
+    '/mfa/verify/totp',
+    authMiddleware,
+    (req, res, next) => { mfaController.verifyTotp(req, res, next).catch(next); },
   );
 
   // GET /auth/verify-email?token=xxx

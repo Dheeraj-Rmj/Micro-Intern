@@ -127,4 +127,40 @@ export class JwtService implements IJwtService {
       throw new UnauthorizedError('Invalid refresh token', 'AUTH_REFRESH_TOKEN_INVALID');
     }
   }
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async generateMfaToken(userId: string): Promise<string> {
+    return jwt.sign(
+      { type: 'mfa_pending' },
+      this.accessSecret,
+      {
+        subject: userId,
+        expiresIn: '5m', // 5 minutes to complete MFA
+        issuer: this.issuer,
+        audience: `${this.audience}:mfa`,
+        algorithm: 'HS256',
+      },
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async verifyMfaToken(token: string): Promise<{ sub: string }> {
+    try {
+      const payload = jwt.verify(token, this.accessSecret, {
+        issuer: this.issuer,
+        audience: `${this.audience}:mfa`,
+        algorithms: ['HS256'],
+      }) as jwt.JwtPayload;
+
+      if (payload['type'] !== 'mfa_pending') {
+        throw new Error('Invalid token type');
+      }
+
+      return {
+        sub: payload['sub'] as string,
+      };
+    } catch (error) {
+      throw new UnauthorizedError('Invalid or expired MFA token', 'AUTH_MFA_TOKEN_INVALID');
+    }
+  }
 }

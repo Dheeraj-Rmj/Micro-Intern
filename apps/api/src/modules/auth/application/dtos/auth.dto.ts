@@ -101,7 +101,6 @@ export type AuthUserResponse = {
   avatarUrl: string | null;
 };
 
-export type LoginResponse = {
-  user: AuthUserResponse;
-  tokens: AuthTokensResponse;
-};
+export type LoginResponse = 
+  | { user: AuthUserResponse; tokens: AuthTokensResponse }
+  | { mfaRequired: true; mfaToken: string };

@@ -44,6 +44,10 @@ model User {
   lastLoginIp     String?   @map("last_login_ip")
   loginAttempts   Int       @default(0) @map("login_attempts")
   lockedUntil     DateTime? @map("locked_until")
+  
+  // MFA
+  mfaEnabled      Boolean   @default(false) @map("mfa_enabled")
+  totpSecret      String?   @map("totp_secret") // Encrypted TOTP secret
 
   // Audit
   createdAt DateTime  @default(now()) @map("created_at")
@@ -55,6 +59,7 @@ model User {
 
   // Relations
   oauthAccounts      OAuthAccount[]
+  webAuthnCredentials WebAuthnCredential[]
   sessions           Session[]
   candidateProfile   CandidateProfile?
   companyMembership  CompanyMember[]
@@ -109,6 +114,25 @@ model Invitation {
   @@index([tokenHash])
   @@index([expiresAt])
   @@map("invitations")
+}
+
+/// WebAuthn credentials for hardware keys and biometrics
+model WebAuthnCredential {
+  id           String   @id // The credential ID base64url encoded
+  userId       String   @map("user_id") @db.Uuid
+  publicKey    Bytes    @map("public_key")
+  counter      BigInt   @default(0)
+  deviceType   String   @map("device_type")
+  backedUp     Boolean  @default(false) @map("backed_up")
+  transports   String[] // Array of transports (e.g. 'usb', 'ble', 'nfc', 'internal')
+  name         String?  // Optional user-friendly name for the key
+  createdAt    DateTime @default(now()) @map("created_at")
+  lastUsedAt   DateTime @default(now()) @map("last_used_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("webauthn_credentials")
 }
 
 model OAuthAccount {
