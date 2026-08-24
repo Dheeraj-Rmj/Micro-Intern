@@ -219,11 +219,7 @@ if (config.SAML_ENTRY_POINT !== undefined && config.SAML_ISSUER !== undefined) {
         callbackUrl: '/api/v1/auth/sso/callback',
         entryPoint: config.SAML_ENTRY_POINT,
         issuer: config.SAML_ISSUER,
-        idpCert: config.SAML_CERT
-          ? config.SAML_CERT.replace(/-----BEGIN CERTIFICATE-----/g, '')
-              .replace(/-----END CERTIFICATE-----/g, '')
-              .replace(/\s+/g, '') // Remove all newlines and spaces
-          : undefined, // The IDP's public certificate as pure base64
+        idpCert: config.SAML_CERT, // The IDP's public certificate
         signatureAlgorithm: 'sha1', // Required because Auth0 defaults to rsa-sha1 but node-saml v5 defaults to sha256
         digestAlgorithm: 'sha1',
       } as any,

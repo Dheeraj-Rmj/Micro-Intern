@@ -66,7 +66,18 @@ const configSchema = z.object({
   // SAML / Enterprise SSO
   SAML_ENTRY_POINT: z.string().url().optional(),
   SAML_ISSUER: z.string().optional(),
-  SAML_CERT: z.string().optional().transform((v) => (v ? v.replace(/\\n/g, '\n') : v)),
+  SAML_CERT: z.string().optional().transform((v) => {
+    if (!v) return v;
+    // Strip existing headers and all whitespace
+    const cleanBase64 = v.replace(/-----BEGIN CERTIFICATE-----/g, '')
+      .replace(/-----END CERTIFICATE-----/g, '')
+      .replace(/\\n/g, '')
+      .replace(/\s+/g, '');
+    
+    // Split into 64-character lines
+    const lines = cleanBase64.match(/.{1,64}/g)?.join('\n') || '';
+    return `-----BEGIN CERTIFICATE-----\n${lines}\n-----END CERTIFICATE-----`;
+  }),
 
   // Storage
   STORAGE_PROVIDER: z.enum(['minio', 's3']).default('minio'),
