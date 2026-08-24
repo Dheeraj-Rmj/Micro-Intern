@@ -93,7 +93,7 @@ export const SuperAdminSecurityTab: React.FC = () => {
             <div className="space-y-2">
               <h4 className="font-semibold text-black dark:text-white">Scan this QR Code</h4>
               <p className="text-xs text-black/60 dark:text-white/60 max-w-sm mx-auto">
-                Open your authenticator app and scan the QR code above. If you can't scan it, enter this setup key manually:
+                Open your authenticator app and scan the QR code above. If you can&apos;t scan it, enter this setup key manually:
               </p>
               <div className="font-mono text-sm tracking-widest p-2 bg-black/5 dark:bg-white/5 rounded-lg text-black dark:text-white selection:bg-indigo-500/30">
                 {mfaSecret}
