@@ -22,8 +22,8 @@ const configSchema = z.object({
   // Server
   API_PORT: z.string().transform(Number).default(process.env['PORT'] ?? '3001'),
   API_HOST: z.string().default('0.0.0.0'),
-  API_BASE_URL: z.string().url(),
-  FRONTEND_URL: z.string().url(),
+  API_BASE_URL: z.string().url().default('http://localhost:3001/api/v1'),
+  FRONTEND_URL: z.string().url().default('http://localhost:3000'),
 
   // Database
   DATABASE_URL: z.string().url(),
@@ -31,13 +31,13 @@ const configSchema = z.object({
   DATABASE_POOL_MAX: z.string().transform(Number).default('10'),
 
   // Redis
-  REDIS_URL: z.string().url(),
+  REDIS_URL: z.string().url().default('redis://localhost:6379'),
   REDIS_PASSWORD: z.string().optional(),
   REDIS_DB: z.string().transform(Number).default('0'),
 
   // JWT
-  JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters'),
-  JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters'),
+  JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters').default('default_jwt_access_secret_for_dev_mode_only_123'),
+  JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters').default('default_jwt_refresh_secret_for_dev_mode_only_123'),
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   JWT_ISSUER: z.string().default('microintern'),
@@ -122,7 +122,7 @@ const configSchema = z.object({
   // Security
   CORS_ORIGINS: z.string().default('http://localhost:3000'),
   BCRYPT_ROUNDS: z.string().transform(Number).default('12'),
-  ENCRYPTION_KEY: z.string().min(32, 'ENCRYPTION_KEY must be at least 32 characters'),
+  ENCRYPTION_KEY: z.string().min(32, 'ENCRYPTION_KEY must be at least 32 characters').default('default_encryption_key_for_dev_mode_only_1234567'),
 
   // Queue
   QUEUE_CONCURRENCY_EMAIL: z.string().transform(Number).default('5'),
