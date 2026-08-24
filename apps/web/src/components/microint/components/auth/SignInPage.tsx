@@ -400,21 +400,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
             )}
           </div>
 
-          {/* Enterprise SSO Button (ONLY for Enterprise Portal - enterprise.microintern.com) */}
-          {initialPortal === 'enterprise' && (
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  window.location.href = `${apiClient.defaults.baseURL}/auth/sso/login`;
-                }}
-                className="w-full py-3 rounded-2xl font-bold text-xs font-mono uppercase bg-amber-500/15 border border-amber-500/40 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>🔑</span>
-                <span>Login via Enterprise SSO</span>
-              </button>
-            </div>
-          )}
+
         </form>
 
         {/* Disclaimer Text */}
@@ -576,18 +562,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
                 </button>
               </div>
 
-              {activeModal !== 'superadmin' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.location.href = `${apiClient.defaults.baseURL}/auth/sso/login`;
-                  }}
-                  className="w-full py-2.5 rounded-2xl font-bold text-xs font-mono uppercase bg-amber-500/15 border border-amber-500/40 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 transition-all cursor-pointer block text-center flex items-center justify-center gap-2"
-                >
-                  <span>🔑</span>
-                  <span>Login via Enterprise SSO</span>
-                </button>
-              )}
+
             </form>
 
             <div className="mt-4 pt-3 border-t border-white/10 text-[10px] opacity-60 font-mono text-center">
