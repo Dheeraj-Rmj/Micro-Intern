@@ -412,4 +412,50 @@ export class PrismaUserRepository implements IUserRepository {
       data: { acceptedAt: new Date() },
     });
   }
+
+  // ── WebAuthn ──────────────────────────────────────────────────────────────
+  async updateWebAuthnCurrentChallenge(userId: string, challenge: string | null): Promise<void> {
+    await this.db.user.update({
+      where: { id: userId },
+      data: { webAuthnCurrentChallenge: challenge },
+    });
+  }
+
+  async saveWebAuthnCredential(userId: string, credential: {
+    id: string;
+    publicKey: Buffer;
+    counter: bigint;
+    deviceType: string;
+    backedUp: boolean;
+    transports: string[];
+  }): Promise<void> {
+    await this.db.webAuthnCredential.create({
+      data: {
+        id: credential.id,
+        userId: userId,
+        publicKey: credential.publicKey,
+        counter: credential.counter,
+        deviceType: credential.deviceType,
+        backedUp: credential.backedUp,
+        transports: credential.transports,
+      },
+    });
+  }
+
+  async getWebAuthnCredentials(userId: string): Promise<Array<{
+    id: string;
+    publicKey: Buffer;
+    counter: bigint;
+    transports: string[];
+  }>> {
+    const creds = await this.db.webAuthnCredential.findMany({
+      where: { userId },
+    });
+    return creds.map(c => ({
+      id: c.id,
+      publicKey: c.publicKey,
+      counter: c.counter,
+      transports: c.transports,
+    }));
+  }
 }

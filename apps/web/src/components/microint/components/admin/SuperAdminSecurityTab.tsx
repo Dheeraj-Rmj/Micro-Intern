@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { apiClient } from '@/lib/api/client';
-import { Shield, Key, CheckCircle2, QrCode } from 'lucide-react';
+import { startRegistration } from '@simplewebauthn/browser';
+import { Shield, Key, CheckCircle2, QrCode, Fingerprint } from 'lucide-react';
 
 export const SuperAdminSecurityTab: React.FC = () => {
   const { showToast } = useApp();
@@ -11,6 +12,7 @@ export const SuperAdminSecurityTab: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [isSettingUp, setIsSettingUp] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isSettingUpPasskey, setIsSettingUpPasskey] = useState(false);
 
   const handleInitializeMfa = async () => {
     setIsSettingUp(true);
@@ -47,6 +49,31 @@ export const SuperAdminSecurityTab: React.FC = () => {
     }
   };
 
+  const handleInitializeWebAuthn = async () => {
+    setIsSettingUpPasskey(true);
+    try {
+      // 1. Get registration options from server
+      const optionsResponse = await apiClient.post('/auth/webauthn/register/generate');
+      const options = optionsResponse.data.data;
+
+      // 2. Prompt user to interact with authenticator (YubiKey / Touch ID)
+      const attestationResponse = await startRegistration({ optionsJSON: options });
+
+      // 3. Send the signature back to server to verify and save
+      await apiClient.post('/auth/webauthn/register/verify', attestationResponse);
+
+      showToast('Passkey Registered', 'Your hardware key/passkey has been successfully registered.', 'success');
+    } catch (err: any) {
+      if (err.name === 'NotAllowedError') {
+        showToast('Cancelled', 'Passkey registration was cancelled.', 'info');
+      } else {
+        showToast('Error', err.message || 'Failed to register passkey', 'warning');
+      }
+    } finally {
+      setIsSettingUpPasskey(false);
+    }
+  };
+
   return (
     <div className="p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
       <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-4">
@@ -80,6 +107,25 @@ export const SuperAdminSecurityTab: React.FC = () => {
                 className="shrink-0 px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs shadow-sm hover:opacity-90 transition-opacity"
               >
                 {isSettingUp ? 'Initializing...' : 'Setup Authenticator'}
+              </button>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="font-semibold text-sm text-black dark:text-white flex items-center gap-2">
+                  <Fingerprint className="w-4 h-4 text-indigo-500" />
+                  Hardware Key (WebAuthn)
+                </div>
+                <p className="text-xs text-black/60 dark:text-white/70">
+                  Use a YubiKey, Touch ID, or Windows Hello to securely sign in without a password.
+                </p>
+              </div>
+              <button
+                onClick={handleInitializeWebAuthn}
+                disabled={isSettingUpPasskey}
+                className="shrink-0 px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs shadow-sm hover:opacity-90 transition-opacity"
+              >
+                {isSettingUpPasskey ? 'Registering...' : 'Register Passkey'}
               </button>
             </div>
           </div>

@@ -112,4 +112,21 @@ export interface IUserRepository {
   } | null>;
 
   markInvitationAccepted(invitationId: string): Promise<void>;
+
+  // ── WebAuthn ──────────────────────────────────────────────────────────────
+  updateWebAuthnCurrentChallenge(userId: string, challenge: string | null): Promise<void>;
+  saveWebAuthnCredential(userId: string, credential: {
+    id: string;
+    publicKey: Buffer;
+    counter: bigint;
+    deviceType: string;
+    backedUp: boolean;
+    transports: string[];
+  }): Promise<void>;
+  getWebAuthnCredentials(userId: string): Promise<Array<{
+    id: string;
+    publicKey: Buffer;
+    counter: bigint;
+    transports: string[];
+  }>>;
 }

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { apiClient } from '../../../../lib/api/client';
-import { Eye, EyeOff, ArrowLeft, Sun, Moon, ShieldAlert, Lock, Building2, UserCheck } from 'lucide-react';
+import { startAuthentication } from '@simplewebauthn/browser';
+import { Eye, EyeOff, ArrowLeft, Sun, Moon, ShieldAlert, Lock, Building2, UserCheck, Fingerprint } from 'lucide-react';
 
 interface SignInPageProps {
   initialPortal?: 'candidate' | 'enterprise' | 'ops';
@@ -150,6 +151,41 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
 
     } catch (err: any) {
       showToast('Authentication Failed', err.message || 'Invalid credentials or network error.', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleWebAuthnLogin = async () => {
+    setIsLoading(true);
+    try {
+      // 1. Get login options
+      const optionsResponse = await apiClient.post('/auth/webauthn/login/generate', {
+        userId: identifier, // Wait, we don't have user ID here. The backend uses req.user.id from the mfaToken!
+      }, {
+        headers: { Authorization: `Bearer ${mfaToken}` }
+      });
+      const options = optionsResponse.data.data;
+
+      // 2. Prompt user
+      const authenticationResponse = await startAuthentication({ optionsJSON: options });
+
+      // 3. Verify
+      const verifyResponse = await apiClient.post('/auth/webauthn/login/verify', authenticationResponse, {
+        headers: { Authorization: `Bearer ${mfaToken}` }
+      });
+
+      const user = verifyResponse.data.data.user;
+      setUserProfile(user);
+      setRole('admin');
+      showToast('Passkey Authenticated', 'Secure WebAuthn login successful.', 'success');
+      setCurrentRoute('admin-dashboard');
+    } catch (err: any) {
+      if (err.name === 'NotAllowedError') {
+        showToast('Cancelled', 'Passkey login was cancelled.', 'info');
+      } else {
+        showToast('Authentication Failed', err.message || 'Passkey verification failed.', 'error');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -345,18 +381,38 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = 'candida
 
           {/* Mandatory MFA Code Input */}
           {(initialPortal === 'ops' && mfaRequired) && (
-            <div className="pt-1">
+            <div className="pt-1 space-y-4">
               <input
                 type="text"
                 value={mfaCode}
                 onChange={(e) => setMfaCode(e.target.value)}
-                placeholder="6-Digit MFA Token / YubiKey Passkey"
+                placeholder="6-Digit MFA Token"
                 className={`w-full px-4 py-3 rounded-2xl text-xs font-mono tracking-widest transition-all focus:outline-none border ${
                   darkMode
                     ? 'bg-amber-500/10 border-amber-500/40 text-amber-300 placeholder:text-amber-400/50'
                     : 'bg-amber-50 border-amber-600/30 text-amber-900 placeholder:text-amber-700/50'
                 }`}
               />
+              
+              <div className="flex items-center justify-between text-xs text-black/50 dark:text-white/50">
+                <div className="w-full h-px bg-black/10 dark:bg-white/10" />
+                <span className="px-4">OR</span>
+                <div className="w-full h-px bg-black/10 dark:bg-white/10" />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleWebAuthnLogin}
+                disabled={isLoading}
+                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-xs font-semibold transition-all border ${
+                  darkMode
+                    ? 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                    : 'bg-black/5 border-black/10 text-black hover:bg-black/10'
+                }`}
+              >
+                <Fingerprint className="w-4 h-4" />
+                Use Hardware Key / Passkey
+              </button>
             </div>
           )}
 

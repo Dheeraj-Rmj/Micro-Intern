@@ -26,6 +26,8 @@ import { OAuthLoginUseCase } from '../application/use-cases/oauth.usecase.js';
 import { ListSessionsUseCase, RevokeSessionUseCase, RevokeOtherSessionsUseCase } from '../application/use-cases/session.usecase.js';
 import { SetupTotpUseCase, VerifyTotpUseCase } from '../application/use-cases/mfa.usecase.js';
 import { MfaLoginUseCase } from '../application/use-cases/mfa-login.usecase.js';
+import { GenerateWebAuthnRegistrationUseCase, VerifyWebAuthnRegistrationUseCase, GenerateWebAuthnLoginUseCase, VerifyWebAuthnLoginUseCase } from '../application/use-cases/webauthn.usecase.js';
+import { WebAuthnController } from './webauthn.controller.js';
 import { PrismaUserRepository } from '../infrastructure/repositories/PrismaUserRepository.js';
 import { BcryptPasswordService, RedisSessionService } from '../infrastructure/services/AuthServices.js';
 import { JwtService } from '../infrastructure/services/JwtService.js';
@@ -144,10 +146,33 @@ export function createAuthRouter(): Router {
       container.get('SetupTotpUseCase'),
       container.get('VerifyTotpUseCase')
     ));
+
+    // WebAuthn
+    container.register('GenerateWebAuthnRegistrationUseCase', () => new GenerateWebAuthnRegistrationUseCase(
+      container.get('IUserRepository')
+    ));
+    container.register('VerifyWebAuthnRegistrationUseCase', () => new VerifyWebAuthnRegistrationUseCase(
+      container.get('IUserRepository')
+    ));
+    container.register('GenerateWebAuthnLoginUseCase', () => new GenerateWebAuthnLoginUseCase(
+      container.get('IUserRepository')
+    ));
+    container.register('VerifyWebAuthnLoginUseCase', () => new VerifyWebAuthnLoginUseCase(
+      container.get('IUserRepository'),
+      container.get('IJwtService'),
+      container.get('ISessionService')
+    ));
+    container.register('WebAuthnController', () => new WebAuthnController(
+      container.get('GenerateWebAuthnRegistrationUseCase'),
+      container.get('VerifyWebAuthnRegistrationUseCase'),
+      container.get('GenerateWebAuthnLoginUseCase'),
+      container.get('VerifyWebAuthnLoginUseCase')
+    ));
   }
   
   const controller = container.get<AuthController>('AuthController');
   const mfaController = container.get<MfaController>('MfaController');
+  const webauthnController = container.get<WebAuthnController>('WebAuthnController');
 
   const router = Router();
 
@@ -196,6 +221,31 @@ export function createAuthRouter(): Router {
     '/mfa/verify/totp',
     authMiddleware,
     (req, res, next) => { mfaController.verifyTotp(req, res, next).catch(next); },
+  );
+
+  // WebAuthn Routes
+  router.post(
+    '/webauthn/register/generate',
+    authMiddleware,
+    (req, res, next) => { webauthnController.generateRegistrationOptions(req, res, next).catch(next); },
+  );
+
+  router.post(
+    '/webauthn/register/verify',
+    authMiddleware,
+    (req, res, next) => { webauthnController.verifyRegistrationResponse(req, res, next).catch(next); },
+  );
+
+  router.post(
+    '/webauthn/login/generate',
+    authRateLimiter,
+    (req, res, next) => { webauthnController.generateLoginOptions(req, res, next).catch(next); },
+  );
+
+  router.post(
+    '/webauthn/login/verify',
+    authRateLimiter,
+    (req, res, next) => { webauthnController.verifyLoginResponse(req, res, next).catch(next); },
   );
 
   // GET /auth/verify-email?token=xxx

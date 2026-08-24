@@ -48,6 +48,7 @@ model User {
   // MFA
   mfaEnabled      Boolean   @default(false) @map("mfa_enabled")
   totpSecret      String?   @map("totp_secret") // Encrypted TOTP secret
+  webAuthnCurrentChallenge String? @map("webauthn_current_challenge")
 
   // Audit
   createdAt DateTime  @default(now()) @map("created_at")
