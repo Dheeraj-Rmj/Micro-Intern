@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '@/core/config.js';
 import { getRedisClient } from '@/core/redis.js';
 import { UnauthorizedError } from '@/shared/errors/index.js';
+import { anomalyDetectionMiddleware } from './anomaly.middleware.js';
 
 import type { JwtAccessPayload, AuthenticatedUser } from '@microintern/shared';
 import type { Request, Response, NextFunction } from 'express';
@@ -40,7 +41,7 @@ declare global {
  */
 export async function authMiddleware(
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction,
 ): Promise<void> {
   try {
@@ -84,7 +85,9 @@ export async function authMiddleware(
       sessionId: payload.sessionId,
     };
 
-    next();
+    // Layer 2 Security: Run anomaly detection
+    await anomalyDetectionMiddleware(req, res, next);
+    return;
   } catch (error) {
     next(error);
   }

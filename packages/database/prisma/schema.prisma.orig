@@ -62,7 +62,6 @@ model User {
   oauthAccounts      OAuthAccount[]
   webAuthnCredentials WebAuthnCredential[]
   sessions           Session[]
-  devices            UserDevice[]
   candidateProfile   CandidateProfile?
   companyMembership  CompanyMember[]
   auditLogsCreated   AuditLog[]          @relation("AuditLogCreatedBy")
@@ -180,26 +179,6 @@ model Session {
   @@index([expiresAt])
   @@index([revokedAt])
   @@map("sessions")
-}
-
-/// Tracks user devices for anomaly detection.
-model UserDevice {
-  id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @map("user_id") @db.Uuid
-  ipAddress   String   @map("ip_address")
-  userAgent   String   @map("user_agent")
-  fingerprint String   @map("fingerprint") // Hash of IP + UA
-  lastSeenAt  DateTime @default(now()) @map("last_seen_at")
-  isTrusted   Boolean  @default(true) @map("is_trusted")
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([fingerprint])
-  @@unique([userId, fingerprint])
-  @@map("user_devices")
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

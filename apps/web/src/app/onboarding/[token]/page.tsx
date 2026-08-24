@@ -275,7 +275,7 @@ export default function OnboardingPage() {
                 ) : (
                   <>
                     <UploadCloud className="w-8 h-8 text-black/40 mb-2" />
-                    <span className="text-xs font-medium text-black/60">Upload Passport or Driver's License (Max 5MB)</span>
+                    <span className="text-xs font-medium text-black/60">Upload Passport or Driver&apos;s License (Max 5MB)</span>
                   </>
                 )}
                 <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={e => handleImageUpload(e, 'govDoc')} />

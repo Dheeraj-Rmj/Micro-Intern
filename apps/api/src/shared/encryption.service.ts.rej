@@ -1,0 +1,10 @@
+@@ -4,7 +4,7 @@
+ const ALGORITHM = 'aes-256-gcm';
+-// Using a 32-byte key derived from APP_SECRET or fallback
+-const RAW_KEY = config.APP_SECRET || '0123456789abcdef0123456789abcdef'; 
++// Using a 32-byte key derived from JWT_ACCESS_SECRET or fallback
++const RAW_KEY = config.JWT_ACCESS_SECRET || '0123456789abcdef0123456789abcdef'; 
+ const ENCRYPTION_KEY = crypto.scryptSync(RAW_KEY, 'salt', 32);
+ 
+ 
+ 

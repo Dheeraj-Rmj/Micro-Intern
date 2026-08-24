@@ -6,6 +6,7 @@ import { NotFoundError, ValidationError, InternalServerError } from '@/shared/er
 import Tesseract from 'tesseract.js';
 import { parse } from 'mrz';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { EncryptionService } from '@/shared/encryption.service.js';
 
 export class OnboardingUseCase {
   constructor(private readonly prisma: PrismaClient) {}
@@ -27,6 +28,13 @@ export class OnboardingUseCase {
       where: { token }
     });
     if (!onboarding) throw new NotFoundError('Invalid onboarding token');
+    
+    if (onboarding.signatureUrl) {
+      onboarding.signatureUrl = EncryptionService.decrypt(onboarding.signatureUrl);
+    }
+    if (onboarding.govDocUrls && Array.isArray(onboarding.govDocUrls)) {
+      onboarding.govDocUrls = onboarding.govDocUrls.map(url => EncryptionService.decrypt(url as string));
+    }
     return onboarding;
   }
 
@@ -69,6 +77,9 @@ export class OnboardingUseCase {
 
     let nextStatus = docVerificationScore.status === 'AUTO_VERIFIED' ? OnboardingStatus.AUTO_VERIFIED : OnboardingStatus.SUBMITTED;
 
+    const encryptedGovDocUrls = data.govDocUrls ? data.govDocUrls.map((url: string) => EncryptionService.encrypt(url)) : [];
+    const encryptedSignatureUrl = data.signatureUrl ? EncryptionService.encrypt(data.signatureUrl) : null;
+
     return await this.prisma.companyOnboarding.update({
       where: { token },
       data: {
@@ -79,9 +90,9 @@ export class OnboardingUseCase {
         adminName: data.adminName,
         adminEmail: data.adminEmail,
         logoUrl: data.logoUrl,
-        govDocUrls: data.govDocUrls,
+        govDocUrls: encryptedGovDocUrls,
         faceScanData: data.faceScanData,
-        signatureUrl: data.signatureUrl,
+        signatureUrl: encryptedSignatureUrl,
         docVerificationScore,
         status: nextStatus
       }
@@ -167,8 +178,13 @@ export class OnboardingUseCase {
   }
 
   async getAllOnboardings() {
-    return this.prisma.companyOnboarding.findMany({
+    const onboardings = await this.prisma.companyOnboarding.findMany({
       orderBy: { createdAt: 'desc' }
     });
+    return onboardings.map(o => ({
+      ...o,
+      signatureUrl: o.signatureUrl ? EncryptionService.decrypt(o.signatureUrl) : null,
+      govDocUrls: Array.isArray(o.govDocUrls) ? o.govDocUrls.map(url => EncryptionService.decrypt(url as string)) : []
+    }));
   }
 }
