@@ -341,21 +341,21 @@ export const SuperAdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Metric Cards */}
         {[
-          { label: "Total Companies", value: stats?.totalCompanies ?? "0", icon: Building2 },
-          { label: "Total Users", value: stats?.totalUsers ?? "0", icon: Users },
-          { label: "Total Assessments", value: stats?.totalAssessments ?? "0", icon: ShieldCheck },
-          { label: "Active Assessments", value: stats?.activeAssessments ?? "0", icon: User },
-          { label: "Active Companies", value: stats?.activeCompanies ?? "0", icon: DollarSign },
-          { label: "Active Users", value: stats?.activeUsers ?? "0", icon: Compass },
+          { label: "Total Companies", value: stats?.companies?.total ?? "0", icon: Building2 },
+          { label: "Total Users", value: stats?.users?.total ?? "0", icon: Users },
+          { label: "Total Assessments", value: stats?.assessments?.total ?? "0", icon: ShieldCheck },
+          { label: "Active Assessments", value: stats?.assessments?.active ?? "0", icon: User },
+          { label: "Active Companies", value: stats?.companies?.active ?? "0", icon: DollarSign },
+          { label: "Active Users", value: stats?.users?.active ?? "0", icon: Compass },
           {
-            label: "Total AI Evaluations",
-            value: stats?.aiMetrics?.totalEvaluations ?? "0",
-            icon: Sparkles,
+            label: "Evaluations Passed",
+            value: stats?.aiUsage?.totalEvaluations ?? "0",
+            icon: ShieldAlert,
           },
           {
-            label: "Avg AI Score",
-            value: stats?.aiMetrics?.averagePercentageScore
-              ? `${stats.aiMetrics.averagePercentageScore}%`
+            label: "Avg Platform Score",
+            value: stats?.aiUsage?.averagePercentageScore
+              ? `${stats.aiUsage.averagePercentageScore}%`
               : "N/A",
             icon: Activity,
           },

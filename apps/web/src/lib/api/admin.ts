@@ -1,20 +1,27 @@
 import { apiClient } from "./client";
 
 export interface AdminStats {
-  totalUsers: number;
-  activeUsers: number;
-  suspendedUsers: number;
-  totalCompanies: number;
-  activeCompanies: number;
-  pendingCompanies: number;
-  totalAssessments: number;
-  activeAssessments: number;
-  aiMetrics: {
+  users: {
+    total: number;
+    active: number;
+    suspended: number;
+  };
+  companies: {
+    total: number;
+    active: number;
+    pendingVerification: number;
+  };
+  assessments: {
+    total: number;
+    active: number;
+  };
+  aiUsage: {
     totalEvaluations: number;
     passedEvaluations: number;
+    passRate: number;
     averagePercentageScore: number;
   };
-  timestamp: string;
+  generatedAt: string;
 }
 
 export interface AdminUser {
