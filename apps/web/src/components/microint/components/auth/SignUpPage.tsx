@@ -23,7 +23,7 @@ const ErrorMsg = ({ msg }: { msg?: string }) =>
   ) : null;
 
 export const SignUpPage: React.FC = () => {
-  const { setCurrentRoute, showToast, setUserProfile } = useApp();
+  const { setCurrentRoute, showToast, setUserProfile, setRole } = useApp();
 
   const [formData, setFormData] = useState({
     fullName: "",
