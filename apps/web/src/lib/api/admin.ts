@@ -147,14 +147,14 @@ export const adminApi = {
   },
 
   generateOnboardingLink: async (): Promise<any> => {
-    const { data } = await apiClient.post<any>('/onboarding/admin/generate');
-    return data;
+    const response = await apiClient.post('/users/admin/generate-onboarding-link');
+    return response.data.data;
   },
 
   getOnboardings: async (): Promise<any[]> => {
     try {
-      const { data } = await apiClient.get<{data: any[]}>('/onboarding/admin/all');
-      return data.data;
+      const response = await apiClient.get('/ekyc/admin/onboardings');
+      return response.data.data;
     } catch (error) {
       console.warn('Backend unavailable, using mock onboardings', error);
       return [];

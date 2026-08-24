@@ -51,7 +51,7 @@ const GOVERNANCE_INSIGHT_QUOTES: MotivationalQuote[] = [
 
 export const SuperAdminDashboard: React.FC = () => {
   const { setCurrentRoute, showToast, darkMode } = useApp();
-  const [activeTab, setActiveTab] = useState<'overview' | 'escrow' | 'security'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'escrow' | 'security' | 'users' | 'ekyc'>('overview');
   const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
   const [selectedQuickActionModal, setSelectedQuickActionModal] = useState<string | null>(null);
   const [impersonateUserEmail, setImpersonateUserEmail] = useState('');
@@ -275,6 +275,26 @@ export const SuperAdminDashboard: React.FC = () => {
           Platform Telemetry
         </button>
         <button
+          onClick={() => setActiveTab('users')}
+          className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            activeTab === 'users'
+              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
+              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+          }`}
+        >
+          Users
+        </button>
+        <button
+          onClick={() => setActiveTab('ekyc')}
+          className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            activeTab === 'ekyc'
+              ? 'bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm'
+              : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
+          }`}
+        >
+          eKYC
+        </button>
+        <button
           onClick={() => setCurrentRoute('admin-organization' as any)}
           className="px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
         >
@@ -319,6 +339,9 @@ export const SuperAdminDashboard: React.FC = () => {
         })}
       </div>
 
+      {activeTab === 'overview' && (
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+
         {/* Bento Card 4 (md:col-span-5) - Executive Action Console */}
         <div className="md:col-span-5 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
           <div>
@@ -339,18 +362,6 @@ export const SuperAdminDashboard: React.FC = () => {
           </div>
 
           <div className="my-6 space-y-3">
-            <button
-              onClick={() => setSelectedQuickActionModal('onboarding')}
-              className="w-full p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/5 dark:hover:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between transition-all cursor-pointer"
-            >
-              <div className="flex items-center gap-3">
-                <Plus className="w-4 h-4 text-emerald-500" />
-                <span className="text-xs font-semibold text-black dark:text-white">
-                  Generate Onboarding Link
-                </span>
-              </div>
-              <ArrowUpRight className="w-4 h-4 text-black/40 dark:text-white/40" />
-            </button>
 
             <button
               onClick={() => setSelectedQuickActionModal('impersonate')}
@@ -444,65 +455,102 @@ export const SuperAdminDashboard: React.FC = () => {
               ))
             )}
           </div>
+          </div>
         </div>
+      )}
 
-        {/* Bento Card 6 (md:col-span-12) - Company Onboardings */}
-        <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
-                Company Onboarding Submissions
-              </h3>
-              <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">
-                Review submitted eKYC documents and digital signatures.
-              </p>
+      {activeTab === 'users' && (
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
+                  Users Management
+                </h3>
+                <p className="text-xs text-black/50 dark:text-white/50 mt-1 leading-relaxed">
+                  Manage platform users and generate access links.
+                </p>
+              </div>
+            </div>
+
+            <div className="my-6 space-y-3">
+              <button
+                onClick={() => setSelectedQuickActionModal('onboarding')}
+                className="w-full max-w-md p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/5 dark:hover:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-between transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <Plus className="w-4 h-4 text-emerald-500" />
+                  <span className="text-xs font-semibold text-black dark:text-white">
+                    Generate Onboarding Link
+                  </span>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-black/40 dark:text-white/40" />
+              </button>
             </div>
           </div>
+        </div>
+      )}
 
-          <div className="space-y-3">
-            {onboardings.length === 0 ? (
-              <div className="p-6 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-center text-xs opacity-60">
-                No active onboarding sessions.
+      {activeTab === 'ekyc' && (
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
+                  Company Onboarding Submissions
+                </h3>
+                <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">
+                  Review submitted eKYC documents and digital signatures.
+                </p>
               </div>
-            ) : (
-              onboardings.map((ob) => (
-                <div
-                  key={ob.id}
-                  className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                >
-                  <div className="flex flex-col gap-1">
+            </div>
+
+            <div className="space-y-3">
+              {onboardings.length === 0 ? (
+                <div className="p-6 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-center text-xs opacity-60">
+                  No active onboarding sessions.
+                </div>
+              ) : (
+                onboardings.map((ob) => (
+                  <div
+                    key={ob.id}
+                    className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  >
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-3">
+                        <span className="font-semibold text-sm">{ob.companyName || 'Pending Submission'}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${ob.status === 'AUTO_VERIFIED' ? 'bg-emerald-500/10 text-emerald-600' : ob.status === 'SUBMITTED' ? 'bg-amber-500/10 text-amber-600' : 'bg-black/10 text-black/60'}`}>{ob.status}</span>
+                        {ob.docVerificationScore?.status === 'AUTO_VERIFIED' && (
+                          <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded-full text-[10px] font-mono font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> MRZ Verified</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-black/50 font-mono">Token: {ob.token}</span>
+                    </div>
+                    
                     <div className="flex items-center gap-3">
-                      <span className="font-semibold text-sm">{ob.companyName || 'Pending Submission'}</span>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${ob.status === 'AUTO_VERIFIED' ? 'bg-emerald-500/10 text-emerald-600' : ob.status === 'SUBMITTED' ? 'bg-amber-500/10 text-amber-600' : 'bg-black/10 text-black/60'}`}>{ob.status}</span>
-                      {ob.docVerificationScore?.status === 'AUTO_VERIFIED' && (
-                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded-full text-[10px] font-mono font-bold flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> MRZ Verified</span>
+                      {(ob.status === 'SUBMITTED' || ob.status === 'AUTO_VERIFIED') && (
+                        <button onClick={async () => {
+                          if (confirm(`Approve onboarding for ${ob.companyName}?`)) {
+                            try {
+                              await apiClient.post(`/ekyc/admin/${ob.id}/approve`);
+                              showToast('Approved', 'Company approved and MoU generated.', 'success');
+                              adminApi.getOnboardings().then(setOnboardings);
+                            } catch (e: any) {
+                              showToast('Error', e.message || 'Failed to approve', 'error');
+                            }
+                          }
+                        }} className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-semibold rounded-lg hover:scale-105 transition-transform cursor-pointer">
+                          Approve & Generate MoU
+                        </button>
                       )}
                     </div>
-                    <span className="text-xs text-black/50 font-mono">Token: {ob.token}</span>
                   </div>
-                  
-                  <div className="flex items-center gap-3">
-                    {(ob.status === 'SUBMITTED' || ob.status === 'AUTO_VERIFIED') && (
-                      <button onClick={async () => {
-                        if (confirm(`Approve onboarding for ${ob.companyName}?`)) {
-                          try {
-                            await apiClient.post(`/onboarding/admin/${ob.id}/approve`);
-                            showToast('Approved', 'Company approved and MoU generated.', 'success');
-                            adminApi.getOnboardings().then(setOnboardings);
-                          } catch (e: any) {
-                            showToast('Error', e.message || 'Failed to approve', 'error');
-                          }
-                        }
-                      }} className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-semibold rounded-lg hover:scale-105 transition-transform">
-                        Approve & Generate MoU
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </div>
         </div>
+      )}
 
       {/* ── Generate Onboarding Link Modal ── */}
       {selectedQuickActionModal === 'onboarding' && (

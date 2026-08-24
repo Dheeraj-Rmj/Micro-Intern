@@ -2,6 +2,10 @@ import { Router } from 'express';
 import express from 'express';
 import { EkycController } from './ekyc.controller.js';
 import { authMiddleware } from '@/middleware/auth.middleware.js';
+import { requireAnyRole } from '@/middleware/rbac.middleware.js';
+import { requireFreshMfa } from '@/middleware/mfa.middleware.js';
+import { createRateLimitMiddleware } from '@/middleware/ratelimit.middleware.js';
+import { Role } from '@microintern/shared';
 
 import { prisma } from '@/core/database.js';
 import { EkycUseCase } from '../application/use-cases/ekyc.usecase.js';
@@ -37,6 +41,31 @@ export function createEkycRouter(): Router {
   router.post(
     '/manual/approve/:companyId',
     ekycController.approveManualVerification.bind(ekycController)
+  );
+
+  // ---------------------------------------------------------
+  // Onboarding eKYC Workflow Integration
+  // ---------------------------------------------------------
+  const strictLimiter = createRateLimitMiddleware('auth'); 
+
+  // Public/Semi-public routes (Company Admin doing onboarding)
+  router.get('/:token', ekycController.validateToken.bind(ekycController));
+  router.post('/:token/submit', strictLimiter, ekycController.submitData.bind(ekycController));
+
+  // Admin routes for eKYC onboarding
+  router.post(
+    '/admin/:id/approve',
+    authMiddleware,
+    requireAnyRole([Role.SUPER_ADMIN]),
+    requireFreshMfa,
+    ekycController.approveSubmission.bind(ekycController)
+  );
+
+  router.get(
+    '/admin/onboardings',
+    authMiddleware,
+    requireAnyRole([Role.SUPER_ADMIN]),
+    ekycController.getAllOnboardings.bind(ekycController)
   );
 
   return router;

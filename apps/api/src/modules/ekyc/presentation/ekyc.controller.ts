@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { EkycUseCase } from '../application/use-cases/ekyc.usecase.js';
 import { ResponseFormatter } from '@/shared/response/ResponseFormatter.js';
 import { UnauthorizedError } from '@/shared/errors/index.js';
+import { Role } from '@microintern/shared';
 
 export class EkycController {
   constructor(private readonly ekycUseCase: EkycUseCase) {}
@@ -77,11 +78,11 @@ export class EkycController {
   async approveManualVerification(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       // Security Check: Ensure only super admins can call this endpoint
-      if (req.user?.role !== 'SUPER_ADMIN') {
+      if (req.user?.role !== Role.SUPER_ADMIN) {
         throw new UnauthorizedError('Only Super Admins can approve eKYC');
       }
 
-      const { companyId } = req.params;
+      const companyId = req.params['companyId'];
       
       await this.ekycUseCase.approveManualVerification(companyId as string);
       
@@ -89,6 +90,46 @@ export class EkycController {
         data: null,
         message: 'Company eKYC approved successfully',
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // ---------------------------------------------------------
+  // Onboarding eKYC Workflow Integration
+  // ---------------------------------------------------------
+
+  async validateToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await this.ekycUseCase.validateToken(req.params['token'] as string);
+      res.status(200).json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async submitData(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await this.ekycUseCase.submitData(req.params['token'] as string, req.body);
+      res.status(200).json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllOnboardings(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await this.ekycUseCase.getAllOnboardings();
+      res.status(200).json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async approveSubmission(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await this.ekycUseCase.approveSubmission(req.params['id'] as string);
+      res.status(200).json({ success: true, data });
     } catch (error) {
       next(error);
     }
