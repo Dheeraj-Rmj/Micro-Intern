@@ -120,7 +120,7 @@ const configSchema = z.object({
   RATE_LIMIT_AUTH_MAX_REQUESTS: z.string().transform(Number).default('10'),
 
   // Security
-  CORS_ORIGINS: z.string().default('http://localhost:3000'),
+  CORS_ORIGINS: z.string().default('http://localhost:3000,https://micro-intern-web.vercel.app'),
   BCRYPT_ROUNDS: z.string().transform(Number).default('12'),
   ENCRYPTION_KEY: z.string().min(32, 'ENCRYPTION_KEY must be at least 32 characters').default('default_encryption_key_for_dev_mode_only_1234567'),
 
