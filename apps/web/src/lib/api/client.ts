@@ -16,7 +16,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } f
  * This dual approach prevents both XSS and CSRF attacks simultaneously.
  */
 
-const API_BASE_URL = process.env['NEXT_PUBLIC_API_URL'] || (process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api/v1' : 'https://micro-intern-4stz.onrender.com/api/v1');
+const API_BASE_URL = process.env['NEXT_PUBLIC_API_URL'] || 'https://micro-intern-4stz.onrender.com/api/v1';
 
 // In-memory access token store
 // This module is a singleton — token persists across component unmounts
