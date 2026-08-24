@@ -66,7 +66,7 @@ const configSchema = z.object({
   // SAML / Enterprise SSO
   SAML_ENTRY_POINT: z.string().url().optional(),
   SAML_ISSUER: z.string().optional(),
-  SAML_CERT: z.string().optional(),
+  SAML_CERT: z.string().optional().transform((v) => (v ? v.replace(/\\n/g, '\n') : v)),
 
   // Storage
   STORAGE_PROVIDER: z.enum(['minio', 's3']).default('minio'),
