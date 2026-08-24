@@ -4,7 +4,7 @@ import { config } from '@/core/config.js';
 import { NotFoundError, BadRequestError } from '@/shared/errors/index.js';
 
 import Tesseract from 'tesseract.js';
-import { parse } from 'mrz';
+// mrz is dynamically imported later because it is ESM only
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { EncryptionService } from '@/shared/encryption.service.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -211,7 +211,8 @@ export class EkycUseCase {
         const mrzLines = text.split('\n').filter(l => l.includes('<<')).slice(-2);
         if (mrzLines.length > 0) {
           const mrzText = mrzLines.join('\n');
-          const mrzParse = parse(mrzText);
+          const mrzModule = await import('mrz');
+          const mrzParse = mrzModule.parse(mrzText);
           if (mrzParse.valid) {
             docVerificationScore = { status: 'AUTO_VERIFIED', score: 100, details: mrzParse };
           } else {
