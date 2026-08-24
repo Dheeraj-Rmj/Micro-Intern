@@ -54,7 +54,7 @@ export const errorMiddleware: ErrorRequestHandler = (
   } else {
     // Unknown error — bug or library error
     appError = new InternalServerError(
-      'An unexpected error occurred',
+      error instanceof Error ? error.message : 'An unexpected error occurred',
       error instanceof Error ? error : undefined,
     );
   }
