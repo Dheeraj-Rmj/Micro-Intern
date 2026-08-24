@@ -55,95 +55,43 @@ export interface AdminAuditLog {
 
 export const adminApi = {
   getStats: async (): Promise<AdminStats> => {
-    try {
-      const { data } = await apiClient.get<{ data: AdminStats }>('/admin/stats');
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock stats', error);
-      return {
-        totalUsers: 24592,
-        activeUsers: 18500,
-        suspendedUsers: 124,
-        totalCompanies: 1420,
-        activeCompanies: 1300,
-        pendingCompanies: 120,
-        totalAssessments: 8400,
-        activeAssessments: 412,
-        aiMetrics: { totalEvaluations: 45000, passedEvaluations: 38000, averagePercentageScore: 82 },
-        timestamp: new Date().toISOString()
-      };
-    }
+    const { data } = await apiClient.get<{ data: AdminStats }>('/admin/stats');
+    return data.data;
   },
 
   getUsers: async (filters: { search?: string; role?: string } = {}): Promise<AdminUser[]> => {
-    try {
-      const { data } = await apiClient.get<{ data: AdminUser[] }>('/admin/users', { params: filters });
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock users', error);
-      return [
-        { id: '1', name: 'Acme Corp', email: 'admin@acme.com', role: 'company', status: 'active', verified: true, trustScore: 99, joined: '2023-01-15', details: 'Enterprise Partner' },
-        { id: '2', name: 'Globex Inc', email: 'hr@globex.com', role: 'company', status: 'pending', verified: false, trustScore: 75, joined: '2023-06-20', details: 'Startup Tier' }
-      ];
-    }
+    const { data } = await apiClient.get<{ data: AdminUser[] }>('/admin/users', { params: filters });
+    return data.data;
   },
 
   getTrials: async (filters: { search?: string; status?: string } = {}): Promise<AdminTrial[]> => {
-    try {
-      const { data } = await apiClient.get<{ data: AdminTrial[] }>('/admin/trials', { params: filters });
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock trials', error);
-      return [];
-    }
+    const { data } = await apiClient.get<{ data: AdminTrial[] }>('/admin/trials', { params: filters });
+    return data.data;
   },
 
   getAuditLogs: async (filters: { search?: string; severity?: string } = {}): Promise<AdminAuditLog[]> => {
-    try {
-      const { data } = await apiClient.get<{ data: AdminAuditLog[] }>('/admin/audit-logs', { params: filters });
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock audit logs', error);
-      return [
-        { id: 'LOG-001', time: new Date().toISOString(), actor: 'sysadmin', ip: '192.168.1.1', action: 'Update Feature Flag', severity: 'INFO', details: 'Enabled Jina Markdown' }
-      ];
-    }
+    const { data } = await apiClient.get<{ data: AdminAuditLog[] }>('/admin/audit-logs', { params: filters });
+    return data.data;
   },
 
   verifyCompany: async (id: string): Promise<any> => {
-    try {
-      const { data } = await apiClient.post<any>(`/admin/companies/${id}/verify`);
-      return data.data;
-    } catch (error) {
-      return { success: true };
-    }
+    const { data } = await apiClient.post<any>(`/admin/companies/${id}/verify`);
+    return data.data;
   },
 
   suspendUser: async (id: string): Promise<any> => {
-    try {
-      const { data } = await apiClient.post<any>(`/admin/users/${id}/suspend`);
-      return data.data;
-    } catch (error) {
-      return { success: true };
-    }
+    const { data } = await apiClient.post<any>(`/admin/users/${id}/suspend`);
+    return data.data;
   },
 
   broadcastAlert: async (message: string): Promise<any> => {
-    try {
-      const { data } = await apiClient.post<any>('/admin/broadcast', { message });
-      return data.data;
-    } catch (error) {
-      return { success: true };
-    }
+    const { data } = await apiClient.post<any>('/admin/broadcast', { message });
+    return data.data;
   },
 
   impersonateUser: async (email: string): Promise<any> => {
-    try {
-      const { data } = await apiClient.post<any>('/admin/impersonate', { email });
-      return data.data;
-    } catch (error) {
-      return { success: true, token: 'mock-token' };
-    }
+    const { data } = await apiClient.post<any>('/admin/impersonate', { email });
+    return data.data;
   },
 
   generateOnboardingLink: async (): Promise<any> => {
@@ -152,107 +100,37 @@ export const adminApi = {
   },
 
   getOnboardings: async (): Promise<any[]> => {
-    try {
-      const response = await apiClient.get('/ekyc/admin/onboardings');
-      return response.data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock onboardings', error);
-      return [];
-    }
+    const response = await apiClient.get('/ekyc/admin/onboardings');
+    return response.data.data;
   },
 
   getSettings: async (): Promise<any> => {
-    try {
-      const { data } = await apiClient.get<any>('/admin/settings');
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock settings', error);
-      return {
-        featureFlags: {
-          aiReader: true, aiSearch: true, zenQuotes: true, stripeLiveMode: true, antiCheatDaemon: true, maintenanceMode: false
-        },
-        emailTemplates: [
-          { id: 'candidate_onboarding', name: 'Candidate Onboarding', subject: 'Welcome to MicroIntern', body: '...' }
-        ],
-        apiKeys: []
-      };
-    }
+    const { data } = await apiClient.get<any>('/admin/settings');
+    return data.data;
   },
 
   updateSettings: async (settings: any): Promise<any> => {
-    try {
-      const { data } = await apiClient.post<any>('/admin/settings', settings);
-      return data.data;
-    } catch (error) {
-      return { success: true };
-    }
+    const { data } = await apiClient.post<any>('/admin/settings', settings);
+    return data.data;
   },
 
   getEscrowMetrics: async (): Promise<any> => {
-    try {
-      const { data } = await apiClient.get<any>('/admin/metrics/escrow');
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock escrow metrics', error);
-      return { totalValueLocked: 452500, activeContracts: 142, payoutsPending: 24100 };
-    }
+    const { data } = await apiClient.get<any>('/admin/metrics/escrow');
+    return data.data;
   },
 
   getSubscriptionMetrics: async (): Promise<any> => {
-    try {
-      const { data } = await apiClient.get<any>('/admin/metrics/subscriptions');
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock subscription metrics', error);
-      return { 
-        mrr: 125000, 
-        arr: 1500000, 
-        activePlans: 412,
-        growthRate: 14.5,
-        plans: [
-          { name: 'Enterprise Plus', count: 42, price: 999 },
-          { name: 'Pro', count: 180, price: 299 },
-          { name: 'Starter', count: 190, price: 49 },
-        ]
-      };
-    }
+    const { data } = await apiClient.get<any>('/admin/metrics/subscriptions');
+    return data.data;
   },
 
   getPaymentMetrics: async (): Promise<any> => {
-    try {
-      const { data } = await apiClient.get<any>('/admin/metrics/payments');
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock payment metrics', error);
-      return { 
-        monthlyVolume: 854000, 
-        successfulTransactions: 1420, 
-        failedTransactions: 12,
-        refundRate: 1.2,
-        recentPayouts: [
-          { id: 'po_123', amount: 4500, status: 'paid', date: new Date().toISOString() }
-        ]
-      };
-    }
+    const { data } = await apiClient.get<any>('/admin/metrics/payments');
+    return data.data;
   },
 
   getGlobalAnalytics: async (): Promise<any> => {
-    try {
-      const { data } = await apiClient.get<any>('/admin/metrics/ai-analytics');
-      return data.data;
-    } catch (error) {
-      console.warn('Backend unavailable, using mock AI analytics', error);
-      return {
-        platformHealthScore: 94,
-        activeUsersGrowth: 18.4,
-        topSkillsDemanded: [
-          { skill: 'React', demandIndex: 98, trend: 'up' },
-          { skill: 'Kubernetes', demandIndex: 85, trend: 'up' },
-        ],
-        skillGaps: [
-          { skill: 'Rust', severity: 'Critical', impact: 'High-performance systems' }
-        ]
-      };
-    }
+    const { data } = await apiClient.get<any>('/admin/metrics/ai-analytics');
+    return data.data;
   }
 };

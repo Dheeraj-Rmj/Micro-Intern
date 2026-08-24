@@ -311,14 +311,14 @@ export const SuperAdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Metric Cards */}
         {[
-          { label: 'Total Companies', value: stats?.totalCompanies || '1,420', icon: Building2 },
-          { label: 'Total Users', value: stats?.totalUsers || '24,592', icon: Users },
-          { label: 'Total HRs/Recruiters', value: '4,105', icon: ShieldCheck },
-          { label: 'Total Candidates', value: '20,487', icon: User },
-          { label: 'Platform Revenue', value: '$2.4M', icon: DollarSign },
-          { label: 'Global Users', value: '18,500', icon: Compass },
-          { label: 'Active Trials', value: stats?.activeAssessments || '412', icon: Sparkles },
-          { label: 'Platform Health', value: '99.99%', icon: Activity },
+          { label: 'Total Companies', value: stats?.totalCompanies ?? '0', icon: Building2 },
+          { label: 'Total Users', value: stats?.totalUsers ?? '0', icon: Users },
+          { label: 'Total Assessments', value: stats?.totalAssessments ?? '0', icon: ShieldCheck },
+          { label: 'Active Assessments', value: stats?.activeAssessments ?? '0', icon: User },
+          { label: 'Active Companies', value: stats?.activeCompanies ?? '0', icon: DollarSign },
+          { label: 'Active Users', value: stats?.activeUsers ?? '0', icon: Compass },
+          { label: 'Total AI Evaluations', value: stats?.aiMetrics?.totalEvaluations ?? '0', icon: Sparkles },
+          { label: 'Avg AI Score', value: stats?.aiMetrics?.averagePercentageScore ? `${stats.aiMetrics.averagePercentageScore}%` : 'N/A', icon: Activity },
         ].map((metric, idx) => {
           const Icon = metric.icon;
           return (
@@ -582,8 +582,7 @@ export const SuperAdminDashboard: React.FC = () => {
                   try {
                     const res = await adminApi.generateOnboardingLink();
                     showToast('Link Generated', 'Onboarding URL created successfully.', 'success');
-                    // Just prompt for now since we're mocking the UI interaction
-                    prompt('Copy this secure onboarding URL and send it to the Company Admin:', res.data.url);
+                    prompt('Copy this secure onboarding URL and send it to the Company Admin:', res.url);
                     setSelectedQuickActionModal(null);
                   } catch (e: any) {
                     showToast('Error', e.message || 'Failed to generate link', 'error');
