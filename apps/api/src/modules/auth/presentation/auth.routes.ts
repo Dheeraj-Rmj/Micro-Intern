@@ -114,7 +114,7 @@ export function createAuthRouter(): Router {
 
     container.register('MfaLoginUseCase', () => new MfaLoginUseCase(
       container.get('IUserRepository'),
-      container.get('JwtService'),
+      container.get('IJwtService'),
       container.get('ISessionService')
     ));
 
