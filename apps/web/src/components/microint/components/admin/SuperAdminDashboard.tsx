@@ -59,6 +59,7 @@ export const SuperAdminDashboard: React.FC = () => {
   );
   const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
   const [selectedQuickActionModal, setSelectedQuickActionModal] = useState<string | null>(null);
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [impersonateUserEmail, setImpersonateUserEmail] = useState("");
   const [systemAlertMessage, setSystemAlertMessage] = useState("");
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -631,30 +632,56 @@ export const SuperAdminDashboard: React.FC = () => {
             </p>
             <div className="pt-4 flex justify-end gap-3">
               <button
-                onClick={() => setSelectedQuickActionModal(null)}
+                onClick={() => {
+                  setSelectedQuickActionModal(null);
+                  setGeneratedLink(null);
+                }}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
               >
-                Cancel
+                Close
               </button>
-              <button
-                onClick={async () => {
-                  try {
-                    const res = await adminApi.generateOnboardingLink();
-                    showToast("Link Generated", "Onboarding URL created successfully.", "success");
-                    prompt(
-                      "Copy this secure onboarding URL and send it to the Company Admin:",
-                      res.url,
-                    );
-                    setSelectedQuickActionModal(null);
-                  } catch (e: any) {
-                    showToast("Error", e.message || "Failed to generate link", "error");
-                  }
-                }}
-                className="px-4 py-2 rounded-xl bg-emerald-500 text-white font-semibold text-xs shadow-sm hover:scale-105 transition-transform"
-              >
-                Generate Link
-              </button>
+              {!generatedLink && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await adminApi.generateOnboardingLink();
+                      setGeneratedLink(res.url);
+                      showToast("Link Generated", "Onboarding URL created successfully.", "success");
+                    } catch (e: any) {
+                      showToast("Error", e.message || "Failed to generate link", "error");
+                    }
+                  }}
+                  className="px-4 py-2 rounded-xl bg-emerald-500 text-white font-semibold text-xs shadow-sm hover:scale-105 transition-transform"
+                >
+                  Generate Link
+                </button>
+              )}
             </div>
+            
+            {generatedLink && (
+              <div className="mt-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
+                  Share this secure link with the Company Admin:
+                </p>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={generatedLink} 
+                    className="w-full text-xs bg-black/5 dark:bg-white/5 rounded-lg px-3 py-2 outline-none border border-black/10 dark:border-white/10 text-black dark:text-white"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedLink);
+                      showToast("Copied", "Link copied to clipboard", "success");
+                    }}
+                    className="px-3 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg text-xs font-semibold whitespace-nowrap hover:scale-105 transition-transform"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
