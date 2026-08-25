@@ -163,6 +163,11 @@ const configSchema = z.object({
     .string()
     .transform((v) => v === "true")
     .default("true"),
+
+  // Firebase Admin
+  FIREBASE_PROJECT_ID: z.string().optional(),
+  FIREBASE_CLIENT_EMAIL: z.string().optional(),
+  FIREBASE_PRIVATE_KEY: z.string().optional(),
 });
 
 /**

@@ -56,6 +56,15 @@ function createApiClient(): AxiosInstance {
       if (accessToken !== null) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
       }
+      
+      // Fix 411 Length Required errors on Render/Cloudflare for empty POST/PUT/PATCH/DELETE requests
+      if (
+        (config.method === "post" || config.method === "put" || config.method === "patch" || config.method === "delete") &&
+        !config.data
+      ) {
+        config.data = {};
+      }
+
       return config;
     },
     async (error: unknown) => await Promise.reject(error),
