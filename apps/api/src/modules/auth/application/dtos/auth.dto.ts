@@ -43,6 +43,19 @@ export const LoginSchema = z.object({
 
 export type LoginDto = z.infer<typeof LoginSchema>;
 
+export const RequestLoginOtpSchema = z.object({
+  email: EmailSchema,
+});
+
+export type RequestLoginOtpDto = z.infer<typeof RequestLoginOtpSchema>;
+
+export const VerifyLoginOtpSchema = z.object({
+  email: EmailSchema,
+  otp: z.string().length(6, "OTP must be exactly 6 digits").regex(/^\d+$/, "OTP must be numeric"),
+});
+
+export type VerifyLoginOtpDto = z.infer<typeof VerifyLoginOtpSchema>;
+
 // ── Token Refresh ─────────────────────────────────────────────────────────────
 
 export const RefreshTokenSchema = z.object({

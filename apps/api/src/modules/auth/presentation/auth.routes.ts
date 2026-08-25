@@ -17,6 +17,8 @@ import {
   ForgotPasswordSchema,
   ResetPasswordSchema,
   VerifyEmailSchema,
+  RequestLoginOtpSchema,
+  VerifyLoginOtpSchema,
 } from "../application/dtos/auth.dto.js";
 import { AuthController } from "./auth.controller.js";
 import { MfaController } from "./mfa.controller.js";
@@ -34,6 +36,10 @@ import {
   ForgotPasswordUseCase,
   ResetPasswordUseCase,
 } from "../application/use-cases/password-reset.usecase.js";
+import {
+  RequestLoginOtpUseCase,
+  VerifyLoginOtpUseCase,
+} from "../application/use-cases/login-otp.usecase.js";
 import { OAuthLoginUseCase } from "../application/use-cases/oauth.usecase.js";
 import {
   ListSessionsUseCase,
@@ -163,6 +169,25 @@ export function createAuthRouter(): Router {
           container.get("TokenService"),
         ),
     );
+    container.register(
+      "RequestLoginOtpUseCase",
+      () =>
+        new RequestLoginOtpUseCase(
+          container.get("IUserRepository"),
+          container.get("IEmailAuthService"),
+          container.get("TokenService"),
+        ),
+    );
+    container.register(
+      "VerifyLoginOtpUseCase",
+      () =>
+        new VerifyLoginOtpUseCase(
+          container.get("IUserRepository"),
+          container.get("IJwtService"),
+          container.get("ISessionService"),
+          container.get("TokenService"),
+        ),
+    );
 
     // Session Management Use Cases
     container.register(
@@ -207,6 +232,8 @@ export function createAuthRouter(): Router {
           container.get("RevokeSessionUseCase"),
           container.get("RevokeOtherSessionsUseCase"),
           container.get("MfaLoginUseCase"),
+          container.get("RequestLoginOtpUseCase"),
+          container.get("VerifyLoginOtpUseCase"),
           container.get("IUserRepository"),
         ),
     );
@@ -305,6 +332,27 @@ export function createAuthRouter(): Router {
     // Add validation schema later
     (req, res, next) => {
       controller.loginMfa(req, res, next).catch(next);
+    },
+  );
+
+  // POST /auth/login-otp/request
+  router.post(
+    "/login-otp/request",
+    authRateLimiter,
+    validate("body", RequestLoginOtpSchema),
+    (req, res, next) => {
+      controller.requestLoginOtp(req, res, next).catch(next);
+    },
+  );
+
+  // POST /auth/login-otp/verify
+  router.post(
+    "/login-otp/verify",
+    authRateLimiter,
+    validate("body", VerifyLoginOtpSchema),
+    audit(AuditAction.LOGIN, "User"),
+    (req, res, next) => {
+      controller.verifyLoginOtp(req, res, next).catch(next);
     },
   );
 

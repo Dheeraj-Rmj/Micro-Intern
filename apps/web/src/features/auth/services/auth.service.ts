@@ -16,6 +16,18 @@ export const authService = {
     return response.data.data;
   },
 
+  async requestLoginOtp(email: string): Promise<void> {
+    await apiClient.post("/auth/login-otp/request", { email });
+  },
+
+  async verifyLoginOtp(email: string, otp: string): Promise<AuthResponse> {
+    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(
+      "/auth/login-otp/verify",
+      { email, otp },
+    );
+    return response.data.data;
+  },
+
   async register(credentials: RegisterCredentials): Promise<AuthResponse> {
     const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(
       "/auth/register-candidate",

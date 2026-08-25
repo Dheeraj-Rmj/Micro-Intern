@@ -26,9 +26,9 @@ export class ForgotPasswordUseCase {
       return;
     }
 
-    const plainToken = this.tokenService.generateSecureToken();
+    const plainToken = this.tokenService.generateOtpToken();
     const tokenHash = this.tokenService.hashToken(plainToken);
-    const expiresAt = new Date(Date.now() + AUTH.PASSWORD_RESET_EXPIRY_MINUTES * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await this.userRepository.createVerificationToken({
       userId: user.id,

@@ -1,7 +1,6 @@
 import { config } from "@/core/config.js";
 import { ResponseFormatter } from "@/shared/response/ResponseFormatter.js";
 import { parseDeviceFromRequest } from "@/shared/utils/device-parser.js";
-
 import {
   LoginSchema,
   RegisterCandidateSchema,
@@ -9,6 +8,8 @@ import {
   ForgotPasswordSchema,
   ResetPasswordSchema,
   VerifyEmailSchema,
+  RequestLoginOtpSchema,
+  VerifyLoginOtpSchema,
 } from "../application/dtos/auth.dto.js";
 import { z } from "zod";
 
@@ -18,6 +19,10 @@ import type {
   RefreshTokenUseCase,
   LogoutUseCase,
 } from "../application/use-cases/auth.usecase.js";
+import type {
+  RequestLoginOtpUseCase,
+  VerifyLoginOtpUseCase,
+} from "../application/use-cases/login-otp.usecase.js";
 import type { MfaLoginUseCase } from "../application/use-cases/mfa-login.usecase.js";
 import type {
   VerifyEmailUseCase,
@@ -90,6 +95,8 @@ export class AuthController {
     private readonly revokeSessionUseCase: RevokeSessionUseCase,
     private readonly revokeOtherSessionsUseCase: RevokeOtherSessionsUseCase,
     private readonly mfaLoginUseCase: MfaLoginUseCase,
+    private readonly requestLoginOtpUseCase: RequestLoginOtpUseCase,
+    private readonly verifyLoginOtpUseCase: VerifyLoginOtpUseCase,
     private readonly userRepository: IUserRepository,
   ) {}
 
@@ -111,6 +118,40 @@ export class AuthController {
         });
 
         // Remove refreshToken from the payload so it doesn't get stored in JS memory
+        result.tokens.refreshToken = undefined as any;
+      }
+
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  requestLoginOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { email } = RequestLoginOtpSchema.parse(req.body);
+      await this.requestLoginOtpUseCase.execute(email);
+      ResponseFormatter.success(res, {
+        message: "If an account exists, a login OTP has been sent",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  verifyLoginOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const metadata = parseDeviceFromRequest(req);
+      const { email, otp } = VerifyLoginOtpSchema.parse(req.body);
+      const result = await this.verifyLoginOtpUseCase.execute(email, otp, metadata);
+
+      if ("tokens" in result && result.tokens && result.tokens.refreshToken) {
+        res.cookie("refreshToken", result.tokens.refreshToken, {
+          httpOnly: true,
+          secure: process.env["NODE_ENV"] === "production",
+          sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
         result.tokens.refreshToken = undefined as any;
       }
 

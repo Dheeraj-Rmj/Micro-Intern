@@ -23,6 +23,13 @@ export class TokenService {
   }
 
   /**
+   * Generate a secure 6-digit OTP token.
+   */
+  generateOtpToken(): string {
+    return crypto.randomInt(100000, 999999).toString();
+  }
+
+  /**
    * Hash a plain token for database storage.
    * Always store this hash, never the plain token.
    */

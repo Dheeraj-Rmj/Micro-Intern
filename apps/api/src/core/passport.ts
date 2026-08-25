@@ -22,10 +22,8 @@ type VerifyCallback = (error: unknown, user?: unknown, info?: unknown) => void;
 
 // Setup LinkedIn Strategy
 if (
-  config.LINKEDIN_CLIENT_ID !== undefined &&
-  config.LINKEDIN_CLIENT_SECRET !== undefined &&
-  config.LINKEDIN_CLIENT_SECRET !== undefined &&
-  config.LINKEDIN_CLIENT_SECRET !== undefined
+  config.LINKEDIN_CLIENT_ID && config.LINKEDIN_CLIENT_ID.trim().length > 0 &&
+  config.LINKEDIN_CLIENT_SECRET && config.LINKEDIN_CLIENT_SECRET.trim().length > 0
 ) {
   const linkedInStrategy = new OAuth2Strategy(
     {
@@ -99,9 +97,8 @@ if (
 
 // Setup Microsoft Strategy
 if (
-  config.MICROSOFT_CLIENT_ID !== undefined &&
-  config.MICROSOFT_CLIENT_SECRET !== undefined &&
-  config.LINKEDIN_CLIENT_SECRET !== undefined
+  config.MICROSOFT_CLIENT_ID && config.MICROSOFT_CLIENT_ID.trim().length > 0 &&
+  config.MICROSOFT_CLIENT_SECRET && config.MICROSOFT_CLIENT_SECRET.trim().length > 0
 ) {
   passport.use(
     new MicrosoftStrategy(
@@ -143,7 +140,7 @@ if (
 }
 
 const GoogleAuthStrategy = GoogleStrategy as any;
-if (config.GOOGLE_CLIENT_ID !== undefined && config.GOOGLE_CLIENT_SECRET !== undefined) {
+if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_ID.trim().length > 0 && config.GOOGLE_CLIENT_SECRET && config.GOOGLE_CLIENT_SECRET.trim().length > 0) {
   passport.use(
     new GoogleAuthStrategy(
       {
@@ -183,7 +180,7 @@ if (config.GOOGLE_CLIENT_ID !== undefined && config.GOOGLE_CLIENT_SECRET !== und
 }
 
 const GitHubAuthStrategy = GitHubStrategy as any;
-if (config.GITHUB_CLIENT_ID !== undefined && config.GITHUB_CLIENT_SECRET !== undefined) {
+if (config.GITHUB_CLIENT_ID && config.GITHUB_CLIENT_ID.trim().length > 0 && config.GITHUB_CLIENT_SECRET && config.GITHUB_CLIENT_SECRET.trim().length > 0) {
   passport.use(
     new GitHubAuthStrategy(
       {

@@ -76,8 +76,6 @@ export class QueueEmailAuthService implements IEmailAuthService {
     firstName: string;
     resetToken: string;
   }): Promise<void> {
-    const resetUrl = `${config.FRONTEND_URL}/reset-password?token=${data.resetToken}`;
-
     await queues.email.add(
       "send-forgot-password-email",
       {
@@ -86,7 +84,7 @@ export class QueueEmailAuthService implements IEmailAuthService {
         subject: "Reset your MicroIntern password",
         variables: {
           firstName: data.firstName,
-          resetUrl,
+          otp: data.resetToken,
           year: new Date().getFullYear(),
           frontendUrl: config.FRONTEND_URL,
         },
@@ -98,6 +96,33 @@ export class QueueEmailAuthService implements IEmailAuthService {
     );
 
     log.info({ email: data.email }, "Enqueued forgot password email");
+  }
+
+  async sendLoginOtpEmail(data: {
+    email: string;
+    firstName: string;
+    otp: string;
+  }): Promise<void> {
+    await queues.email.add(
+      "send-login-otp-email",
+      {
+        to: data.email,
+        templateId: "login-otp",
+        subject: "Your MicroIntern Login Code",
+        variables: {
+          firstName: data.firstName,
+          otp: data.otp,
+          year: new Date().getFullYear(),
+          frontendUrl: config.FRONTEND_URL,
+        },
+      },
+      {
+        attempts: 3,
+        backoff: { type: "exponential", delay: 5000 },
+      },
+    );
+
+    log.info({ email: data.email }, "Enqueued login OTP email");
   }
 
   async sendPasswordChangedEmail(data: { email: string; firstName: string }): Promise<void> {
