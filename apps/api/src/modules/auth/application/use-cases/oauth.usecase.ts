@@ -114,8 +114,13 @@ export class OAuthLoginUseCase {
           avatarUrl: user.avatarUrl,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       log.error({ error }, "OAuth Login failed");
+      
+      if (error.message === "AccountNotFound" || error.code === "AccountNotFound") {
+        throw error;
+      }
+      
       throw new AuthDomainError("UNAUTHORIZED", "Failed to process OAuth login");
     }
   }
