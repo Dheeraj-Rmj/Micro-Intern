@@ -42,7 +42,7 @@ export function applySecurityMiddleware(app: Application): void {
       // Cross-Origin headers
       crossOriginEmbedderPolicy: true,
       crossOriginOpenerPolicy: { policy: "same-origin" },
-      crossOriginResourcePolicy: { policy: "same-site" },
+      crossOriginResourcePolicy: { policy: "cross-origin" },
       // Prevent MIME type sniffing
       noSniff: true,
       // Prevent clickjacking
