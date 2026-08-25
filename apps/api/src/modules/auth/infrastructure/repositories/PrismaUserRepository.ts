@@ -17,11 +17,15 @@ export class PrismaUserRepository implements IUserRepository {
   // ── Lookup ────────────────────────────────────────────────────────────────
 
   async findById(id: string): Promise<User | null> {
-    const user = await this.db.user.findFirst({
-      where: { id, deletedAt: null },
-      include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
-    });
-    return user !== null ? User.fromPrisma(user) : null;
+    try {
+      const user = await this.db.user.findFirst({
+        where: { id, deletedAt: null },
+        include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
+      });
+      return user !== null ? User.fromPrisma(user) : null;
+    } catch {
+      return null;
+    }
   }
 
   async findByEmail(email: string): Promise<User | null> {
