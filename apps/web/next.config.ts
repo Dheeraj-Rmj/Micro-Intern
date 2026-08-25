@@ -7,6 +7,7 @@ const cspHeader = `
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data: https: http:;
     font-src 'self';
+    connect-src 'self' https: http: ws: wss:;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
