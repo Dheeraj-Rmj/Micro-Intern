@@ -217,7 +217,7 @@ export class EkycUseCase {
         // Extract MRZ lines
         const mrzLines = text
           .split("\n")
-          .filter((l) => l.includes("<<"))
+          .filter((l: string) => l.includes("<<"))
           .slice(-2);
         if (mrzLines.length > 0) {
           const mrzText = mrzLines.join("\n");

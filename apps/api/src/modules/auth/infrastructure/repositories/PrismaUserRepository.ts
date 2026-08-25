@@ -318,7 +318,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async createVerificationToken(data: {
     userId: string;
-    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET" | "LOGIN_OTP";
     tokenHash: string;
     expiresAt: Date;
   }): Promise<void> {
@@ -340,7 +340,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async findVerificationToken(data: {
     tokenHash: string;
-    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET" | "LOGIN_OTP";
   }): Promise<{ id: string; userId: string; expiresAt: Date; usedAt: Date | null } | null> {
     return await this.db.verificationToken.findFirst({
       where: {
@@ -366,7 +366,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async invalidateVerificationTokens(data: {
     userId: string;
-    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET" | "LOGIN_OTP";
   }): Promise<void> {
     await this.db.verificationToken.updateMany({
       where: { userId: data.userId, type: data.type, usedAt: null },

@@ -77,21 +77,21 @@ export interface IUserRepository {
   // ── Verification Tokens ───────────────────────────────────────────────────
   createVerificationToken(data: {
     userId: string;
-    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET" | "LOGIN_OTP";
     tokenHash: string;
     expiresAt: Date;
   }): Promise<void>;
 
   findVerificationToken(data: {
     tokenHash: string;
-    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET" | "LOGIN_OTP";
   }): Promise<{ id: string; userId: string; expiresAt: Date; usedAt: Date | null } | null>;
 
   markVerificationTokenUsed(tokenId: string): Promise<void>;
 
   invalidateVerificationTokens(data: {
     userId: string;
-    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET";
+    type: "EMAIL_VERIFICATION" | "PASSWORD_RESET" | "LOGIN_OTP";
   }): Promise<void>;
 
   // ── Invitations ───────────────────────────────────────────────────────────
