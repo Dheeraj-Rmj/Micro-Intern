@@ -36,6 +36,14 @@ export class PrismaUserRepository implements IUserRepository {
     return user !== null ? User.fromPrisma(user) : null;
   }
 
+  async findByUsername(username: string): Promise<User | null> {
+    const user = await this.db.user.findFirst({
+      where: { username, deletedAt: null },
+      include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
+    });
+    return user !== null ? User.fromPrisma(user) : null;
+  }
+
   async findByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null> {
     const account = await this.db.oAuthAccount.findFirst({
       where: { provider: provider as OAuthProvider, providerAccountId },
@@ -114,6 +122,7 @@ export class PrismaUserRepository implements IUserRepository {
 
   async createCandidate(data: {
     email: string;
+    username?: string;
     passwordHash: string;
     firstName: string;
     lastName: string;
@@ -122,6 +131,7 @@ export class PrismaUserRepository implements IUserRepository {
       const created = await tx.user.create({
         data: {
           email: data.email.toLowerCase(),
+          username: data.username,
           passwordHash: data.passwordHash,
           firstName: data.firstName,
           lastName: data.lastName,

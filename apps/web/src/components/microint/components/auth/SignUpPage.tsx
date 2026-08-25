@@ -89,6 +89,7 @@ export const SignUpPage: React.FC = () => {
       const response = await apiClient.post("/auth/register/candidate", {
         firstName: formData.fullName.split(' ')[0] || formData.fullName,
         lastName: formData.fullName.split(' ').slice(1).join(' ') || '',
+        username: formData.username,
         email: formData.email,
         password: formData.password,
       });

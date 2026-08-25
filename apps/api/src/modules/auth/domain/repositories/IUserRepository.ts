@@ -11,11 +11,13 @@ export interface IUserRepository {
   // ── Lookup ────────────────────────────────────────────────────────────────
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
+  findByUsername(username: string): Promise<User | null>;
   findByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null>;
 
   // ── Candidate Creation ────────────────────────────────────────────────────
   createCandidate(data: {
     email: string;
+    username?: string;
     passwordHash: string;
     firstName: string;
     lastName: string;

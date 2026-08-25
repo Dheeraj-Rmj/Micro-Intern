@@ -16,6 +16,7 @@ import { z } from "zod";
 
 export const RegisterCandidateSchema = z.object({
   email: EmailSchema,
+  username: z.string().min(3).regex(/^[a-zA-Z0-9_]+$/).optional(),
   password: PasswordSchema,
   firstName: NameSchema,
   lastName: NameSchema,
