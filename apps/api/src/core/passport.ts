@@ -63,6 +63,8 @@ if (
       } catch (error: any) {
           if (error.message === "AccountNotFound") {
             done(null, false, { message: "AccountNotFound" });
+          } else if (error.message === "AccountAlreadyExists") {
+            done(null, false, { message: "AccountAlreadyExists" });
           } else {
             done(error, false);
           }
@@ -142,6 +144,8 @@ if (
         } catch (error: any) {
           if (error.message === "AccountNotFound") {
             done(null, false, { message: "AccountNotFound" });
+          } else if (error.message === "AccountAlreadyExists") {
+            done(null, false, { message: "AccountAlreadyExists" });
           } else {
             done(error, false);
           }
@@ -188,6 +192,8 @@ if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_ID.trim().length > 0 && conf
         } catch (error: any) {
           if (error.message === "AccountNotFound") {
             done(null, false, { message: "AccountNotFound" });
+          } else if (error.message === "AccountAlreadyExists") {
+            done(null, false, { message: "AccountAlreadyExists" });
           } else {
             done(error, false);
           }
@@ -238,6 +244,8 @@ if (config.GITHUB_CLIENT_ID && config.GITHUB_CLIENT_ID.trim().length > 0 && conf
         } catch (error: any) {
           if (error.message === "AccountNotFound") {
             done(null, false, { message: "AccountNotFound" });
+          } else if (error.message === "AccountAlreadyExists") {
+            done(null, false, { message: "AccountAlreadyExists" });
           } else {
             done(error, false);
           }

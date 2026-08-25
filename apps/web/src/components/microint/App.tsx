@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppProvider, useApp } from "./context/AppContext";
 import { LoadingScreen } from "./components/common/LoadingScreen";
 import { Toast } from "./components/common/Toast";
@@ -44,6 +44,27 @@ import {
 const MainRouter: React.FC = () => {
   const { currentRoute, setCurrentRoute, role, setRole, showToast } = useApp();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const errParam = params.get("error");
+      if (errParam) {
+        // Clean URL to prevent recurring toasts on refresh
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        if (errParam === "AccountAlreadyExists") {
+          showToast("Account Exists", "An account with this email already exists. Please log in instead.", "warning");
+          setCurrentRoute("login");
+        } else if (errParam === "AccountNotFound") {
+          showToast("Account Not Found", "No account found with this email. Please sign up.", "warning");
+          setCurrentRoute("signup");
+        } else {
+          showToast("Authentication Error", decodeURIComponent(errParam), "error");
+        }
+      }
+    }
+  }, [showToast, setCurrentRoute]);
 
   // 1. Fullscreen Loading Screen
   if (currentRoute === "loading") {

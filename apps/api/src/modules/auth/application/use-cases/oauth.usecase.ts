@@ -43,7 +43,12 @@ export class OAuthLoginUseCase {
         user = await this.userRepository.findByEmail(profile.email);
 
         if (user) {
-          // Link new OAuth account to existing user
+          // If the intent is "signup", but the account already exists, reject the attempt.
+          if (action === "signup") {
+            throw new Error("AccountAlreadyExists");
+          }
+
+          // Link new OAuth account to existing user (only if logging in)
           await this.userRepository.linkOAuthAccount(user.id, {
             provider: profile.provider,
             providerAccountId: profile.providerAccountId,
@@ -117,7 +122,10 @@ export class OAuthLoginUseCase {
     } catch (error: any) {
       log.error({ error }, "OAuth Login failed");
       
-      if (error.message === "AccountNotFound" || error.code === "AccountNotFound") {
+      if (
+        error.message === "AccountNotFound" || error.code === "AccountNotFound" ||
+        error.message === "AccountAlreadyExists" || error.code === "AccountAlreadyExists"
+      ) {
         throw error;
       }
       

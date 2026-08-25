@@ -119,7 +119,7 @@ export const SignUpPage: React.FC = () => {
   const handleSocialAuth = (provider: string) => {
     const API_URL =
       process.env["NEXT_PUBLIC_API_URL"] || "https://micro-intern-4stz.onrender.com/api/v1";
-    window.location.href = `${API_URL}/auth/${provider.toLowerCase()}`;
+    window.location.href = `${API_URL}/auth/${provider.toLowerCase()}?action=signup`;
   };
 
   const isFormValid =
