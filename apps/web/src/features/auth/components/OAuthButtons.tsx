@@ -5,12 +5,12 @@ import { Loader2 } from "lucide-react";
 
 const API_BASE_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:5001";
 
-export function OAuthButtons() {
+export function OAuthButtons({ action = "login" }: { action?: "login" | "signup" }) {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  const handleOAuthLogin = (provider: "linkedin" | "microsoft") => {
+  const handleOAuthLogin = (provider: "linkedin" | "microsoft" | "google" | "github") => {
     setLoadingProvider(provider);
-    window.location.href = `${API_BASE_URL}/api/v1/auth/${provider}`;
+    window.location.href = `${API_BASE_URL}/api/v1/auth/${provider}?action=${action}`;
   };
 
   return (

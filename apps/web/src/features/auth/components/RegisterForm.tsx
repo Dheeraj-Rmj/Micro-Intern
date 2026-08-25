@@ -243,7 +243,7 @@ export function RegisterForm() {
         </div>
       </div>
 
-      <OAuthButtons />
+      <OAuthButtons action="signup" />
 
       <p className="mt-8 text-center text-sm text-slate-400">
         Already have a candidate account?{" "}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -17,6 +17,18 @@ export function LoginForm() {
   const setAuth = useAuthStore((state) => state.setAuth);
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const errParam = params.get("error");
+      if (errParam === "AccountNotFound") {
+        setApiError("Account not found. Please create an account.");
+      } else if (errParam) {
+        setApiError(decodeURIComponent(errParam));
+      }
+    }
+  }, []);
 
   const {
     register,
@@ -152,7 +164,7 @@ export function LoginForm() {
         </div>
       </div>
 
-      <OAuthButtons />
+      <OAuthButtons action="login" />
 
       <p className="mt-8 text-center text-sm text-slate-400">
         New to MicroIntern?{" "}

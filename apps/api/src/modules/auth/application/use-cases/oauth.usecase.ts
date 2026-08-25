@@ -26,7 +26,11 @@ export class OAuthLoginUseCase {
     private readonly sessionService: ISessionService,
   ) {}
 
-  async execute(profile: OAuthProfile, metadata?: Partial<ParsedDeviceInfo>) {
+  async execute(
+    profile: OAuthProfile,
+    metadata?: Partial<ParsedDeviceInfo>,
+    action: string = "login",
+  ) {
     try {
       // 1. Check if OAuth account already exists
       let user = await this.userRepository.findByOAuthAccount(
@@ -47,7 +51,13 @@ export class OAuthLoginUseCase {
             refreshToken: profile.refreshToken,
           });
         } else {
-          // 3. Create a brand new user
+          // 3. User does not exist at all.
+          // If the intent is to just "login", we reject the attempt.
+          if (action === "login") {
+            throw new Error("AccountNotFound");
+          }
+
+          // Otherwise (action === "signup"), we create a brand new user
           user = await this.userRepository.createOAuthCandidate({
             email: profile.email,
             firstName: profile.firstName,

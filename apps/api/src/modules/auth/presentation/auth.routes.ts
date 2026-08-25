@@ -1,3 +1,5 @@
+import { config } from "@/core/config.js";
+
 import { AuditAction } from "@microintern/shared";
 import { Router } from "express";
 import { z } from "zod";
@@ -470,55 +472,50 @@ export function createAuthRouter(): Router {
   );
 
   // ── OAuth Routes ──────────────────────────────────────────────────────────
+
+  const setOAuthAction = (req: any, res: any, next: any) => {
+    if (req.query.action) {
+      res.cookie("oauth_action", req.query.action, { maxAge: 10 * 60 * 1000, httpOnly: true });
+    }
+    next();
+  };
+
+  const handleOAuthFailure = (provider: string) => (req: any, res: any, next: any) => {
+    passport.authenticate(provider, { session: false }, (err: any, user: any, info: any) => {
+      if (err) return next(err);
+      if (!user) {
+        const errorMsg = info?.message || "OAuthFailed";
+        return res.redirect(`${config.FRONTEND_URL}/?error=${errorMsg}`);
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  };
+
   // GET /auth/linkedin
-  router.get("/linkedin", passport.authenticate("linkedin", { session: false }));
+  router.get("/linkedin", setOAuthAction, passport.authenticate("linkedin", { session: false }));
 
   // GET /auth/linkedin/callback
-  router.get(
-    "/linkedin/callback",
-    passport.authenticate("linkedin", { session: false, failureRedirect: "/login" }),
-    controller.handleOAuthCallback,
-  );
+  router.get("/linkedin/callback", handleOAuthFailure("linkedin"), controller.handleOAuthCallback);
 
   // GET /auth/microsoft
-  router.get(
-    "/microsoft",
-    passport.authenticate("microsoft", { session: false, prompt: "select_account" }),
-  );
+  router.get("/microsoft", setOAuthAction, passport.authenticate("microsoft", { session: false, prompt: "select_account" }));
 
   // GET /auth/microsoft/callback
-  router.get(
-    "/microsoft/callback",
-    passport.authenticate("microsoft", { session: false, failureRedirect: "/login" }),
-    controller.handleOAuthCallback,
-  );
+  router.get("/microsoft/callback", handleOAuthFailure("microsoft"), controller.handleOAuthCallback);
 
   // GET /auth/github
-  router.get("/github", passport.authenticate("github", { session: false, scope: ["user:email"] }));
+  router.get("/github", setOAuthAction, passport.authenticate("github", { session: false, scope: ["user:email"] }));
 
   // GET /auth/github/callback
-  router.get(
-    "/github/callback",
-    passport.authenticate("github", { session: false, failureRedirect: "/login" }),
-    controller.handleOAuthCallback,
-  );
+  router.get("/github/callback", handleOAuthFailure("github"), controller.handleOAuthCallback);
 
   // GET /auth/google
-  router.get(
-    "/google",
-    passport.authenticate("google", {
-      session: false,
-      scope: ["profile", "email"],
-      prompt: "select_account",
-    }),
-  );
+  router.get("/google", setOAuthAction, passport.authenticate("google", { session: false, scope: ["profile", "email"], prompt: "select_account" }));
 
   // GET /auth/google/callback
-  router.get(
-    "/google/callback",
-    passport.authenticate("google", { session: false, failureRedirect: "/login" }),
-    controller.handleOAuthCallback,
-  );
+  router.get("/google/callback", handleOAuthFailure("google"), controller.handleOAuthCallback);
+
 
   return router;
 }

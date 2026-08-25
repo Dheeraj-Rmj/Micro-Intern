@@ -30,14 +30,16 @@ if (
       authorizationURL: "https://www.linkedin.com/oauth/v2/authorization",
       tokenURL: "https://www.linkedin.com/oauth/v2/accessToken",
       clientID: config.LINKEDIN_CLIENT_ID,
+      passReqToCallback: true,
       clientSecret: config.LINKEDIN_CLIENT_SECRET,
       callbackURL: config.LINKEDIN_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/linkedin/callback`,
       scope: ["openid", "profile", "email"],
     },
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    async (accessToken: string, refreshToken: string, profile: unknown, done: VerifyCallback) => {
+    async (req: any, accessToken: string, refreshToken: string, profile: unknown, done: VerifyCallback) => {
       try {
         const container = getContainer();
+          const action = req.cookies?.oauth_action || "login";
         const oauthLoginUseCase = container.get<OAuthLoginUseCase>("OAuthLoginUseCase");
 
         const p = profile as PassportProfile;
@@ -55,12 +57,16 @@ if (
           avatarUrl,
           accessToken,
           refreshToken,
-        });
+          }, undefined, action);
 
         done(null, result);
-      } catch (error) {
-        done(error, false);
-      }
+      } catch (error: any) {
+          if (error.message === "AccountNotFound") {
+            done(null, false, { message: "AccountNotFound" });
+          } else {
+            done(error, false);
+          }
+        }
     },
   );
 
@@ -104,15 +110,17 @@ if (
     new MicrosoftStrategy(
       {
         clientID: config.MICROSOFT_CLIENT_ID,
+      passReqToCallback: true,
         clientSecret: config.MICROSOFT_CLIENT_SECRET,
         callbackURL:
           config.MICROSOFT_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/microsoft/callback`,
         scope: ["user.read"],
       },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      async (accessToken: string, refreshToken: string, profile: unknown, done: VerifyCallback) => {
+      async (req: any, accessToken: string, refreshToken: string, profile: unknown, done: VerifyCallback) => {
         try {
           const container = getContainer();
+          const action = req.cookies?.oauth_action || "login";
           const oauthLoginUseCase = container.get<OAuthLoginUseCase>("OAuthLoginUseCase");
 
           const p = profile as PassportProfile;
@@ -128,11 +136,15 @@ if (
             lastName,
             accessToken,
             refreshToken,
-          });
+          }, undefined, action);
 
           done(null, result);
-        } catch (error) {
-          done(error, false);
+        } catch (error: any) {
+          if (error.message === "AccountNotFound") {
+            done(null, false, { message: "AccountNotFound" });
+          } else {
+            done(error, false);
+          }
         }
       },
     ),
@@ -145,13 +157,15 @@ if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_ID.trim().length > 0 && conf
     new GoogleAuthStrategy(
       {
         clientID: config.GOOGLE_CLIENT_ID,
+      passReqToCallback: true,
         clientSecret: config.GOOGLE_CLIENT_SECRET,
         callbackURL: config.GOOGLE_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/google/callback`,
       },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
+      async (req: any, accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
         try {
           const container = getContainer();
+          const action = req.cookies?.oauth_action || "login";
           const oauthLoginUseCase = container.get<OAuthLoginUseCase>("OAuthLoginUseCase");
 
           const email = profile.emails?.[0]?.value ?? "";
@@ -168,11 +182,15 @@ if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_ID.trim().length > 0 && conf
             avatarUrl,
             accessToken,
             refreshToken,
-          });
+          }, undefined, action);
 
           done(null, result);
-        } catch (error) {
-          done(error, false);
+        } catch (error: any) {
+          if (error.message === "AccountNotFound") {
+            done(null, false, { message: "AccountNotFound" });
+          } else {
+            done(error, false);
+          }
         }
       },
     ),
@@ -185,14 +203,16 @@ if (config.GITHUB_CLIENT_ID && config.GITHUB_CLIENT_ID.trim().length > 0 && conf
     new GitHubAuthStrategy(
       {
         clientID: config.GITHUB_CLIENT_ID,
+      passReqToCallback: true,
         clientSecret: config.GITHUB_CLIENT_SECRET,
         callbackURL: config.GITHUB_CALLBACK_URL ?? `${config.API_BASE_URL}/auth/github/callback`,
         scope: ["user:email"],
       },
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      async (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
+      async (req: any, accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) => {
         try {
           const container = getContainer();
+          const action = req.cookies?.oauth_action || "login";
           const oauthLoginUseCase = container.get<OAuthLoginUseCase>("OAuthLoginUseCase");
 
           // GitHub emails might be buried or hidden, handle carefully
@@ -212,11 +232,15 @@ if (config.GITHUB_CLIENT_ID && config.GITHUB_CLIENT_ID.trim().length > 0 && conf
             avatarUrl,
             accessToken,
             refreshToken,
-          });
+          }, undefined, action);
 
           done(null, result);
-        } catch (error) {
-          done(error, false);
+        } catch (error: any) {
+          if (error.message === "AccountNotFound") {
+            done(null, false, { message: "AccountNotFound" });
+          } else {
+            done(error, false);
+          }
         }
       },
     ),
