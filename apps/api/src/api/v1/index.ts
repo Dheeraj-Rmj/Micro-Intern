@@ -12,6 +12,7 @@ import {
 import { createManagementRouter } from "@/modules/management/presentation/management.routes.js";
 import { createNotificationRouter } from "@/modules/notification/presentation/notification.routes.js";
 import { createAssessmentRouter } from "@/modules/assessment/presentation/assessment.routes.js";
+import { healthRouter } from "@/api/health/health.routes.js";
 
 // Skill-Based Hiring Platform Modules
 import { createSkillRoutes } from "@/modules/skill-framework/presentation/skill.routes.js";
@@ -45,6 +46,7 @@ export function createV1Router(): Router {
   attachAssessmentSubmissionRoutes(assessmentRouter);
 
   // ── Core Platform ──────────────────────────────────────────────────────────
+  v1Router.use("/health", healthRouter);
   v1Router.use("/auth", createAuthRouter());
   v1Router.use("/management", createManagementRouter());
   v1Router.use("/candidates", createCandidateRouter());
