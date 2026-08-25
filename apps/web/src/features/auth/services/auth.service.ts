@@ -30,7 +30,7 @@ export const authService = {
 
   async register(credentials: RegisterCredentials): Promise<AuthResponse> {
     const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(
-      "/auth/register-candidate",
+      "/auth/register/candidate",
       {
         firstName: credentials.firstName,
         lastName: credentials.lastName,
