@@ -51,7 +51,11 @@ export const SignUpPage: React.FC = () => {
 
   const validate = (): boolean => {
     const errs: FormErrors = {};
-    if (!formData.fullName.trim()) errs.fullName = "Full name is required";
+    if (!formData.fullName.trim()) {
+      errs.fullName = "Full name is required";
+    } else if (!formData.fullName.trim().includes(" ")) {
+      errs.fullName = "Please enter both first and last name";
+    }
     if (!formData.username.trim()) {
       errs.username = "Username is required";
     } else if (formData.username.length < 3) {
@@ -125,6 +129,7 @@ export const SignUpPage: React.FC = () => {
 
   const isFormValid =
     formData.fullName.trim().length > 0 &&
+    formData.fullName.trim().includes(" ") &&
     formData.username.trim().length >= 3 &&
     formData.email.trim().length > 0 &&
     formData.password.length >= 8 &&
