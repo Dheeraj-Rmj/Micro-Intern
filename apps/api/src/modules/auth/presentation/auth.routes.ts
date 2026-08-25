@@ -207,6 +207,7 @@ export function createAuthRouter(): Router {
           container.get("RevokeSessionUseCase"),
           container.get("RevokeOtherSessionsUseCase"),
           container.get("MfaLoginUseCase"),
+          container.get("IUserRepository"),
         ),
     );
 
@@ -380,8 +381,8 @@ export function createAuthRouter(): Router {
   });
 
   // GET /auth/me
-  router.get("/me", authMiddleware, (req, res) => {
-    controller.me(req, res);
+  router.get("/me", authMiddleware, (req, res, next) => {
+    controller.me(req, res, next).catch(next);
   });
 
   // ── Device Logins & Session History Routes ────────────────────────────────

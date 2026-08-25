@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useAuthStore } from "@/stores/auth.store";
 import { assessmentApi } from "../../../lib/api/assessment";
 import {
   PageRoute,
@@ -130,6 +131,55 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile>(INITIAL_COMPANY_PROFILE);
   const [trials, setTrials] = useState<Trial[]>(MOCK_TRIALS);
+
+  // Sync useAuthStore (global state) to AppContext userProfile (legacy state)
+  useEffect(() => {
+    const unsub = useAuthStore.subscribe((state, prevState) => {
+      if (state.user && state.user !== prevState.user) {
+        setUserProfile((prev) => ({
+          ...prev,
+          id: state.user!.id,
+          fullName: `${state.user!.firstName} ${state.user!.lastName}`,
+          email: state.user!.email,
+          role: state.user!.role,
+          avatar: state.user!.avatarUrl || prev.avatar,
+        }));
+        
+        // Ensure role state is synced
+        if (state.user!.role === "SUPER_ADMIN" || state.user!.role === "ADMIN") {
+          setRole("admin");
+        } else if (state.user!.role === "COMPANY_OWNER" || state.user!.role === "RECRUITER") {
+          setRole("company");
+        } else {
+          setRole("candidate");
+        }
+      }
+    });
+    
+    // Initial sync
+    const state = useAuthStore.getState();
+    if (state.user) {
+        setUserProfile((prev) => ({
+          ...prev,
+          id: state.user!.id,
+          fullName: `${state.user!.firstName} ${state.user!.lastName}`,
+          email: state.user!.email,
+          role: state.user!.role,
+          avatar: state.user!.avatarUrl || prev.avatar,
+        }));
+        
+        // Ensure role state is synced
+        if (state.user!.role === "SUPER_ADMIN" || state.user!.role === "ADMIN") {
+          setRole("admin");
+        } else if (state.user!.role === "COMPANY_OWNER" || state.user!.role === "RECRUITER") {
+          setRole("company");
+        } else {
+          setRole("candidate");
+        }
+    }
+    
+    return unsub;
+  }, []);
 
   useEffect(() => {
     const fetchTrials = async () => {

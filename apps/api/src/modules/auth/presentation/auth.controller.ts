@@ -32,6 +32,7 @@ import type {
   RevokeSessionUseCase,
   RevokeOtherSessionsUseCase,
 } from "../application/use-cases/session.usecase.js";
+import type { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import type { Request, Response, NextFunction } from "express";
 
 const ResendVerificationSchema = z.object({
@@ -64,7 +65,7 @@ export class AuthController {
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
           secure: process.env["NODE_ENV"] === "production",
-          sameSite: "strict",
+          sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
       }
@@ -89,6 +90,7 @@ export class AuthController {
     private readonly revokeSessionUseCase: RevokeSessionUseCase,
     private readonly revokeOtherSessionsUseCase: RevokeOtherSessionsUseCase,
     private readonly mfaLoginUseCase: MfaLoginUseCase,
+    private readonly userRepository: IUserRepository,
   ) {}
 
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -104,7 +106,7 @@ export class AuthController {
         res.cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: true,
           secure: process.env["NODE_ENV"] === "production",
-          sameSite: "strict",
+          sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
@@ -134,7 +136,7 @@ export class AuthController {
         res.cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: true,
           secure: process.env["NODE_ENV"] === "production",
-          sameSite: "strict",
+          sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
@@ -161,7 +163,7 @@ export class AuthController {
         res.cookie("refreshToken", result.tokens.refreshToken, {
           httpOnly: true,
           secure: process.env["NODE_ENV"] === "production",
-          sameSite: "strict",
+          sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
         result.tokens.refreshToken = undefined as any;
@@ -193,7 +195,7 @@ export class AuthController {
         res.cookie("refreshToken", (result as any).refreshToken, {
           httpOnly: true,
           secure: process.env["NODE_ENV"] === "production",
-          sameSite: "strict",
+          sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
         (result as any).refreshToken = undefined;
@@ -218,8 +220,33 @@ export class AuthController {
     }
   };
 
-  me = (req: Request, res: Response): void => {
-    ResponseFormatter.success(res, req.user);
+  me = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ success: false, error: { message: "Unauthorized" } });
+        return;
+      }
+      const user = await this.userRepository.findById(req.user.id);
+      if (!user) {
+        res.status(404).json({ success: false, error: { message: "User not found" } });
+        return;
+      }
+      
+      const payload = {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        avatarUrl: user.avatarUrl,
+        companyId: user.companyId,
+        sessionId: req.user.sessionId,
+      };
+      
+      ResponseFormatter.success(res, payload);
+    } catch (error) {
+      next(error);
+    }
   };
 
   // ── Device Logins & Session History ──────────────────────────────────────

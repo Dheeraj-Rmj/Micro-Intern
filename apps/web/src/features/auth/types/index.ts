@@ -3,7 +3,7 @@ export interface CandidateUser {
   email: string;
   firstName: string;
   lastName: string;
-  role: "CANDIDATE";
+  role: "CANDIDATE" | "SUPER_ADMIN" | "ADMIN" | "COMPANY_OWNER" | "RECRUITER" | string;
   avatarUrl?: string | null;
   isEmailVerified: boolean;
   createdAt: string;

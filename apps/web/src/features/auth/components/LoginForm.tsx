@@ -35,7 +35,10 @@ export function LoginForm() {
     onSuccess: (response) => {
       setApiError(null);
       setAuth(response.user, response.accessToken);
-      router.replace("/dashboard");
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("microintern_current_route", "dashboard");
+      }
+      router.replace("/");
     },
     onError: (error: unknown) => {
       let message = "Invalid email or password. Please try again.";

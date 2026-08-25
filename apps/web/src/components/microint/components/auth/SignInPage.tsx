@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { apiClient, setAccessToken } from "../../../../lib/api/client";
+import { useAuthStore } from "@/stores/auth.store";
 import { startAuthentication } from "@simplewebauthn/browser";
 import {
   Eye,
@@ -107,6 +108,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         const user = response.data.data.user;
         const accessToken = response.data.data.tokens?.accessToken;
         if (accessToken) setAccessToken(accessToken);
+        useAuthStore.getState().setAuth(user, accessToken || "");
         setUserProfile(user);
         setRole(user.role.toLowerCase());
         showToast("Authenticated", "MFA Verification successful.", "success");
@@ -143,6 +145,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
       const user = data.user;
       const accessToken = data.tokens?.accessToken;
       if (accessToken) setAccessToken(accessToken);
+      useAuthStore.getState().setAuth(user, accessToken || "");
       
       setUserProfile(user);
       
@@ -200,6 +203,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
       const user = verifyResponse.data.data.user;
       const accessToken = verifyResponse.data.data.accessToken;
       if (accessToken) setAccessToken(accessToken);
+      useAuthStore.getState().setAuth(user, accessToken || "");
 
       setUserProfile(user);
       setRole("admin");
@@ -243,6 +247,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
       const user = data.user;
       const accessToken = data.tokens?.accessToken;
       if (accessToken) setAccessToken(accessToken);
+      useAuthStore.getState().setAuth(user, accessToken || "");
       
       setUserProfile(user);
       setActiveModal("none");

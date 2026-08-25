@@ -115,8 +115,7 @@ export function createAdminRouter(): Router {
   const router = Router();
 
   // All endpoints in Admin router strictly require ADMIN role or higher (SUPER_ADMIN)
-  // TEMPORARILY DISABLED FOR DEMO SO USER CAN PREVIEW WITHOUT JWT:
-  // router.use(authMiddleware as RequestHandler, requireRole(Role.ADMIN) as RequestHandler);
+  router.use(authMiddleware as RequestHandler, requireRole(Role.ADMIN) as RequestHandler);
 
   // GET /api/v1/admin/stats
   router.get("/stats", (req, res, next) => {
