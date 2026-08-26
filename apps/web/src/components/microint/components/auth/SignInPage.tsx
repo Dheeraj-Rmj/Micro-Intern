@@ -110,9 +110,21 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         if (accessToken) setAccessToken(accessToken);
         useAuthStore.getState().setAuth(user, accessToken || "");
         setUserProfile(user);
-        setRole(user.role.toLowerCase());
-        showToast("Authenticated", "MFA Verification successful.", "success");
-        setCurrentRoute(user.role === "SUPER_ADMIN" || user.role === "ADMIN" ? "admin-dashboard" : user.role === "COMPANY_OWNER" || user.role === "RECRUITER" ? "company-dashboard" : "dashboard");
+        
+        const userRole = user.role;
+        if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
+          setRole("admin");
+          showToast("Authenticated", "MFA Verification successful.", "success");
+          setCurrentRoute("admin-dashboard");
+        } else if (userRole === "COMPANY_OWNER" || userRole === "RECRUITER") {
+          setRole("company");
+          showToast("Authenticated", "MFA Verification successful.", "success");
+          setCurrentRoute("company-dashboard");
+        } else {
+          setRole("candidate");
+          showToast("Authenticated", "MFA Verification successful.", "success");
+          setCurrentRoute("dashboard");
+        }
         return;
       }
 
@@ -122,7 +134,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         return;
       }
 
-      const response = await apiClient.post("/auth/login", {
+      const endpoint = initialPortal === 'candidate' ? '/auth/login' : '/management/auth/login';
+      const response = await apiClient.post(endpoint, {
         email: identifier,
         password,
       });
@@ -233,7 +246,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
          // In a real app we'd split it like the main form.
       }
 
-      const response = await apiClient.post("/auth/login", {
+      const endpoint = '/management/auth/login';
+      const response = await apiClient.post(endpoint, {
         email: modalEmail,
         password: modalPassword,
       });

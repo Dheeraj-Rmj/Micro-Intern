@@ -47,6 +47,20 @@ export class ManagementController {
       const dto = LoginSchema.parse(req.body);
       const ipAddress = req.ip || "";
       const result = await this.managementLoginUseCase.execute(dto, ipAddress);
+
+      // Set httpOnly cookie for CSRF and XSS protection
+      if ("tokens" in result && result.tokens && result.tokens.refreshToken) {
+        res.cookie("refreshToken", result.tokens.refreshToken, {
+          httpOnly: true,
+          secure: process.env["NODE_ENV"] === "production",
+          sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
+        // Remove refreshToken from the payload so it doesn't get stored in JS memory
+        (result.tokens as any).refreshToken = undefined;
+      }
+
       ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);

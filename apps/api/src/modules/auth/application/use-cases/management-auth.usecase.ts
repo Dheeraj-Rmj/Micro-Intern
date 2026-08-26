@@ -69,6 +69,13 @@ export class ManagementLoginUseCase {
     await this.userRepository.resetLoginAttempts(user.id);
     await this.userRepository.updateLastLogin(user.id, ipAddress);
 
+    // If MFA is enabled, issue a temporary MFA token instead of full session tokens
+    if (user.mfaEnabled) {
+      const mfaToken = await this.jwtService.generateMfaToken(user.id);
+      log.info({ userId: user.id }, "MFA required for management login");
+      return { mfaRequired: true, mfaToken };
+    }
+
     // Create session and tokens
     const sessionId = await this.sessionService.createSession(user.id);
     const tokens = await this.jwtService.generateTokenPair(user, sessionId);

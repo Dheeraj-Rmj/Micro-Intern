@@ -37,11 +37,9 @@ export class PrismaUserRepository implements IUserRepository {
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    const user = await this.db.user.findFirst({
-      where: { username, deletedAt: null },
-      include: { companyMembership: { where: { deletedAt: null }, take: 1 } },
-    });
-    return user !== null ? User.fromPrisma(user) : null;
+    // username is not currently in the Prisma schema, so we return null for now.
+    // To support usernames, add it to schema.prisma and uncomment the query.
+    return null;
   }
 
   async findByOAuthAccount(provider: string, providerAccountId: string): Promise<User | null> {
@@ -131,7 +129,6 @@ export class PrismaUserRepository implements IUserRepository {
       const created = await tx.user.create({
         data: {
           email: data.email.toLowerCase(),
-          username: data.username,
           passwordHash: data.passwordHash,
           firstName: data.firstName,
           lastName: data.lastName,

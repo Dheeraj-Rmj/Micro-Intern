@@ -139,15 +139,17 @@ export class RegisterCandidateUseCase {
     }
 
     // Check username uniqueness
+    /*
     if (dto.username) {
       const existingUsername = await this.userRepository.findByUsername(dto.username);
       if (existingUsername !== null) {
         throw new ConflictError(
           "Username is already taken",
-          "AUTH_USERNAME_ALREADY_EXISTS",
+          "AUTH_EMAIL_ALREADY_EXISTS",
         );
       }
     }
+    */
 
     // Hash password
     const passwordHash = await this.passwordService.hash(dto.password);
