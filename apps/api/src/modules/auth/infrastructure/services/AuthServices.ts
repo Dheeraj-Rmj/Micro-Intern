@@ -60,6 +60,7 @@ export class RedisSessionService implements ISessionService {
           country: metadata?.country ?? null,
           region: metadata?.region ?? null,
           userAgent: metadata?.userAgent ?? null,
+          token: sessionId,
           expiresAt,
           lastUsedAt: new Date(),
         },

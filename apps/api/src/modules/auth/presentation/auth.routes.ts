@@ -65,6 +65,8 @@ import {
 import { JwtService } from "../infrastructure/services/JwtService.js";
 import { TokenService } from "../infrastructure/services/TokenService.js";
 import { QueueEmailAuthService } from "../infrastructure/services/QueueEmailAuthService.js";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "../infrastructure/better-auth.js";
 
 const ResendVerificationSchema = z.object({
   email: z.string().email(),
@@ -294,6 +296,9 @@ export function createAuthRouter(): Router {
   const webauthnController = container.get<WebAuthnController>("WebAuthnController");
 
   const router = Router();
+  
+  // Mount Better Auth to handle all standard auth routes (/sign-in, /sign-up, /session, etc)
+  router.all("/*", toNodeHandler(auth));
 
   // POST /auth/register and /auth/register/candidate
   router.post(

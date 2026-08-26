@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { apiClient, setAccessToken } from "../../../../lib/api/client";
-
+import { authClient } from "../../../../lib/better-auth";
 import { useApp } from "../../context/AppContext";
 import { Eye, EyeOff, AlertCircle, ArrowLeft, Sun, Moon } from "lucide-react";
 
@@ -90,25 +90,29 @@ export const SignUpPage: React.FC = () => {
     try {
       setIsLoading(true);
 
-      const response = await apiClient.post("/auth/register/candidate", {
-        firstName: formData.fullName.split(' ')[0] || formData.fullName,
-        lastName: formData.fullName.split(' ').slice(1).join(' ') || '',
-        username: formData.username,
+      const firstName = formData.fullName.split(' ')[0] || formData.fullName;
+      const lastName = formData.fullName.split(' ').slice(1).join(' ') || '';
+
+      const { data, error } = await authClient.signUp.email({
         email: formData.email,
         password: formData.password,
-      });
+        name: formData.fullName,
+        firstName,
+        lastName,
+        username: formData.username,
+        role: "CANDIDATE",
+      } as any);
 
-      const data = response.data.data;
-      const user = data.user;
-      const accessToken = data.tokens?.accessToken;
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const user = data.user as any;
       
-      // We import setAccessToken from client to ensure axios bears the token
-      if (accessToken) setAccessToken(accessToken);
-
       setUserProfile(user);
       setRole("candidate");
 
-      showToast("Account Created! 🎉", "Welcome to MicroIntern. Let’s get you verified.", "success");
+      showToast("Account Created! 🎉", "Welcome to MicroIntern.", "success");
       setCurrentRoute("dashboard");
     } catch (err: any) {
       showToast(

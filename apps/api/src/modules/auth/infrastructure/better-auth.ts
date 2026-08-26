@@ -1,0 +1,86 @@
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import geoip from "geoip-lite";
+
+import { prisma } from "../../../core/database.js";
+import { createModuleLogger } from "../../../core/logger.js";
+import { PrismaClient } from "@microintern/database";
+
+const log = createModuleLogger("BetterAuth");
+
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  baseURL: process.env["API_URL"] ? `${process.env["API_URL"]}/api/v1/auth` : "https://micro-intern-4stz.onrender.com/api/v1/auth",
+  emailAndPassword: {
+    enabled: true,
+  },
+  user: {
+    additionalFields: {
+      firstName: {
+        type: "string",
+        required: true,
+      },
+      lastName: {
+        type: "string",
+        required: true,
+      },
+      username: {
+        type: "string",
+        required: false,
+      },
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: "CANDIDATE"
+      }
+    }
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user, ctx) => {
+          // If role is CANDIDATE, create CandidateProfile
+          if ((user as any)["role"] === "CANDIDATE") {
+            await prisma.candidateProfile.create({
+              data: {
+                userId: user.id,
+              }
+            });
+          }
+        }
+      }
+    },
+    session: {
+      create: {
+        before: async (session, ctx) => {
+          let city = "Unknown";
+          let country = "Unknown";
+          let region = "Unknown";
+
+          if (session.ipAddress) {
+            const geo = geoip.lookup(session.ipAddress);
+            if (geo) {
+              city = geo.city || "Unknown";
+              country = geo.country || "Unknown";
+              region = geo.region || "Unknown";
+            }
+          }
+
+          log.info({ ip: session.ipAddress, city, country }, "Enriching session with location");
+
+          return {
+            data: {
+              ...session,
+              city,
+              country,
+              region,
+            },
+          };
+        },
+      },
+    },
+  },
+  plugins: [],
+});

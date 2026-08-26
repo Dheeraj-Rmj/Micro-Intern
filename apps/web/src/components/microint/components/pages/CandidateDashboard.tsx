@@ -1320,6 +1320,11 @@ export const CandidateDashboard: React.FC = () => {
         )}
       </div>
 
+      <div className="mt-8 flex justify-center w-full">
+        <RecentDevices />
+      </div>
+
+      {/* Modals & Overlays */}
       {/* ======================================================== */}
       {/* 1. CALENDAR MODAL                                        */}
       {/* ======================================================== */}

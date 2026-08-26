@@ -32,6 +32,10 @@ model User {
   role     Role
   status   EntityStatus @default(PENDING_VERIFICATION)
 
+  name          String?
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?
+
   // Profile
   firstName String  @map("first_name")
   lastName  String  @map("last_name")
@@ -70,6 +74,7 @@ model User {
   notifications      Notification[]
   verificationTokens VerificationToken[]
   sentInvitations    Invitation[]        @relation("InvitationSentBy")
+  accounts           Account[]
 
   @@index([email])
   @@index([role])
@@ -161,6 +166,7 @@ model OAuthAccount {
 model Session {
   id               String    @id @default(uuid()) @db.Uuid
   userId           String    @map("user_id") @db.Uuid
+  token            String    @unique
   refreshTokenHash String?   @map("refresh_token_hash") @db.Text
   ipAddress        String?   @map("ip_address")
   userAgent        String?   @map("user_agent") @db.Text
@@ -174,6 +180,7 @@ model Session {
   revokedAt        DateTime? @map("revoked_at")
   lastUsedAt       DateTime  @default(now()) @map("last_used_at")
   createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -181,6 +188,36 @@ model Session {
   @@index([expiresAt])
   @@index([revokedAt])
   @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid()) @db.Uuid
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id") @db.Uuid
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token") @db.Text
+  refreshToken          String?   @map("refresh_token") @db.Text
+  idToken               String?   @map("id_token") @db.Text
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(uuid()) @db.Uuid
+  identifier String
+  value      String    @db.Text
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@map("verifications")
 }
 
 /// Tracks user devices for anomaly detection.

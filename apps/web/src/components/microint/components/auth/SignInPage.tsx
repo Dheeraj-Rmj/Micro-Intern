@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { apiClient, setAccessToken } from "../../../../lib/api/client";
-import { useAuthStore } from "@/stores/auth.store";
+import { authClient } from "../../../../lib/better-auth";import { useAuthStore } from "@/stores/auth.store";
 import { startAuthentication } from "@simplewebauthn/browser";
 import {
   Eye,
@@ -99,32 +99,29 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
           return;
         }
 
-        const response = await apiClient.post("/auth/login/mfa", {
-          mfaToken,
-          code: mfaCode,
+        const { data, error } = await authClient.signIn.email({
+          email: identifier,
+          password: password,
+          callbackURL: "/admin-dashboard"
         });
 
-        // Setup real session context
-        const user = response.data.data.user;
-        const accessToken = response.data.data.tokens?.accessToken;
-        if (accessToken) setAccessToken(accessToken);
-        useAuthStore.getState().setAuth(user, accessToken || "");
+        if (error) throw new Error(error.message);
+
+        const user = data.user as any;
         setUserProfile(user);
         
-        const userRole = user.role;
-        if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
-          setRole("admin");
-          showToast("Authenticated", "MFA Verification successful.", "success");
-          setCurrentRoute("admin-dashboard");
-        } else if (userRole === "COMPANY_OWNER" || userRole === "RECRUITER") {
-          setRole("company");
-          showToast("Authenticated", "MFA Verification successful.", "success");
-          setCurrentRoute("company-dashboard");
-        } else {
-          setRole("candidate");
-          showToast("Authenticated", "MFA Verification successful.", "success");
-          setCurrentRoute("dashboard");
-        }
+        const roleStr = (user as any).role || "USER";
+        setRole(roleStr.toLowerCase());
+
+        showToast("Welcome Back!", "Successfully authenticated.", "success");
+        
+        setCurrentRoute(
+          roleStr === "SUPER_ADMIN" || roleStr === "ADMIN" 
+            ? "admin-dashboard" 
+            : roleStr === "COMPANY_OWNER" || roleStr === "RECRUITER" 
+              ? "company-dashboard" 
+              : "dashboard"
+        );
         return;
       }
 
@@ -134,29 +131,18 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         return;
       }
 
-      const endpoint = initialPortal === 'candidate' ? '/auth/login' : '/management/auth/login';
-      const response = await apiClient.post(endpoint, {
+      const { data, error } = await authClient.signIn.email({
         email: identifier,
         password,
       });
 
-      const data = response.data.data;
-
-      // Handle MFA Challenge
-      if (data.mfaRequired) {
-        setMfaRequired(true);
-        setMfaToken(data.mfaToken);
-        showToast(
-          "MFA Required",
-          "Please enter the 6-digit code from your authenticator app.",
-          "info",
-        );
-        return; // Wait for user to input MFA code
+      if (error) {
+        throw new Error(error.message);
       }
 
       // If no MFA required, proceed directly
-      const user = data.user;
-      const accessToken = data.tokens?.accessToken;
+      const user = data.user as any;
+      const accessToken = (data as any).token;
       if (accessToken) setAccessToken(accessToken);
       useAuthStore.getState().setAuth(user, accessToken || "");
       
@@ -180,7 +166,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     } catch (err: any) {
       showToast(
         "Authentication Failed",
-        err.response?.data?.error?.message || err.message || "Invalid credentials or network error.",
+        err.message || "Invalid credentials or network error.",
         "error",
       );
     } finally {
@@ -213,7 +199,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         },
       );
 
-      const user = verifyResponse.data.data.user;
+      const user = verifyResponse.data.data.user as any;
       const accessToken = verifyResponse.data.data.accessToken;
       if (accessToken) setAccessToken(accessToken);
       useAuthStore.getState().setAuth(user, accessToken || "");
@@ -246,22 +232,16 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
          // In a real app we'd split it like the main form.
       }
 
-      const endpoint = '/management/auth/login';
-      const response = await apiClient.post(endpoint, {
+      const { data, error } = await authClient.signIn.email({
         email: modalEmail,
         password: modalPassword,
       });
 
-      const data = response.data.data;
-      if (data.mfaRequired) {
-         showToast("MFA Required", "This shortcut does not support 2FA flow yet. Please use main form.", "warning");
-         return;
+      if (error) {
+        throw new Error(error.message);
       }
 
-      const user = data.user;
-      const accessToken = data.tokens?.accessToken;
-      if (accessToken) setAccessToken(accessToken);
-      useAuthStore.getState().setAuth(user, accessToken || "");
+      const user = data.user as any;
       
       setUserProfile(user);
       setActiveModal("none");
@@ -283,7 +263,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     } catch (err: any) {
       showToast(
         "Authentication Failed",
-        err.response?.data?.error?.message || err.message || "Invalid credentials or network error.",
+        err.message || "Invalid credentials or network error.",
         "error",
       );
     } finally {
