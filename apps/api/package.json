@@ -8,7 +8,7 @@
     "dev": "tsx watch --env-file=.env src/core/server.ts",
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/core/server.js",
-    "seed:admins": "tsx seed_admins.ts",
+    "seed:admins": "tsx src/scripts/seed_admins.ts",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",

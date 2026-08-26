@@ -1,4 +1,4 @@
-import { prisma } from "./src/core/database.js";
+import { prisma } from "../core/database.js";
 import * as bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 
