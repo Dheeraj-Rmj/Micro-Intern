@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import geoip from "geoip-lite";
+import { UAParser } from "ua-parser-js";
 
 import { prisma } from "../../../core/database.js";
 import { createModuleLogger } from "../../../core/logger.js";
@@ -84,7 +85,22 @@ export const auth = betterAuth({
             }
           }
 
-          log.info({ ip: session.ipAddress, city, country }, "Enriching session with location");
+          let os = "Unknown";
+          let browser = "Unknown";
+          let deviceType = "desktop";
+
+          if (session.userAgent) {
+            const parser = new UAParser(session.userAgent);
+            const parsedOS = parser.getOS();
+            const parsedBrowser = parser.getBrowser();
+            const parsedDevice = parser.getDevice();
+
+            os = parsedOS.name ? `${parsedOS.name} ${parsedOS.version || ""}`.trim() : "Unknown";
+            browser = parsedBrowser.name ? `${parsedBrowser.name} ${parsedBrowser.version || ""}`.trim() : "Unknown";
+            deviceType = parsedDevice.type || "desktop";
+          }
+
+          log.info({ ip: session.ipAddress, city, country, os, browser }, "Enriching session with location and device info");
 
           return {
             data: {
@@ -92,6 +108,9 @@ export const auth = betterAuth({
               city,
               country,
               region,
+              os,
+              browser,
+              deviceType,
             },
           };
         },
