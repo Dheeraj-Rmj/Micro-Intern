@@ -40,7 +40,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        after: async (user, ctx) => {
+        after: async (user: any, ctx: any) => {
           // If role is CANDIDATE, create CandidateProfile
           if ((user as any)["role"] === "CANDIDATE") {
             await prisma.candidateProfile.create({
@@ -54,7 +54,7 @@ export const auth = betterAuth({
     },
     session: {
       create: {
-        before: async (session, ctx) => {
+        before: async (session: any, ctx: any) => {
           let city = "Unknown";
           let country = "Unknown";
           let region = "Unknown";
