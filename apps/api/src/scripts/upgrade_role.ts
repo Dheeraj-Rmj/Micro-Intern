@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from "../core/database.js";
 
 async function main() {
   const email = 'vyshnavinakka5@gmail.com';
