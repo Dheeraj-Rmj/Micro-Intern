@@ -180,7 +180,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     } catch (err: any) {
       showToast(
         "Authentication Failed",
-        err.message || "Invalid credentials or network error.",
+        err.response?.data?.error?.message || err.message || "Invalid credentials or network error.",
         "error",
       );
     } finally {
@@ -283,7 +283,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     } catch (err: any) {
       showToast(
         "Authentication Failed",
-        err.message || "Invalid credentials or network error.",
+        err.response?.data?.error?.message || err.message || "Invalid credentials or network error.",
         "error",
       );
     } finally {

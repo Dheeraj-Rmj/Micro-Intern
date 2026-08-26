@@ -5,9 +5,9 @@ import { z } from "zod";
  */
 export const EmailSchema = z
   .string()
-  .email({ message: "Invalid email address" })
+  .trim()
   .toLowerCase()
-  .trim();
+  .email({ message: "Invalid email address" });
 
 /**
  * Password validation — enforces enterprise password policy.
