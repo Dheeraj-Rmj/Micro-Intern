@@ -42,7 +42,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import { TechSkillIcon } from "../common/TechSkillIcon";
-import { RecentDevices } from "../auth/RecentDevices";
 
 interface WidgetConfig {
   id: string;
@@ -1319,10 +1318,6 @@ export const CandidateDashboard: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="mt-8 flex justify-center w-full">
-        <RecentDevices />
       </div>
 
       {/* Modals & Overlays */}
