@@ -42,6 +42,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { TechSkillIcon } from "../common/TechSkillIcon";
+import { RecentDevices } from "../auth/RecentDevices";
 
 interface WidgetConfig {
   id: string;
