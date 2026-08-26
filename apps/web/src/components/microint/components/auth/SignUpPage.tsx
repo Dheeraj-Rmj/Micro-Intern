@@ -56,7 +56,6 @@ export const SignUpPage: React.FC = () => {
     } else if (!formData.fullName.trim().includes(" ")) {
       errs.fullName = "Please enter both first and last name";
     }
-
     if (!formData.username.trim()) {
       errs.username = "Username is required";
     } else if (formData.username.length < 3) {
@@ -93,7 +92,7 @@ export const SignUpPage: React.FC = () => {
 
       const response = await apiClient.post("/auth/register/candidate", {
         firstName: formData.fullName.split(' ')[0] || formData.fullName,
-        lastName: formData.fullName.split(' ').slice(1).join(' ') || '.',
+        lastName: formData.fullName.split(' ').slice(1).join(' ') || '',
         username: formData.username,
         email: formData.email,
         password: formData.password,
