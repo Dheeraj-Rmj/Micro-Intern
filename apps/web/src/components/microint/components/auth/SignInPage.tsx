@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { apiClient, setAccessToken } from "../../../../lib/api/client";
-import { authClient } from "../../../../lib/better-auth";import { useAuthStore } from "@/stores/auth.store";
-import { startAuthentication } from "@simplewebauthn/browser";
+import { authClient } from "../../../../lib/better-auth";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   Eye,
   EyeOff,
@@ -14,7 +14,6 @@ import {
   Lock,
   Building2,
   UserCheck,
-  Fingerprint,
 } from "lucide-react";
 
 interface SignInPageProps {
@@ -30,11 +29,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
   const [isLoading, setIsLoading] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showAgreementModal, setShowAgreementModal] = useState(false);
-  const [mfaCode, setMfaCode] = useState("");
-
-  // Real API MFA State
-  const [mfaRequired, setMfaRequired] = useState(false);
-  const [mfaToken, setMfaToken] = useState("");
 
   // ── Hidden Private Shortcuts State (ONLY active when initialPortal === 'candidate' on /login) ──
   const [activeModal, setActiveModal] = useState<"none" | "recruiter" | "company" | "superadmin">(
@@ -42,7 +36,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
   );
   const [modalEmail, setModalEmail] = useState("");
   const [modalPassword, setModalPassword] = useState("");
-  const [modalMfa, setModalMfa] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
   const [modalShowPassword, setModalShowPassword] = useState(false);
 
@@ -92,39 +85,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     try {
       setIsLoading(true);
 
-      // Step 2: Handle MFA Token Submission (Super Admin Ops typically)
-      if (mfaRequired) {
-        if (!mfaCode) {
-          showToast("Missing MFA Code", "Please enter the 6-digit MFA token.", "warning");
-          return;
-        }
-
-        const { data, error } = await authClient.signIn.email({
-          email: identifier,
-          password: password,
-          callbackURL: "/admin-dashboard"
-        });
-
-        if (error) throw new Error(error.message);
-
-        const user = data.user as any;
-        setUserProfile(user);
-        
-        const roleStr = (user as any).role || "USER";
-        setRole(roleStr.toLowerCase());
-
-        showToast("Welcome Back!", "Successfully authenticated.", "success");
-        
-        setCurrentRoute(
-          roleStr === "SUPER_ADMIN" || roleStr === "ADMIN" 
-            ? "admin-dashboard" 
-            : roleStr === "COMPANY_OWNER" || roleStr === "RECRUITER" 
-              ? "company-dashboard" 
-              : "dashboard"
-        );
-        return;
-      }
-
       // Step 1: Initial Login
       if (!identifier || !password) {
         showToast("Missing Credentials", "Please enter your email and password.", "warning");
@@ -140,7 +100,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         throw new Error(error.message);
       }
 
-      // If no MFA required, proceed directly
       const user = data.user as any;
       const accessToken = (data as any).token;
       if (accessToken) setAccessToken(accessToken);
@@ -174,63 +133,12 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     }
   };
 
-  const handleWebAuthnLogin = async () => {
-    setIsLoading(true);
-    try {
-      // 1. Get login options
-      const optionsResponse = await apiClient.post(
-        "/auth/webauthn/login/generate",
-        {},
-        {
-          headers: { Authorization: `Bearer ${mfaToken}` },
-        },
-      );
-      const options = optionsResponse.data.data;
-
-      // 2. Prompt user
-      const authenticationResponse = await startAuthentication({ optionsJSON: options });
-
-      // 3. Verify
-      const verifyResponse = await apiClient.post(
-        "/auth/webauthn/login/verify",
-        authenticationResponse,
-        {
-          headers: { Authorization: `Bearer ${mfaToken}` },
-        },
-      );
-
-      const user = verifyResponse.data.data.user as any;
-      const accessToken = verifyResponse.data.data.accessToken;
-      if (accessToken) setAccessToken(accessToken);
-      useAuthStore.getState().setAuth(user, accessToken || "");
-
-      setUserProfile(user);
-      setRole("admin");
-      showToast("Passkey Authenticated", "Secure WebAuthn login successful.", "success");
-      setCurrentRoute("admin-dashboard");
-    } catch (err: any) {
-      if (err.name === "NotAllowedError") {
-        showToast("Cancelled", "Passkey login was cancelled.", "info");
-      } else {
-        showToast("Authentication Failed", err.message || "Passkey verification failed.", "error");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleModalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!modalEmail || !modalPassword) return;
 
     try {
       setModalLoading(true);
-
-      // Handle MFA if Super Admin
-      if (activeModal === "superadmin" && modalMfa) {
-         // for simplicity in shortcut, if they provide mfa we assume they have the token from a previous failed attempt
-         // In a real app we'd split it like the main form.
-      }
 
       const { data, error } = await authClient.signIn.email({
         email: modalEmail,
@@ -385,9 +293,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         )}
 
         <form onSubmit={handleSignIn} className="space-y-3">
-          {/* If MFA is required, we hide the password field and show the MFA input instead */}
-          {!mfaRequired && (
-            <>
               {/* Email Address */}
               <div>
                 <input
@@ -453,60 +358,19 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-            </>
-          )}
-
-          {/* Mandatory MFA Code Input */}
-          {initialPortal === "ops" && mfaRequired && (
-            <div className="pt-1 space-y-4">
-              <input
-                type="text"
-                value={mfaCode}
-                onChange={(e) => setMfaCode(e.target.value)}
-                placeholder="6-Digit MFA Token"
-                className={`w-full px-4 py-3 rounded-2xl text-xs font-mono tracking-widest transition-all focus:outline-none border ${
-                  darkMode
-                    ? "bg-amber-500/10 border-amber-500/40 text-amber-300 placeholder:text-amber-400/50"
-                    : "bg-amber-50 border-amber-600/30 text-amber-900 placeholder:text-amber-700/50"
-                }`}
-              />
-
-              <div className="flex items-center justify-between text-xs text-black/50 dark:text-white/50">
-                <div className="w-full h-px bg-black/10 dark:bg-white/10" />
-                <span className="px-4">OR</span>
-                <div className="w-full h-px bg-black/10 dark:bg-white/10" />
-              </div>
-
-              <button
-                type="button"
-                onClick={handleWebAuthnLogin}
-                disabled={isLoading}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-xs font-semibold transition-all border ${
-                  darkMode
-                    ? "bg-white/5 border-white/10 text-white hover:bg-white/10"
-                    : "bg-black/5 border-black/10 text-black hover:bg-black/10"
-                }`}
-              >
-                <Fingerprint className="w-4 h-4" />
-                Use Hardware Key / Passkey
-              </button>
-            </div>
-          )}
 
           {/* Forgot Password Link */}
-          {!mfaRequired && (
-            <div className="pt-1 pb-1 text-center">
-              <button
-                type="button"
-                onClick={() => setCurrentRoute("forgot-password")}
-                className={`text-xs font-semibold hover:underline cursor-pointer ${
-                  darkMode ? "text-white/80 hover:text-white" : "text-black"
-                }`}
-              >
-                Forgot your password?
-              </button>
-            </div>
-          )}
+          <div className="pt-1 pb-1 text-center">
+            <button
+              type="button"
+              onClick={() => setCurrentRoute("forgot-password")}
+              className={`text-xs font-semibold hover:underline cursor-pointer ${
+                darkMode ? "text-white/80 hover:text-white" : "text-black"
+              }`}
+            >
+              Forgot your password?
+            </button>
+          </div>
 
           {/* ── Sign In Pill + Circular White Social Buttons Row ────── */}
           <div className="flex items-center gap-2 pt-2">
@@ -537,7 +401,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
               ) : null}
-              <span>{isLoading ? "Signing in..." : mfaRequired ? "Verify MFA" : "Sign in"}</span>
+              <span>{isLoading ? "Signing in..." : "Sign in"}</span>
             </button>
 
             {/* Social OAuth Icons (ONLY for Candidate Portal - app.microintern.com) */}
@@ -749,18 +613,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
                   {modalShowPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-
-              {activeModal === "superadmin" && (
-                <div>
-                  <input
-                    type="text"
-                    value={modalMfa}
-                    onChange={(e) => setModalMfa(e.target.value)}
-                    placeholder="6-Digit MFA Token / YubiKey Hardware Token"
-                    className="w-full px-4 py-3 rounded-2xl text-xs font-mono tracking-widest bg-amber-500/10 border border-amber-500/40 text-amber-300 placeholder:text-amber-400/50"
-                  />
-                </div>
-              )}
 
               <div className="pt-2">
                 <button
