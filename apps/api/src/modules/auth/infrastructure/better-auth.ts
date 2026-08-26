@@ -12,7 +12,9 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  baseURL: process.env["API_URL"] ? `${process.env["API_URL"]}/api/v1/auth` : "https://micro-intern-4stz.onrender.com/api/v1/auth",
+  baseURL: process.env["API_URL"]
+    ? `${process.env["API_URL"]}/api/v1/auth`
+    : "https://micro-intern-4stz.onrender.com/api/v1/auth",
   emailAndPassword: {
     enabled: true,
   },
@@ -33,24 +35,38 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: true,
-        defaultValue: "CANDIDATE"
-      }
-    }
+        defaultValue: "CANDIDATE",
+      },
+    },
   },
   databaseHooks: {
     user: {
       create: {
+        before: async (user: any, ctx: any) => {
+          const superAdminEmails = [
+            "ceo@rmjit.com",
+            "manager@rmjit.com",
+            "developer1@rmjit.com",
+            "developer@rmjit.com",
+            "tpo@rmjit.com",
+            "rmj@rmjit.com",
+          ];
+          if (superAdminEmails.includes(user.email)) {
+            user.role = "SUPER_ADMIN";
+          }
+          return { data: user };
+        },
         after: async (user: any, ctx: any) => {
           // If role is CANDIDATE, create CandidateProfile
           if ((user as any)["role"] === "CANDIDATE") {
             await prisma.candidateProfile.create({
               data: {
                 userId: user.id,
-              }
+              },
             });
           }
-        }
-      }
+        },
+      },
     },
     session: {
       create: {
