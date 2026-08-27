@@ -29,14 +29,12 @@ export const CandidateDashboard: React.FC = () => {
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop";
 
   const navLinks = [
-    { name: "Dashboard", active: true },
-    { name: "People", active: false },
-    { name: "Hiring", active: false },
-    { name: "Devices", active: false },
-    { name: "Apps", active: false },
-    { name: "Salary", active: false },
-    { name: "Calendar", active: false },
-    { name: "Reviews", active: false },
+    { name: "Dashboard", route: "dashboard", active: true },
+    { name: "Network", route: "network", active: false },
+    { name: "Discover Trials", route: "discover-trials", active: false },
+    { name: "Applications", route: "my-applications", active: false },
+    { name: "Workspace", route: "workspace", active: false },
+    { name: "Submissions", route: "submissions", active: false },
   ];
 
   return (
@@ -53,6 +51,7 @@ export const CandidateDashboard: React.FC = () => {
           {navLinks.map((link) => (
             <button
               key={link.name}
+              onClick={() => setCurrentRoute(link.route as any)}
               className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
                 link.active
                   ? "bg-[#333333] text-white shadow-lg"
