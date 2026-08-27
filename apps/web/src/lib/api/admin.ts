@@ -109,8 +109,8 @@ export const adminApi = {
     return data.data;
   },
 
-  generateOnboardingLink: async (): Promise<any> => {
-    const response = await apiClient.post("/users/admin/generate-onboarding-link");
+  generateOnboardingLink: async (companyName: string): Promise<any> => {
+    const response = await apiClient.post("/users/admin/generate-onboarding-link", { companyName });
     return response.data.data;
   },
 

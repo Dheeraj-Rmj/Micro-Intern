@@ -13,7 +13,10 @@ export class UsersUseCase {
    * Generates a secure, one-time eKYC onboarding link for a new company admin.
    * Super Admins use this to invite new enterprises to the platform.
    */
-  async generateOnboardingUrl(superAdminId: string): Promise<{ token: string; url: string }> {
+  async generateOnboardingUrl(
+    superAdminId: string,
+    companyName: string
+  ): Promise<{ token: string; url: string }> {
     try {
       const token = uuidv7(); // Cryptographically secure v7 UUID token
 
@@ -22,13 +25,18 @@ export class UsersUseCase {
         data: {
           token,
           superAdminId,
+          companyName,
           status: "PENDING",
         },
       });
 
+      const baseUrl = process.env["FRONTEND_URL"] || "https://micro-intern-web.vercel.app";
+      // ensure we don't have double slash if baseUrl has trailing slash
+      const formattedBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+
       return {
         token,
-        url: `http://localhost:3000/users/ekyc/${token}`,
+        url: `${formattedBaseUrl}/users/ekyc/${token}`,
       };
     } catch (error: any) {
       throw new InternalServerError("Failed to generate secure onboarding token", error);

@@ -60,6 +60,7 @@ export const SuperAdminDashboard: React.FC = () => {
   const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
   const [selectedQuickActionModal, setSelectedQuickActionModal] = useState<string | null>(null);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [newCompanyName, setNewCompanyName] = useState("");
   const [impersonateUserEmail, setImpersonateUserEmail] = useState("");
   const [systemAlertMessage, setSystemAlertMessage] = useState("");
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -630,32 +631,54 @@ export const SuperAdminDashboard: React.FC = () => {
               Generate a secure, one-time URL to invite a new company to complete their eKYC and MoU
               onboarding.
             </p>
-            <div className="pt-4 flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setSelectedQuickActionModal(null);
-                  setGeneratedLink(null);
-                }}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
-              >
-                Close
-              </button>
+            <div className="pt-4 flex flex-col gap-3">
               {!generatedLink && (
-                <button
-                  onClick={async () => {
-                    try {
-                      const res = await adminApi.generateOnboardingLink();
-                      setGeneratedLink(res.url);
-                      showToast("Link Generated", "Onboarding URL created successfully.", "success");
-                    } catch (e: any) {
-                      showToast("Error", e.message || "Failed to generate link", "error");
-                    }
-                  }}
-                  className="px-4 py-2 rounded-xl bg-emerald-500 text-white font-semibold text-xs shadow-sm hover:scale-105 transition-transform"
-                >
-                  Generate Link
-                </button>
+                <div className="mb-2">
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Enterprise Company Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Acme Corp"
+                    value={newCompanyName}
+                    onChange={(e) => setNewCompanyName(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-emerald-500"
+                    required
+                  />
+                </div>
               )}
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedQuickActionModal(null);
+                    setGeneratedLink(null);
+                    setNewCompanyName("");
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                >
+                  Close
+                </button>
+                {!generatedLink && (
+                  <button
+                    onClick={async () => {
+                      if (!newCompanyName.trim()) {
+                        showToast("Missing Name", "Please provide a company name first.", "warning");
+                        return;
+                      }
+                      try {
+                        const res = await adminApi.generateOnboardingLink(newCompanyName);
+                        setGeneratedLink(res.url || res);
+                        showToast("Link Generated", "Onboarding URL created successfully.", "success");
+                      } catch (e: any) {
+                        showToast("Error", e.message || "Failed to generate link", "error");
+                      }
+                    }}
+                    className="px-4 py-2 rounded-xl bg-emerald-500 text-white font-semibold text-xs shadow-sm hover:scale-105 transition-transform"
+                  >
+                    Generate Link
+                  </button>
+                )}
+              </div>
             </div>
             
             {generatedLink && (

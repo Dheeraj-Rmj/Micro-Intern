@@ -12,7 +12,14 @@ export class UsersController {
   async generateUrl(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const superAdminId = req.user?.id || "unknown";
-      const data = await usersUseCase.generateOnboardingUrl(superAdminId);
+      const { companyName } = req.body;
+
+      if (!companyName || typeof companyName !== "string") {
+        res.status(400).json({ success: false, message: "companyName is required" });
+        return;
+      }
+
+      const data = await usersUseCase.generateOnboardingUrl(superAdminId, companyName);
       res.status(200).json({ success: true, data });
     } catch (error) {
       next(error);

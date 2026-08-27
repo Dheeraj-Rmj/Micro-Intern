@@ -35,6 +35,7 @@ export const SuperAdminOrganizationPage: React.FC = () => {
 
   // Enterprise Company eKYC Verification Modal State
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
+  const [companyLegalName, setCompanyLegalName] = useState("");
   const [onboardingLink, setOnboardingLink] = useState<string | null>(null);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
@@ -56,9 +57,13 @@ export const SuperAdminOrganizationPage: React.FC = () => {
 
   const handleGenerateLink = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!companyLegalName.trim()) {
+      showToast("Missing Fields", "Please enter the Enterprise Company Name.", "warning");
+      return;
+    }
     setIsGeneratingLink(true);
     try {
-      const data = await adminApi.generateOnboardingLink();
+      const data = await adminApi.generateOnboardingLink(companyLegalName);
       setOnboardingLink(data.url || data);
       showToast(
         "Secure Link Generated",
@@ -457,11 +462,24 @@ export const SuperAdminOrganizationPage: React.FC = () => {
             <form onSubmit={handleGenerateLink} className="space-y-6">
               {!onboardingLink ? (
                 <>
-                  <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-xs text-black/70 dark:text-white/70 leading-relaxed text-center">
+                  <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-xs text-black/70 dark:text-white/70 leading-relaxed text-center mb-4">
                     <Building2 className="w-8 h-8 text-black/20 dark:text-white/20 mx-auto mb-3" />
                     Generate a unique, secure <strong>eKYC Onboarding Link</strong>. Share this link with the Enterprise Client so they can securely complete their company registration, verify their tax details, and set up their administrator account.
                   </div>
-                  <div className="flex justify-end gap-3 pt-2">
+                  <div>
+                    <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                      Enterprise Company Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Acme Corp"
+                      value={companyLegalName}
+                      onChange={(e) => setCompanyLegalName(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3 pt-4">
                     <button
                       type="button"
                       onClick={() => setShowAddCompanyModal(false)}
