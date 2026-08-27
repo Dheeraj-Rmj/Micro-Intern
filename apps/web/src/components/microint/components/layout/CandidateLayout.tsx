@@ -50,15 +50,24 @@ export const CandidateLayout: React.FC<CandidateLayoutProps> = ({ children }) =>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 backdrop-blur-md border border-white/40 shadow-sm hover:bg-white/60 transition-colors">
+          <button
+            onClick={() => setCurrentRoute("settings")}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 backdrop-blur-md border border-white/40 shadow-sm hover:bg-white/60 transition-colors"
+          >
             <Settings className="w-4 h-4 text-[#444444]" />
             <span className="text-sm font-medium text-[#444444] hidden sm:inline">Setting</span>
           </button>
-          <button className="w-10 h-10 rounded-full bg-white/50 backdrop-blur-md border border-white/40 shadow-sm flex items-center justify-center hover:bg-white/60 transition-colors relative">
+          <button
+            onClick={() => setCurrentRoute("notifications")}
+            className="w-10 h-10 rounded-full bg-white/50 backdrop-blur-md border border-white/40 shadow-sm flex items-center justify-center hover:bg-white/60 transition-colors relative"
+          >
             <Bell className="w-4 h-4 text-[#444444]" />
             <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[#FFD166] rounded-full border border-[#F4F1EA]" />
           </button>
-          <button className="w-10 h-10 rounded-full bg-white/50 backdrop-blur-md border border-white/40 shadow-sm flex items-center justify-center hover:bg-white/60 transition-colors overflow-hidden">
+          <button
+            onClick={() => setCurrentRoute("profile")}
+            className="w-10 h-10 rounded-full bg-white/50 backdrop-blur-md border border-white/40 shadow-sm flex items-center justify-center hover:bg-white/60 transition-colors overflow-hidden"
+          >
             <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
           </button>
         </div>

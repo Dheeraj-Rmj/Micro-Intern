@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import {
   Bell,
@@ -19,8 +19,35 @@ import {
 
 export const CandidateDashboard: React.FC = () => {
   const { userProfile, setCurrentRoute, applications, interviews, submissions } = useApp();
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isEditingTimer, setIsEditingTimer] = useState(false);
+  const [inputMinutes, setInputMinutes] = useState("");
   const [expandedAccordion, setExpandedAccordion] = useState<string>("devices");
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const handleTimerSubmit = () => {
+    const mins = parseInt(inputMinutes);
+    if (!isNaN(mins) && mins >= 0) {
+      setElapsedSeconds(mins * 60);
+    }
+    setIsEditingTimer(false);
+  };
+
+  const formatTime = (totalSeconds: number) => {
+    const m = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+    const s = (totalSeconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
 
   const displayName = userProfile?.fullName || "User";
   const userTitle = userProfile?.degree || "Candidate";
@@ -256,21 +283,51 @@ export const CandidateDashboard: React.FC = () => {
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center justify-center">
-                    <span className="text-4xl font-light tracking-tight text-[#222]">02:35</span>
+                    {isEditingTimer ? (
+                      <input
+                        type="number"
+                        className="w-24 bg-transparent border-b border-[#222] text-center text-4xl font-light tracking-tight text-[#222] outline-none mb-1"
+                        value={inputMinutes}
+                        onChange={(e) => setInputMinutes(e.target.value)}
+                        onBlur={handleTimerSubmit}
+                        onKeyDown={(e) => e.key === "Enter" && handleTimerSubmit()}
+                        autoFocus
+                        placeholder="Mins"
+                      />
+                    ) : (
+                      <span
+                        className={`text-4xl font-light tracking-tight text-[#222] ${!isPlaying ? 'cursor-pointer hover:opacity-70' : ''}`}
+                        onClick={() => {
+                          if (!isPlaying) {
+                            setInputMinutes(Math.floor(elapsedSeconds / 60).toString());
+                            setIsEditingTimer(true);
+                          }
+                        }}
+                        title={!isPlaying ? "Click to set time" : ""}
+                      >
+                        {formatTime(elapsedSeconds)}
+                      </span>
+                    )}
                     <span className="text-xs text-[#666]">Work Time</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 mt-2">
-                  <button
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#222] hover:scale-105 transition-transform"
-                  >
-                    <Play className="w-5 h-5 ml-1" />
-                  </button>
-                  <button className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#222] hover:scale-105 transition-transform">
-                    <Pause className="w-5 h-5" />
-                  </button>
+                  {!isPlaying ? (
+                    <button
+                      onClick={() => setIsPlaying(true)}
+                      className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#222] hover:scale-105 transition-transform"
+                    >
+                      <Play className="w-5 h-5 ml-1" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setIsPlaying(false)}
+                      className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#222] hover:scale-105 transition-transform"
+                    >
+                      <Pause className="w-5 h-5" />
+                    </button>
+                  )}
                   <button className="w-12 h-12 rounded-full bg-[#333] text-white shadow-sm flex items-center justify-center hover:scale-105 transition-transform ml-4">
                     <Clock className="w-5 h-5" />
                   </button>
