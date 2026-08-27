@@ -35,10 +35,8 @@ export const SuperAdminOrganizationPage: React.FC = () => {
 
   // Enterprise Company eKYC Verification Modal State
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
-  const [companyLegalName, setCompanyLegalName] = useState("");
-  const [companyDomain, setCompanyDomain] = useState("");
-  const [einNumber, setEinNumber] = useState("");
-  const [escrowPool, setEscrowPool] = useState("$25,000");
+  const [onboardingLink, setOnboardingLink] = useState<string | null>(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -56,24 +54,28 @@ export const SuperAdminOrganizationPage: React.FC = () => {
     fetchUsers();
   }, []);
 
-  const handleVerifyCompany = async (e: React.FormEvent) => {
+  const handleGenerateLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!companyLegalName.trim() || !companyDomain.trim()) {
-      showToast("Missing Fields", "Please specify legal company name and domain.", "warning");
-      return;
-    }
-
+    setIsGeneratingLink(true);
     try {
-      // In a real flow, company is created first. Here we simulate verified company registration.
+      const data = await adminApi.generateOnboardingLink();
+      setOnboardingLink(data.url || data);
       showToast(
-        "Enterprise eKYC Submitted!",
-        `Submitted verification for "${companyLegalName}".`,
+        "Secure Link Generated",
+        "The single-use eKYC onboarding link has been generated successfully.",
         "success",
       );
-      setShowAddCompanyModal(false);
-      fetchUsers();
     } catch (err: any) {
-      showToast("Error", err.message || "Verification failed.", "warning");
+      showToast("Error", err.message || "Failed to generate link.", "warning");
+    } finally {
+      setIsGeneratingLink(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (onboardingLink) {
+      navigator.clipboard.writeText(onboardingLink);
+      showToast("Link Copied", "The onboarding link has been copied to your clipboard.", "success");
     }
   };
 
@@ -160,11 +162,14 @@ export const SuperAdminOrganizationPage: React.FC = () => {
             <span>Launch Company Admin Portal</span>
           </button>
           <button
-            onClick={() => setShowAddCompanyModal(true)}
+            onClick={() => {
+              setOnboardingLink(null);
+              setShowAddCompanyModal(true);
+            }}
             className="px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Add & Verify Company (eKYC)</span>
+            <span>Generate eKYC Link</span>
           </button>
         </div>
       </div>
@@ -449,123 +454,68 @@ export const SuperAdminOrganizationPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleVerifyCompany} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Company Legal Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Acme Corp / Enterprise Partner"
-                  value={companyLegalName}
-                  onChange={(e) => setCompanyLegalName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Corporate Domain (Used for Recruiter Logins e.g. @company.microintern)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. acme.com"
-                  value={companyDomain}
-                  onChange={(e) => setCompanyDomain(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500 font-mono"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                    Tax ID / EIN Number
-                  </label>
-                  <input
-                    type="text"
-                    value={einNumber}
-                    onChange={(e) => setEinNumber(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                    Escrow Trial Pool
-                  </label>
-                  <input
-                    type="text"
-                    value={escrowPool}
-                    onChange={(e) => setEscrowPool(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-600 dark:text-indigo-400 space-y-3">
-                <div className="font-bold flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>9-Point eKYC Enterprise Verification Check</span>
+            <form onSubmit={handleGenerateLink} className="space-y-6">
+              {!onboardingLink ? (
+                <>
+                  <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-xs text-black/70 dark:text-white/70 leading-relaxed text-center">
+                    <Building2 className="w-8 h-8 text-black/20 dark:text-white/20 mx-auto mb-3" />
+                    Generate a unique, secure <strong>eKYC Onboarding Link</strong>. Share this link with the Enterprise Client so they can securely complete their company registration, verify their tax details, and set up their administrator account.
                   </div>
-                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">
-                    Automated by AI
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono">
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ GST Verified</span>
+                  <div className="flex justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCompanyModal(false)}
+                      className="px-5 py-2.5 rounded-xl text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white text-xs font-semibold cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isGeneratingLink}
+                      className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isGeneratingLink && <RefreshCw className="w-3 h-3 animate-spin" />}
+                      <span>{isGeneratingLink ? "Generating..." : "Generate Link"}</span>
+                    </button>
                   </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ CIN Verified</span>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs text-center font-bold flex items-center justify-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Link Generated Successfully
                   </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ Business License</span>
+                  <div>
+                    <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1.5">
+                      Secure eKYC Link
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        readOnly
+                        value={onboardingLink}
+                        className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCopyLink}
+                        className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs whitespace-nowrap cursor-pointer hover:scale-105 transition-transform"
+                      >
+                        Copy Link
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ Corporate Email</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ Website Domain</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ Legal Documents</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ DNS TXT Domain</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ Director Identity</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-1 rounded">
-                    <span>✓ Registered Address</span>
+                  <div className="flex justify-end pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddCompanyModal(false)}
+                      className="px-6 py-2.5 rounded-xl border border-black/10 dark:border-white/10 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 font-semibold text-xs transition-colors cursor-pointer"
+                    >
+                      Close
+                    </button>
                   </div>
                 </div>
-                <p className="text-[11px] opacity-90 leading-relaxed border-t border-indigo-500/20 pt-2">
-                  Upon verification, Company Admins under this domain will receive dedicated
-                  workspace access (
-                  <code className="font-mono text-amber-500 font-bold">@microintern</code>) to
-                  manage recruiter credentials, AI resources, and assessments.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddCompanyModal(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs shadow-md transition-all cursor-pointer flex items-center gap-2"
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Verify & Onboard Enterprise</span>
-                </button>
-              </div>
+              )}
             </form>
           </div>
         </div>
