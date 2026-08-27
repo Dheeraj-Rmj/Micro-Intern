@@ -11,8 +11,7 @@ import { applySecurityMiddleware } from "@/middleware/security.middleware.js";
 import { strictContentTypeMiddleware } from "@/middleware/content-type.middleware.js";
 import { xssSanitizerMiddleware } from "@/middleware/xss.middleware.js";
 import { logger } from "./logger.js";
-import { toNodeHandler } from "better-auth/node";
-import { auth } from "@/modules/auth/infrastructure/better-auth.js";
+
 
 /**
  * Express application factory.
@@ -77,9 +76,6 @@ export function createApp(): Application {
   app.use(createRateLimitMiddleware("global"));
 
   // ── Routes ───────────────────────────────────────────────────────────────
-  // Mount Better Auth directly on the root app to preserve URL paths
-  app.all("/api/v1/auth/*", toNodeHandler(auth));
-
   app.use("/health", healthRouter);
   app.use("/api/v1", createV1Router());
 

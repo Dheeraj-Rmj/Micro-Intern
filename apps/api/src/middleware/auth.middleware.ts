@@ -1,5 +1,5 @@
 import { UnauthorizedError } from "@/shared/errors/index.js";
-import { auth } from "../modules/auth/infrastructure/better-auth.js";
+import { JwtService } from "@/modules/auth/infrastructure/services/JwtService.js";
 import type { AuthenticatedUser } from "@microintern/shared";
 import type { Request, Response, NextFunction } from "express";
 
@@ -11,6 +11,8 @@ declare global {
     }
   }
 }
+
+const jwtService = new JwtService();
 
 export function extractBearerToken(req: Request): string | null {
   const authHeader = req.headers.authorization;
@@ -26,22 +28,21 @@ export async function authMiddleware(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const session = await auth.api.getSession({
-      headers: req.headers as Record<string, string>,
-    });
-
-    if (!session || !session.session) {
+    const token = extractBearerToken(req);
+    if (!token) {
       throw new UnauthorizedError("Authentication token required", "AUTH_TOKEN_INVALID");
     }
 
+    const payload = await jwtService.verifyAccessToken(token);
+
     req.user = {
-      id: session.user.id,
-      email: session.user.email,
-      role: (session.user as any).role || "USER",
-      companyId: null,
-      sessionId: session.session.id,
+      id: payload.sub,
+      email: payload.email,
+      role: payload.role,
+      companyId: payload.companyId ?? null,
+      sessionId: payload.sessionId,
     };
-    req.sessionId = session.session.id;
+    req.sessionId = payload.sessionId;
 
     next();
   } catch (error) {
@@ -55,22 +56,20 @@ export async function optionalAuthMiddleware(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const session = await auth.api.getSession({
-      headers: req.headers as Record<string, string>,
-    });
-
-    if (session && session.session) {
+    const token = extractBearerToken(req);
+    if (token) {
+      const payload = await jwtService.verifyAccessToken(token);
       req.user = {
-        id: session.user.id,
-        email: session.user.email,
-        role: (session.user as any).role || "USER",
-        companyId: null,
-        sessionId: session.session.id,
+        id: payload.sub,
+        email: payload.email,
+        role: payload.role,
+        companyId: payload.companyId ?? null,
+        sessionId: payload.sessionId,
       };
-      req.sessionId = session.session.id;
+      req.sessionId = payload.sessionId;
     }
-    next();
-  } catch (error) {
-    next();
+  } catch {
+    // Token invalid or missing — continue as unauthenticated
   }
+  next();
 }

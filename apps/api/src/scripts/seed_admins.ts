@@ -1,5 +1,6 @@
+import bcrypt from "bcryptjs";
 import { prisma } from "../core/database.js";
-import { auth } from "../modules/auth/infrastructure/better-auth.js";
+import { Role, EntityStatus } from "@microintern/database";
 
 async function main() {
   const emails = [
@@ -12,46 +13,39 @@ async function main() {
   ];
 
   const plainPassword = "Rmjit@123";
+  const passwordHash = await bcrypt.hash(plainPassword, 12);
 
   for (const email of emails) {
     try {
-      // 1. Create user via better-auth to ensure correct password hashing and Account linkages
-      await auth.api.signUpEmail({
-        body: {
-          email,
-          password: plainPassword,
-          name: "Super Admin",
-          firstName: "Super",
-          lastName: "Admin",
-          role: "SUPER_ADMIN",
-        },
-      });
-
-      // 2. Force update status and mfaEnabled directly via Prisma to bypass verification
-      await prisma.user.update({
-        where: { email },
-        data: {
-          status: "ACTIVE",
-          mfaEnabled: false,
-        },
-      });
-      console.log(`✅ Seeded Super Admin: ${email}`);
-    } catch (err: any) {
-      const errorStr = String(err).toLowerCase();
-      if (errorStr.includes("already exists") || errorStr.includes("unique constraint")) {
-        console.log(`⚠️ User already exists: ${email}. Attempting to force update...`);
+      const existing = await prisma.user.findUnique({ where: { email } });
+      if (existing) {
         await prisma.user.update({
           where: { email },
           data: {
-            role: "SUPER_ADMIN",
-            status: "ACTIVE",
+            role: Role.SUPER_ADMIN,
+            status: EntityStatus.ACTIVE,
             mfaEnabled: false,
+            emailVerified: true,
           },
         });
         console.log(`✅ Updated existing Super Admin: ${email}`);
       } else {
-        console.error(`❌ Failed to seed ${email}:`, err);
+        await prisma.user.create({
+          data: {
+            email,
+            firstName: "Super",
+            lastName: "Admin",
+            passwordHash,
+            role: Role.SUPER_ADMIN,
+            status: EntityStatus.ACTIVE,
+            emailVerified: true,
+            mfaEnabled: false,
+          },
+        });
+        console.log(`✅ Seeded Super Admin: ${email}`);
       }
+    } catch (err: any) {
+      console.error(`❌ Failed to seed ${email}:`, err);
     }
   }
 }

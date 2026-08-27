@@ -3,31 +3,14 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
-import { authClient } from "@/lib/better-auth";
-
-const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://micro-intern-web.vercel.app";
+const API_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "https://micro-intern-4stz.onrender.com/api/v1";
 
 export function OAuthButtons({ action = "login" }: { action?: "login" | "signup" }) {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  const handleOAuthLogin = async (provider: "linkedin" | "microsoft" | "google" | "github") => {
+  const handleOAuthLogin = (provider: "linkedin" | "microsoft" | "google" | "github") => {
     setLoadingProvider(provider);
-    
-    try {
-      const { error } = await authClient.signIn.social({
-        provider,
-        callbackURL: `${APP_URL}/dashboard`,
-      });
-      if (error) {
-        console.error("OAuth error:", error);
-        alert(`OAuth Error: ${error.message || "Failed to initialize social login"}`);
-        setLoadingProvider(null);
-      }
-    } catch (err: any) {
-      console.error(err);
-      alert(`Unexpected Error: ${err.message || String(err)}`);
-      setLoadingProvider(null);
-    }
+    window.location.href = `${API_URL}/auth/${provider}${action === "signup" ? "?action=signup" : ""}`;
   };
 
   return (

@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
-import { authClient } from "@/lib/better-auth";
 
-const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://micro-intern-web.vercel.app";
+const API_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "https://micro-intern-4stz.onrender.com/api/v1";
 
 export function OAuthButtons() {
   const providers: { name: string, provider: "google" | "github" | "microsoft" | "linkedin", icon: React.ReactNode, className: string, path?: string }[] = [
@@ -84,20 +83,8 @@ export function OAuthButtons() {
           <Button
             variant="outline"
             className={`w-full h-12 text-sm font-medium transition-all shadow-sm ${provider.className}`}
-            onClick={async () => {
-              try {
-                const { error } = await authClient.signIn.social({
-                  provider: provider.provider,
-                  callbackURL: `${APP_URL}/dashboard`,
-                });
-                if (error) {
-                  console.error("OAuth error:", error);
-                  alert(`OAuth Error: ${error.message || "Failed to initialize social login"}`);
-                }
-              } catch (err: any) {
-                console.error(err);
-                alert(`Unexpected Error: ${err.message || String(err)}`);
-              }
+            onClick={() => {
+              window.location.href = `${API_URL}${provider.path}`;
             }}
           >
             {provider.icon}

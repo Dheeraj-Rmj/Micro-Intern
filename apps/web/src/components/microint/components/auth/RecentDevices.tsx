@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { authClient } from "../../../../lib/better-auth";
+import { apiClient } from "../../../../lib/api/client";
 import { Laptop, Smartphone, MapPin, Clock, XCircle, ShieldAlert } from "lucide-react";
 
 export const RecentDevices = () => {
@@ -10,10 +10,8 @@ export const RecentDevices = () => {
 
   const fetchSessions = async () => {
     try {
-      const { data, error } = await authClient.listSessions();
-      if (!error && data) {
-        setSessions(data);
-      }
+      const response = await apiClient.get<{ data: any[] }>("/auth/sessions");
+      setSessions(response.data.data ?? []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -25,10 +23,10 @@ export const RecentDevices = () => {
     fetchSessions();
   }, []);
 
-  const revokeSession = async (token: string) => {
+  const revokeSession = async (sessionId: string) => {
     try {
-      await authClient.revokeSession({ token });
-      fetchSessions(); // Refresh list
+      await apiClient.delete(`/auth/sessions/${sessionId}`);
+      fetchSessions();
     } catch (err) {
       console.error("Failed to revoke session", err);
     }
@@ -78,7 +76,7 @@ export const RecentDevices = () => {
               </div>
 
               <button
-                onClick={() => revokeSession(session.token)}
+                onClick={() => revokeSession(session.id)}
                 className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 p-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
               >
                 <XCircle className="w-4 h-4" />

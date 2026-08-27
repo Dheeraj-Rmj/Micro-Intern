@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { apiClient, setAccessToken } from "../../../../lib/api/client";
-import { authClient } from "../../../../lib/better-auth";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   Eye,
@@ -85,29 +84,21 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     try {
       setIsLoading(true);
 
-      // Step 1: Initial Login
       if (!identifier || !password) {
         showToast("Missing Credentials", "Please enter your email and password.", "warning");
         return;
       }
 
-      const { data, error } = await authClient.signIn.email({
-        email: identifier,
-        password,
-      });
+      const response = await apiClient.post<{ data: { accessToken: string; refreshToken: string; user: any } }>(
+        "/auth/login",
+        { email: identifier, password },
+      );
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      const user = data.user as any;
-      const accessToken = (data as any).token;
-      if (accessToken) setAccessToken(accessToken);
-      useAuthStore.getState().setAuth(user, accessToken || "");
-      
+      const { accessToken, user } = response.data.data;
+      setAccessToken(accessToken);
+      useAuthStore.getState().setAuth(user, accessToken);
       setUserProfile(user);
-      
-      // Navigate to correct portal based on role
+
       const userRole = user.role;
       if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
         setRole("admin");
@@ -123,7 +114,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         setCurrentRoute("dashboard");
       }
     } catch (err: any) {
-      let errorMessage = err.message || "Invalid credentials or network error.";
+      let errorMessage = err.response?.data?.error?.message || err.message || "Invalid credentials or network error.";
       if (errorMessage.includes("Failed to fetch") || errorMessage.includes("Network Error")) {
         errorMessage = "Backend is starting up (Cold Start). Please wait 60s and try again.";
       }
@@ -140,20 +131,17 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     try {
       setModalLoading(true);
 
-      const { data, error } = await authClient.signIn.email({
-        email: modalEmail,
-        password: modalPassword,
-      });
+      const response = await apiClient.post<{ data: { accessToken: string; user: any } }>(
+        "/auth/login",
+        { email: modalEmail, password: modalPassword },
+      );
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      const user = data.user as any;
-      
+      const { accessToken, user } = response.data.data;
+      setAccessToken(accessToken);
+      useAuthStore.getState().setAuth(user, accessToken);
       setUserProfile(user);
       setActiveModal("none");
-      
+
       const userRole = user.role;
       if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") {
         setRole("admin");
@@ -169,7 +157,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         setCurrentRoute("dashboard");
       }
     } catch (err: any) {
-      let errorMessage = err.message || "Invalid credentials or network error.";
+      let errorMessage = err.response?.data?.error?.message || err.message || "Invalid credentials or network error.";
       if (errorMessage.includes("Failed to fetch") || errorMessage.includes("Network Error")) {
         errorMessage = "Backend is starting up (Cold Start). Please wait 60s and try again.";
       }
@@ -179,7 +167,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     }
   };
 
-  const handleSocialAuth = async (provider: string) => {
+  const handleSocialAuth = (provider: string) => {
     if (initialPortal !== "candidate") {
       showToast(
         "Unauthorized Access",
@@ -188,20 +176,9 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
       );
       return;
     }
-    const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] || "https://micro-intern-web.vercel.app";
-    try {
-      const { error } = await authClient.signIn.social({
-        provider: provider.toLowerCase() as any,
-        callbackURL: `${APP_URL}/dashboard`,
-      });
-      if (error) {
-        console.error("OAuth error:", error);
-        showToast("OAuth Error", error.message || "Could not initialize social login.", "error");
-      }
-    } catch (err: any) {
-      console.error(err);
-      showToast("OAuth Error", err.message || "An unexpected error occurred.", "error");
-    }
+    const API_URL =
+      process.env["NEXT_PUBLIC_API_URL"] || "https://micro-intern-4stz.onrender.com/api/v1";
+    window.location.href = `${API_URL}/auth/${provider.toLowerCase()}`;
   };
 
   const isFormValid = identifier.trim().length > 0 && password.trim().length > 0;
