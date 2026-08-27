@@ -13,14 +13,14 @@ async function test() {
     // 2. Fetch the quote (this will hit the API first time)
     console.log("\nFetching quote (Attempt 1)...");
     const start1 = Date.now();
-    const quote1 = await ZenQuotesService.getQuoteOfDay();
+    const quote1 = await ZenQuotesService.getRandomQuote();
     console.log(`⏱️ Took ${Date.now() - start1}ms`);
     console.log("Quote:", quote1);
 
     // 3. Fetch again (this should hit the cache)
     console.log("\nFetching quote (Attempt 2 - Should be cached)...");
     const start2 = Date.now();
-    const quote2 = await ZenQuotesService.getQuoteOfDay();
+    const quote2 = await ZenQuotesService.getRandomQuote();
     console.log(`⏱️ Took ${Date.now() - start2}ms`);
     console.log("Quote:", quote2);
   } catch (err) {

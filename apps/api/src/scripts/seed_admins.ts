@@ -1,6 +1,5 @@
 import { prisma } from "../core/database.js";
-import * as bcrypt from "bcryptjs";
-import { v4 as uuidv4 } from "uuid";
+import { auth } from "../modules/auth/infrastructure/better-auth.js";
 
 async function main() {
   const emails = [
@@ -13,28 +12,47 @@ async function main() {
   ];
 
   const plainPassword = "Rmjit@123";
-  const salt = await bcrypt.genSalt(12);
-  const passwordHash = await bcrypt.hash(plainPassword, salt);
 
   for (const email of emails) {
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: {
-        role: "SUPER_ADMIN",
-        passwordHash,
-      },
-      create: {
-        id: uuidv4(),
-        email,
-        firstName: "Super",
-        lastName: "Admin",
-        role: "SUPER_ADMIN",
-        passwordHash,
-        status: "ACTIVE",
-        mfaEnabled: false, // explicitly disable MFA for this testing to bypass shortcut modal limits
-      },
-    });
-    console.log(`✅ Seeded Super Admin: ${user.email}`);
+    try {
+      // 1. Create user via better-auth to ensure correct password hashing and Account linkages
+      await auth.api.signUpEmail({
+        body: {
+          email,
+          password: plainPassword,
+          name: "Super Admin",
+          firstName: "Super",
+          lastName: "Admin",
+          role: "SUPER_ADMIN",
+        },
+      });
+
+      // 2. Force update status and mfaEnabled directly via Prisma to bypass verification
+      await prisma.user.update({
+        where: { email },
+        data: {
+          status: "ACTIVE",
+          mfaEnabled: false,
+        },
+      });
+      console.log(`✅ Seeded Super Admin: ${email}`);
+    } catch (err: any) {
+      const errorStr = String(err).toLowerCase();
+      if (errorStr.includes("already exists") || errorStr.includes("unique constraint")) {
+        console.log(`⚠️ User already exists: ${email}. Attempting to force update...`);
+        await prisma.user.update({
+          where: { email },
+          data: {
+            role: "SUPER_ADMIN",
+            status: "ACTIVE",
+            mfaEnabled: false,
+          },
+        });
+        console.log(`✅ Updated existing Super Admin: ${email}`);
+      } else {
+        console.error(`❌ Failed to seed ${email}:`, err);
+      }
+    }
   }
 }
 

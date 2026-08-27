@@ -123,11 +123,11 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         setCurrentRoute("dashboard");
       }
     } catch (err: any) {
-      showToast(
-        "Authentication Failed",
-        err.message || "Invalid credentials or network error.",
-        "error",
-      );
+      let errorMessage = err.message || "Invalid credentials or network error.";
+      if (errorMessage.includes("Failed to fetch") || errorMessage.includes("Network Error")) {
+        errorMessage = "Backend is starting up (Cold Start). Please wait 60s and try again.";
+      }
+      showToast("Authentication Failed", errorMessage, "error");
     } finally {
       setIsLoading(false);
     }
@@ -169,11 +169,11 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         setCurrentRoute("dashboard");
       }
     } catch (err: any) {
-      showToast(
-        "Authentication Failed",
-        err.message || "Invalid credentials or network error.",
-        "error",
-      );
+      let errorMessage = err.message || "Invalid credentials or network error.";
+      if (errorMessage.includes("Failed to fetch") || errorMessage.includes("Network Error")) {
+        errorMessage = "Backend is starting up (Cold Start). Please wait 60s and try again.";
+      }
+      showToast("Authentication Failed", errorMessage, "error");
     } finally {
       setModalLoading(false);
     }

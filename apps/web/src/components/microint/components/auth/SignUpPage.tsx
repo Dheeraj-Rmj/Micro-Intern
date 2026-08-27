@@ -115,11 +115,11 @@ export const SignUpPage: React.FC = () => {
       showToast("Account Created! 🎉", "Welcome to MicroIntern.", "success");
       setCurrentRoute("dashboard");
     } catch (err: any) {
-      showToast(
-        "Registration Failed",
-        err.message || "Could not create your account.",
-        "error",
-      );
+      let errorMessage = err.message || "Could not create your account.";
+      if (errorMessage.includes("Failed to fetch") || errorMessage.includes("Network Error")) {
+        errorMessage = "Backend is starting up (Cold Start). Please wait 60s and try again.";
+      }
+      showToast("Registration Failed", errorMessage, "error");
     } finally {
       setIsLoading(false);
     }
