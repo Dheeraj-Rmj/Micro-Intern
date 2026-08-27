@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 const API_URL =
   process.env["NEXT_PUBLIC_API_URL"] ?? "https://micro-intern-4stz.onrender.com/api/v1";
+const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://micro-intern-web.vercel.app";
 
 export function OAuthButtons() {
   const providers = [
@@ -81,7 +82,8 @@ export function OAuthButtons() {
             variant="outline"
             className={`w-full h-12 text-sm font-medium transition-all shadow-sm ${provider.className}`}
             onClick={() => {
-              window.location.href = `${API_URL}${provider.path}`;
+              const callbackURL = encodeURIComponent(`${APP_URL}/dashboard`);
+              window.location.href = `${API_URL}${provider.path}?callbackURL=${callbackURL}`;
             }}
           >
             {provider.icon}

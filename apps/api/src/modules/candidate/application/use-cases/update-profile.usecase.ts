@@ -22,7 +22,7 @@ export class UpdateProfileUseCase {
   /**
    * Updates a candidate profile and its relations, enforcing optimistic concurrency.
    */
-  async execute(userId: string, data: UpdateCandidateGraphDto) {
+  async execute(userId: string, data: UpdateCandidateGraphDto): Promise<any> {
     const { profile, skills, experiences, educations, certificates, socials, preferences } = data;
 
     const currentProfile = await this.db.candidateProfile.findUnique({

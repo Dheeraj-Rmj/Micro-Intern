@@ -17,6 +17,11 @@ export const auth = betterAuth({
   baseURL: process.env["API_URL"]
     ? `${process.env["API_URL"]}/api/v1/auth`
     : "https://micro-intern-4stz.onrender.com/api/v1/auth",
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://micro-intern-web.vercel.app",
+    process.env["FRONTEND_URL"] || "https://micro-intern-web.vercel.app"
+  ],
   emailAndPassword: {
     enabled: true,
   },

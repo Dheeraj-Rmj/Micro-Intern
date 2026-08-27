@@ -32,6 +32,8 @@ import {
   MapPin,
   Calendar,
 } from "lucide-react";
+import { networkApi } from "../../../../lib/api/network";
+import { SkillBadge } from "../common/SkillBadge";
 import { TechSkillIcon } from "../common/TechSkillIcon";
 
 export type ReactionType = "like" | "celebrate" | "support" | "love" | "insightful" | "curious";
@@ -122,7 +124,7 @@ interface Peer {
   about?: string;
   trustScore?: number;
   certifications?: Array<{ title: string; issuer: string; score: string }>;
-  skills: Array<{ name: string; endorsedCount: number; endorsedByMe: boolean }>;
+  skills: Array<{ name: string; endorsedCount: number; endorsedByMe: boolean; status?: any }>;
   status: "none" | "pending" | "connected";
   mutualCount: number;
 }
@@ -149,47 +151,54 @@ export const NetworkPage: React.FC = () => {
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
 
   // Persistent Posts State
-  const [posts, setPosts] = useState<NetworkPost[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_POSTS_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error("Failed to parse saved network posts", e);
-        }
-      }
-    }
-    return INITIAL_POSTS;
-  });
-
+  const [posts, setPosts] = useState<NetworkPost[]>([]);
+  
   // Persistent Peers State
-  const [peers, setPeers] = useState<Peer[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_PEERS_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.error("Failed to parse saved network peers", e);
-        }
-      }
-    }
-    return INITIAL_PEERS;
-  });
-
-  // Save changes to localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(posts));
-    }
-  }, [posts]);
+  const [peers, setPeers] = useState<Peer[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_PEERS_KEY, JSON.stringify(peers));
-    }
-  }, [peers]);
+    // Fetch feed
+    networkApi.getFeed().then((res) => {
+      // Map API posts to UI structure
+      const mappedPosts = res.data.posts.map((p) => ({
+        id: p.id,
+        authorName: p.author?.name || "Unknown User",
+        authorHeadline: p.author?.headline || "",
+        authorAvatar: p.author?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+        timeAgo: new Date(p.createdAt).toLocaleDateString(),
+        content: p.content,
+        skills: ["MicroIntern"], // Just stub for now, as posts don't have skills directly yet
+        hashtag: p.postType,
+        reactions: {
+          like: p._count?.reactions || 0,
+          celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
+        },
+        userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
+        comments: [],
+      }));
+      setPosts(mappedPosts);
+    }).catch(console.error);
+
+    // Fetch Discover profiles
+    networkApi.getDiscoverProfiles().then((res) => {
+      const mappedPeers = res.data.map((p) => ({
+        id: p.id,
+        name: p.name,
+        headline: p.headline || "Software Engineer",
+        avatar: p.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+        trustScore: p.trustScore,
+        skills: p.skills.map((s) => ({
+          name: s.skill,
+          endorsedCount: 1, // default
+          endorsedByMe: false,
+          status: s.verified ? "VERIFIED" : "CLAIMED"
+        })),
+        status: "none" as "none" | "pending" | "connected",
+        mutualCount: 0,
+      }));
+      setPeers(mappedPeers);
+    }).catch(console.error);
+  }, []);
 
   // Create Post input state
   const [newPostText, setNewPostText] = useState("");
@@ -285,43 +294,45 @@ export const NetworkPage: React.FC = () => {
   };
 
   // Handle Create Post
-  const handleCreatePost = () => {
+  const handleCreatePost = async () => {
     if (!newPostText.trim()) {
       showToast("Empty Post", "Please write something before posting.", "warning");
       return;
     }
-    const newPost: NetworkPost = {
-      id: `post-${Date.now()}`,
-      authorName: userProfile.fullName || "Candidate",
-      authorHeadline: userProfile.headline || "Software Engineer • MicroIntern Candidate",
-      authorAvatar:
-        userProfile.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
-      timeAgo: "Just now",
-      content: newPostText.trim(),
-      skills: selectedPostSkills,
-      hashtag: newPostHashtag || "#AgenticAI",
-      aiVerifiedBadge: "AI Verified Candidate Member ✓",
-      githubRepoUrl: newPostRepoUrl.trim() || undefined,
-      reactions: {
-        like: 1,
-        celebrate: 0,
-        support: 0,
-        love: 0,
-        insightful: 0,
-        curious: 0,
-      },
-      userReaction: "like",
-      comments: [],
-    };
-    setPosts([newPost, ...posts]);
-    setNewPostText("");
-    setNewPostRepoUrl("");
-    setShowAdvancedPostFields(false);
-    showToast(
-      "Post Published 🚀",
-      "Your update is now live in the professional network feed.",
-      "success",
-    );
+    
+    try {
+      const res = await networkApi.createPost(newPostText.trim(), newPostHashtag || "INSIGHT");
+      if (res.success) {
+        const p = res.data;
+        const mappedPost = {
+          id: p.id,
+          authorName: p.author?.name || "Unknown User",
+          authorHeadline: p.author?.headline || "",
+          authorAvatar: p.author?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+          timeAgo: "Just now",
+          content: p.content,
+          skills: selectedPostSkills,
+          hashtag: p.postType,
+          reactions: {
+            like: 0, celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
+          },
+          userReaction: null,
+          comments: [],
+        };
+        setPosts([mappedPost, ...posts]);
+        setNewPostText("");
+        setNewPostRepoUrl("");
+        setShowAdvancedPostFields(false);
+        showToast(
+          "Post Published 🚀",
+          "Your update is now live in the professional network feed.",
+          "success",
+        );
+      }
+    } catch (e) {
+      showToast("Error", "Failed to publish post. Please try again.", "error");
+      console.error(e);
+    }
   };
 
   // Handle Accept Request
@@ -335,9 +346,15 @@ export const NetworkPage: React.FC = () => {
   };
 
   // Handle Connect Request
-  const handleConnectPeer = (peerId: string) => {
-    setPeers((prev) => prev.map((p) => (p.id === peerId ? { ...p, status: "pending" } : p)));
-    showToast("Request Sent", "Connection request sent successfully.", "info");
+  const handleConnectPeer = async (peerId: string) => {
+    try {
+      await networkApi.sendConnectionRequest(peerId);
+      setPeers((prev) => prev.map((p) => (p.id === peerId ? { ...p, status: "pending" } : p)));
+      showToast("Request Sent", "Connection request sent successfully.", "info");
+    } catch (e) {
+      showToast("Error", "Failed to send connection request.", "error");
+      console.error(e);
+    }
   };
 
   // Handle Endorse Skill on Peer
@@ -739,7 +756,7 @@ export const NetworkPage: React.FC = () => {
                 filteredPosts.map((post) => {
                   const totalRx = getTotalReactions(post.reactions);
                   const activeReactionConfig = post.userReaction
-                    ? REACTIONS[post.userReaction]
+                    ? REACTIONS[post.userReaction as ReactionType]
                     : null;
 
                   return (
@@ -824,13 +841,11 @@ export const NetworkPage: React.FC = () => {
                       {post.skills.length > 0 && (
                         <div className="flex flex-wrap gap-2 pt-1">
                           {post.skills.map((skill, idx) => (
-                            <span
+                            <SkillBadge
                               key={idx}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 text-black dark:text-white text-xs font-semibold"
-                            >
-                              <TechSkillIcon skill={skill} size={15} />
-                              <span>{skill}</span>
-                            </span>
+                              skill={skill}
+                              status="CLAIMED"
+                            />
                           ))}
                         </div>
                       )}
@@ -1203,22 +1218,21 @@ export const NetworkPage: React.FC = () => {
                         Skills & Peer Endorsements
                       </span>
                       <div className="flex flex-wrap gap-1.5">
-                        {peer.skills.map((skill, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => handleEndorseSkill(peer.id, skill.name)}
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                              skill.endorsedByMe
-                                ? "bg-purple-600 text-white shadow-xs"
-                                : "bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10"
-                            }`}
-                            title={`Click to endorse ${skill.name}`}
-                          >
-                            <TechSkillIcon skill={skill.name} size={13} />
-                            <span>{skill.name}</span>
-                            <span className="font-bold opacity-80">({skill.endorsedCount})</span>
-                          </button>
+                        {peer.skills.map((skill: any, idx: number) => (
+                          <div key={idx} className="relative group">
+                            <SkillBadge
+                              skill={skill.name}
+                              status={skill.status || "CLAIMED"}
+                            />
+                            {/* Hidden endorsement button on hover */}
+                            <button
+                              type="button"
+                              onClick={() => handleEndorseSkill(peer.id, skill.name)}
+                              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center bg-black/50 text-white text-[10px] rounded"
+                            >
+                              Endorse +1
+                            </button>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -1428,25 +1442,21 @@ export const NetworkPage: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {selectedPublicPeer.skills.map((skill, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleEndorseSkill(selectedPublicPeer.id, skill.name)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-                        skill.endorsedByMe
-                          ? "bg-purple-600 text-white shadow-md"
-                          : "bg-black/5 dark:bg-white/10 text-black dark:text-white hover:bg-black/10"
-                      }`}
-                      title={`Endorse ${selectedPublicPeer.name} on ${skill.name}`}
-                    >
-                      <TechSkillIcon skill={skill.name} size={16} />
-                      <span>{skill.name}</span>
-                      <span className="font-bold px-1.5 py-0.5 rounded-md bg-black/10 dark:bg-white/20 text-[11px]">
-                        {skill.endorsedCount}
-                      </span>
-                      {skill.endorsedByMe && <span>✓ You endorsed</span>}
-                    </button>
+                  {selectedPublicPeer.skills.map((skill: any, idx: number) => (
+                    <div key={idx} className="relative group">
+                      <SkillBadge
+                        skill={skill.name}
+                        status={skill.status || "CLAIMED"}
+                      />
+                      {/* Hidden endorsement button on hover */}
+                      <button
+                        type="button"
+                        onClick={() => handleEndorseSkill(selectedPublicPeer.id, skill.name)}
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center bg-black/50 text-white text-[10px] rounded"
+                      >
+                        Endorse +1
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>

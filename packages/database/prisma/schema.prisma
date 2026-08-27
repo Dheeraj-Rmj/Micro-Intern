@@ -264,6 +264,9 @@ model CandidateProfile {
   yearsOfExperience Int?    @map("years_of_experience")
   isOpenToWork      Boolean @default(true) @map("is_open_to_work")
   isPublic          Boolean @default(false) @map("is_public")
+  
+  // Privacy & Network Controls
+  visibility        Json?   // e.g. { profile: "PUBLIC", assessments: "CONNECTIONS", messages: "RECRUITERS" }
 
   // Phase 3 OS
   globalRank Int? @map("global_rank")
@@ -2521,4 +2524,88 @@ model AIOfferLetter {
   @@index([candidateId])
   @@index([companyId])
   @@map("ai_offer_letters")
+}
+
+// -----------------------------------------------------------------------------
+// PROFESSIONAL NETWORK MODELS
+// -----------------------------------------------------------------------------
+
+model Connection {
+  id           String   @id @default(uuid()) @db.Uuid
+  requesterId  String   @map("requester_id") @db.Uuid
+  recipientId  String   @map("recipient_id") @db.Uuid
+  status       ConnectionStatus @default(PENDING)
+  note         String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  @@unique([requesterId, recipientId])
+  @@map("connections")
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+model NetworkPost {
+  id           String   @id @default(uuid()) @db.Uuid
+  authorId     String   @map("author_id") @db.Uuid
+  content      String   @db.Text
+  postType     PostType @map("post_type") // PROJECT, ACHIEVEMENT, LEARNING, INSIGHT, OPPORTUNITY
+  
+  // Optional References
+  projectId    String?  @map("project_id") @db.Uuid // Link to CandidatePortfolio
+  assessmentId String?  @map("assessment_id") @db.Uuid // Link to CandidateJourney/Assessment
+  
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  reactions    PostReaction[]
+  comments     PostComment[]
+
+  @@map("network_posts")
+}
+
+enum PostType {
+  PROJECT
+  ACHIEVEMENT
+  LEARNING
+  INSIGHT
+  OPPORTUNITY
+}
+
+model PostReaction {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String   @db.VarChar(50) // LIKE, CELEBRATE, SUPPORT, INSIGHTFUL
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  post      NetworkPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@unique([postId, userId])
+  @@map("post_reactions")
+}
+
+model PostComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  post      NetworkPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  @@map("post_comments")
+}
+
+model Recommendation {
+  id          String   @id @default(uuid()) @db.Uuid
+  giverId     String   @map("giver_id") @db.Uuid
+  receiverId  String   @map("receiver_id") @db.Uuid
+  skillId     String?  @map("skill_id") @db.Uuid
+  content     String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("recommendations")
 }

@@ -38,6 +38,7 @@ import { createReferralRoutes } from "@/modules/referral/presentation/referral.r
 import { createDiversityRoutes } from "@/modules/diversity/presentation/diversity.routes.js";
 import { createSlackRoutes } from "@/modules/integrations/slack/presentation/slack.routes.js";
 import { createAIToolsRouter } from "@/modules/management/presentation/ai-tools.routes.js";
+import { createNetworkRouter } from "@/modules/network/presentation/network.routes.js";
 
 export function createV1Router(): Router {
   const v1Router = Router();
@@ -58,6 +59,7 @@ export function createV1Router(): Router {
   v1Router.use("/notifications", createNotificationRouter());
   v1Router.use("/ekyc", createEkycRouter());
   v1Router.use("/users", usersRoutes);
+  v1Router.use("/network", createNetworkRouter());
   // ── Skill-Based Hiring Platform ────────────────────────────────────────────
   v1Router.use("/skills", createSkillRoutes());
   v1Router.use("/role-profiles", createRoleProfileRoutes());

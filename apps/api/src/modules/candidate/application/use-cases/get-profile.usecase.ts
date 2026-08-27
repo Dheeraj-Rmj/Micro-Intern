@@ -7,7 +7,7 @@ export class GetProfileUseCase {
    * Retrieves a candidate profile and all its normalized relations.
    * Creates an empty profile if one doesn't exist.
    */
-  async execute(userId: string) {
+  async execute(userId: string): Promise<any> {
     let profile = await this.db.candidateProfile.findUnique({
       where: { userId },
       include: {
