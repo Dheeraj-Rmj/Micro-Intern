@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useAuthStore } from "@/stores/auth.store";
 import { assessmentApi } from "../../../lib/api/assessment";
+import { journeyApi, submissionApi, notificationsApi } from "../../../lib/api/candidate-data";
 import {
   PageRoute,
   UserRole,
@@ -21,9 +22,6 @@ import {
   INITIAL_USER_PROFILE,
   INITIAL_COMPANY_PROFILE,
   MOCK_TRIALS,
-  MOCK_APPLICATIONS,
-  MOCK_SUBMISSIONS,
-  MOCK_NOTIFICATIONS,
   MOCK_ACHIEVEMENTS,
   MOCK_INTERVIEWS,
   MOCK_CANDIDATES_SEARCH_POOL,
@@ -225,14 +223,116 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     fetchTrials();
   }, []);
-  const [applications, setApplications] = useState<Application[]>(MOCK_APPLICATIONS);
-  const [submissions, setSubmissions] = useState<Submission[]>(MOCK_SUBMISSIONS);
-  const [notifications, setNotifications] = useState<AppNotification[]>(MOCK_NOTIFICATIONS);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [achievements] = useState<AchievementBadge[]>(MOCK_ACHIEVEMENTS);
   const [interviews, setInterviews] = useState<InterviewSlot[]>(MOCK_INTERVIEWS);
   const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>(
     MOCK_CANDIDATES_SEARCH_POOL,
   );
+
+  // ── Fetch real applications (candidate journeys) from API ──────────────────
+  useEffect(() => {
+    const authState = useAuthStore.getState();
+    if (!authState.isAuthenticated) return;
+    const fetchApplications = async () => {
+      try {
+        const journeys = await journeyApi.getMyCandidateJourneys();
+        if (journeys && journeys.length > 0) {
+          const mapped: Application[] = journeys.map((j) => ({
+            id: j.id,
+            trialId: j.assessmentId,
+            trialTitle: j.assessment?.title || "Assessment",
+            company: j.assessment?.company?.name || "Company",
+            candidateName: authState.user ? `${authState.user.firstName} ${authState.user.lastName}` : "Candidate",
+            candidateEmail: authState.user?.email || "",
+            candidateAvatar: authState.user?.avatarUrl || "",
+            appliedDate: new Date(j.createdAt).toLocaleDateString(),
+            status: (j.status?.toLowerCase() === "hired" ? "accepted"
+              : j.status?.toLowerCase() === "rejected" ? "rejected"
+              : j.status?.toLowerCase() === "interview" || j.status?.toLowerCase() === "qualified" ? "shortlisted"
+              : "applied") as Application["status"],
+            matchScore: j.matchScore ?? j.score ?? 0,
+            stage: j.stage || j.status || "Under Review",
+          }));
+          setApplications(mapped);
+        }
+      } catch {
+        // silently ignore — candidate may not have journeys yet
+      }
+    };
+    fetchApplications();
+  }, []);
+
+  // ── Fetch real submissions from API ────────────────────────────────────────
+  useEffect(() => {
+    const authState = useAuthStore.getState();
+    if (!authState.isAuthenticated) return;
+    const fetchSubmissions = async () => {
+      try {
+        const subs = await submissionApi.getMyCandidateSubmissions();
+        if (subs && subs.length > 0) {
+          const mapped: Submission[] = subs.map((s) => ({
+            id: s.id,
+            trialId: s.assessmentId,
+            trialTitle: s.assessment?.title || "Assessment",
+            company: s.assessment?.company?.name || "Company",
+            repoUrl: s.repoUrl,
+            submittedAt: s.submittedAt
+              ? new Date(s.submittedAt).toLocaleDateString()
+              : new Date(s.createdAt).toLocaleDateString(),
+            status: (
+              s.status === "PENDING" ? "Under Review"
+              : s.status === "EVALUATED" || s.status === "SCORED" ? "Evaluated"
+              : s.status === "APPROVED" ? "Approved"
+              : s.status === "REJECTED" ? "Rejected"
+              : "Under Review"
+            ) as Submission["status"],
+            score: s.score ?? undefined,
+            feedback: s.feedback ?? undefined,
+            fileNames: [],
+          }));
+          setSubmissions(mapped);
+        }
+      } catch {
+        // silently ignore
+      }
+    };
+    fetchSubmissions();
+  }, []);
+
+  // ── Fetch real notifications from API ──────────────────────────────────────
+  useEffect(() => {
+    const authState = useAuthStore.getState();
+    if (!authState.isAuthenticated) return;
+    const fetchNotifications = async () => {
+      try {
+        const notifs = await notificationsApi.list();
+        if (notifs && notifs.length > 0) {
+          const mapped: AppNotification[] = notifs.map((n) => ({
+            id: n.id,
+            title: n.title,
+            message: n.message,
+            timestamp: new Date(n.createdAt).toLocaleString(),
+            category: (
+              n.type?.toLowerCase().includes("trial") ? "trial"
+              : n.type?.toLowerCase().includes("application") ? "application"
+              : n.type?.toLowerCase().includes("interview") ? "interview"
+              : n.type?.toLowerCase().includes("evaluation") || n.type?.toLowerCase().includes("eval") ? "evaluation"
+              : n.type?.toLowerCase().includes("achievement") ? "achievement"
+              : "system"
+            ) as AppNotification["category"],
+            read: n.isRead,
+          }));
+          setNotifications(mapped);
+        }
+      } catch {
+        // silently ignore
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   const { theme, setTheme, systemTheme } = useTheme();
 
@@ -368,15 +468,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const title = targetTrial ? targetTrial.title : "MicroIntern Trial Task";
     const company = targetTrial ? targetTrial.company : "Enterprise Partner";
 
+    let apiSubmission: { id: string; status: string; score?: number; feedback?: string } | null = null;
     try {
       if (targetTrial && !targetTrial.id.startsWith("mock")) {
-        await assessmentApi.submitAssessment(targetTrial.id, {
-          tasks: [
-            {
-              taskId: "default",
-              output: solutionText,
-            },
-          ],
+        apiSubmission = await submissionApi.submitAssessment(targetTrial.id, {
+          solutionText,
+          fileNames,
         });
       }
     } catch (err) {
@@ -385,20 +482,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     const newSub: Submission = {
-      id: `sub-${Date.now()}`,
+      id: apiSubmission?.id || `sub-${Date.now()}`,
       trialId: trialId,
       trialTitle: title,
       company: company,
-      candidateName: userProfile.fullName || "Alex Vance",
+      candidateName: userProfile.fullName || "Candidate",
       submittedAt: new Date().toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
       }),
-      status: "Under Review",
-      score: 95,
-      feedback:
-        "Automated evaluation complete. Code passed all unit tests and static syntax analysis.",
+      status: (apiSubmission?.status?.toLowerCase() as Submission["status"]) || "Under Review",
+      score: apiSubmission?.score,
+      feedback: apiSubmission?.feedback || "Your submission is being evaluated by our AI system.",
       fileNames: fileNames.length > 0 ? fileNames : ["workspace_solution.ts", "readme.md"],
     };
 
@@ -425,12 +521,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [recruiterOffers, setRecruiterOffers] = useState<RecruiterOffer[]>([]);
 
   const markNotificationRead = (id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true, read: true } : n)));
+    // Fire-and-forget API call
+    notificationsApi.markRead(id).catch(() => {});
   };
 
   const clearAllNotifications = () => {
     setNotifications([]);
-    showToast("Notifications Cleared", "All notifications deleted", "info");
+    notificationsApi.markAllRead().catch(() => {});
+    showToast("Notifications Cleared", "All notifications marked as read", "info");
   };
 
   const createOffer = (offer: Omit<RecruiterOffer, "id">) => {

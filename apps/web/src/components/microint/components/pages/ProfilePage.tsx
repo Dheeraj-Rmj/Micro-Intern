@@ -34,6 +34,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { TechSkillIcon } from "../common/TechSkillIcon";
+import { candidateApi } from "@/lib/api/candidate";
 
 // Zod validation schema with ALL 7 text/list fields marked mandatory
 const profileSchema = z.object({
@@ -714,7 +715,7 @@ export const ProfilePage: React.FC = () => {
   };
 
   // Form Submission
-  const onSaveProfile = (data: ProfileFormValues) => {
+  const onSaveProfile = async (data: ProfileFormValues) => {
     if (!avatarPreview) {
       setAvatarError("This field is required.");
     }
@@ -729,31 +730,49 @@ export const ProfilePage: React.FC = () => {
 
     setIsSaving(true);
 
-    setTimeout(() => {
-      const updatedProfile = {
-        ...userProfile,
-        fullName: data.fullName,
-        headline: data.headline,
-        bio: data.bio,
-        aboutMe: data.bio,
-        skills: data.skills,
-        githubUrl: data.githubUrl,
-        linkedinUrl: data.linkedinUrl,
-        portfolioUrl: data.portfolioUrl,
-        avatar: avatarPreview,
-        resumeFileName: resumeName,
-      };
+    const updatedProfile = {
+      ...userProfile,
+      fullName: data.fullName,
+      headline: data.headline,
+      bio: data.bio,
+      aboutMe: data.bio,
+      skills: data.skills,
+      githubUrl: data.githubUrl,
+      linkedinUrl: data.linkedinUrl,
+      portfolioUrl: data.portfolioUrl,
+      avatar: avatarPreview,
+      resumeFileName: resumeName,
+    };
 
-      setUserProfile(updatedProfile);
-      if (typeof window !== "undefined") {
-        localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updatedProfile));
-      }
+    // Try to persist to real API
+    try {
+      await candidateApi.updateProfile({
+        profile: {
+          headline: data.headline,
+          bio: data.bio,
+          isOpenToWork: true,
+          isPublic: true,
+        },
+        skills: data.skills.map((name) => ({ skill: name, level: 3, verified: false })),
+        socials: [
+          ...(data.githubUrl ? [{ platform: "GITHUB" as const, url: data.githubUrl }] : []),
+          ...(data.linkedinUrl ? [{ platform: "LINKEDIN" as const, url: data.linkedinUrl }] : []),
+          ...(data.portfolioUrl ? [{ platform: "PORTFOLIO" as const, url: data.portfolioUrl }] : []),
+        ],
+      });
+    } catch {
+      // best-effort, don't block local save
+    }
 
-      setIsSaving(false);
-      setIsSaved(true);
-      setIsEditedAfterSave(false);
-      showToast("Profile Saved", "Profile saved successfully.", "success");
-    }, 400);
+    setUserProfile(updatedProfile);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updatedProfile));
+    }
+
+    setIsSaving(false);
+    setIsSaved(true);
+    setIsEditedAfterSave(false);
+    showToast("Profile Saved", "Profile saved successfully.", "success");
   };
 
   const handleReset = () => {

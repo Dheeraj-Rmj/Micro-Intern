@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
+import { companyApi } from "../../../../lib/api/company";
 import {
   Sparkles,
   Plus,
@@ -28,36 +29,92 @@ const INITIAL_ENTERPRISE_TRIALS: CompanyTrialItem[] = [];
 export const CompanyTrialsPage: React.FC = () => {
   const { showToast } = useApp();
   const [trials, setTrials] = useState<CompanyTrialItem[]>(INITIAL_ENTERPRISE_TRIALS);
+  const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [title, setTitle] = useState("");
   const [stipend, setStipend] = useState("$3,500");
   const [category, setCategory] = useState("Full Stack");
 
-  const handleCreateTrial = (e: React.FormEvent) => {
+  useEffect(() => {
+    const fetchAssessments = async () => {
+      try {
+        const result = await companyApi.getAssessments();
+        const list = result?.assessments ?? [];
+        if (list.length > 0) {
+          const mapped: CompanyTrialItem[] = list.map((a: any) => ({
+            id: a.id,
+            title: a.title,
+            category: a.category || a.skillsRequired?.[0] || "General",
+            stipend: "Merit-Based",
+            applicantsCount: 0,
+            status: (
+              a.status === "PUBLISHED" ? "ACTIVE"
+              : a.status === "ARCHIVED" ? "COMPLETED"
+              : "DRAFT"
+            ) as CompanyTrialItem["status"],
+            deadline: a.publishedAt
+              ? `Since ${new Date(a.publishedAt).toLocaleDateString()}`
+              : "Pending",
+          }));
+          setTrials(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch assessments:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAssessments();
+  }, []);
+
+  const handleCreateTrial = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
       showToast("Missing Title", "Please enter a skill trial title.", "warning");
       return;
     }
 
+    // Optimistic local update
+    const tempId = `temp-${Date.now()}`;
     const newTrial: CompanyTrialItem = {
-      id: `ZOH-0${trials.length + 1}`,
+      id: tempId,
       title,
       category,
       stipend,
       applicantsCount: 0,
-      status: "ACTIVE",
-      deadline: "10 days left",
+      status: "DRAFT",
+      deadline: "Pending",
     };
-
-    setTrials([newTrial, ...trials]);
+    setTrials((prev) => [newTrial, ...prev]);
     setTitle("");
     setShowCreateModal(false);
-    showToast(
-      "Trial Published & Escrow Locked",
-      `"${title}" is now live for verified candidates to apply. ${stipend} escrow pool deposited.`,
-      "success",
-    );
+
+    try {
+      const res = await companyApi.createAssessment({
+        title,
+        description: `${category} skill trial`,
+        skillsRequired: [category],
+        durationMinutes: 120,
+        passingScore: 70,
+        isPublic: true,
+      });
+      const created = res?.data;
+      if (created?.id) {
+        // Replace temp entry with real one
+        setTrials((prev) =>
+          prev.map((t) =>
+            t.id === tempId ? { ...newTrial, id: created.id, status: "DRAFT" } : t,
+          ),
+        );
+      }
+      showToast(
+        "Assessment Created",
+        `"${title}" has been created. Publish it to make it live.`,
+        "success",
+      );
+    } catch {
+      showToast("Error", "Failed to save trial to backend. Showing locally.", "warning");
+    }
   };
 
   return (

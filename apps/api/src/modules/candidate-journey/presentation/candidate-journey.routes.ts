@@ -76,6 +76,8 @@ export function createCandidateJourneyRoutes(): Router {
     requireAnyRole([Role.ADMIN, Role.SUPER_ADMIN, Role.COMPANY_OWNER, Role.RECRUITER]),
     controller.advanceJourney,
   );
+  // /candidate/me — MUST be before /:id to avoid route conflict
+  router.get("/candidate/me", authMiddleware, controller.listCandidateJourneys);
   router.get("/:id", authMiddleware, controller.getJourney);
   router.get("/candidate/:candidateId", authMiddleware, controller.listCandidateJourneys);
   router.get("/company/:companyId", authMiddleware, controller.listCompanyJourneys);

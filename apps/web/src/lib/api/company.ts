@@ -1,7 +1,7 @@
 import { apiClient } from "./client";
 
 export const companyApi = {
-  // Enterprise Hub / Company Admin endpoints
+  // ── Company Admin endpoints ───────────────────────────────────────────────
 
   getDepartments: async () => {
     const response = await apiClient.get("/companies/me/departments");
@@ -41,5 +41,87 @@ export const companyApi = {
   getAIInsights: async () => {
     const response = await apiClient.get("/companies/me/ai-insights");
     return response.data;
+  },
+
+  // ── Assessments ───────────────────────────────────────────────────────────
+
+  getAssessments: async () => {
+    try {
+      const response = await apiClient.get("/assessments", { params: { limit: 50 } });
+      return response.data?.data ?? { assessments: [], total: 0 };
+    } catch {
+      return { assessments: [], total: 0 };
+    }
+  },
+
+  createAssessment: async (payload: Record<string, unknown>) => {
+    const response = await apiClient.post("/assessments", payload);
+    return response.data;
+  },
+
+  publishAssessment: async (id: string) => {
+    const response = await apiClient.post(`/assessments/${id}/publish`, {});
+    return response.data;
+  },
+
+  deleteAssessment: async (id: string) => {
+    const response = await apiClient.delete(`/assessments/${id}`);
+    return response.data;
+  },
+
+  // ── Candidate Journeys / Applications ────────────────────────────────────
+
+  getCompanyJourneys: async (companyId: string) => {
+    try {
+      const response = await apiClient.get(`/candidate-journeys/company/${companyId}`);
+      return response.data?.data ?? [];
+    } catch {
+      return [];
+    }
+  },
+
+  updateJourneyStatus: async (journeyId: string, toStatus: string, reason?: string) => {
+    const response = await apiClient.put(`/candidate-journeys/${journeyId}/advance`, {
+      toStatus,
+      reason,
+    });
+    return response.data;
+  },
+
+  // ── AI Task Recommendation ("Give Task") ─────────────────────────────────
+
+  getAITaskRecommendation: async (candidateId: string, roleProfileId?: string) => {
+    try {
+      const response = await apiClient.post("/matching/candidate", {
+        candidateId,
+        roleProfileId,
+      });
+      return response.data?.data ?? null;
+    } catch {
+      return null;
+    }
+  },
+
+  rankCandidates: async (roleProfileId: string, candidateIds: string[]) => {
+    try {
+      const response = await apiClient.post("/matching/rank", {
+        roleProfileId,
+        candidateIds,
+      });
+      return response.data?.data ?? [];
+    } catch {
+      return [];
+    }
+  },
+
+  // ── Company Profile ───────────────────────────────────────────────────────
+
+  getCompanyProfile: async () => {
+    try {
+      const response = await apiClient.get("/companies/me");
+      return response.data?.data ?? null;
+    } catch {
+      return null;
+    }
   },
 };

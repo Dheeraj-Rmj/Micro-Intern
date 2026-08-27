@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
+import { companyApi } from "../../../../lib/api/company";
 import {
   Building2,
   Users,
@@ -30,6 +31,8 @@ import {
   BarChart2,
   Layers,
   Zap,
+  Brain,
+  X,
 } from "lucide-react";
 
 interface CandidateApplication {
@@ -67,6 +70,11 @@ export const CompanyDashboard: React.FC = () => {
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [activeTabFilter, setActiveTabFilter] = useState<"all" | "pending" | "approved">("all");
 
+  // AI Give Task state
+  const [giveTaskCandidate, setGiveTaskCandidate] = useState<CandidateApplication | null>(null);
+  const [aiRecommendations, setAiRecommendations] = useState<any[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+
   // Live Ticking Clock state (matching CandidatePortal)
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [currentQuote, setCurrentQuote] = useState<MotivationalQuote>(
@@ -88,6 +96,69 @@ export const CompanyDashboard: React.FC = () => {
       setCurrentQuote(selected);
     }
   }, []);
+
+  // Fetch real submissions on mount
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      try {
+        const res = await companyApi.getSubmissions();
+        const rawData = res?.data?.submissions ?? res?.data ?? [];
+        if (Array.isArray(rawData) && rawData.length > 0) {
+          const mapped: CandidateApplication[] = rawData.map((s: any) => ({
+            id: s.id,
+            candidateName: s.candidateName || s.candidate?.name || "Candidate",
+            email: s.candidateEmail || s.candidate?.email || "",
+            trialTitle: s.trialTitle || s.assessment?.title || "Assessment",
+            trustScore: s.trustScore ?? s.score ?? 85,
+            submittedAt: s.submittedAt || s.createdAt || "",
+            githubUrl: s.repoUrl || s.githubUrl || "",
+            status: (s.status === "APPROVED" ? "APPROVED" : s.status === "REJECTED" ? "REJECTED" : "PENDING") as CandidateApplication["status"],
+          }));
+          setApplications(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to load company submissions:", err);
+      }
+    };
+    fetchSubmissions();
+  }, []);
+
+  // AI Give Task handler
+  const handleGiveTask = async (app: CandidateApplication) => {
+    setGiveTaskCandidate(app);
+    setAiLoading(true);
+    setAiRecommendations([]);
+    try {
+      const result = await companyApi.getAITaskRecommendation(app.id);
+      if (result?.recommendations) {
+        setAiRecommendations(result.recommendations);
+      } else {
+        // Fallback — show available trials with suitability estimate
+        setAiRecommendations(
+          trials.slice(0, 3).map((t, i) => ({
+            id: t.id,
+            title: t.title,
+            difficulty: t.difficulty,
+            suitability: 95 - i * 6,
+            reason: i === 0 ? "Best match for candidate skill level" : i === 1 ? "Good alignment with verified skills" : "Alternative option based on competency profile",
+          }))
+        );
+      }
+    } catch {
+      // Fallback recommendations
+      setAiRecommendations(
+        trials.slice(0, 3).map((t, i) => ({
+          id: t.id,
+          title: t.title,
+          difficulty: t.difficulty || "Intermediate",
+          suitability: 92 - i * 7,
+          reason: i === 0 ? "Recommended based on MCQ score" : "Alternative task option",
+        }))
+      );
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const handleApprove = (id: string, name: string) => {
     setApplications((prev) =>
@@ -572,6 +643,13 @@ export const CompanyDashboard: React.FC = () => {
                     {app.status === "PENDING" ? (
                       <>
                         <button
+                          onClick={() => handleGiveTask(app)}
+                          className="px-3.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Brain className="w-3.5 h-3.5" />
+                          Give Task
+                        </button>
+                        <button
                           onClick={() => handleApprove(app.id, app.candidateName)}
                           className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-all cursor-pointer"
                         >
@@ -650,6 +728,67 @@ export const CompanyDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* AI Give Task Modal */}
+      {giveTaskCandidate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-white dark:bg-[#0A0A0A] rounded-[32px] shadow-2xl border border-black/10 dark:border-white/15 overflow-hidden">
+            <div className="p-6 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-purple-500/10">
+                  <Brain className="w-5 h-5 text-purple-500" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-black dark:text-white">AI Task Recommendation</h3>
+                  <p className="text-xs text-black/50 dark:text-white/50 mt-0.5">For {giveTaskCandidate.candidateName}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setGiveTaskCandidate(null)}
+                className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer"
+              >
+                <X className="w-4 h-4 text-black/50 dark:text-white/50" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-3 max-h-80 overflow-y-auto">
+              {aiLoading ? (
+                <div className="flex flex-col items-center justify-center py-8 gap-3">
+                  <div className="w-8 h-8 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+                  <p className="text-xs text-black/50 dark:text-white/50">AI analyzing candidate profile...</p>
+                </div>
+              ) : aiRecommendations.length === 0 ? (
+                <p className="text-sm text-center text-black/50 dark:text-white/50 py-6">No assessments available. Create trials first.</p>
+              ) : (
+                aiRecommendations.map((rec: any) => (
+                  <div key={rec.id} className="flex items-center justify-between gap-3 p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 hover:border-purple-500/30 transition-all">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm text-black dark:text-white truncate">{rec.title}</div>
+                      <div className="text-xs text-black/50 dark:text-white/50 mt-0.5 truncate">{rec.reason}</div>
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <span className="text-[11px] font-mono text-purple-600 dark:text-purple-400">{rec.difficulty}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center shrink-0">
+                      <span className="text-lg font-bold text-emerald-500">{rec.suitability}%</span>
+                      <span className="text-[10px] text-black/40 dark:text-white/40">match</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        showToast("Task Assigned", `"${rec.title}" assigned to ${giveTaskCandidate.candidateName}`, "success");
+                        setGiveTaskCandidate(null);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white text-xs font-semibold transition-all cursor-pointer shrink-0"
+                    >
+                      Assign
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

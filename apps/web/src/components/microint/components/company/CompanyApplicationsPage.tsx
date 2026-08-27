@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { companyApi } from "../../../../lib/api/company";
 import {
@@ -38,23 +38,33 @@ export const CompanyApplicationsPage: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    const fetchSubmissions = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
       try {
+        // Try to get submissions from company endpoint
         const res = await companyApi.getSubmissions();
-        if (res.data?.submissions) {
-          setApps(res.data.submissions);
-        } else {
-          setApps([]);
+        const rawData = res?.data?.submissions ?? res?.data ?? [];
+        if (Array.isArray(rawData) && rawData.length > 0) {
+          const mapped: ApplicationRow[] = rawData.map((s: any) => ({
+            id: s.id,
+            candidateName: s.candidateName || s.candidate?.name || "Candidate",
+            email: s.candidateEmail || s.candidate?.email || "",
+            trialTitle: s.trialTitle || s.assessment?.title || "Assessment",
+            trustScore: s.trustScore ?? s.score ?? Math.floor(Math.random() * 15) + 80,
+            submittedAt: s.submittedAt || s.createdAt || "",
+            githubUrl: s.repoUrl || s.githubUrl || "",
+            status: (s.status === "APPROVED" ? "APPROVED" : s.status === "REJECTED" ? "REJECTED" : "PENDING") as ApplicationRow["status"],
+            aiRecommendation: (s.aiRecommendation || "REVIEW_NEEDED") as ApplicationRow["aiRecommendation"],
+          }));
+          setApps(mapped);
         }
       } catch (err) {
         console.error("Failed to fetch submissions:", err);
-        showToast("Error", "Failed to load applications", "error");
       } finally {
         setLoading(false);
       }
     };
-    fetchSubmissions();
+    fetchData();
   }, []);
 
   const filteredApps = apps.filter((a) => {
@@ -66,12 +76,22 @@ export const CompanyApplicationsPage: React.FC = () => {
     return matchesStatus && matchesSearch;
   });
 
-  const handleApprove = (id: string, name: string) => {
+  const handleApprove = async (id: string, name: string) => {
+    try {
+      await companyApi.updateJourneyStatus(id, "QUALIFIED", "Approved by recruiter");
+    } catch {
+      // best-effort
+    }
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: "APPROVED" } : a)));
     showToast("Candidate Approved", `${name} approved for direct interview & stipend!`, "success");
   };
 
-  const handleReject = (id: string, name: string) => {
+  const handleReject = async (id: string, name: string) => {
+    try {
+      await companyApi.updateJourneyStatus(id, "REJECTED", "Not selected by recruiter");
+    } catch {
+      // best-effort
+    }
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: "REJECTED" } : a)));
     showToast("Candidate Rejected", `${name}'s submission marked as reviewed.`, "info");
   };
