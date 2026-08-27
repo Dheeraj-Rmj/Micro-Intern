@@ -190,13 +190,17 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     }
     const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] || "https://micro-intern-web.vercel.app";
     try {
-      await authClient.signIn.social({
+      const { error } = await authClient.signIn.social({
         provider: provider.toLowerCase() as any,
         callbackURL: `${APP_URL}/dashboard`,
       });
+      if (error) {
+        console.error("OAuth error:", error);
+        showToast("OAuth Error", "Could not initialize social login.", "error");
+      }
     } catch (err) {
       console.error(err);
-      showToast("OAuth Error", "Could not initialize social login.", "error");
+      showToast("OAuth Error", "An unexpected error occurred.", "error");
     }
   };
 

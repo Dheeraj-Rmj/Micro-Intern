@@ -14,12 +14,18 @@ export function OAuthButtons({ action = "login" }: { action?: "login" | "signup"
     setLoadingProvider(provider);
     
     try {
-      await authClient.signIn.social({
+      const { error } = await authClient.signIn.social({
         provider,
         callbackURL: `${APP_URL}/dashboard`,
       });
-    } catch (err) {
+      if (error) {
+        console.error("OAuth error:", error);
+        alert(`OAuth Error: ${error.message || "Failed to initialize social login"}`);
+        setLoadingProvider(null);
+      }
+    } catch (err: any) {
       console.error(err);
+      alert(`Unexpected Error: ${err.message || String(err)}`);
       setLoadingProvider(null);
     }
   };

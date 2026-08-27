@@ -86,12 +86,17 @@ export function OAuthButtons() {
             className={`w-full h-12 text-sm font-medium transition-all shadow-sm ${provider.className}`}
             onClick={async () => {
               try {
-                await authClient.signIn.social({
+                const { error } = await authClient.signIn.social({
                   provider: provider.provider,
                   callbackURL: `${APP_URL}/dashboard`,
                 });
-              } catch (err) {
+                if (error) {
+                  console.error("OAuth error:", error);
+                  alert(`OAuth Error: ${error.message || "Failed to initialize social login"}`);
+                }
+              } catch (err: any) {
                 console.error(err);
+                alert(`Unexpected Error: ${err.message || String(err)}`);
               }
             }}
           >
