@@ -139,43 +139,7 @@ export const SuperAdminSystemPage: React.FC = () => {
     }
   };
 
-  const apiGateways = [
-    {
-      name: "Stripe Connect Escrow API",
-      status: "HEALTHY",
-      latency: "42ms",
-      uptime: "99.99%",
-      lastPing: "1 min ago",
-    },
-    {
-      name: "GitHub Docker Sandbox Runners",
-      status: "HEALTHY",
-      latency: "180ms",
-      uptime: "99.98%",
-      lastPing: "30 sec ago",
-    },
-    {
-      name: "OpenAI / Anthropic Evaluation Endpoints",
-      status: "HEALTHY",
-      latency: "310ms",
-      uptime: "99.95%",
-      lastPing: "2 mins ago",
-    },
-    {
-      name: "Tavily Live Web Search API",
-      status: "HEALTHY",
-      latency: "120ms",
-      uptime: "100.0%",
-      lastPing: "45 sec ago",
-    },
-    {
-      name: "Jina Markdown Reader API v1",
-      status: "HEALTHY",
-      latency: "95ms",
-      uptime: "100.0%",
-      lastPing: "1 min ago",
-    },
-  ];
+  const apiGateways: any[] = [];
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300 pb-16">

@@ -112,36 +112,7 @@ export const SuperAdminEscrowTrialsPage: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          {[
-            {
-              id: "ESC-9481",
-              company: "Google",
-              title: "Kubernetes Reliability Engineer",
-              amount: "$4,500",
-              status: "LOCKED",
-            },
-            {
-              id: "ESC-7721",
-              company: "Stripe",
-              title: "Payments Core Infrastructure",
-              amount: "$6,200",
-              status: "IN_PROGRESS",
-            },
-            {
-              id: "ESC-4492",
-              company: "Linear",
-              title: "React Performance Optimization",
-              amount: "$2,800",
-              status: "LOCKED",
-            },
-            {
-              id: "ESC-1104",
-              company: "Vercel",
-              title: "Edge Network Routing",
-              amount: "$5,000",
-              status: "PAYOUT_READY",
-            },
-          ].map((trial, i) => (
+          {(metrics?.recentContracts || []).map((trial: any, i: number) => (
             <div
               key={i}
               className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between group hover:border-black/20 dark:hover:border-white/20 transition-all cursor-pointer"

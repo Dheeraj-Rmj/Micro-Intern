@@ -344,32 +344,7 @@ export const SuperAdminAIAnalyticsPage: React.FC = () => {
               <div className="text-[10px] font-bold text-black/50 dark:text-white/50 uppercase">
                 Cost & Usage per Enterprise
               </div>
-              {[
-                {
-                  name: "Google LLC (@google)",
-                  cost: "$412.50",
-                  tokens: "18.4M tokens",
-                  model: "Gemini / Groq",
-                },
-                {
-                  name: "Microsoft Corp (@microsoft)",
-                  cost: "$380.10",
-                  tokens: "14.2M tokens",
-                  model: "Gemini / OpenRouter",
-                },
-                {
-                  name: "Amazon Tech (@amazon)",
-                  cost: "$290.00",
-                  tokens: "10.1M tokens",
-                  model: "Groq / Ollama",
-                },
-                {
-                  name: "Adobe Systems (@adobe)",
-                  cost: "$140.20",
-                  tokens: "5.5M tokens",
-                  model: "Gemini 1.5 Pro",
-                },
-              ].map((ent, idx) => (
+              {[].map((ent: any, idx: number) => (
                 <div
                   key={idx}
                   className="flex items-center justify-between p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03]"
