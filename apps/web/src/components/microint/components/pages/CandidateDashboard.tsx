@@ -71,13 +71,13 @@ export const CandidateDashboard: React.FC = () => {
               <div className="flex flex-col gap-2">
                 <span className="text-sm text-[#555555]">Active</span>
                 <div className="px-6 py-2.5 rounded-full bg-[#333333] text-white text-sm font-medium">
-                  {applications.filter(a => a.status === "in_progress" || a.status === "interviewing").length * 10}%
+                  {applications.filter(a => a.status === "applied" || a.status === "interviewing").length * 10}%
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <span className="text-sm text-[#555555]">Completed</span>
                 <div className="px-6 py-2.5 rounded-full bg-[#FFD166] text-[#222] text-sm font-medium">
-                  {submissions.filter(s => s.status === "evaluated").length * 10}%
+                  {submissions.filter(s => s.status === "Evaluated" || s.status === "Approved").length * 10}%
                 </div>
               </div>
               <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
