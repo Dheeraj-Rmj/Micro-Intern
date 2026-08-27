@@ -33,7 +33,7 @@ export default function PublicSkillPassportPage() {
   }, [username]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black dark:border-white"></div></div>;
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black dark:border-white" /></div>;
   }
 
   if (error || !profile) {
@@ -45,7 +45,7 @@ export default function PublicSkillPassportPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 font-sans text-slate-900 dark:text-slate-100">
       {/* Header Banner */}
-      <div className="h-48 md:h-64 bg-gradient-to-r from-blue-600 to-indigo-700 w-full"></div>
+      <div className="h-48 md:h-64 bg-gradient-to-r from-blue-600 to-indigo-700 w-full" />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 pb-12">
         {/* Profile Card */}
