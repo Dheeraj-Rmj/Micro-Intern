@@ -65,8 +65,7 @@ import {
 import { JwtService } from "../infrastructure/services/JwtService.js";
 import { TokenService } from "../infrastructure/services/TokenService.js";
 import { QueueEmailAuthService } from "../infrastructure/services/QueueEmailAuthService.js";
-import { toNodeHandler } from "better-auth/node";
-import { auth } from "../infrastructure/better-auth.js";
+// Removed better-auth imports from router level
 
 const ResendVerificationSchema = z.object({
   email: z.string().email(),
@@ -298,10 +297,7 @@ export function createAuthRouter(): Router {
   const router = Router();
   
   // Mount Better Auth to handle all standard auth routes (/sign-in, /sign-up, /session, etc)
-  router.all("/*", (req, res, next) => {
-    req.url = req.originalUrl;
-    return toNodeHandler(auth)(req, res);
-  });
+  // Moved to app.ts to preserve original URL path properly
 
   // POST /auth/register and /auth/register/candidate
   router.post(
