@@ -270,8 +270,8 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <div className="text-black/50 dark:text-white/60 font-mono text-[11px]">
-                          {user.email} • {user.id}
+                        <div className="text-black/50 dark:text-white/60 font-mono text-[11px] mt-0.5">
+                          {user.email} • {user.id} {user.ipAddress ? `• IP: ${user.ipAddress}` : ""}
                         </div>
                       </div>
                     </div>

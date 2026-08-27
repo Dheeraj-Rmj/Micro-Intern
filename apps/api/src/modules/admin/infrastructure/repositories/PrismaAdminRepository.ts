@@ -145,6 +145,10 @@ export class PrismaAdminRepository implements IAdminRepository {
             company: true,
           },
         },
+        devices: {
+          orderBy: { lastSeenAt: "desc" },
+          take: 1,
+        },
       },
     });
 
@@ -161,6 +165,7 @@ export class PrismaAdminRepository implements IAdminRepository {
         u.role === "COMPANY_OWNER" || u.role === "RECRUITER"
           ? `Company: ${u.companyMembership?.[0]?.company?.name ?? "Unassigned"}`
           : `Bio: ${u.candidateProfile?.bio ?? "No bio"}`,
+      ipAddress: u.devices?.[0]?.ipAddress ?? "Unknown IP",
     }));
   }
 
