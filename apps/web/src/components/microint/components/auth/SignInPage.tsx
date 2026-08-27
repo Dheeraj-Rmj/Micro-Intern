@@ -89,12 +89,13 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
         return;
       }
 
-      const response = await apiClient.post<{ data: { accessToken: string; refreshToken: string; user: any } }>(
+      const response = await apiClient.post<{ data: { tokens: { accessToken: string }; user: any } }>(
         "/auth/login",
         { email: identifier, password },
       );
 
-      const { accessToken, user } = response.data.data;
+      const { tokens, user } = response.data.data;
+      const accessToken = tokens.accessToken;
       setAccessToken(accessToken);
       useAuthStore.getState().setAuth(user, accessToken);
       setUserProfile(user);
@@ -131,12 +132,13 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     try {
       setModalLoading(true);
 
-      const response = await apiClient.post<{ data: { accessToken: string; user: any } }>(
+      const response = await apiClient.post<{ data: { tokens: { accessToken: string }; user: any } }>(
         "/auth/login",
         { email: modalEmail, password: modalPassword },
       );
 
-      const { accessToken, user } = response.data.data;
+      const { tokens: modalTokens, user } = response.data.data;
+      const accessToken = modalTokens.accessToken;
       setAccessToken(accessToken);
       useAuthStore.getState().setAuth(user, accessToken);
       setUserProfile(user);

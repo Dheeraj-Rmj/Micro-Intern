@@ -9,11 +9,12 @@ import type {
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(
-      "/auth/login",
-      credentials,
-    );
-    return response.data.data;
+    const response = await apiClient.post<{
+      success: boolean;
+      data: { user: CandidateUser; tokens: { accessToken: string; refreshToken?: string } };
+    }>("/auth/login", credentials);
+    const { user, tokens } = response.data.data;
+    return { user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   },
 
   async requestLoginOtp(email: string): Promise<void> {
@@ -29,16 +30,17 @@ export const authService = {
   },
 
   async register(credentials: RegisterCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<{ success: boolean; data: AuthResponse }>(
-      "/auth/register/candidate",
-      {
-        firstName: credentials.firstName,
-        lastName: credentials.lastName,
-        email: credentials.email,
-        password: credentials.password,
-      },
-    );
-    return response.data.data;
+    const response = await apiClient.post<{
+      success: boolean;
+      data: { user: CandidateUser; tokens: { accessToken: string; refreshToken?: string } };
+    }>("/auth/register/candidate", {
+      firstName: credentials.firstName,
+      lastName: credentials.lastName,
+      email: credentials.email,
+      password: credentials.password,
+    });
+    const { user, tokens } = response.data.data;
+    return { user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   },
 
   async logout(): Promise<void> {

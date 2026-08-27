@@ -92,7 +92,7 @@ export const SignUpPage: React.FC = () => {
       const firstName = formData.fullName.split(' ')[0] || formData.fullName;
       const lastName = formData.fullName.split(' ').slice(1).join(' ') || '';
 
-      const response = await apiClient.post<{ data: { accessToken: string; user: any } }>(
+      const response = await apiClient.post<{ data: { tokens: { accessToken: string }; user: any } }>(
         "/auth/register/candidate",
         {
           email: formData.email,
@@ -103,7 +103,8 @@ export const SignUpPage: React.FC = () => {
         },
       );
 
-      const { accessToken, user } = response.data.data;
+      const { tokens: regTokens, user } = response.data.data;
+      const accessToken = regTokens.accessToken;
       setAccessToken(accessToken);
       setUserProfile(user);
       setRole("candidate");
