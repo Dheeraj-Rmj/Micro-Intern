@@ -242,7 +242,6 @@ export class PrismaAdminRepository implements IAdminRepository {
   }
 
   async getEscrowMetrics(): Promise<any> {
-    // In a real app we would sum actual transaction records. Here we estimate based on active assessments.
     const activeCount = await this.db.assessment.count({
       where: { status: "PUBLISHED" as any, deletedAt: null },
     });
@@ -251,9 +250,9 @@ export class PrismaAdminRepository implements IAdminRepository {
     });
 
     return {
-      totalValueLocked: activeCount * 1500 + pendingCount * 500,
+      totalValueLocked: 0,
       activeContracts: activeCount,
-      payoutsPending: pendingCount * 1500,
+      payoutsPending: 0,
     };
   }
 
@@ -261,17 +260,12 @@ export class PrismaAdminRepository implements IAdminRepository {
     const activeCompanies = await this.db.company.count({
       where: { status: "ACTIVE" as any, deletedAt: null },
     });
-    // Simulate metrics based on company count
     return {
-      mrr: activeCompanies * 299,
-      arr: activeCompanies * 299 * 12,
+      mrr: 0,
+      arr: 0,
       activePlans: activeCompanies,
-      growthRate: 14.5,
-      plans: [
-        { name: "Enterprise Plus", count: Math.floor(activeCompanies * 0.2), price: 999 },
-        { name: "Pro", count: Math.floor(activeCompanies * 0.5), price: 299 },
-        { name: "Starter", count: Math.floor(activeCompanies * 0.3), price: 49 },
-      ],
+      growthRate: 0,
+      plans: [],
     };
   }
 
@@ -280,14 +274,11 @@ export class PrismaAdminRepository implements IAdminRepository {
       where: { status: "ACTIVE" as any, deletedAt: null },
     });
     return {
-      monthlyVolume: activeCompanies * 450,
-      successfulTransactions: activeCompanies * 12,
-      failedTransactions: Math.floor(activeCompanies * 0.5),
-      refundRate: 1.2,
-      recentPayouts: [
-        { id: "po_123", amount: 4500, status: "paid", date: new Date().toISOString() },
-        { id: "po_124", amount: 1200, status: "pending", date: new Date().toISOString() },
-      ],
+      monthlyVolume: 0,
+      successfulTransactions: 0,
+      failedTransactions: 0,
+      refundRate: 0,
+      recentPayouts: [],
     };
   }
 
@@ -298,17 +289,10 @@ export class PrismaAdminRepository implements IAdminRepository {
     });
 
     return {
-      platformHealthScore: evalStats._avg.percentageScore ?? 92,
-      activeUsersGrowth: 18.4,
-      topSkillsDemanded: [
-        { skill: "React", demandIndex: 98, trend: "up" },
-        { skill: "Kubernetes", demandIndex: 85, trend: "up" },
-        { skill: "Python", demandIndex: 92, trend: "stable" },
-      ],
-      skillGaps: [
-        { skill: "Rust", severity: "Critical", impact: "High-performance systems" },
-        { skill: "GraphQL", severity: "High", impact: "API Layer" },
-      ],
+      platformHealthScore: evalStats._avg.percentageScore ?? 0,
+      activeUsersGrowth: 0,
+      topSkillsDemanded: [],
+      skillGaps: [],
     };
   }
 }
