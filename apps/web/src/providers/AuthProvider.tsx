@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useAuthStore } from "@/stores/auth.store";
 import { authService } from "@/features/auth/services/auth.service";
+import { setAccessToken } from "@/lib/api/client";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -22,6 +23,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setLoading(false);
         return;
       }
+
+      // Restore the in-memory token for the API client from local storage
+      setAccessToken(accessToken);
 
       try {
         const user = await authService.getCurrentUser();
