@@ -298,7 +298,10 @@ export function createAuthRouter(): Router {
   const router = Router();
   
   // Mount Better Auth to handle all standard auth routes (/sign-in, /sign-up, /session, etc)
-  router.all("/*", toNodeHandler(auth));
+  router.all("/*", (req, res, next) => {
+    req.url = req.originalUrl;
+    return toNodeHandler(auth)(req, res);
+  });
 
   // POST /auth/register and /auth/register/candidate
   router.post(
