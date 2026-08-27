@@ -148,45 +148,26 @@ export const CandidateDashboard: React.FC = () => {
             {/* Accordion Menu */}
             <div className="flex flex-col gap-2">
               <AccordionItem
-                title="Pension contributions"
-                id="pension"
+                title="Active Micro-Trials"
+                id="trials"
                 expanded={expandedAccordion}
                 setExpanded={setExpandedAccordion}
               />
               <AccordionItem
-                title="Devices"
-                id="devices"
-                expanded={expandedAccordion}
-                setExpanded={setExpandedAccordion}
-              >
-                <div className="flex items-center justify-between py-3 px-4 bg-white/40 rounded-xl mt-2 backdrop-blur-sm border border-white/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-black/5 flex items-center justify-center overflow-hidden">
-                      <Monitor className="w-5 h-5 text-[#333]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-[#222]">MacBook Air</p>
-                      <p className="text-xs text-[#666]">Version M1</p>
-                    </div>
-                  </div>
-                  <button className="w-6 h-6 rounded-full hover:bg-black/10 flex items-center justify-center transition-colors">
-                    <div className="flex flex-col gap-0.5">
-                      <div className="w-1 h-1 bg-[#666] rounded-full" />
-                      <div className="w-1 h-1 bg-[#666] rounded-full" />
-                      <div className="w-1 h-1 bg-[#666] rounded-full" />
-                    </div>
-                  </button>
-                </div>
-              </AccordionItem>
-              <AccordionItem
-                title="Compensation Summary"
-                id="comp"
+                title="Trust Score & Verification"
+                id="trust"
                 expanded={expandedAccordion}
                 setExpanded={setExpandedAccordion}
               />
               <AccordionItem
-                title="Employee Benefits"
-                id="benefits"
+                title="Earnings & Payouts"
+                id="earnings"
+                expanded={expandedAccordion}
+                setExpanded={setExpandedAccordion}
+              />
+              <AccordionItem
+                title="My Applications"
+                id="applications"
                 expanded={expandedAccordion}
                 setExpanded={setExpandedAccordion}
               />
