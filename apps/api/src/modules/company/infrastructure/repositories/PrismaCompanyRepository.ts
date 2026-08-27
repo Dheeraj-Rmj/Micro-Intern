@@ -1,12 +1,12 @@
-import { ICompanyRepository } from "../../application/ports/ICompanyRepository";
-import { CompanyDepartment } from "../../domain/entities/CompanyDepartment.entity";
-import { CompanyAnalyticsSnapshot } from "../../domain/entities/CompanyAnalyticsSnapshot.entity";
-import { CompanyBilling } from "../../domain/entities/CompanyBilling.entity";
-import { AIInsightRecommendation } from "../../domain/entities/AIInsightRecommendation.entity";
+import { ICompanyRepository } from "../../application/ports/ICompanyRepository.js";
+import { CompanyDepartment } from "../../domain/entities/CompanyDepartment.entity.js";
+import { CompanyAnalyticsSnapshot } from "../../domain/entities/CompanyAnalyticsSnapshot.entity.js";
+import { CompanyBilling } from "../../domain/entities/CompanyBilling.entity.js";
+import { AIInsightRecommendation } from "../../domain/entities/AIInsightRecommendation.entity.js";
 import { PrismaClient } from "@microintern/database";
-import { Company } from "../../domain/entities/Company.entity";
-import { CompanyMember } from "../../domain/entities/CompanyMember.entity";
-import type { ICompanyRepository as IDomainCompanyRepository } from "../../domain/repositories/ICompanyRepository";
+import { Company } from "../../domain/entities/Company.entity.js";
+import { CompanyMember } from "../../domain/entities/CompanyMember.entity.js";
+import type { ICompanyRepository as IDomainCompanyRepository } from "../../domain/repositories/ICompanyRepository.js";
 
 export class PrismaCompanyRepository implements ICompanyRepository, IDomainCompanyRepository {
   constructor(private prisma: PrismaClient) {}

@@ -1,5 +1,5 @@
-import { ICompanyRepository } from "../ports/ICompanyRepository";
-import { CompanyDepartment } from "../../domain/entities/CompanyDepartment.entity";
+import { ICompanyRepository } from "../ports/ICompanyRepository.js";
+import { CompanyDepartment } from "../../domain/entities/CompanyDepartment.entity.js";
 
 export class GetDepartmentsUseCase {
   constructor(private companyRepo: ICompanyRepository) {}

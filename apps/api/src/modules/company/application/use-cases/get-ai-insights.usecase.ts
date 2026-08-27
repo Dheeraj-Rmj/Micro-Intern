@@ -1,5 +1,5 @@
-import { ICompanyRepository } from "../ports/ICompanyRepository";
-import { AIInsightRecommendation } from "../../domain/entities/AIInsightRecommendation.entity";
+import { ICompanyRepository } from "../ports/ICompanyRepository.js";
+import { AIInsightRecommendation } from "../../domain/entities/AIInsightRecommendation.entity.js";
 
 export class GetAIInsightsUseCase {
   constructor(private companyRepo: ICompanyRepository) {}
