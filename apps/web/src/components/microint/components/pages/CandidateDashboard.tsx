@@ -22,11 +22,11 @@ export const CandidateDashboard: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [expandedAccordion, setExpandedAccordion] = useState<string>("devices");
 
-  const displayName = userProfile?.fullName || "Intern";
-  const userTitle = userProfile?.degree || "UX/UI Designer";
+  const displayName = userProfile?.fullName || "User";
+  const userTitle = userProfile?.degree || "Candidate";
   const userAvatar =
     userProfile?.avatar ||
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop";
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.fullName || "User")}&background=random`;
 
   const navLinks = [
     { name: "Dashboard", route: "dashboard", active: true },
