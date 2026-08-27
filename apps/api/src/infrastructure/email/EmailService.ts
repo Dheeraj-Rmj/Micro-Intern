@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import Handlebars from "handlebars";
 import nodemailer from "nodemailer";
@@ -8,6 +9,9 @@ import { config } from "@/core/config.js";
 import { createModuleLogger } from "@/core/logger.js";
 
 import type { Transporter, SendMailOptions } from "nodemailer";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const log = createModuleLogger("EmailService");
 
