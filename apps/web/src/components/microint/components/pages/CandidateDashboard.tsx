@@ -331,16 +331,20 @@ export const CandidateDashboard: React.FC = () => {
                         if (interview.time) {
                           const timeStr = interview.time.toUpperCase();
                           if (timeStr.includes("PM") || timeStr.includes("AM")) {
-                            const [time, period] = timeStr.split(" ");
-                            let [h, m] = time.split(":").map(Number);
-                            if (period === "PM" && h !== 12) h += 12;
-                            if (period === "AM" && h === 12) h = 0;
+                            const parts = timeStr.split(" ");
+                            const timePart = parts[0] || "";
+                            const periodPart = parts[1] || "";
+                            const [hStr, mStr] = timePart.split(":");
+                            let h = hStr ? Number(hStr) : 9;
+                            let m = mStr ? Number(mStr) : 0;
+                            if (periodPart === "PM" && h !== 12) h += 12;
+                            if (periodPart === "AM" && h === 12) h = 0;
                             hours = h;
-                            minutes = m || 0;
+                            minutes = m;
                           } else {
-                            const [h, m] = interview.time.split(":").map(Number);
-                            hours = h;
-                            minutes = m || 0;
+                            const [hStr, mStr] = interview.time.split(":");
+                            hours = hStr ? Number(hStr) : 9;
+                            minutes = mStr ? Number(mStr) : 0;
                           }
                         }
                         

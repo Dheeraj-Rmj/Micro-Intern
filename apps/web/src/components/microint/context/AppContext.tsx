@@ -407,6 +407,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return;
     }
 
+    // Enforce profile completion before applying
+    const isProfileComplete = 
+      userProfile.skills && userProfile.skills.length > 0 &&
+      userProfile.aboutMe && userProfile.aboutMe.trim() !== "";
+      
+    if (!isProfileComplete) {
+      showToast("Profile Incomplete", "Please update your skills and bio in Settings before applying to skill trials.", "warning");
+      setCurrentRoute("settings");
+      return;
+    }
+
     try {
       if (!targetTrial.id.startsWith("mock")) {
         await assessmentApi.startAssessment(targetTrial.id);
