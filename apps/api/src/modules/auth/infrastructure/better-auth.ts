@@ -22,6 +22,12 @@ export const auth = betterAuth({
     "https://micro-intern-web.vercel.app",
     process.env["FRONTEND_URL"] || "https://micro-intern-web.vercel.app"
   ],
+  advanced: {
+    ipAddress: {
+      trustedProxies: ["127.0.0.1", "::1"], // Trusts localhost proxies like nginx or cloudflare (via header)
+      ipAddressHeaders: ["x-forwarded-for", "cf-connecting-ip", "x-real-ip", "true-client-ip"],
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },

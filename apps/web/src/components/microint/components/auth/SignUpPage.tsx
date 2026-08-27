@@ -125,10 +125,17 @@ export const SignUpPage: React.FC = () => {
     }
   };
 
-  const handleSocialAuth = (provider: string) => {
-    const API_URL =
-      process.env["NEXT_PUBLIC_API_URL"] || "https://micro-intern-4stz.onrender.com/api/v1";
-    window.location.href = `${API_URL}/auth/${provider.toLowerCase()}?action=signup`;
+  const handleSocialAuth = async (provider: string) => {
+    const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] || "https://micro-intern-web.vercel.app";
+    try {
+      await authClient.signIn.social({
+        provider: provider.toLowerCase() as any,
+        callbackURL: `${APP_URL}/dashboard`,
+      });
+    } catch (err) {
+      console.error(err);
+      showToast("OAuth Error", "Could not initialize social login.", "error");
+    }
   };
 
   const isFormValid =

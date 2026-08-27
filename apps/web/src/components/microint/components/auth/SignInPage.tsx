@@ -179,7 +179,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
     }
   };
 
-  const handleSocialAuth = (provider: string) => {
+  const handleSocialAuth = async (provider: string) => {
     if (initialPortal !== "candidate") {
       showToast(
         "Unauthorized Access",
@@ -188,9 +188,16 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
       );
       return;
     }
-    const API_URL =
-      process.env["NEXT_PUBLIC_API_URL"] || "https://micro-intern-4stz.onrender.com/api/v1";
-    window.location.href = `${API_URL}/auth/${provider.toLowerCase()}`;
+    const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] || "https://micro-intern-web.vercel.app";
+    try {
+      await authClient.signIn.social({
+        provider: provider.toLowerCase() as any,
+        callbackURL: `${APP_URL}/dashboard`,
+      });
+    } catch (err) {
+      console.error(err);
+      showToast("OAuth Error", "Could not initialize social login.", "error");
+    }
   };
 
   const isFormValid = identifier.trim().length > 0 && password.trim().length > 0;
