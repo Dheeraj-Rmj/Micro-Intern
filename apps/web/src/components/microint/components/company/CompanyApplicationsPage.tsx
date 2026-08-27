@@ -27,11 +27,9 @@ interface ApplicationRow {
   aiRecommendation: "STRONG_HIRE" | "INTERVIEW" | "REVIEW_NEEDED";
 }
 
-const INITIAL_APPS: ApplicationRow[] = [];
-
 export const CompanyApplicationsPage: React.FC = () => {
   const { showToast } = useApp();
-  const [apps, setApps] = useState<ApplicationRow[]>(INITIAL_APPS);
+  const [apps, setApps] = useState<ApplicationRow[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "PENDING" | "APPROVED" | "REJECTED">(
     "ALL",

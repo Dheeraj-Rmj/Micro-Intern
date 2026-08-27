@@ -24,8 +24,6 @@ interface RecruiterSeat {
   status: "ACTIVE" | "SUSPENDED";
   created: string;
 }
-
-const INITIAL_RECRUITERS: RecruiterSeat[] = [];
 import { companyApi } from "../../../../lib/api/company";
 
 export const CompanyRecruitersPage: React.FC = () => {

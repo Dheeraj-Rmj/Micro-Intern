@@ -2,8 +2,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useAuthStore } from "@/stores/auth.store";
-import { assessmentApi } from "../../../lib/api/assessment";
 import { journeyApi, submissionApi, notificationsApi } from "../../../lib/api/candidate-data";
+import { assessmentApi } from "../../../lib/api/assessment";
 import {
   PageRoute,
   UserRole,
@@ -18,14 +18,6 @@ import {
   CandidateSearchResult,
   RecruiterOffer,
 } from "../types";
-import {
-  INITIAL_USER_PROFILE,
-  INITIAL_COMPANY_PROFILE,
-  MOCK_TRIALS,
-  MOCK_ACHIEVEMENTS,
-  MOCK_INTERVIEWS,
-  MOCK_CANDIDATES_SEARCH_POOL,
-} from "../data/mockData";
 
 interface ToastInfo {
   id: string;
@@ -119,16 +111,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const saved = localStorage.getItem("microintern_user_profile");
       if (saved) {
         try {
-          return { ...INITIAL_USER_PROFILE, ...JSON.parse(saved) };
-        } catch (e) {
+          return JSON.parse(saved) as UserProfile;
+        } catch {
           // ignore parse error
         }
       }
     }
-    return INITIAL_USER_PROFILE;
+    // Empty profile — will be filled from auth store on mount
+    return {
+      fullName: "", username: "", email: "", phone: "", avatar: "",
+      location: "", college: "", degree: "", experienceYears: "",
+      resumeFileName: "", aboutMe: "", skills: [], portfolioUrl: "",
+      githubUrl: "", linkedinUrl: "", trustScore: 0,
+    } as UserProfile;
   });
-  const [companyProfile, setCompanyProfile] = useState<CompanyProfile>(INITIAL_COMPANY_PROFILE);
-  const [trials, setTrials] = useState<Trial[]>(MOCK_TRIALS);
+  const [companyProfile, setCompanyProfile] = useState<CompanyProfile>({
+    companyName: "", logo: "", website: "", industry: "",
+    companySize: "", headquarters: "", description: "",
+    linkedinUrl: "", twitterUrl: "", githubUrl: "",
+    ekycStatus: "UNVERIFIED",
+  });
+  const [trials, setTrials] = useState<Trial[]>([]);
 
   // Sync useAuthStore (global state) to AppContext userProfile (legacy state)
   useEffect(() => {
@@ -226,11 +229,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [applications, setApplications] = useState<Application[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
-  const [achievements] = useState<AchievementBadge[]>(MOCK_ACHIEVEMENTS);
-  const [interviews, setInterviews] = useState<InterviewSlot[]>(MOCK_INTERVIEWS);
-  const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>(
-    MOCK_CANDIDATES_SEARCH_POOL,
-  );
+  const [achievements] = useState<AchievementBadge[]>([]);
+  const [interviews, setInterviews] = useState<InterviewSlot[]>([]);
+  const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>([]);
 
   // ── Fetch real applications (candidate journeys) from API ──────────────────
   useEffect(() => {

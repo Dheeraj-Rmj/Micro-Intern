@@ -62,11 +62,9 @@ const FALLBACK_LEADERSHIP_QUOTES: MotivationalQuote[] = [
   { q: "Simplicity is the prerequisite for reliability.", a: "Edsger W. Dijkstra" },
 ];
 
-const INITIAL_APPLICATIONS: CandidateApplication[] = [];
-
 export const CompanyDashboard: React.FC = () => {
   const { setCurrentRoute, showToast, trials, companyProfile } = useApp();
-  const [applications, setApplications] = useState<CandidateApplication[]>(INITIAL_APPLICATIONS);
+  const [applications, setApplications] = useState<CandidateApplication[]>([]);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [activeTabFilter, setActiveTabFilter] = useState<"all" | "pending" | "approved">("all");
 

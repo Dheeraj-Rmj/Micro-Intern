@@ -24,11 +24,9 @@ interface CompanyTrialItem {
   deadline: string;
 }
 
-const INITIAL_ENTERPRISE_TRIALS: CompanyTrialItem[] = [];
-
 export const CompanyTrialsPage: React.FC = () => {
   const { showToast } = useApp();
-  const [trials, setTrials] = useState<CompanyTrialItem[]>(INITIAL_ENTERPRISE_TRIALS);
+  const [trials, setTrials] = useState<CompanyTrialItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [title, setTitle] = useState("");
