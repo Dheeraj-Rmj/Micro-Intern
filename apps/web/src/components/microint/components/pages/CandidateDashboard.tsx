@@ -18,11 +18,11 @@ import {
 } from "lucide-react";
 
 export const CandidateDashboard: React.FC = () => {
-  const { userProfile, setCurrentRoute } = useApp();
+  const { userProfile, setCurrentRoute, applications, interviews, submissions } = useApp();
   const [isPlaying, setIsPlaying] = useState(true);
   const [expandedAccordion, setExpandedAccordion] = useState<string>("devices");
 
-  const displayName = userProfile?.fullName || "Nixtio";
+  const displayName = userProfile?.fullName || "Intern";
   const userTitle = userProfile?.degree || "UX/UI Designer";
   const userAvatar =
     userProfile?.avatar ||
@@ -93,13 +93,13 @@ export const CandidateDashboard: React.FC = () => {
               <div className="flex flex-col gap-2">
                 <span className="text-sm text-[#555555]">Active</span>
                 <div className="px-6 py-2.5 rounded-full bg-[#333333] text-white text-sm font-medium">
-                  15%
+                  {applications.filter(a => a.status === "in_progress" || a.status === "interviewing").length * 10}%
                 </div>
               </div>
               <div className="flex flex-col gap-2">
                 <span className="text-sm text-[#555555]">Completed</span>
                 <div className="px-6 py-2.5 rounded-full bg-[#FFD166] text-[#222] text-sm font-medium">
-                  15%
+                  {submissions.filter(s => s.status === "evaluated").length * 10}%
                 </div>
               </div>
               <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
@@ -111,7 +111,7 @@ export const CandidateDashboard: React.FC = () => {
               <div className="flex flex-col gap-2">
                 <span className="text-sm text-[#555555]">Output</span>
                 <div className="px-6 py-2.5 rounded-full border border-black/20 text-[#222] text-sm font-medium bg-transparent">
-                  10%
+                  {submissions.length * 10}%
                 </div>
               </div>
             </div>
@@ -120,7 +120,7 @@ export const CandidateDashboard: React.FC = () => {
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
-                  <span className="text-[3rem] font-light leading-none tracking-tight">78</span>
+                  <span className="text-[3rem] font-light leading-none tracking-tight">{applications.length}</span>
                   <span className="text-xs text-[#555555] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
                     <Users className="w-3 h-3" /> Applications
                   </span>
@@ -128,7 +128,7 @@ export const CandidateDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
-                  <span className="text-[3rem] font-light leading-none tracking-tight">56</span>
+                  <span className="text-[3rem] font-light leading-none tracking-tight">{interviews.length}</span>
                   <span className="text-xs text-[#555555] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
                     <Briefcase className="w-3 h-3" /> Interviews
                   </span>
@@ -136,7 +136,7 @@ export const CandidateDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
-                  <span className="text-[3rem] font-light leading-none tracking-tight">203</span>
+                  <span className="text-[3rem] font-light leading-none tracking-tight">{submissions.length}</span>
                   <span className="text-xs text-[#555555] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
                     <FolderKanban className="w-3 h-3" /> Submissions
                   </span>
@@ -259,7 +259,7 @@ export const CandidateDashboard: React.FC = () => {
                             bar.active ? "bg-[#FFD166]" : "bg-[#333]"
                           }`}
                           style={{ height: `${bar.height}%` }}
-                         />
+                        />
                       </div>
                       <span className="text-[10px] font-mono font-medium text-[#888]">
                         {bar.day}
@@ -330,9 +330,13 @@ export const CandidateDashboard: React.FC = () => {
             {/* Calendar View */}
             <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm flex-1 relative overflow-hidden flex flex-col min-h-[300px]">
               <div className="flex items-center justify-between mb-6">
-                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">August</span>
+                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">
+                  August
+                </span>
                 <h3 className="text-lg font-medium text-[#222]">September 2024</h3>
-                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">October</span>
+                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">
+                  October
+                </span>
               </div>
 
               <div className="flex-1 flex">
@@ -343,7 +347,7 @@ export const CandidateDashboard: React.FC = () => {
                   <span>10:00 am</span>
                   <span>11:00 am</span>
                 </div>
-                
+
                 {/* Days Axis & Timeline Area */}
                 <div className="flex-1 flex flex-col">
                   <div className="flex justify-between px-4 pb-4">
@@ -363,35 +367,44 @@ export const CandidateDashboard: React.FC = () => {
                   </div>
 
                   {/* Timeline Grid */}
-                  <div className="flex-1 relative flex justify-between px-8">
+                  <div className="flex-1 relative flex justify-between px-8 py-2">
                     {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="w-px h-full bg-black/5 border-l border-black/5 border-dashed" />
+                      <div
+                        key={i}
+                        className="w-px h-full bg-black/5 border-l border-black/5 border-dashed"
+                      />
                     ))}
 
-                    {/* Event Block 1 */}
-                    <div className="absolute top-[10%] left-[25%] w-[40%] bg-[#333] text-white rounded-2xl p-4 shadow-lg z-10 flex items-center justify-between">
-                      <div>
-                        <h4 className="text-sm font-medium">Weekly Team Sync</h4>
-                        <p className="text-xs text-white/60 mt-0.5">Discuss progress on projects</p>
-                      </div>
-                      <div className="flex -space-x-2">
-                        <img src="https://i.pravatar.cc/100?img=1" className="w-6 h-6 rounded-full border border-[#333]" alt="" />
-                        <img src="https://i.pravatar.cc/100?img=2" className="w-6 h-6 rounded-full border border-[#333]" alt="" />
-                        <img src="https://i.pravatar.cc/100?img=3" className="w-6 h-6 rounded-full border border-[#333]" alt="" />
-                      </div>
-                    </div>
-
-                    {/* Event Block 2 */}
-                    <div className="absolute top-[60%] left-[45%] w-[35%] bg-white rounded-2xl p-4 shadow-md z-10 flex items-center justify-between border border-black/5">
-                      <div>
-                        <h4 className="text-sm font-medium text-[#222]">Onboarding Session</h4>
-                        <p className="text-xs text-[#666] mt-0.5">Introduction for new hires</p>
-                      </div>
-                      <div className="flex -space-x-2">
-                        <img src="https://i.pravatar.cc/100?img=4" className="w-6 h-6 rounded-full border border-white" alt="" />
-                        <img src="https://i.pravatar.cc/100?img=5" className="w-6 h-6 rounded-full border border-white" alt="" />
-                      </div>
-                    </div>
+                    {/* Dynamic Event Blocks */}
+                    {interviews.length > 0 ? (
+                      interviews.slice(0, 3).map((interview, idx) => (
+                        <div
+                          key={interview.id}
+                          className={`absolute w-[40%] rounded-2xl p-4 shadow-sm z-10 flex flex-col gap-2 ${
+                            idx % 2 === 0
+                              ? "bg-[#333] text-white shadow-lg"
+                              : "bg-white border border-black/5 text-[#222]"
+                          }`}
+                          style={{
+                            top: `${10 + idx * 30}%`,
+                            left: `${15 + idx * 20}%`,
+                          }}
+                        >
+                          <div>
+                            <h4 className={`text-sm font-medium ${idx % 2 === 0 ? "text-white" : "text-[#222]"}`}>
+                              {interview.trialTitle}
+                            </h4>
+                            <p className={`text-xs mt-0.5 ${idx % 2 === 0 ? "text-white/60" : "text-[#666]"}`}>
+                              {interview.time} - {interview.interviewer}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                       <div className="absolute inset-0 flex items-center justify-center">
+                          <p className="text-sm text-[#888]">No upcoming events</p>
+                       </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -427,43 +440,28 @@ export const CandidateDashboard: React.FC = () => {
             {/* Task List */}
             <div className="bg-[#333333] text-white rounded-[2rem] p-6 shadow-xl flex-1 flex flex-col relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20" />
-              
+
               <div className="flex justify-between items-center mb-8 relative z-10">
-                <h2 className="text-lg font-medium">Onboarding Task</h2>
-                <span className="text-3xl font-light text-white/90">2/8</span>
+                <h2 className="text-lg font-medium">Upcoming Events</h2>
+                <span className="text-3xl font-light text-white/90">{interviews.length}</span>
               </div>
 
               <div className="flex flex-col gap-4 relative z-10">
-                <TaskItem
-                  title="Interview"
-                  time="Sep 13, 08:30"
-                  icon={<Monitor className="w-4 h-4" />}
-                  completed
-                />
-                <TaskItem
-                  title="Team Meeting"
-                  time="Sep 13, 10:30"
-                  icon={<Users className="w-4 h-4" />}
-                  completed
-                />
-                <TaskItem
-                  title="Project Update"
-                  time="Sep 13, 13:00"
-                  icon={<div className="w-4 h-4 border-2 border-current rounded-sm" />}
-                  completed={false}
-                />
-                <TaskItem
-                  title="Discuss Q3 Goals"
-                  time="Sep 13, 14:45"
-                  icon={<Briefcase className="w-4 h-4" />}
-                  completed={false}
-                />
-                <TaskItem
-                  title="HR Policy Review"
-                  time="Sep 13, 16:30"
-                  icon={<CheckCircle2 className="w-4 h-4" />}
-                  completed={false}
-                />
+                {interviews.length > 0 ? (
+                  interviews.map((interview) => (
+                     <TaskItem
+                        key={interview.id}
+                        title={interview.trialTitle}
+                        time={`${interview.date} ${interview.time}`}
+                        icon={<Briefcase className="w-4 h-4" />}
+                        completed={interview.status === "completed"}
+                     />
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 text-white/50 text-sm">
+                    No upcoming events
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -530,7 +528,9 @@ const TaskItem = ({
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className={`text-sm font-medium truncate ${completed ? "text-white/60 line-through decoration-white/30" : "text-white"}`}>
+        <h4
+          className={`text-sm font-medium truncate ${completed ? "text-white/60 line-through decoration-white/30" : "text-white"}`}
+        >
           {title}
         </h4>
         <p className="text-xs text-white/50 truncate">{time}</p>
@@ -538,7 +538,7 @@ const TaskItem = ({
       <div className="shrink-0">
         {completed ? (
           <div className="w-5 h-5 rounded-full bg-[#FFD166] flex items-center justify-center">
-             <CheckCircle2 className="w-3.5 h-3.5 text-[#333]" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#333]" />
           </div>
         ) : (
           <Circle className="w-5 h-5 text-white/20" />
