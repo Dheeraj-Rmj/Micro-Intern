@@ -30,7 +30,11 @@ export class UsersUseCase {
         },
       });
 
-      const baseUrl = process.env["FRONTEND_URL"] || "https://micro-intern-web.vercel.app";
+      let baseUrl = process.env["FRONTEND_URL"] || "https://micro-intern-web.vercel.app";
+      if (baseUrl.includes("localhost") || baseUrl.includes("[YOUR-VERCEL-APP-URL]")) {
+        baseUrl = "https://micro-intern-web.vercel.app";
+      }
+      
       // ensure we don't have double slash if baseUrl has trailing slash
       const formattedBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
 
