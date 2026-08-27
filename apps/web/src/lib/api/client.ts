@@ -109,8 +109,11 @@ function createApiClient(): AxiosInstance {
           // Refresh failed — clear token and redirect to login
           clearAccessToken();
           if (typeof window !== "undefined") {
-            sessionStorage.setItem("microintern_current_route", "signin");
-            window.location.href = "/";
+            const isPublicRoute = window.location.pathname.startsWith("/users/ekyc");
+            if (!isPublicRoute) {
+              sessionStorage.setItem("microintern_current_route", "signin");
+              window.location.href = "/";
+            }
           }
         }
       }
