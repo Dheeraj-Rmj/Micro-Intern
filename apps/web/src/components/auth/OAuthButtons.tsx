@@ -2,15 +2,15 @@
 
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
+import { authClient } from "@/lib/better-auth";
 
-const API_URL =
-  process.env["NEXT_PUBLIC_API_URL"] ?? "https://micro-intern-4stz.onrender.com/api/v1";
 const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://micro-intern-web.vercel.app";
 
 export function OAuthButtons() {
-  const providers = [
+  const providers: { name: string, provider: "google" | "github" | "microsoft" | "linkedin", icon: React.ReactNode, className: string, path?: string }[] = [
     {
       name: "Google",
+      provider: "google",
       path: "/auth/google",
       icon: (
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -36,6 +36,7 @@ export function OAuthButtons() {
     },
     {
       name: "GitHub",
+      provider: "github",
       path: "/auth/github",
       icon: (
         <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -46,6 +47,7 @@ export function OAuthButtons() {
     },
     {
       name: "Microsoft",
+      provider: "microsoft",
       path: "/auth/microsoft",
       icon: (
         <svg className="w-5 h-5 mr-2" viewBox="0 0 21 21">
@@ -59,6 +61,7 @@ export function OAuthButtons() {
     },
     {
       name: "LinkedIn",
+      provider: "linkedin",
       path: "/auth/linkedin",
       icon: (
         <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -81,9 +84,15 @@ export function OAuthButtons() {
           <Button
             variant="outline"
             className={`w-full h-12 text-sm font-medium transition-all shadow-sm ${provider.className}`}
-            onClick={() => {
-              const callbackURL = encodeURIComponent(`${APP_URL}/dashboard`);
-              window.location.href = `${API_URL}${provider.path}?callbackURL=${callbackURL}`;
+            onClick={async () => {
+              try {
+                await authClient.signIn.social({
+                  provider: provider.provider,
+                  callbackURL: `${APP_URL}/dashboard`,
+                });
+              } catch (err) {
+                console.error(err);
+              }
             }}
           >
             {provider.icon}

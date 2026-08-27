@@ -3,17 +3,25 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
-const API_BASE_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "https://micro-intern-4stz.onrender.com/api/v1";
+import { authClient } from "@/lib/better-auth";
+
 const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://micro-intern-web.vercel.app";
 
 export function OAuthButtons({ action = "login" }: { action?: "login" | "signup" }) {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  const handleOAuthLogin = (provider: "linkedin" | "microsoft" | "google" | "github") => {
+  const handleOAuthLogin = async (provider: "linkedin" | "microsoft" | "google" | "github") => {
     setLoadingProvider(provider);
-    // Explicitly pass callbackURL to ensure better-auth redirects to the deployed frontend
-    const callbackURL = encodeURIComponent(`${APP_URL}/dashboard`);
-    window.location.href = `${API_BASE_URL}/auth/${provider}?action=${action}&callbackURL=${callbackURL}`;
+    
+    try {
+      await authClient.signIn.social({
+        provider,
+        callbackURL: `${APP_URL}/dashboard`,
+      });
+    } catch (err) {
+      console.error(err);
+      setLoadingProvider(null);
+    }
   };
 
   return (
