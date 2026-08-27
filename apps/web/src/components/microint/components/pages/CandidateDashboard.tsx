@@ -274,78 +274,113 @@ export const CandidateDashboard: React.FC = () => {
             <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm flex-1 relative overflow-hidden flex flex-col min-h-[300px]">
               <div className="flex items-center justify-between mb-6">
                 <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">
-                  August
+                  {new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toLocaleString('default', { month: 'long' })}
                 </span>
-                <h3 className="text-lg font-medium text-[#222]">September 2024</h3>
+                <h3 className="text-lg font-medium text-[#222]">
+                  {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+                </h3>
                 <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">
-                  October
+                  {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleString('default', { month: 'long' })}
                 </span>
               </div>
 
               <div className="flex-1 flex">
-                {/* Time Axis */}
+                {/* Time Axis (9 AM - 5 PM) */}
                 <div className="flex flex-col justify-between py-12 pr-4 w-20 text-xs text-[#888] font-mono border-r border-black/5 border-dashed">
-                  <span>8:00 am</span>
                   <span>9:00 am</span>
-                  <span>10:00 am</span>
                   <span>11:00 am</span>
+                  <span>1:00 pm</span>
+                  <span>3:00 pm</span>
+                  <span>5:00 pm</span>
                 </div>
 
                 {/* Days Axis & Timeline Area */}
                 <div className="flex-1 flex flex-col">
                   <div className="flex justify-between px-4 pb-4">
-                    {[
-                      { d: "Mon", n: "22" },
-                      { d: "Tue", n: "23" },
-                      { d: "Wed", n: "24" },
-                      { d: "Thu", n: "25" },
-                      { d: "Fri", n: "26" },
-                      { d: "Sat", n: "27" },
-                    ].map((day, i) => (
-                      <div key={i} className="flex flex-col items-center gap-1">
-                        <span className="text-xs text-[#888]">{day.d}</span>
-                        <span className="text-sm font-medium text-[#222]">{day.n}</span>
-                      </div>
-                    ))}
+                    {Array.from({ length: 6 }).map((_, i) => {
+                      const today = new Date();
+                      const dayOfWeek = today.getDay();
+                      const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1) + i;
+                      const date = new Date(today.setDate(diff));
+                      const d = date.toLocaleString('default', { weekday: 'short' });
+                      const n = date.getDate().toString();
+                      return (
+                        <div key={i} className="flex flex-col items-center gap-1 flex-1">
+                          <span className="text-xs text-[#888]">{d}</span>
+                          <span className={`text-sm font-medium ${new Date().getDate() === parseInt(n) ? 'text-blue-600 bg-blue-50 px-2 rounded-full' : 'text-[#222]'}`}>{n}</span>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Timeline Grid */}
-                  <div className="flex-1 relative flex justify-between px-8 py-2">
+                  <div className="flex-1 relative flex justify-between px-4 py-2">
                     {[0, 1, 2, 3, 4, 5].map((i) => (
                       <div
                         key={i}
-                        className="w-px h-full bg-black/5 border-l border-black/5 border-dashed"
+                        className="w-full h-full border-l border-black/5 border-dashed first:border-l-0 relative"
                       />
                     ))}
 
                     {/* Dynamic Event Blocks */}
                     {interviews.length > 0 ? (
-                      interviews.slice(0, 3).map((interview, idx) => (
-                        <div
-                          key={interview.id}
-                          className={`absolute w-[40%] rounded-2xl p-4 shadow-sm z-10 flex flex-col gap-2 ${
-                            idx % 2 === 0
-                              ? "bg-[#333] text-white shadow-lg"
-                              : "bg-white border border-black/5 text-[#222]"
-                          }`}
-                          style={{
-                            top: `${10 + idx * 30}%`,
-                            left: `${15 + idx * 20}%`,
-                          }}
-                        >
-                          <div>
-                            <h4 className={`text-sm font-medium ${idx % 2 === 0 ? "text-white" : "text-[#222]"}`}>
+                      interviews.map((interview, idx) => {
+                        // Position calculations
+                        let hours = 9;
+                        let minutes = 0;
+                        if (interview.time) {
+                          const timeStr = interview.time.toUpperCase();
+                          if (timeStr.includes("PM") || timeStr.includes("AM")) {
+                            const [time, period] = timeStr.split(" ");
+                            let [h, m] = time.split(":").map(Number);
+                            if (period === "PM" && h !== 12) h += 12;
+                            if (period === "AM" && h === 12) h = 0;
+                            hours = h;
+                            minutes = m || 0;
+                          } else {
+                            const [h, m] = interview.time.split(":").map(Number);
+                            hours = h;
+                            minutes = m || 0;
+                          }
+                        }
+                        
+                        const eventDate = new Date(interview.date);
+                        let dayIndex = eventDate.getDay() - 1;
+                        if (dayIndex < 0) dayIndex = 6;
+                        
+                        // Only show if it fits in 9am-5pm and Mon-Sat
+                        if (hours < 9 || hours >= 17 || dayIndex > 5) return null;
+                        
+                        const top = ((hours + minutes / 60 - 9) / 8) * 100;
+                        const left = (dayIndex / 6) * 100;
+
+                        return (
+                          <div
+                            key={interview.id}
+                            className={`absolute rounded-xl p-3 shadow-sm z-10 flex flex-col gap-1 overflow-hidden transition-all hover:scale-105 hover:z-20 ${
+                              idx % 2 === 0
+                                ? "bg-[#333] text-white shadow-lg"
+                                : "bg-white border border-black/10 text-[#222]"
+                            }`}
+                            style={{
+                              top: `${Math.max(5, Math.min(85, top))}%`,
+                              left: `${left + 2}%`,
+                              width: '14%',
+                              minHeight: '60px'
+                            }}
+                          >
+                            <h4 className={`text-xs font-semibold truncate ${idx % 2 === 0 ? "text-white" : "text-[#222]"}`}>
                               {interview.trialTitle}
                             </h4>
-                            <p className={`text-xs mt-0.5 ${idx % 2 === 0 ? "text-white/60" : "text-[#666]"}`}>
-                              {interview.time} - {interview.interviewer}
+                            <p className={`text-[10px] mt-auto truncate ${idx % 2 === 0 ? "text-white/70" : "text-[#666]"}`}>
+                              {interview.time}
                             </p>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     ) : (
                        <div className="absolute inset-0 flex items-center justify-center">
-                          <p className="text-sm text-[#888]">No upcoming events</p>
+                          <p className="text-sm text-[#888]">No upcoming events this week</p>
                        </div>
                     )}
                   </div>
