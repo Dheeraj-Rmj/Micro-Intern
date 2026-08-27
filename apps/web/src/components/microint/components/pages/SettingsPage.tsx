@@ -2,9 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useApp } from "../../context/AppContext";
 import { Breadcrumbs } from "../common/Breadcrumbs";
-import { sessionApi } from "@/lib/api/sessions";
 import { RecentDevices } from "../auth/RecentDevices";
-import type { DeviceSession } from "@microintern/shared";
 import {
   Settings,
   User,
@@ -50,148 +48,7 @@ export const SettingsPage: React.FC = () => {
     browserPush: false,
   });
 
-  // ── Device Logins & Session History State ────────────────────────────────
-  const [sessions, setSessions] = useState<DeviceSession[]>([]);
-  const [isLoadingSessions, setIsLoadingSessions] = useState<boolean>(true);
-  const [revokingId, setRevokingId] = useState<string | null>(null);
-  const [isRevokingOthers, setIsRevokingOthers] = useState<boolean>(false);
 
-  const fetchSessions = useCallback(async () => {
-    setIsLoadingSessions(true);
-    try {
-      const data = await sessionApi.getDeviceSessions();
-      if (data && data.length > 0) {
-        setSessions(data);
-      } else {
-        // High-fidelity fallback / current device representation for UI preview
-        setSessions([
-          {
-            id: "current-session-id",
-            userId: userProfile.id || "usr-1",
-            deviceType: "desktop",
-            browser: "Chrome 131",
-            os: "Windows 11/10",
-            ipAddress: "127.0.0.1",
-            location: "Local Network (Dev)",
-            isCurrent: true,
-            isActive: true,
-            lastActiveAt: new Date().toISOString(),
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-            expiresAt: new Date(Date.now() + 86400000 * 7).toISOString(),
-            revokedAt: null,
-          },
-          {
-            id: "mobile-session-id-1",
-            userId: userProfile.id || "usr-1",
-            deviceType: "mobile",
-            browser: "Safari 18",
-            os: "iOS 18",
-            ipAddress: "192.168.1.45",
-            location: "Apple iPhone (San Francisco, US)",
-            isCurrent: false,
-            isActive: true,
-            lastActiveAt: new Date(Date.now() - 1000 * 60 * 42).toISOString(), // 42 mins ago
-            createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-            expiresAt: new Date(Date.now() + 86400000 * 5).toISOString(),
-            revokedAt: null,
-          },
-          {
-            id: "mac-session-id-2",
-            userId: userProfile.id || "usr-1",
-            deviceType: "desktop",
-            browser: "Firefox 133",
-            os: "macOS Sonoma",
-            ipAddress: "172.56.21.9",
-            location: "MacBook Pro (Austin, US)",
-            isCurrent: false,
-            isActive: true,
-            lastActiveAt: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(), // 6 hours ago
-            createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
-            expiresAt: new Date(Date.now() + 86400000 * 3).toISOString(),
-            revokedAt: null,
-          },
-        ]);
-      }
-    } catch {
-      // Keep existing sessions if API is unavailable
-    } finally {
-      setIsLoadingSessions(false);
-    }
-  }, [userProfile.id]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (activeTab === "sessions" || activeTab === "security") {
-      fetchSessions();
-    }
-  }, [activeTab]);
-
-  const handleRevokeSingle = async (sessionId: string) => {
-    setRevokingId(sessionId);
-    try {
-      await sessionApi.revokeSession(sessionId);
-      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
-      showToast(
-        "Device Logged Out",
-        "The selected device has been logged out and its session revoked.",
-        "success",
-      );
-    } catch {
-      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
-      showToast("Device Logged Out", "Device revoked successfully.", "success");
-    } finally {
-      setRevokingId(null);
-    }
-  };
-
-  const handleRevokeOtherDevices = async () => {
-    setIsRevokingOthers(true);
-    try {
-      const res = await sessionApi.revokeOtherSessions();
-      setSessions((prev) => prev.filter((s) => s.isCurrent));
-      showToast(
-        "All Other Devices Logged Out",
-        res.message || "All other active sessions have been terminated.",
-        "success",
-      );
-    } catch {
-      setSessions((prev) => prev.filter((s) => s.isCurrent));
-      showToast(
-        "All Other Devices Logged Out",
-        "All other active sessions have been terminated.",
-        "success",
-      );
-    } finally {
-      setIsRevokingOthers(false);
-    }
-  };
-
-  const formatRelativeTime = (isoString: string) => {
-    try {
-      const diffMs = Date.now() - new Date(isoString).getTime();
-      const diffMins = Math.floor(diffMs / (1000 * 60));
-      if (diffMins < 1) return "Active just now";
-      if (diffMins < 60) return `Active ${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
-      const diffHours = Math.floor(diffMins / 60);
-      if (diffHours < 24) return `Active ${diffHours} hr${diffHours > 1 ? "s" : ""} ago`;
-      const diffDays = Math.floor(diffHours / 24);
-      return `Active ${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-    } catch {
-      return "Recently active";
-    }
-  };
-
-  const getDeviceIcon = (type: DeviceSession["deviceType"]) => {
-    switch (type) {
-      case "mobile":
-        return <Smartphone className="w-5 h-5 text-emerald-500" />;
-      case "tablet":
-        return <Tablet className="w-5 h-5 text-sky-500" />;
-      case "desktop":
-      default:
-        return <Laptop className="w-5 h-5 text-indigo-500" />;
-    }
-  };
 
   const handleSaveSecurity = (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,8 +67,7 @@ export const SettingsPage: React.FC = () => {
     );
   };
 
-  const currentDevice = sessions.find((s) => s.isCurrent) || sessions[0];
-  const otherDevices = sessions.filter((s) => s.id !== currentDevice?.id && s.isActive);
+
 
   return (
     <div className="pb-12 text-black dark:text-white max-w-[1200px] mx-auto w-full font-sans">
