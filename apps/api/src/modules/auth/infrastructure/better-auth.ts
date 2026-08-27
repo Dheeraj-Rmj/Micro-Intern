@@ -14,9 +14,13 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   secret: process.env["BETTER_AUTH_SECRET"] || process.env["JWT_ACCESS_SECRET"] || process.env["ENCRYPTION_KEY"],
-  baseURL: process.env["API_URL"]
-    ? `${process.env["API_URL"]}/api/v1/auth`
-    : "https://micro-intern-4stz.onrender.com/api/v1/auth",
+  baseURL: (() => {
+    const api = process.env["API_URL"];
+    if (!api) return "https://micro-intern-4stz.onrender.com/api/v1/auth";
+    if (api.endsWith("/api/v1")) return `${api}/auth`;
+    if (api.endsWith("/api/v1/")) return `${api}auth`;
+    return api.endsWith("/") ? `${api}api/v1/auth` : `${api}/api/v1/auth`;
+  })(),
   trustedOrigins: [
     "http://localhost:3000",
     "https://micro-intern-web.vercel.app",
