@@ -134,11 +134,11 @@ export const SignUpPage: React.FC = () => {
       });
       if (error) {
         console.error("OAuth error:", error);
-        showToast("OAuth Error", "Could not initialize social login.", "error");
+        showToast("OAuth Error", error.message || "Could not initialize social login.", "error");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      showToast("OAuth Error", "An unexpected error occurred.", "error");
+      showToast("OAuth Error", err.message || "An unexpected error occurred.", "error");
     }
   };
 
