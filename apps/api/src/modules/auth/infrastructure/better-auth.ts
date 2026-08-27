@@ -13,6 +13,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  secret: process.env["BETTER_AUTH_SECRET"] || process.env["JWT_ACCESS_SECRET"] || process.env["ENCRYPTION_KEY"],
   baseURL: process.env["API_URL"]
     ? `${process.env["API_URL"]}/api/v1/auth`
     : "https://micro-intern-4stz.onrender.com/api/v1/auth",
