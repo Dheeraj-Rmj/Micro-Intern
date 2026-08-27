@@ -141,9 +141,7 @@ export const CandidateDashboard: React.FC = () => {
                   <h3 className="text-2xl font-serif text-white tracking-tight">{displayName}</h3>
                   <p className="text-white/70 text-sm">{userTitle}</p>
                 </div>
-                <div className="px-4 py-1.5 rounded-full border border-white/30 backdrop-blur-md bg-black/20 text-white font-mono text-sm">
-                  $1,200
-                </div>
+
               </div>
             </div>
 
@@ -197,56 +195,7 @@ export const CandidateDashboard: React.FC = () => {
 
           {/* Middle Content */}
           <div className="col-span-12 lg:col-span-6 flex flex-col gap-6">
-            <div className="grid grid-cols-2 gap-6 h-[320px]">
-              {/* Progress Card */}
-              <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm flex flex-col relative overflow-hidden">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-xl font-medium text-[#222]">Progress</h2>
-                    <div className="flex items-baseline gap-2 mt-2">
-                      <span className="text-[2.5rem] font-light leading-none">6.1 h</span>
-                      <span className="text-xs text-[#666] leading-tight max-w-[80px]">
-                        Work Time this week
-                      </span>
-                    </div>
-                  </div>
-                  <button className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-white transition-colors bg-white/50">
-                    <ArrowUpRight className="w-5 h-5 text-[#333]" />
-                  </button>
-                </div>
-
-                <div className="mt-auto flex items-end justify-between px-2 h-[120px]">
-                  {[
-                    { day: "S", height: 30, active: false },
-                    { day: "M", height: 80, active: false },
-                    { day: "T", height: 50, active: false },
-                    { day: "W", height: 90, active: false },
-                    { day: "T", height: 60, active: false },
-                    { day: "F", height: 75, active: true, value: "5h 23m" },
-                    { day: "S", height: 0, active: false },
-                  ].map((bar, i) => (
-                    <div key={i} className="flex flex-col items-center gap-3 relative group">
-                      {bar.active && (
-                        <div className="absolute -top-10 px-3 py-1 bg-[#FFD166] text-[#222] text-xs font-medium rounded-full shadow-sm whitespace-nowrap z-10">
-                          {bar.value}
-                        </div>
-                      )}
-                      <div className="w-2.5 h-[100px] rounded-full bg-black/5 relative overflow-hidden">
-                        <div
-                          className={`absolute bottom-0 w-full rounded-full transition-all duration-1000 ${
-                            bar.active ? "bg-[#FFD166]" : "bg-[#333]"
-                          }`}
-                          style={{ height: `${bar.height}%` }}
-                        />
-                      </div>
-                      <span className="text-[10px] font-mono font-medium text-[#888]">
-                        {bar.day}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+            <div className="grid grid-cols-1 gap-6 h-[320px]">
               {/* Time Tracker Card */}
               <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm flex flex-col items-center relative overflow-hidden">
                 <div className="w-full flex justify-between items-start absolute top-6 left-6 right-6">
@@ -256,28 +205,28 @@ export const CandidateDashboard: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="relative flex-1 flex items-center justify-center w-full mt-2">
-                  <svg className="w-56 h-56 transform -rotate-90">
+                <div className="relative flex-1 flex items-center justify-center w-full mt-10">
+                  <svg className="w-48 h-48 transform -rotate-90">
                     {/* Subtle background track */}
                     <circle
-                      cx="112"
-                      cy="112"
-                      r="100"
+                      cx="96"
+                      cy="96"
+                      r="86"
                       fill="none"
                       stroke="rgba(0,0,0,0.05)"
                       strokeWidth="6"
                     />
                     {/* Solid orange progress (Apple Timer Style) */}
                     <circle
-                      cx="112"
-                      cy="112"
-                      r="100"
+                      cx="96"
+                      cy="96"
+                      r="86"
                       fill="none"
                       stroke="#FF9500"
                       strokeWidth="6"
                       strokeLinecap="round"
-                      strokeDasharray="628"
-                      strokeDashoffset={628 - (628 * (elapsedSeconds % 3600)) / 3600}
+                      strokeDasharray="540"
+                      strokeDashoffset={540 - (540 * (elapsedSeconds % 3600)) / 3600}
                       className="transition-all duration-1000"
                     />
                   </svg>

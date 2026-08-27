@@ -162,10 +162,10 @@ export const RecentDevices = () => {
         ) : (
           sessions.map((session) => {
             const isCurrent = session.isCurrent;
-            const location = session.city && session.country ? `${session.city}, ${session.country}` : session.country || "Location unavailable";
-            const deviceName = session.deviceType ? session.deviceType.charAt(0).toUpperCase() + session.deviceType.slice(1) : "Unknown device";
-            const browserName = session.browser || "Unknown browser";
-            const osName = session.os || "Unknown operating system";
+            const location = session.location || (session.city && session.country ? `${session.city}, ${session.country}` : session.country) || "Location unavailable";
+            const deviceName = session.deviceType && session.deviceType !== "unknown" ? session.deviceType.charAt(0).toUpperCase() + session.deviceType.slice(1) : "Unknown device";
+            const browserName = session.browser && session.browser !== "Unknown Browser" ? session.browser : "Unknown browser";
+            const osName = session.os && session.os !== "Unknown OS" ? session.os : "Unknown operating system";
             
             return (
               <div
