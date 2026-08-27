@@ -256,29 +256,28 @@ export const CandidateDashboard: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="relative flex-1 flex items-center justify-center w-full mt-4">
-                  <svg className="w-48 h-48 transform -rotate-90">
-                    {/* Dashed background track */}
+                <div className="relative flex-1 flex items-center justify-center w-full mt-2">
+                  <svg className="w-56 h-56 transform -rotate-90">
+                    {/* Subtle background track */}
                     <circle
-                      cx="96"
-                      cy="96"
-                      r="80"
+                      cx="112"
+                      cy="112"
+                      r="100"
                       fill="none"
-                      stroke="rgba(0,0,0,0.1)"
-                      strokeWidth="2"
-                      strokeDasharray="4 8"
+                      stroke="rgba(0,0,0,0.05)"
+                      strokeWidth="6"
                     />
-                    {/* Solid yellow progress */}
+                    {/* Solid orange progress (Apple Timer Style) */}
                     <circle
-                      cx="96"
-                      cy="96"
-                      r="80"
+                      cx="112"
+                      cy="112"
+                      r="100"
                       fill="none"
-                      stroke="#FFD166"
-                      strokeWidth="12"
+                      stroke="#FF9500"
+                      strokeWidth="6"
                       strokeLinecap="round"
-                      strokeDasharray="502"
-                      strokeDashoffset="200" // Adjust this to change progress
+                      strokeDasharray="628"
+                      strokeDashoffset={628 - (628 * (elapsedSeconds % 3600)) / 3600}
                       className="transition-all duration-1000"
                     />
                   </svg>
@@ -286,7 +285,7 @@ export const CandidateDashboard: React.FC = () => {
                     {isEditingTimer ? (
                       <input
                         type="number"
-                        className="w-24 bg-transparent border-b border-[#222] text-center text-4xl font-light tracking-tight text-[#222] outline-none mb-1"
+                        className="w-28 bg-transparent border-b border-[#222] text-center text-5xl font-light tracking-tight text-[#222] outline-none mb-1 font-mono"
                         value={inputMinutes}
                         onChange={(e) => setInputMinutes(e.target.value)}
                         onBlur={handleTimerSubmit}
@@ -296,7 +295,7 @@ export const CandidateDashboard: React.FC = () => {
                       />
                     ) : (
                       <span
-                        className={`text-4xl font-light tracking-tight text-[#222] ${!isPlaying ? 'cursor-pointer hover:opacity-70' : ''}`}
+                        className={`text-5xl font-light tracking-tight text-[#222] font-mono ${!isPlaying ? 'cursor-pointer hover:opacity-70' : ''}`}
                         onClick={() => {
                           if (!isPlaying) {
                             setInputMinutes(Math.floor(elapsedSeconds / 60).toString());
@@ -308,29 +307,35 @@ export const CandidateDashboard: React.FC = () => {
                         {formatTime(elapsedSeconds)}
                       </span>
                     )}
-                    <span className="text-xs text-[#666]">Work Time</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 mt-2">
+                <div className="flex w-full items-center justify-between px-6 pb-2">
+                  <button 
+                    onClick={() => {
+                      setIsPlaying(false);
+                      setElapsedSeconds(0);
+                    }}
+                    className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center text-[#222] font-medium text-sm hover:bg-black/10 transition-colors"
+                  >
+                    Reset
+                  </button>
+                  
                   {!isPlaying ? (
                     <button
                       onClick={() => setIsPlaying(true)}
-                      className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#222] hover:scale-105 transition-transform"
+                      className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-medium text-sm hover:bg-emerald-500/20 transition-colors"
                     >
-                      <Play className="w-5 h-5 ml-1" />
+                      Start
                     </button>
                   ) : (
                     <button
                       onClick={() => setIsPlaying(false)}
-                      className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#222] hover:scale-105 transition-transform"
+                      className="w-16 h-16 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center font-medium text-sm hover:bg-orange-500/20 transition-colors"
                     >
-                      <Pause className="w-5 h-5" />
+                      Stop
                     </button>
                   )}
-                  <button className="w-12 h-12 rounded-full bg-[#333] text-white shadow-sm flex items-center justify-center hover:scale-105 transition-transform ml-4">
-                    <Clock className="w-5 h-5" />
-                  </button>
                 </div>
               </div>
             </div>
