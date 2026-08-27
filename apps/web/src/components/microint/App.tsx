@@ -9,6 +9,7 @@ import { SignUpPage } from "./components/auth/SignUpPage";
 import { ForgotPasswordPage } from "./components/auth/ForgotPasswordPage";
 import { Sidebar } from "./components/dashboard/Sidebar";
 import { DashboardHeader } from "./components/dashboard/DashboardHeader";
+import { CandidateLayout } from "./components/layout/CandidateLayout";
 import { CandidateDashboard } from "./components/pages/CandidateDashboard";
 import { ProfilePage } from "./components/pages/ProfilePage";
 import { DiscoverTrialsPage } from "./components/pages/DiscoverTrialsPage";
@@ -202,14 +203,27 @@ const MainRouter: React.FC = () => {
     }
   };
 
+  const isCandidateRoute = [
+    "dashboard",
+    "network",
+    "profile",
+    "discover-trials",
+    "my-applications",
+    "workspace",
+    "submissions",
+    "notifications",
+    "achievements",
+    "settings",
+  ].includes(currentRoute);
+
   return (
-    <div className="min-h-screen flex bg-[#FAFAFA] dark:bg-black text-black dark:text-white transition-colors duration-300 relative overflow-x-hidden selection:bg-gray-200 selection:text-gray-900">
-      {currentRoute === "dashboard" ? (
-        <div className="flex-1 w-full min-w-0">
+    <>
+      {isCandidateRoute ? (
+        <CandidateLayout>
           {renderDashboardView()}
-        </div>
+        </CandidateLayout>
       ) : (
-        <>
+        <div className="min-h-screen flex bg-[#FAFAFA] dark:bg-black text-black dark:text-white transition-colors duration-300 relative overflow-x-hidden selection:bg-gray-200 selection:text-gray-900">
           {/* Persistent Responsive Sidebar */}
           <div className="relative z-10 flex">
             <Sidebar mobileOpen={mobileSidebarOpen} setMobileOpen={setMobileSidebarOpen} />
@@ -223,11 +237,10 @@ const MainRouter: React.FC = () => {
               {renderDashboardView()}
             </main>
           </div>
-        </>
+        </div>
       )}
-
       <Toast />
-    </div>
+    </>
   );
 };
 
