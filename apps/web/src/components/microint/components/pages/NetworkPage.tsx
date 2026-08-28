@@ -1128,7 +1128,7 @@ export const NetworkPage: React.FC = () => {
  />
  <div>
  <h3 className="font-bold text-base text-[#222]">{userProfile.fullName || "My Account"}</h3>
- <p className="text-xs text-black/50">{userProfile.role === "candidate" ? "Candidate" : "Member"} · MicroIntern</p>
+ <p className="text-xs text-black/50">{(userProfile as any).role === "candidate" ? "Candidate" : "Member"} · MicroIntern</p>
  <div className="flex items-center gap-3 mt-1.5">
  <span className="text-[11px] text-black/60 font-medium">
  <span className="font-bold text-[#222]">{myPosts.length}</span> posts
