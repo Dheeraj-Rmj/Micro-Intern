@@ -19,6 +19,7 @@ import type {
   RefreshTokenUseCase,
   LogoutUseCase,
 } from "../application/use-cases/auth.usecase.js";
+import type { DeleteAccountUseCase } from "../application/use-cases/delete-account.usecase.js";
 import type {
   RequestLoginOtpUseCase,
   VerifyLoginOtpUseCase,
@@ -100,6 +101,7 @@ export class AuthController {
     private readonly requestLoginOtpUseCase: RequestLoginOtpUseCase,
     private readonly verifyLoginOtpUseCase: VerifyLoginOtpUseCase,
     private readonly userRepository: IUserRepository,
+    private readonly deleteAccountUseCase: DeleteAccountUseCase,
   ) {}
 
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -405,6 +407,28 @@ export class AuthController {
       const { newPassword } = req.body as { newPassword: string };
       await this.changePasswordUseCase.execute(req.user.id, newPassword);
       ResponseFormatter.success(res, { message: "Password changed successfully" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user || !req.user.id) {
+        res.status(401).json({ success: false, error: { code: "UNAUTHORIZED", message: "Not authenticated" } });
+        return;
+      }
+      const userId = req.user.id;
+      
+      await this.deleteAccountUseCase.execute(userId);
+      
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env["NODE_ENV"] === "production",
+        sameSite: process.env["NODE_ENV"] === "production" ? "none" : "lax",
+      });
+
+      res.status(200).json({ success: true, data: { message: "Account deleted successfully" } });
     } catch (error) {
       next(error);
     }

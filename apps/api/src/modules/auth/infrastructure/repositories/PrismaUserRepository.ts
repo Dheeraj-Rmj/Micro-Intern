@@ -236,6 +236,13 @@ export class PrismaUserRepository implements IUserRepository {
     return User.fromPrisma(user);
   }
 
+  async delete(id: string): Promise<void> {
+    // Delete the user; cascading deletes configured in Prisma schema should handle relations
+    await this.db.user.delete({
+      where: { id },
+    });
+  }
+
   // ── Login Security ────────────────────────────────────────────────────────
 
   async incrementLoginAttempts(userId: string): Promise<void> {

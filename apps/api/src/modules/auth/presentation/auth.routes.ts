@@ -52,6 +52,7 @@ import {
 } from "../application/use-cases/session.usecase.js";
 import { SetupTotpUseCase, VerifyTotpUseCase } from "../application/use-cases/mfa.usecase.js";
 import { MfaLoginUseCase } from "../application/use-cases/mfa-login.usecase.js";
+import { DeleteAccountUseCase } from "../application/use-cases/delete-account.usecase.js";
 import {
   GenerateWebAuthnRegistrationUseCase,
   VerifyWebAuthnRegistrationUseCase,
@@ -230,6 +231,11 @@ export function createAuthRouter(): Router {
     );
 
     container.register(
+      "DeleteAccountUseCase",
+      () => new DeleteAccountUseCase(container.get("IUserRepository")),
+    );
+
+    container.register(
       "AuthController",
       (_infra: InfrastructureDependencies) =>
         new AuthController(
@@ -249,6 +255,7 @@ export function createAuthRouter(): Router {
           container.get("RequestLoginOtpUseCase"),
           container.get("VerifyLoginOtpUseCase"),
           container.get("IUserRepository"),
+          container.get("DeleteAccountUseCase"),
         ),
     );
 
@@ -547,6 +554,12 @@ export function createAuthRouter(): Router {
   // GET /auth/google/callback
   router.get("/google/callback", handleOAuthFailure("google"), controller.handleOAuthCallback);
 
+  // DELETE /auth/account
+  router.delete(
+    "/account",
+    authMiddleware,
+    controller.deleteAccount.bind(controller),
+  );
 
   return router;
 }

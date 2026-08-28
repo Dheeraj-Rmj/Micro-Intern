@@ -47,6 +47,10 @@ export const authService = {
     await apiClient.post("/auth/logout");
   },
 
+  async deleteAccount(): Promise<void> {
+    await apiClient.delete("/auth/account");
+  },
+
   async getCurrentUser(): Promise<CandidateUser> {
     const response = await apiClient.get<{ success: boolean; data: CandidateUser }>("/auth/me");
     return response.data.data;

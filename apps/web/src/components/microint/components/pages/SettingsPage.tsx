@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useApp } from "../../context/AppContext";
 import { Breadcrumbs } from "../common/Breadcrumbs";
 import { RecentDevices } from "../auth/RecentDevices";
+import { authService } from "../../../../features/auth/services/auth.service";
 import {
   Settings,
   User,
@@ -47,6 +48,23 @@ export const SettingsPage: React.FC = () => {
     trustScoreUpdates: true,
     browserPush: false,
   });
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you absolutely sure you want to delete your account? This action cannot be undone.")) return;
+    
+    setIsDeleting(true);
+    try {
+      await authService.deleteAccount();
+      setCurrentRoute("login" as any);
+      showToast("Account Deleted", "Your account has been successfully removed.", "info");
+    } catch (err: any) {
+      showToast("Error", err.response?.data?.error?.message || "Failed to delete account", "error");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
 
 
@@ -206,6 +224,22 @@ export const SettingsPage: React.FC = () => {
                   className="px-6 py-3.5 rounded-full border border-black/10 dark:border-white/10 text-xs font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
                 >
                   View Active Devices
+                </button>
+              </div>
+
+              {/* DANGER ZONE */}
+              <div className="pt-8 mt-8 border-t border-red-500/20">
+                <h4 className="font-bold text-sm text-red-500 mb-2">Danger Zone</h4>
+                <p className="text-xs text-black/50 dark:text-white/60 mb-4">
+                  Permanently delete your account and all associated data. This action cannot be undone.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  className="px-6 py-2.5 rounded-xl border border-red-500 text-red-500 font-bold text-xs hover:bg-red-500/10 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {isDeleting ? "Deleting..." : "Delete Account"}
                 </button>
               </div>
             </form>

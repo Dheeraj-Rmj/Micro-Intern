@@ -69,6 +69,7 @@ export interface IUserRepository {
   lockAccount(userId: string, until: Date): Promise<void>;
   updateLastLogin(userId: string, ipAddress: string): Promise<void>;
   updateStatus(userId: string, status: string): Promise<void>;
+  delete(id: string): Promise<void>;
 
   // ── Profile Updates ───────────────────────────────────────────────────────
   setEmailVerified(userId: string): Promise<void>;
