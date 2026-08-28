@@ -70,4 +70,8 @@ export const authService = {
   async changePassword(newPassword: string): Promise<void> {
     await apiClient.post("/auth/change-password", { newPassword });
   },
+
+  async completeOnboarding(): Promise<void> {
+    await apiClient.post("/auth/complete-onboarding", {});
+  },
 };

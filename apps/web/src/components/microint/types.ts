@@ -56,7 +56,10 @@ export type PageRoute =
   | "admin-system"
   | "admin-trials"
   | "admin-users"
-  | "admin-trust-ai";
+  | "admin-trust-ai"
+  // Onboarding Routes
+  | "candidate-onboarding"
+  | "company-onboarding";
 
 export type UserRole = "candidate" | "recruiter" | "company" | "admin";
 

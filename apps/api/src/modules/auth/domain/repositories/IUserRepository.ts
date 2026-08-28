@@ -74,6 +74,7 @@ export interface IUserRepository {
   setEmailVerified(userId: string): Promise<void>;
   setPasswordHash(userId: string, passwordHash: string): Promise<void>;
   setForcePasswordChange(userId: string, force: boolean): Promise<void>;
+  setOnboarded(userId: string): Promise<void>;
   /** Atomically updates the password hash AND clears the forcePasswordChange flag in one DB write. */
   updatePasswordAndClearForceChange(userId: string, passwordHash: string): Promise<void>;
   updateAvatar(userId: string, avatarUrl: string): Promise<void>;

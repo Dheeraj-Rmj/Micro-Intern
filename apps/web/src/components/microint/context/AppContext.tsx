@@ -154,6 +154,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         } else {
           setRole("candidate");
         }
+
+        // ── Onboarding gate: redirect new users to the wizard ──────────────
+        if (!state.user!.isOnboarded) {
+          const role = state.user!.role;
+          if (role === "COMPANY_OWNER") {
+            setCurrentRoute("company-onboarding");
+          } else if (role === "CANDIDATE") {
+            setCurrentRoute("candidate-onboarding");
+          }
+        }
       }
     });
     
@@ -176,6 +186,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setRole("company");
         } else {
           setRole("candidate");
+        }
+
+        // ── Onboarding gate on page refresh ────────────────────────────────
+        if (!state.user!.isOnboarded) {
+          const savedRoute = typeof window !== "undefined"
+            ? sessionStorage.getItem("microintern_current_route")
+            : null;
+          // Only gate if not already in an onboarding or auth route
+          const exemptRoutes = ["candidate-onboarding", "company-onboarding", "landing", "login", "signin", "signup", "forgot-password"];
+          if (!savedRoute || !exemptRoutes.includes(savedRoute)) {
+            if (state.user!.role === "COMPANY_OWNER") {
+              setCurrentRoute("company-onboarding");
+            } else if (state.user!.role === "CANDIDATE") {
+              setCurrentRoute("candidate-onboarding");
+            }
+          }
         }
     }
     

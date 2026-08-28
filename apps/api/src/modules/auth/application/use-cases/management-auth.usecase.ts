@@ -95,6 +95,7 @@ export class ManagementLoginUseCase {
         avatarUrl: user.avatarUrl,
         companyId: user.companyId,
         forcePasswordChange: user.forcePasswordChange,
+        isOnboarded: user.isOnboarded,
       },
       tokens,
     };

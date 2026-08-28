@@ -7,6 +7,7 @@ export interface CandidateUser {
   avatarUrl?: string | null;
   isEmailVerified: boolean;
   forcePasswordChange?: boolean;
+  isOnboarded: boolean;
   createdAt: string;
   updatedAt: string;
 }

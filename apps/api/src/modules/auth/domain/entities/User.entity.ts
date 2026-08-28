@@ -33,6 +33,7 @@ export class User {
     public readonly lockedUntil: Date | null,
     public readonly companyId: string | null,
     public readonly forcePasswordChange: boolean,
+    public readonly isOnboarded: boolean,
     public readonly mfaEnabled: boolean,
     public readonly totpSecret: string | null,
     public readonly createdAt: Date,
@@ -93,6 +94,7 @@ export class User {
     lockedUntil: Date | null;
     companyMembership?: Array<{ companyId: string }>;
     forcePasswordChange: boolean;
+    isOnboarded?: boolean | null;
     mfaEnabled: boolean;
     totpSecret: string | null;
     createdAt: Date;
@@ -113,6 +115,7 @@ export class User {
       data.lockedUntil,
       data.companyMembership?.[0]?.companyId ?? null,
       data.forcePasswordChange,
+      data.isOnboarded ?? false,
       data.mfaEnabled,
       data.totpSecret,
       data.createdAt,

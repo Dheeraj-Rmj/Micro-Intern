@@ -307,6 +307,14 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
+  async setOnboarded(userId: string): Promise<void> {
+    await this.db.user.update({
+      where: { id: userId },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data: { isOnboarded: true, updatedAt: new Date() } as any,
+    });
+  }
+
   async updatePasswordAndClearForceChange(userId: string, passwordHash: string): Promise<void> {
     await this.db.user.update({
       where: { id: userId },

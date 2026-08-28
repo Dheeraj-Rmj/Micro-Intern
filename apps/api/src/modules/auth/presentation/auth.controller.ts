@@ -263,6 +263,19 @@ export class AuthController {
     }
   };
 
+  completeOnboarding = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ success: false, error: { message: "Unauthorized" } });
+        return;
+      }
+      await this.userRepository.setOnboarded(req.user.id);
+      ResponseFormatter.success(res, { isOnboarded: true });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   me = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user) {
@@ -285,6 +298,7 @@ export class AuthController {
         companyId: user.companyId,
         sessionId: req.user.sessionId,
         forcePasswordChange: user.forcePasswordChange,
+        isOnboarded: user.isOnboarded,
       };
       
       ResponseFormatter.success(res, payload);

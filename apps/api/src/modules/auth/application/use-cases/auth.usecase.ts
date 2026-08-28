@@ -105,6 +105,7 @@ export class LoginUseCase {
         emailVerifiedAt: user.emailVerifiedAt,
         avatarUrl: user.avatarUrl,
         forcePasswordChange: user.forcePasswordChange,
+        isOnboarded: user.isOnboarded,
       },
       tokens,
     };
@@ -204,6 +205,7 @@ export class RegisterCandidateUseCase {
         emailVerifiedAt: user.emailVerifiedAt,
         avatarUrl: user.avatarUrl,
         forcePasswordChange: user.forcePasswordChange,
+        isOnboarded: user.isOnboarded,
       },
       tokens,
     };

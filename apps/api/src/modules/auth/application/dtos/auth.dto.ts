@@ -114,6 +114,7 @@ export type AuthUserResponse = {
   emailVerifiedAt: Date | null;
   avatarUrl: string | null;
   forcePasswordChange?: boolean;
+  isOnboarded: boolean;
 };
 
 export type LoginResponse =

@@ -137,6 +137,8 @@ export class VerifyLoginOtpUseCase {
         companyId: user.companyId ?? null,
         emailVerifiedAt: user.emailVerifiedAt,
         avatarUrl: user.avatarUrl,
+        forcePasswordChange: user.forcePasswordChange,
+        isOnboarded: user.isOnboarded,
       },
       tokens,
     };

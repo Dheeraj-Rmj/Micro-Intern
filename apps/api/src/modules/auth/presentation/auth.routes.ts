@@ -446,6 +446,11 @@ export function createAuthRouter(): Router {
     },
   );
 
+  // POST /auth/complete-onboarding — marks user's isOnboarded flag as true
+  router.post("/complete-onboarding", authMiddleware, (req, res, next) => {
+    controller.completeOnboarding(req, res, next).catch(next);
+  });
+
   // POST /auth/refresh
   router.post("/refresh", validate("body", RefreshTokenSchema), (req, res, next) => {
     controller.refreshToken(req, res, next).catch(next);

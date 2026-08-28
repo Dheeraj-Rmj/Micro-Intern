@@ -42,6 +42,8 @@ import {
   CompanyAIGeneratorPage,
 } from "./components/company";
 import { ForcePasswordChangeModal } from "../../features/auth/components/ForcePasswordChangeModal";
+import { CandidateOnboardingWizard } from "./components/onboarding/CandidateOnboardingWizard";
+import { CompanyOnboardingWizard } from "./components/onboarding/CompanyOnboardingWizard";
 
 const MainRouter: React.FC = () => {
   const { currentRoute, setCurrentRoute, role, setRole, showToast } = useApp();
@@ -127,6 +129,25 @@ const MainRouter: React.FC = () => {
     return (
       <>
         <ForgotPasswordPage />
+        <Toast />
+      </>
+    );
+  }
+
+  // Onboarding Wizards (fullscreen, no sidebar)
+  if (currentRoute === "candidate-onboarding") {
+    return (
+      <>
+        <CandidateOnboardingWizard />
+        <Toast />
+      </>
+    );
+  }
+
+  if (currentRoute === "company-onboarding") {
+    return (
+      <>
+        <CompanyOnboardingWizard />
         <Toast />
       </>
     );
