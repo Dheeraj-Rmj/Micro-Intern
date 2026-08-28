@@ -42,13 +42,14 @@ import { createNetworkRouter } from "@/modules/network/presentation/network.rout
 
 export function createV1Router(): Router {
   const v1Router = Router();
+  const authRouter = createAuthRouter();
   const companyRouter = createCompanyRouter();
   const assessmentRouter = createAssessmentRouter();
   attachAssessmentSubmissionRoutes(assessmentRouter);
 
   // ── Core Platform ──────────────────────────────────────────────────────────
   v1Router.use("/health", healthRouter);
-  v1Router.use("/auth", createAuthRouter());
+  v1Router.use("/auth", authRouter);
   v1Router.use("/management", createManagementRouter());
   v1Router.use("/candidates", createCandidateRouter());
   v1Router.use("/companies", companyRouter);
