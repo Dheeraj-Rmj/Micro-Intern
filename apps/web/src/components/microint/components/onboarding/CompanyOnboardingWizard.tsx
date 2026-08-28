@@ -76,11 +76,11 @@ export const CompanyOnboardingWizard: React.FC = () => {
     // Try to update company profile — may not exist yet for all backends
     try {
       const payload: Record<string, unknown> = {};
-      if (form.website) payload.website = form.website;
-      if (form.industry) payload.industry = form.industry;
-      if (form.companySize) payload.companySize = form.companySize;
-      if (form.headquarters) payload.headquarters = form.headquarters;
-      if (form.description) payload.description = form.description;
+      if (form["website"]) payload["website"] = form["website"];
+      if (form["industry"]) payload["industry"] = form["industry"];
+      if (form["companySize"]) payload["companySize"] = form["companySize"];
+      if (form["headquarters"]) payload["headquarters"] = form["headquarters"];
+      if (form["description"]) payload["description"] = form["description"];
       if (Object.keys(payload).length) {
         // updateCompany endpoint — best effort
         await (companyApi as any).updateCompany?.(payload);
@@ -136,7 +136,9 @@ export const CompanyOnboardingWizard: React.FC = () => {
   }
 
   const currentStep = STEPS[step - 1];
+  if (!currentStep) return null;
   const StepIcon = currentStep.icon;
+  const progressPercentage = ((STEPS.findIndex((s) => s.id === currentStep.id) + 1) / STEPS.length) * 100;
 
   return (
     <div className="fixed inset-0 z-[200] flex bg-[#08080a] text-white overflow-hidden">
@@ -148,10 +150,10 @@ export const CompanyOnboardingWizard: React.FC = () => {
           </div>
           <p className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-6">Company setup</p>
           <nav className="space-y-2">
-            {STEPS.map((s) => {
+            {STEPS.map((s, index) => {
               const Icon = s.icon;
-              const isDone = s.id < step;
-              const isCurrent = s.id === step;
+              const isCurrent = s.id === currentStep.id;
+              const isDone = STEPS.findIndex((x) => x.id === currentStep.id) > index;
               return (
                 <div key={s.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${isCurrent ? "bg-white/10" : isDone ? "opacity-60" : "opacity-30"}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isDone ? "bg-emerald-500" : isCurrent ? "bg-white/15" : "bg-white/5"}`}>

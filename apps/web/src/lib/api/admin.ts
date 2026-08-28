@@ -101,6 +101,11 @@ export const adminApi = {
     return data.data;
   },
 
+  unsuspendUser: async (id: string): Promise<any> => {
+    const { data } = await apiClient.post<any>(`/admin/users/${id}/unsuspend`);
+    return data.data;
+  },
+
   broadcastAlert: async (message: string): Promise<any> => {
     const { data } = await apiClient.post<any>("/admin/broadcast", { message });
     return data.data;

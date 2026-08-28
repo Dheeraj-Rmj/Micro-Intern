@@ -13,6 +13,7 @@ import type {
   GetPaymentMetricsUseCase,
   GetGlobalAnalyticsUseCase,
   CreateCompanyManuallyUseCase,
+  UnsuspendUserUseCase,
 } from "../application/index.js";
 import type { Request, Response, NextFunction } from "express";
 
@@ -30,6 +31,7 @@ export class AdminController {
     private readonly getPaymentMetricsUseCase: GetPaymentMetricsUseCase,
     private readonly getGlobalAnalyticsUseCase: GetGlobalAnalyticsUseCase,
     private readonly createCompanyManuallyUseCase: CreateCompanyManuallyUseCase,
+    private readonly unsuspendUserUseCase: UnsuspendUserUseCase,
   ) {}
 
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -62,6 +64,12 @@ export class AdminController {
     const targetUserId = req.params["id"] as string;
     const suspended = await this.suspendUserUseCase.execute(req.user!.id, targetUserId);
     ResponseFormatter.success(res, suspended);
+  }
+
+  async unsuspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const targetUserId = req.params["id"] as string;
+    const unsuspended = await this.unsuspendUserUseCase.execute(req.user!.id, targetUserId);
+    ResponseFormatter.success(res, unsuspended);
   }
 
   async listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -64,7 +64,7 @@ export const SuperAdminOrganizationPage: React.FC = () => {
     }
     setIsSubmitting(true);
     try {
-      await adminApi.createCompany({
+      const result = await adminApi.createCompany({
         companyName: companyLegalName,
         adminName,
         adminEmail,
@@ -74,6 +74,10 @@ export const SuperAdminOrganizationPage: React.FC = () => {
         `${companyLegalName} has been successfully verified and added.`,
         "success",
       );
+      if (result && result.generatedPassword) {
+        // Show password via native alert so the admin can copy it immediately
+        window.alert(`Company created successfully!\n\nAdmin Email: ${adminEmail}\nTemporary Password: ${result.generatedPassword}\n\nPlease copy this password securely and provide it to the new company admin. They will be forced to change it upon first login.`);
+      }
       setShowAddCompanyModal(false);
       setCompanyLegalName("");
       setAdminName("");
@@ -119,9 +123,13 @@ export const SuperAdminOrganizationPage: React.FC = () => {
     }
   };
 
-  const toggleSuspension = async (userId: string) => {
+  const toggleSuspension = async (userId: string, currentStatus: string) => {
     try {
-      await adminApi.suspendUser(userId);
+      if (currentStatus === "suspended" || currentStatus === "SUSPENDED") {
+        await adminApi.unsuspendUser(userId);
+      } else {
+        await adminApi.suspendUser(userId);
+      }
       showToast("Suspension Updated", "User suspension status updated successfully.", "success");
       fetchUsers();
     } catch (err: any) {
@@ -370,7 +378,7 @@ export const SuperAdminOrganizationPage: React.FC = () => {
 
                       {/* Suspend / Restore Button */}
                       <button
-                        onClick={() => toggleSuspension(user.id)}
+                        onClick={() => toggleSuspension(user.id, user.status)}
                         className={`p-2 rounded-xl border transition-colors cursor-pointer ${
                           user.status === "suspended"
                             ? "border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20"

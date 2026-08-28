@@ -62,6 +62,9 @@ export const CandidateOnboardingWizard: React.FC = () => {
   const { updateUser } = useAuthStore();
   const { setCurrentRoute, showToast } = useApp();
 
+  const currentStep = STEPS[step - 1];
+  if (!currentStep) return null;
+
   const progress = (step / STEPS.length) * 100;
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,9 +93,9 @@ export const CandidateOnboardingWizard: React.FC = () => {
       }
       if (step === 2) {
         const payload: Record<string, unknown> = {};
-        if (form.headline) payload.headline = form.headline;
-        if (form.bio) payload.bio = form.bio;
-        if (form.location) payload.location = form.location;
+        if (form["headline"]) payload["headline"] = form["headline"];
+        if (form["bio"]) payload["bio"] = form["bio"];
+        if (form["location"]) payload["location"] = form["location"];
         if (Object.keys(payload).length) await candidateApi.updateProfile(payload as any);
       }
       if (step === 3 && form.skills.length > 0) {
@@ -162,7 +165,6 @@ export const CandidateOnboardingWizard: React.FC = () => {
     );
   }
 
-  const currentStep = STEPS[step - 1];
   const StepIcon = currentStep.icon;
 
   return (
@@ -177,7 +179,7 @@ export const CandidateOnboardingWizard: React.FC = () => {
           </div>
           <p className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-6">Set up your profile</p>
           <nav className="space-y-2">
-            {STEPS.map((s) => {
+            {STEPS.map((s, index) => {
               const Icon = s.icon;
               const isDone = s.id < step;
               const isCurrent = s.id === step;

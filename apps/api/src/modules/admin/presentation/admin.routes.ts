@@ -20,6 +20,7 @@ import {
   GetPaymentMetricsUseCase,
   GetGlobalAnalyticsUseCase,
   CreateCompanyManuallyUseCase,
+  UnsuspendUserUseCase,
 } from "../application/index.js";
 import { PrismaAdminRepository } from "../infrastructure/index.js";
 
@@ -62,6 +63,11 @@ export function createAdminRouter(): Router {
       "SuspendUserUseCase",
       () =>
         new SuspendUserUseCase(container.get("IAdminRepository"), container.get("ISessionService")),
+    );
+    container.register(
+      "UnsuspendUserUseCase",
+      () =>
+        new UnsuspendUserUseCase(container.get("IAdminRepository")),
     );
     container.register(
       "ListUsersUseCase",
@@ -114,6 +120,7 @@ export function createAdminRouter(): Router {
           container.get("GetPaymentMetricsUseCase"),
           container.get("GetGlobalAnalyticsUseCase"),
           container.get("CreateCompanyManuallyUseCase"),
+          container.get("UnsuspendUserUseCase"),
         ),
     );
   }
@@ -159,6 +166,15 @@ export function createAdminRouter(): Router {
     audit(AuditAction.UPDATE, "User") as RequestHandler,
     (req, res, next) => {
       controller.suspendUser(req, res, next).catch(next);
+    },
+  );
+
+  // POST /api/v1/admin/users/:id/unsuspend
+  router.post(
+    "/users/:id/unsuspend" as unknown as string,
+    audit(AuditAction.UPDATE, "User") as RequestHandler,
+    (req, res, next) => {
+      controller.unsuspendUser(req, res, next).catch(next);
     },
   );
 

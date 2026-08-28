@@ -197,7 +197,10 @@ export class PrismaAdminRepository implements IAdminRepository {
     const slug = data.companyName.toLowerCase().replace(/[\s_]+/g, "-") + "-" + crypto.randomUUID().substring(0, 8);
     
     return await this.db.$transaction(async (tx) => {
-      const hashedPassword = await bcrypt.hash("ChangeMe123!", 10);
+      // Generate a secure random password
+      const plainPassword = crypto.randomUUID().substring(0, 12) + "A1!";
+      const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
       const user = await tx.user.create({
         data: {
           email: data.adminEmail,
@@ -228,7 +231,7 @@ export class PrismaAdminRepository implements IAdminRepository {
         },
       });
 
-      return { user, company };
+      return { user, company, generatedPassword: plainPassword };
     });
   }
 

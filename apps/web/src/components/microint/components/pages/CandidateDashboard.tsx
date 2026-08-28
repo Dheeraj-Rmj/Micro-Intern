@@ -18,8 +18,10 @@ import {
   Plus,
   X,
   Send,
+  LogOut,
 } from "lucide-react";
 import { InterviewSlot } from "../../types";
+import { authService } from "../../../../features/auth/services/auth.service";
 
 export const CandidateDashboard: React.FC = () => {
   const { userProfile, setCurrentRoute, applications, interviews, submissions, scheduleInterview } = useApp();
@@ -64,6 +66,15 @@ export const CandidateDashboard: React.FC = () => {
   const userAvatar =
     userProfile?.avatar ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.fullName || "User")}&background=random`;
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      window.location.href = "/auth";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <>
@@ -146,6 +157,15 @@ export const CandidateDashboard: React.FC = () => {
                 className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute top-6 right-6 z-10">
+                <button 
+                  onClick={handleLogout}
+                  className="p-2.5 rounded-full bg-white/10 hover:bg-red-500/80 text-white backdrop-blur-md transition-all flex items-center justify-center border border-white/20 shadow-sm"
+                  title="Log out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
               <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
                 <div>
                   <h3 className="text-2xl font-serif text-white tracking-tight">{displayName}</h3>
