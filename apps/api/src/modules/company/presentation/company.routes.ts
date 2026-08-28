@@ -70,7 +70,11 @@ export function createCompanyRouter(): Router {
     );
     container.register(
       "InviteTeamMemberUseCase",
-      () => new InviteTeamMemberUseCase(container.get("ICompanyRepository")),
+      () => new InviteTeamMemberUseCase(
+        container.get("ICompanyRepository"),
+        container.get("IUserRepository"),
+        container.get("IPasswordService"),
+      ),
     );
     container.register(
       "ListTeamMembersUseCase",

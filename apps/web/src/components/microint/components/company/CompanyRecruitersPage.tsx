@@ -74,7 +74,7 @@ export const CompanyRecruitersPage: React.FC = () => {
     const newEmail = `${cleanedHandle}@company.microintern`;
 
     try {
-      const res = await companyApi.inviteMember(newEmail, roleTitle);
+      const res = await companyApi.inviteMember(newEmail, roleTitle, fullName);
 
       const newRecruiter: RecruiterSeat = {
         id: res.data.userId || `REC-${Math.floor(100 + Math.random() * 900)}`,

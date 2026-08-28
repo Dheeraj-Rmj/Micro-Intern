@@ -18,8 +18,8 @@ export const companyApi = {
     return response.data;
   },
 
-  inviteMember: async (email: string, role: string) => {
-    const response = await apiClient.post("/companies/me/members/invite", { email, role });
+  inviteMember: async (email: string, role: string, name?: string) => {
+    const response = await apiClient.post("/companies/me/members/invite", { email, role, name });
     return response.data;
   },
 

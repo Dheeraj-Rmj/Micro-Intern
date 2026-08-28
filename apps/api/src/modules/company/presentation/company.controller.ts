@@ -109,8 +109,8 @@ export class CompanyController {
   inviteMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = this.getAuthenticatedUserId(req);
-      const { email } = req.body as InviteTeamMemberInput;
-      const result = await this.inviteTeamMemberUseCase.execute(userId, email);
+      const { email, name, role } = req.body as InviteTeamMemberInput;
+      const result = await this.inviteTeamMemberUseCase.execute(userId, email, name, role);
       ResponseFormatter.created(res, result);
     } catch (error) {
       next(error);

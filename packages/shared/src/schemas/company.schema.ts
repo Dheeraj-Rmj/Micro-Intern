@@ -60,6 +60,8 @@ export type UpdateCompanyInput = z.infer<typeof UpdateCompanySchema>;
  */
 export const InviteTeamMemberSchema = z.object({
   email: EmailSchema,
+  name: z.string().min(1, "Name is required").optional(),
+  role: z.string().optional(),
 });
 
 export type InviteTeamMemberInput = z.infer<typeof InviteTeamMemberSchema>;

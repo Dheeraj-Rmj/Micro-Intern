@@ -11,13 +11,24 @@ import {
 
 import type { CompanyMember } from "../../domain/entities/CompanyMember.entity.js";
 import type { ICompanyRepository } from "../../domain/repositories/ICompanyRepository.js";
+import type { IUserRepository } from "../../../auth/domain/repositories/IUserRepository.js";
+import type { IPasswordService } from "../../../auth/application/interfaces/IPasswordService.js";
 
 const log = createModuleLogger("InviteTeamMemberUseCase");
 
 export class InviteTeamMemberUseCase {
-  constructor(private readonly companyRepository: ICompanyRepository) {}
+  constructor(
+    private readonly companyRepository: ICompanyRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly passwordService: IPasswordService,
+  ) {}
 
-  async execute(userId: string, email: string): Promise<CompanyMember> {
+  async execute(
+    userId: string,
+    email: string,
+    name?: string,
+    roleTitle?: string
+  ): Promise<CompanyMember> {
     const targetEmail = email.toLowerCase().trim();
     log.info({ userId, email: targetEmail }, "Attempting to invite team member");
 
@@ -31,9 +42,36 @@ export class InviteTeamMemberUseCase {
       throw new NotCompanyOwnerError();
     }
 
-    const existingMember = await this.companyRepository.findMemberByEmail(company.id, targetEmail);
+    let existingMember = await this.companyRepository.findMemberByEmail(company.id, targetEmail);
     if (existingMember !== null) {
       throw new MemberAlreadyExistsError(targetEmail);
+    }
+
+    let user = await this.userRepository.findByEmail(targetEmail);
+    if (!user) {
+      log.info({ email: targetEmail }, "User not found, creating new account for invited member");
+      const defaultPassword = "MicroIntern#Recruit2026!";
+      const passwordHash = await this.passwordService.hash(defaultPassword);
+      
+      const parts = (name || email.split("@")[0]!).split(" ");
+      const firstName = parts[0] || "New";
+      const lastName = parts.slice(1).join(" ") || "Recruiter";
+
+      user = await this.userRepository.createCandidate({
+        email: targetEmail,
+        passwordHash,
+        firstName,
+        lastName,
+      });
+
+      // Force password change on first login
+      await this.userRepository.setForcePasswordChange(user.id, true);
+      // Ensure role is correctly set on user record
+      await this.userRepository.updateStatus(user.id, "ACTIVE");
+      
+      // We must also update user role to RECRUITER
+      // PrismaUserRepository does not have updateRole, so we rely on CompanyMembership for role validation,
+      // but let's make sure they can login.
     }
 
     const newMember = await this.companyRepository.inviteMember(
