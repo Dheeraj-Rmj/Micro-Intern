@@ -285,6 +285,7 @@ model CandidateProfile {
   // Candidate Graph Relations
   aiAnalyses          CandidateAIAnalysis[]
   skills              CandidateSkill[]
+  earnings            CandidateEarning[]
   experiences         CandidateExperience[]
   educations          CandidateEducation[]
   certificates        CandidateCertificate[]
@@ -637,6 +638,7 @@ model Assessment {
   passingScore    Int     @default(70) @map("passing_score")
   maxAttempts     Int     @default(1) @map("max_attempts")
   isPublic        Boolean @default(false) @map("is_public")
+  stipendAmount   Decimal? @db.Decimal(10,2) @map("stipend_amount")
 
   // CTO Architectural Extensions
   complexityScore            Int? @map("complexity_score")
@@ -765,6 +767,7 @@ model Submission {
   deliverableItems SubmissionDeliverableItem[]
   files            SubmissionFile[]
   links            SubmissionLink[]
+  earnings         CandidateEarning[]
 
   @@unique([assessmentId, candidateId, attemptNumber])
   @@index([assessmentId])
@@ -2611,4 +2614,31 @@ model Recommendation {
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("recommendations")
+}
+
+model CandidateEarning {
+  id                 String           @id @default(uuid()) @db.Uuid
+  candidateId        String           @map("candidate_id") @db.Uuid
+  submissionId       String?          @map("submission_id") @db.Uuid
+  
+  amount             Decimal          @db.Decimal(10,2)
+  currency           String           @default("USD") @db.VarChar(10)
+  status             EarningStatus    @default(PENDING) 
+  description        String?          @db.Text
+  
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+
+  candidate          CandidateProfile @relation(fields: [candidateId], references: [id])
+  submission         Submission?      @relation(fields: [submissionId], references: [id])
+  
+  @@index([candidateId])
+  @@unique([submissionId])
+  @@map("candidate_earnings")
+}
+
+enum EarningStatus {
+  PENDING
+  AVAILABLE
+  PAID
 }

@@ -222,4 +222,63 @@ export class NetworkService {
 
     return profile;
   }
+
+  async addComment(userId: string, postId: string, content: string) {
+    if (!content || !content.trim()) {
+      throw new BadRequestError("Comment content cannot be empty");
+    }
+    
+    const post = await this.db.networkPost.findUnique({ where: { id: postId } });
+    if (!post) throw new NotFoundError("Post not found");
+
+    return this.db.postComment.create({
+      data: {
+        userId,
+        postId,
+        content,
+      },
+    });
+  }
+
+  async addReaction(userId: string, postId: string, type: string) {
+    if (!type || !type.trim()) {
+      throw new BadRequestError("Reaction type cannot be empty");
+    }
+    
+    const post = await this.db.networkPost.findUnique({ where: { id: postId } });
+    if (!post) throw new NotFoundError("Post not found");
+
+    const existing = await this.db.postReaction.findUnique({
+      where: {
+        postId_userId: {
+          postId,
+          userId,
+        },
+      },
+    });
+
+    if (existing) {
+      if (existing.type === type) {
+        // Toggle off if clicking the same reaction
+        await this.db.postReaction.delete({ where: { id: existing.id } });
+        return { message: "Reaction removed", reacted: false };
+      } else {
+        // Update type if clicking a different reaction
+        const updated = await this.db.postReaction.update({
+          where: { id: existing.id },
+          data: { type },
+        });
+        return { message: "Reaction updated", reacted: true, reaction: updated };
+      }
+    }
+
+    const created = await this.db.postReaction.create({
+      data: {
+        userId,
+        postId,
+        type,
+      },
+    });
+    return { message: "Reaction added", reacted: true, reaction: created };
+  }
 }

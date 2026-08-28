@@ -15,6 +15,7 @@ import { CalculateCompletionUseCase } from "../application/use-cases/calculate-c
 import { UploadAvatarUseCase } from "../application/use-cases/upload-avatar.usecase.js";
 import { UploadResumeUseCase } from "../application/use-cases/upload-resume.usecase.js";
 import { GetResumeUrlUseCase } from "../application/use-cases/get-resume-url.usecase.js";
+import { GetDashboardStatsUseCase } from "../application/use-cases/get-dashboard-stats.usecase.js";
 import { CandidateController } from "./candidate.controller.js";
 import type { RequestHandler } from "express";
 
@@ -56,6 +57,10 @@ export function createCandidateRouter(): Router {
       "GetResumeUrlUseCase",
       (infra) => new GetResumeUrlUseCase(infra.db, getStorageService()),
     );
+    container.register(
+      "GetDashboardStatsUseCase",
+      (infra) => new GetDashboardStatsUseCase(infra.db),
+    );
 
     container.register(
       "CandidateController",
@@ -66,6 +71,7 @@ export function createCandidateRouter(): Router {
           container.get("UploadAvatarUseCase"),
           container.get("UploadResumeUseCase"),
           container.get("GetResumeUrlUseCase"),
+          container.get("GetDashboardStatsUseCase"),
         ),
     );
   }
@@ -134,6 +140,16 @@ export function createCandidateRouter(): Router {
     requireRole(Role.CANDIDATE) as RequestHandler,
     (req, res, next) => {
       controller.getResumeUrl(req, res).catch(next);
+    },
+  );
+
+  // GET /candidates/me/dashboard-stats
+  candidateRouter.get(
+    "/me/dashboard-stats",
+    authMiddleware as RequestHandler,
+    requireRole(Role.CANDIDATE) as RequestHandler,
+    (req, res, next) => {
+      controller.getDashboardStats(req, res).catch(next);
     },
   );
 

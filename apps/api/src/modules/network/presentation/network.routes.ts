@@ -35,6 +35,8 @@ router.use(authMiddleware);
 router.get("/feed", controller.getFeed);
 router.get("/my-posts", controller.getMyPosts);
 router.post("/posts", controller.createPost);
+router.post("/posts/:postId/comments", controller.addComment);
+router.post("/posts/:postId/reactions", controller.addReaction);
 router.get("/discover", controller.getDiscoverProfiles);
 router.post("/connections", controller.sendConnectionRequest);
 router.get("/profile/:username", controller.getPublicProfile);

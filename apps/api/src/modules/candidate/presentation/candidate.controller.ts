@@ -2,6 +2,7 @@ import { UpdateCandidateGraphSchema } from "@microintern/shared";
 
 import type { GetProfileUseCase } from "../application/use-cases/get-profile.usecase.js";
 import type { GetResumeUrlUseCase } from "../application/use-cases/get-resume-url.usecase.js";
+import type { GetDashboardStatsUseCase } from "../application/use-cases/get-dashboard-stats.usecase.js";
 import type { UpdateProfileUseCase } from "../application/use-cases/update-profile.usecase.js";
 import type { UploadAvatarUseCase } from "../application/use-cases/upload-avatar.usecase.js";
 import type { UploadResumeUseCase } from "../application/use-cases/upload-resume.usecase.js";
@@ -14,6 +15,7 @@ export class CandidateController {
     private readonly uploadAvatarUseCase: UploadAvatarUseCase,
     private readonly uploadResumeUseCase: UploadResumeUseCase,
     private readonly getResumeUrlUseCase: GetResumeUrlUseCase,
+    private readonly getDashboardStatsUseCase: GetDashboardStatsUseCase,
   ) {}
 
   /**
@@ -94,6 +96,19 @@ export class CandidateController {
     res.status(200).json({
       success: true,
       data: result,
+    });
+  };
+
+  /**
+   * GET /api/v1/candidates/me/dashboard-stats
+   */
+  getDashboardStats = async (req: Request, res: Response) => {
+    const userId = req.user?.id as string;
+    const stats = await this.getDashboardStatsUseCase.execute(userId);
+
+    res.status(200).json({
+      success: true,
+      data: stats,
     });
   };
 }

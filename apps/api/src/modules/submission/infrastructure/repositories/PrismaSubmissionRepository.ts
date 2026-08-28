@@ -71,16 +71,50 @@ export class PrismaSubmissionRepository implements ISubmissionRepository {
     status: SubmissionStatus,
     metadata?: { submittedAt?: Date; totalScore?: number; isPassed?: boolean },
   ): Promise<Submission> {
-    const record = await this.db.submission.update({
-      where: { id },
-      data: {
-        status,
-        ...(metadata?.submittedAt ? { submittedAt: metadata.submittedAt } : {}),
-        ...(metadata?.totalScore !== undefined ? { totalScore: metadata.totalScore } : {}),
-        ...(metadata?.isPassed !== undefined ? { isPassed: metadata.isPassed } : {}),
-      },
-      include: this.standardInclude,
+    const record = await this.db.$transaction(async (tx) => {
+      const updated = await tx.submission.update({
+        where: { id },
+        data: {
+          status,
+          ...(metadata?.submittedAt ? { submittedAt: metadata.submittedAt } : {}),
+          ...(metadata?.totalScore !== undefined ? { totalScore: metadata.totalScore } : {}),
+          ...(metadata?.isPassed !== undefined ? { isPassed: metadata.isPassed } : {}),
+        },
+        include: { ...this.standardInclude, assessment: true },
+      });
+
+      // Manage earnings if the assessment has a stipend amount configured
+      if (updated.assessment.stipendAmount !== null) {
+        let earningStatus: 'PENDING' | 'AVAILABLE' | 'PAID' | null = null;
+
+        if (status === 'SUBMITTED' || status === 'UNDER_EVALUATION') {
+          earningStatus = 'PENDING';
+        } else if (status === 'EVALUATION_COMPLETE' || status === 'PASSED') {
+          earningStatus = 'AVAILABLE';
+        }
+
+        if (earningStatus) {
+          await tx.candidateEarning.upsert({
+            where: {
+              submissionId: updated.id,
+            },
+            update: {
+              status: earningStatus,
+              amount: updated.assessment.stipendAmount,
+            },
+            create: {
+              candidateId: updated.candidateId,
+              submissionId: updated.id,
+              amount: updated.assessment.stipendAmount,
+              status: earningStatus,
+            },
+          });
+        }
+      }
+
+      return updated;
     });
+
     return Submission.fromPrisma(record);
   }
 

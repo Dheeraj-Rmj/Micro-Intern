@@ -67,4 +67,32 @@ export class NetworkController {
     const profile = await this.networkService.getPublicProfile(username);
     res.json({ success: true, data: profile });
   };
+
+  addComment = async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new UnauthorizedError("Unauthorized");
+
+    const postId = req.params["postId"];
+    if (!postId || typeof postId !== "string") {
+      throw new BadRequestError("Post ID is required");
+    }
+
+    const { content } = req.body;
+    const comment = await this.networkService.addComment(userId, postId, content);
+    res.status(201).json({ success: true, data: comment });
+  };
+
+  addReaction = async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new UnauthorizedError("Unauthorized");
+
+    const postId = req.params["postId"];
+    if (!postId || typeof postId !== "string") {
+      throw new BadRequestError("Post ID is required");
+    }
+
+    const { type } = req.body;
+    const reaction = await this.networkService.addReaction(userId, postId, type);
+    res.status(201).json({ success: true, data: reaction });
+  };
 }
