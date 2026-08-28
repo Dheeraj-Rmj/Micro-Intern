@@ -64,6 +64,11 @@ export const companyApi = {
     return response.data;
   },
 
+  archiveAssessment: async (id: string) => {
+    const response = await apiClient.post(`/assessments/${id}/archive`, {});
+    return response.data;
+  },
+
   deleteAssessment: async (id: string) => {
     const response = await apiClient.delete(`/assessments/${id}`);
     return response.data;

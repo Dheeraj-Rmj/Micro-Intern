@@ -12,6 +12,10 @@ import {
   Lock,
   Building2,
   FileText,
+  Eye,
+  EyeOff,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 
 interface CompanyTrialItem {
@@ -64,6 +68,31 @@ export const CompanyTrialsPage: React.FC = () => {
     };
     fetchAssessments();
   }, []);
+
+  const handleAction = async (id: string, action: "publish" | "archive" | "delete") => {
+    try {
+      if (action === "publish") {
+        await companyApi.publishAssessment(id);
+        setTrials((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, status: "ACTIVE" } : t))
+        );
+        showToast("Success", "Skill trial published successfully.", "success");
+      } else if (action === "archive") {
+        await companyApi.archiveAssessment(id);
+        setTrials((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, status: "COMPLETED" } : t))
+        );
+        showToast("Success", "Skill trial hidden successfully.", "success");
+      } else if (action === "delete") {
+        await companyApi.deleteAssessment(id);
+        setTrials((prev) => prev.filter((t) => t.id !== id));
+        showToast("Success", "Skill trial deleted successfully.", "success");
+      }
+    } catch (err) {
+      console.error(`Failed to ${action} assessment:`, err);
+      showToast("Error", `Failed to ${action} skill trial.`, "error");
+    }
+  };
 
   const handleCreateTrial = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,6 +228,33 @@ export const CompanyTrialsPage: React.FC = () => {
                 <DollarSign className="w-3.5 h-3.5" />
                 <span>{t.stipend} Budgeted</span>
               </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2 border-t border-black/5 dark:border-white/5">
+              {t.status === "DRAFT" || t.status === "COMPLETED" ? (
+                <button
+                  onClick={() => handleAction(t.id, "publish")}
+                  className="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-emerald-500/10 hover:text-emerald-500 text-black/70 dark:text-white/70 font-semibold text-xs transition-all flex items-center gap-1.5 flex-1 justify-center"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  Publish / Unhide
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleAction(t.id, "archive")}
+                  className="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-amber-500/10 hover:text-amber-500 text-black/70 dark:text-white/70 font-semibold text-xs transition-all flex items-center gap-1.5 flex-1 justify-center"
+                >
+                  <EyeOff className="w-3.5 h-3.5" />
+                  Hide
+                </button>
+              )}
+              <button
+                onClick={() => handleAction(t.id, "delete")}
+                className="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-rose-500/10 hover:text-rose-500 text-black/70 dark:text-white/70 font-semibold text-xs transition-all flex items-center gap-1.5 justify-center"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </button>
             </div>
           </div>
         ))}
