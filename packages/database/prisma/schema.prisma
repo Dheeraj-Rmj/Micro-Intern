@@ -49,6 +49,7 @@ model User {
   lastLoginIp     String?   @map("last_login_ip")
   loginAttempts   Int       @default(0) @map("login_attempts")
   lockedUntil     DateTime? @map("locked_until")
+  forcePasswordChange Boolean @default(false) @map("force_password_change")
   
   // MFA
   mfaEnabled      Boolean   @default(false) @map("mfa_enabled")

@@ -92,9 +92,9 @@ export class ManagementLoginUseCase {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-        companyId: user.companyId,
-        emailVerifiedAt: user.emailVerifiedAt,
         avatarUrl: user.avatarUrl,
+        companyId: user.companyId,
+        forcePasswordChange: user.forcePasswordChange,
       },
       tokens,
     };

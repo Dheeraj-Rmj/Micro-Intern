@@ -73,6 +73,9 @@ export interface IUserRepository {
   // ── Profile Updates ───────────────────────────────────────────────────────
   setEmailVerified(userId: string): Promise<void>;
   setPasswordHash(userId: string, passwordHash: string): Promise<void>;
+  setForcePasswordChange(userId: string, force: boolean): Promise<void>;
+  /** Atomically updates the password hash AND clears the forcePasswordChange flag in one DB write. */
+  updatePasswordAndClearForceChange(userId: string, passwordHash: string): Promise<void>;
   updateAvatar(userId: string, avatarUrl: string): Promise<void>;
   updateMfaSettings(userId: string, mfaEnabled: boolean, totpSecret?: string | null): Promise<void>;
 

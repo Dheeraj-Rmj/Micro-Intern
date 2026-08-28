@@ -32,6 +32,7 @@ export class User {
     public readonly loginAttempts: number,
     public readonly lockedUntil: Date | null,
     public readonly companyId: string | null,
+    public readonly forcePasswordChange: boolean,
     public readonly mfaEnabled: boolean,
     public readonly totpSecret: string | null,
     public readonly createdAt: Date,
@@ -91,6 +92,7 @@ export class User {
     loginAttempts: number;
     lockedUntil: Date | null;
     companyMembership?: Array<{ companyId: string }>;
+    forcePasswordChange: boolean;
     mfaEnabled: boolean;
     totpSecret: string | null;
     createdAt: Date;
@@ -110,6 +112,7 @@ export class User {
       data.loginAttempts,
       data.lockedUntil,
       data.companyMembership?.[0]?.companyId ?? null,
+      data.forcePasswordChange,
       data.mfaEnabled,
       data.totpSecret,
       data.createdAt,

@@ -6,6 +6,7 @@ export interface CandidateUser {
   role: "CANDIDATE" | "SUPER_ADMIN" | "ADMIN" | "COMPANY_OWNER" | "RECRUITER" | string;
   avatarUrl?: string | null;
   isEmailVerified: boolean;
+  forcePasswordChange?: boolean;
   createdAt: string;
   updatedAt: string;
 }

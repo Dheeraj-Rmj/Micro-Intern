@@ -1,6 +1,7 @@
 import type { IAdminRepository, UserSummary, CompanySummary } from "../../application/index.js";
 import type { PlatformStatsProps } from "../../domain/index.js";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import type { PrismaClient } from "@microintern/database";
 
 export class PrismaAdminRepository implements IAdminRepository {
@@ -186,14 +187,15 @@ export class PrismaAdminRepository implements IAdminRepository {
     const slug = data.companyName.toLowerCase().replace(/[\s_]+/g, "-") + "-" + crypto.randomUUID().substring(0, 8);
     
     return await this.db.$transaction(async (tx) => {
-      // 1. Create User
+      const hashedPassword = await bcrypt.hash("ChangeMe123!", 10);
       const user = await tx.user.create({
         data: {
           email: data.adminEmail,
           firstName: data.adminName.split(" ")[0] || "Admin",
           lastName: data.adminName.split(" ").slice(1).join(" ") || "",
-          passwordHash: "ChangeMe123!", 
+          passwordHash: hashedPassword, 
           role: "COMPANY_OWNER",
+          forcePasswordChange: true,
         },
       });
 

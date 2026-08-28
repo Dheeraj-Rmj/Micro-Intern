@@ -10,6 +10,11 @@ import { PDFDocument, StandardFonts } from "pdf-lib";
 import { EncryptionService } from "@/shared/encryption.service.js";
 import { v4 as uuidv4 } from "uuid";
 import { OnboardingStatus } from "@microintern/database";
+import bcrypt from "bcryptjs";
+
+/** Default temporary password assigned to eKYC-provisioned company owners.
+ * The user is forced to change it on first login via forcePasswordChange: true. */
+const EKYC_DEFAULT_PASSWORD = "ChangeMe123!";
 
 export class EkycUseCase {
   private stripe: Stripe;
@@ -342,13 +347,18 @@ export class EkycUseCase {
         },
       });
 
+      // Hash the default temporary password. forcePasswordChange ensures the
+      // user must set a new password on first login before accessing the platform.
+      const tempPasswordHash = await bcrypt.hash(EKYC_DEFAULT_PASSWORD, config.BCRYPT_ROUNDS);
+
       const user = await tx.user.create({
         data: {
           email: onboarding.adminEmail || `admin-${uuidv4()}@test.com`,
           firstName: onboarding.adminName?.split(" ")[0] || "Admin",
           lastName: onboarding.adminName?.split(" ").slice(1).join(" ") || "",
-          passwordHash: "not-set",
+          passwordHash: tempPasswordHash,
           role: "COMPANY_OWNER",
+          forcePasswordChange: true,
         },
       });
 

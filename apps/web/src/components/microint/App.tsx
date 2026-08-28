@@ -41,6 +41,7 @@ import {
   CompanyAIInsightsPage,
   CompanyAIGeneratorPage,
 } from "./components/company";
+import { ForcePasswordChangeModal } from "../../features/auth/components/ForcePasswordChangeModal";
 
 const MainRouter: React.FC = () => {
   const { currentRoute, setCurrentRoute, role, setRole, showToast } = useApp();
@@ -239,6 +240,7 @@ const MainRouter: React.FC = () => {
           </div>
         </div>
       )}
+      <ForcePasswordChangeModal />
       <Toast />
     </>
   );

@@ -32,6 +32,7 @@ import type {
   ForgotPasswordUseCase,
   ResetPasswordUseCase,
 } from "../application/use-cases/password-reset.usecase.js";
+import type { ChangePasswordUseCase } from "../application/use-cases/change-password.usecase.js";
 import type {
   ListSessionsUseCase,
   RevokeSessionUseCase,
@@ -91,6 +92,7 @@ export class AuthController {
     private readonly resendVerificationEmailUseCase: ResendVerificationEmailUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
     private readonly listSessionsUseCase: ListSessionsUseCase,
     private readonly revokeSessionUseCase: RevokeSessionUseCase,
     private readonly revokeOtherSessionsUseCase: RevokeOtherSessionsUseCase,
@@ -282,6 +284,7 @@ export class AuthController {
         avatarUrl: user.avatarUrl,
         companyId: user.companyId,
         sessionId: req.user.sessionId,
+        forcePasswordChange: user.forcePasswordChange,
       };
       
       ResponseFormatter.success(res, payload);
@@ -373,6 +376,21 @@ export class AuthController {
       const { token, newPassword } = ResetPasswordSchema.parse(req.body);
       await this.resetPasswordUseCase.execute(token, newPassword);
       ResponseFormatter.success(res, { message: "Password has been reset successfully" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ success: false, error: { message: "Unauthorized" } });
+        return;
+      }
+      // Body is already validated by validate("body", ChangePasswordSchema) middleware
+      const { newPassword } = req.body as { newPassword: string };
+      await this.changePasswordUseCase.execute(req.user.id, newPassword);
+      ResponseFormatter.success(res, { message: "Password changed successfully" });
     } catch (error) {
       next(error);
     }

@@ -113,6 +113,7 @@ export type AuthUserResponse = {
   companyId: string | null;
   emailVerifiedAt: Date | null;
   avatarUrl: string | null;
+  forcePasswordChange?: boolean;
 };
 
 export type LoginResponse =

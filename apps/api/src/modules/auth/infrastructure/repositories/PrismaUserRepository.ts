@@ -296,7 +296,25 @@ export class PrismaUserRepository implements IUserRepository {
   async setPasswordHash(userId: string, passwordHash: string): Promise<void> {
     await this.db.user.update({
       where: { id: userId },
-      data: { passwordHash },
+      data: { passwordHash, updatedAt: new Date() },
+    });
+  }
+
+  async setForcePasswordChange(userId: string, force: boolean): Promise<void> {
+    await this.db.user.update({
+      where: { id: userId },
+      data: { forcePasswordChange: force, updatedAt: new Date() },
+    });
+  }
+
+  async updatePasswordAndClearForceChange(userId: string, passwordHash: string): Promise<void> {
+    await this.db.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash,
+        forcePasswordChange: false,
+        updatedAt: new Date(),
+      },
     });
   }
 

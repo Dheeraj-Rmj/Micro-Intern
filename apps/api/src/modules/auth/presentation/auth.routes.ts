@@ -21,6 +21,7 @@ import {
   VerifyEmailSchema,
   RequestLoginOtpSchema,
   VerifyLoginOtpSchema,
+  ChangePasswordSchema,
 } from "../application/dtos/auth.dto.js";
 import { AuthController } from "./auth.controller.js";
 import { MfaController } from "./mfa.controller.js";
@@ -38,6 +39,7 @@ import {
   ForgotPasswordUseCase,
   ResetPasswordUseCase,
 } from "../application/use-cases/password-reset.usecase.js";
+import { ChangePasswordUseCase } from "../application/use-cases/change-password.usecase.js";
 import {
   RequestLoginOtpUseCase,
   VerifyLoginOtpUseCase,
@@ -173,6 +175,14 @@ export function createAuthRouter(): Router {
         ),
     );
     container.register(
+      "ChangePasswordUseCase",
+      () =>
+        new ChangePasswordUseCase(
+          container.get("IUserRepository"),
+          container.get("IPasswordService"),
+        ),
+    );
+    container.register(
       "RequestLoginOtpUseCase",
       () =>
         new RequestLoginOtpUseCase(
@@ -231,6 +241,7 @@ export function createAuthRouter(): Router {
           container.get("ResendVerificationEmailUseCase"),
           container.get("ForgotPasswordUseCase"),
           container.get("ResetPasswordUseCase"),
+          container.get("ChangePasswordUseCase"),
           container.get("ListSessionsUseCase"),
           container.get("RevokeSessionUseCase"),
           container.get("RevokeOtherSessionsUseCase"),
@@ -421,6 +432,17 @@ export function createAuthRouter(): Router {
     audit(AuditAction.UPDATE, "User"),
     (req, res, next) => {
       controller.resetPassword(req, res, next).catch(next);
+    },
+  );
+
+  // POST /auth/change-password
+  router.post(
+    "/change-password",
+    authMiddleware,
+    validate("body", ChangePasswordSchema),
+    audit(AuditAction.UPDATE, "User"),
+    (req, res, next) => {
+      controller.changePassword(req, res, next).catch(next);
     },
   );
 

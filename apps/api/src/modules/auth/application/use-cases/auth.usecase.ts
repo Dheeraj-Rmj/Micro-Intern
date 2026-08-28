@@ -104,6 +104,7 @@ export class LoginUseCase {
         companyId: user.companyId ?? null,
         emailVerifiedAt: user.emailVerifiedAt,
         avatarUrl: user.avatarUrl,
+        forcePasswordChange: user.forcePasswordChange,
       },
       tokens,
     };
@@ -202,6 +203,7 @@ export class RegisterCandidateUseCase {
         companyId: null,
         emailVerifiedAt: user.emailVerifiedAt,
         avatarUrl: user.avatarUrl,
+        forcePasswordChange: user.forcePasswordChange,
       },
       tokens,
     };
