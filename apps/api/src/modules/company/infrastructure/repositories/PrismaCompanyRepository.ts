@@ -95,6 +95,7 @@ export class PrismaCompanyRepository implements ICompanyRepository, IDomainCompa
       this.prisma.companyMember.count({ where: { companyId } }),
       this.prisma.companyMember.findMany({
         where: { companyId },
+        include: { user: true },
         skip: pagination.skip,
         take: pagination.take,
         orderBy: { joinedAt: "desc" },
