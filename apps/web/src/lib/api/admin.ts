@@ -116,6 +116,11 @@ export const adminApi = {
     return response.data.data;
   },
 
+  createCompany: async (data: { companyName: string; adminEmail: string; adminName: string }): Promise<any> => {
+    const response = await apiClient.post("/admin/companies/manual", data);
+    return response.data.data;
+  },
+
   getOnboardings: async (): Promise<any[]> => {
     const response = await apiClient.get("/ekyc/admin/onboardings");
     return response.data.data;

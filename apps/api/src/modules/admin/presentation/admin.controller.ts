@@ -12,6 +12,7 @@ import type {
   GetSubscriptionMetricsUseCase,
   GetPaymentMetricsUseCase,
   GetGlobalAnalyticsUseCase,
+  CreateCompanyManuallyUseCase,
 } from "../application/index.js";
 import type { Request, Response, NextFunction } from "express";
 
@@ -28,6 +29,7 @@ export class AdminController {
     private readonly getSubscriptionMetricsUseCase: GetSubscriptionMetricsUseCase,
     private readonly getPaymentMetricsUseCase: GetPaymentMetricsUseCase,
     private readonly getGlobalAnalyticsUseCase: GetGlobalAnalyticsUseCase,
+    private readonly createCompanyManuallyUseCase: CreateCompanyManuallyUseCase,
   ) {}
 
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -44,6 +46,12 @@ export class AdminController {
     const companyId = req.params["id"] as string;
     const verified = await this.verifyCompanyUseCase.execute(req.user!.id, companyId);
     ResponseFormatter.success(res, verified);
+  }
+
+  async createCompanyManually(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const data = req.body;
+    const result = await this.createCompanyManuallyUseCase.execute(req.user!.id, data);
+    ResponseFormatter.success(res, result);
   }
 
   async suspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {

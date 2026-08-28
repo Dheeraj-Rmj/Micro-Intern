@@ -1,5 +1,6 @@
 import type { IAdminRepository, UserSummary, CompanySummary } from "../../application/index.js";
 import type { PlatformStatsProps } from "../../domain/index.js";
+import crypto from "crypto";
 import type { PrismaClient } from "@microintern/database";
 
 export class PrismaAdminRepository implements IAdminRepository {
@@ -178,6 +179,44 @@ export class PrismaAdminRepository implements IAdminRepository {
         activeTrials: company?.assessments?.length ?? 0,
         escrowLocked: company?.assessments?.reduce((acc: number, curr: any) => acc + (curr.passingScore || 0) * 10, 0) ?? 0,
       };
+    });
+  }
+
+  async createCompanyManually(data: { companyName: string; adminEmail: string; adminName: string }): Promise<any> {
+    const slug = data.companyName.toLowerCase().replace(/[\s_]+/g, "-") + "-" + crypto.randomUUID().substring(0, 8);
+    
+    return await this.db.$transaction(async (tx) => {
+      // 1. Create User
+      const user = await tx.user.create({
+        data: {
+          email: data.adminEmail,
+          firstName: data.adminName.split(" ")[0] || "Admin",
+          lastName: data.adminName.split(" ").slice(1).join(" ") || "",
+          passwordHash: "ChangeMe123!", 
+          role: "COMPANY_OWNER",
+        },
+      });
+
+      // 2. Create Company
+      const company = await tx.company.create({
+        data: {
+          name: data.companyName,
+          slug,
+          status: "ACTIVE",
+          ekycStatus: "VERIFIED_MANUAL",
+        },
+      });
+
+      // 3. Create Company Member
+      await tx.companyMember.create({
+        data: {
+          companyId: company.id,
+          userId: user.id,
+          role: "COMPANY_OWNER",
+        },
+      });
+
+      return { user, company };
     });
   }
 

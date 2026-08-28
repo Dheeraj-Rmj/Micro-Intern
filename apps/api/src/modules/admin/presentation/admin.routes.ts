@@ -19,6 +19,7 @@ import {
   GetSubscriptionMetricsUseCase,
   GetPaymentMetricsUseCase,
   GetGlobalAnalyticsUseCase,
+  CreateCompanyManuallyUseCase,
 } from "../application/index.js";
 import { PrismaAdminRepository } from "../infrastructure/index.js";
 
@@ -93,6 +94,11 @@ export function createAdminRouter(): Router {
     );
 
     container.register(
+      "CreateCompanyManuallyUseCase",
+      () => new CreateCompanyManuallyUseCase(container.get("IAdminRepository") as PrismaAdminRepository),
+    );
+
+    container.register(
       "AdminController",
       () =>
         new AdminController(
@@ -107,6 +113,7 @@ export function createAdminRouter(): Router {
           container.get("GetSubscriptionMetricsUseCase"),
           container.get("GetPaymentMetricsUseCase"),
           container.get("GetGlobalAnalyticsUseCase"),
+          container.get("CreateCompanyManuallyUseCase"),
         ),
     );
   }
@@ -126,6 +133,16 @@ export function createAdminRouter(): Router {
   router.get("/companies/pending", (req, res, next) => {
     controller.listPendingCompanies(req, res, next).catch(next);
   });
+
+  // POST /api/v1/admin/companies/manual
+  router.post(
+    "/companies/manual" as unknown as string,
+    requireRole(Role.SUPER_ADMIN) as RequestHandler,
+    audit(AuditAction.CREATE, "Company") as RequestHandler,
+    (req, res, next) => {
+      controller.createCompanyManually(req, res, next).catch(next);
+    },
+  );
 
   // POST /api/v1/admin/companies/:id/verify
   router.post(

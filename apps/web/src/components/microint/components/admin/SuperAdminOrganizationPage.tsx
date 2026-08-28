@@ -36,8 +36,9 @@ export const SuperAdminOrganizationPage: React.FC = () => {
   // Enterprise Company eKYC Verification Modal State
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
   const [companyLegalName, setCompanyLegalName] = useState("");
-  const [onboardingLink, setOnboardingLink] = useState<string | null>(null);
-  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [adminName, setAdminName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -55,32 +56,33 @@ export const SuperAdminOrganizationPage: React.FC = () => {
     fetchUsers();
   }, []);
 
-  const handleGenerateLink = async (e: React.FormEvent) => {
+  const handleAddCompany = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!companyLegalName.trim()) {
-      showToast("Missing Fields", "Please enter the Enterprise Company Name.", "warning");
+    if (!companyLegalName.trim() || !adminName.trim() || !adminEmail.trim()) {
+      showToast("Missing Fields", "Please enter all details.", "warning");
       return;
     }
-    setIsGeneratingLink(true);
+    setIsSubmitting(true);
     try {
-      const data = await adminApi.generateOnboardingLink(companyLegalName);
-      setOnboardingLink(data.url || data);
+      await adminApi.createCompany({
+        companyName: companyLegalName,
+        adminName,
+        adminEmail,
+      });
       showToast(
-        "Secure Link Generated",
-        "The single-use eKYC onboarding link has been generated successfully.",
+        "Company Provisioned",
+        `${companyLegalName} has been successfully verified and added.`,
         "success",
       );
+      setShowAddCompanyModal(false);
+      setCompanyLegalName("");
+      setAdminName("");
+      setAdminEmail("");
+      fetchUsers();
     } catch (err: any) {
-      showToast("Error", err.message || "Failed to generate link.", "warning");
+      showToast("Error", err.message || "Failed to add company.", "warning");
     } finally {
-      setIsGeneratingLink(false);
-    }
-  };
-
-  const handleCopyLink = () => {
-    if (onboardingLink) {
-      navigator.clipboard.writeText(onboardingLink);
-      showToast("Link Copied", "The onboarding link has been copied to your clipboard.", "success");
+      setIsSubmitting(false);
     }
   };
 
@@ -168,13 +170,15 @@ export const SuperAdminOrganizationPage: React.FC = () => {
           </button>
           <button
             onClick={() => {
-              setOnboardingLink(null);
+              setCompanyLegalName("");
+              setAdminName("");
+              setAdminEmail("");
               setShowAddCompanyModal(true);
             }}
             className="px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Generate eKYC Link</span>
+            <span>Manually Add Company</span>
           </button>
         </div>
       </div>
@@ -459,81 +463,69 @@ export const SuperAdminOrganizationPage: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleGenerateLink} className="space-y-6">
-              {!onboardingLink ? (
-                <>
-                  <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-xs text-black/70 dark:text-white/70 leading-relaxed text-center mb-4">
-                    <Building2 className="w-8 h-8 text-black/20 dark:text-white/20 mx-auto mb-3" />
-                    Generate a unique, secure <strong>eKYC Onboarding Link</strong>. Share this link with the Enterprise Client so they can securely complete their company registration, verify their tax details, and set up their administrator account.
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                      Enterprise Company Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Acme Corp"
-                      value={companyLegalName}
-                      onChange={(e) => setCompanyLegalName(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
-                      required
-                    />
-                  </div>
-                  <div className="flex justify-end gap-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddCompanyModal(false)}
-                      className="px-5 py-2.5 rounded-xl text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white text-xs font-semibold cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isGeneratingLink}
-                      className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isGeneratingLink && <RefreshCw className="w-3 h-3 animate-spin" />}
-                      <span>{isGeneratingLink ? "Generating..." : "Generate Link"}</span>
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs text-center font-bold flex items-center justify-center gap-2">
-                    <CheckCircle2 className="w-4 h-4" />
-                    Link Generated Successfully
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1.5">
-                      Secure eKYC Link
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        readOnly
-                        value={onboardingLink}
-                        className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none font-mono"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleCopyLink}
-                        className="px-4 py-2 rounded-xl bg-[#111111] dark:bg-white text-white dark:text-black font-semibold text-xs whitespace-nowrap cursor-pointer hover:scale-105 transition-transform"
-                      >
-                        Copy Link
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex justify-end pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddCompanyModal(false)}
-                      className="px-6 py-2.5 rounded-xl border border-black/10 dark:border-white/10 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 font-semibold text-xs transition-colors cursor-pointer"
-                    >
-                      Close
-                    </button>
-                  </div>
+            <form onSubmit={handleAddCompany} className="space-y-6">
+              <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 text-xs text-black/70 dark:text-white/70 leading-relaxed text-center mb-4">
+                <Building2 className="w-8 h-8 text-black/20 dark:text-white/20 mx-auto mb-3" />
+                Manually verify and provision an Enterprise Company. This skips automated eKYC and creates a Company Owner account with default credentials.
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Enterprise Company Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Acme Corp"
+                    value={companyLegalName}
+                    onChange={(e) => setCompanyLegalName(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                    required
+                  />
                 </div>
-              )}
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Admin Full Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. John Doe"
+                    value={adminName}
+                    onChange={(e) => setAdminName(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Admin Email Address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="admin@acmecorp.com"
+                    value={adminEmail}
+                    onChange={(e) => setAdminEmail(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddCompanyModal(false)}
+                  className="px-5 py-2.5 rounded-xl text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting && <RefreshCw className="w-3 h-3 animate-spin" />}
+                  <span>{isSubmitting ? "Provisioning..." : "Add & Verify Company"}</span>
+                </button>
+              </div>
             </form>
           </div>
         </div>
