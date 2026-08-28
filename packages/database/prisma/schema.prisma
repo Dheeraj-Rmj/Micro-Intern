@@ -76,6 +76,7 @@ model User {
   verificationTokens VerificationToken[]
   sentInvitations    Invitation[]        @relation("InvitationSentBy")
   accounts           Account[]
+  networkPosts       NetworkPost[]
 
   @@index([email])
   @@index([role])
@@ -2563,6 +2564,7 @@ model NetworkPost {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
   
+  author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   reactions    PostReaction[]
   comments     PostComment[]
 

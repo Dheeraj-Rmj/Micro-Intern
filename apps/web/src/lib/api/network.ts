@@ -45,6 +45,11 @@ export const networkApi = {
     return res.data;
   },
 
+  getMyPosts: async (page = 1, limit = 50) => {
+    const res = await apiClient.get<{ success: boolean; data: NetworkPost[] }>(`/network/my-posts?page=${page}&limit=${limit}`);
+    return res.data;
+  },
+
   getDiscoverProfiles: async () => {
     const res = await apiClient.get<{ success: boolean; data: DiscoverProfile[] }>("/network/discover");
     return res.data;

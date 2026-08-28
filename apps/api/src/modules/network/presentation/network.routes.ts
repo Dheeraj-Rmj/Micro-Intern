@@ -33,6 +33,7 @@ export function createNetworkRouter(): Router {
 router.use(authMiddleware);
 
 router.get("/feed", controller.getFeed);
+router.get("/my-posts", controller.getMyPosts);
 router.post("/posts", controller.createPost);
 router.get("/discover", controller.getDiscoverProfiles);
 router.post("/connections", controller.sendConnectionRequest);

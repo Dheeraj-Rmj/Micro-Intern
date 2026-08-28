@@ -27,6 +27,19 @@ export class NetworkController {
     res.status(201).json({ success: true, data: post });
   };
 
+  getMyPosts = async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new UnauthorizedError("Unauthorized");
+
+    const pageStr = (req.query as any).page;
+    const limitStr = (req.query as any).limit;
+    const page = parseInt(pageStr as string) || 1;
+    const limit = parseInt(limitStr as string) || 20;
+
+    const posts = await this.networkService.getMyPosts(userId, page, limit);
+    res.json({ success: true, data: posts });
+  };
+
   getDiscoverProfiles = async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new UnauthorizedError("Unauthorized");

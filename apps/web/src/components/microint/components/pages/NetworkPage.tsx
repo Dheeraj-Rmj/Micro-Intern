@@ -152,7 +152,11 @@ export const NetworkPage: React.FC = () => {
 
  // Persistent Posts State
  const [posts, setPosts] = useState<NetworkPost[]>([]);
- 
+
+ // My own posts (shown in My Network tab)
+ const [myPosts, setMyPosts] = useState<NetworkPost[]>([]);
+ const [myPostsLoading, setMyPostsLoading] = useState(false);
+
  // Persistent Peers State
  const [peers, setPeers] = useState<Peer[]>([]);
 
@@ -199,6 +203,31 @@ export const NetworkPage: React.FC = () => {
  setPeers(mappedPeers);
  }).catch(console.error);
  }, []);
+
+ // Fetch my posts when My Network tab becomes active
+ useEffect(() => {
+ if (activeTab !== "network") return;
+ setMyPostsLoading(true);
+ networkApi.getMyPosts().then((res) => {
+ const mapped = res.data.map((p) => ({
+ id: p.id,
+ authorName: p.author?.name || userProfile.fullName || "Me",
+ authorHeadline: p.author?.headline || "",
+ authorAvatar: p.author?.avatar || userProfile.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+ timeAgo: new Date(p.createdAt).toLocaleDateString(),
+ content: p.content,
+ skills: [] as string[],
+ hashtag: p.postType,
+ reactions: {
+ like: p._count?.reactions || 0,
+ celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
+ },
+ userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
+ comments: [],
+ }));
+ setMyPosts(mapped);
+ }).catch(console.error).finally(() => setMyPostsLoading(false));
+ }, [activeTab]);
 
  // Create Post input state
  const [newPostText, setNewPostText] = useState("");
@@ -304,11 +333,12 @@ export const NetworkPage: React.FC = () => {
  const res = await networkApi.createPost(newPostText.trim(), newPostHashtag || "INSIGHT");
  if (res.success) {
  const p = res.data;
+ // Build author from userProfile immediately — no refetch needed
  const mappedPost = {
  id: p.id,
- authorName: p.author?.name || "Unknown User",
+ authorName: p.author?.name || userProfile.fullName || "Me",
  authorHeadline: p.author?.headline || "",
- authorAvatar: p.author?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+ authorAvatar: p.author?.avatar || userProfile.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
  timeAgo: "Just now",
  content: p.content,
  skills: selectedPostSkills,
@@ -320,6 +350,8 @@ export const NetworkPage: React.FC = () => {
  comments: [],
  };
  setPosts([mappedPost, ...posts]);
+ // Also prepend to myPosts so it shows immediately in My Network tab
+ setMyPosts((prev) => [mappedPost, ...prev]);
  setNewPostText("");
  setNewPostRepoUrl("");
  setShowAdvancedPostFields(false);
@@ -1084,6 +1116,107 @@ export const NetworkPage: React.FC = () => {
  ) : (
  /* MY NETWORK & CONNECTIONS TAB (Persistent with skill endorsements & Full LinkedIn Profile view) */
  <div className="space-y-6">
+
+ {/* ─── MY ACTIVITY (LinkedIn-style) ─── */}
+ <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[32px] border border-white/50 shadow-sm space-y-5">
+ {/* Profile mini-header */}
+ <div className="flex items-center gap-4">
+ <img
+ src={userProfile.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150"}
+ alt="My Avatar"
+ className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
+ />
+ <div>
+ <h3 className="font-bold text-base text-[#222]">{userProfile.fullName || "My Account"}</h3>
+ <p className="text-xs text-black/50">{userProfile.role === "candidate" ? "Candidate" : "Member"} · MicroIntern</p>
+ <div className="flex items-center gap-3 mt-1.5">
+ <span className="text-[11px] text-black/60 font-medium">
+ <span className="font-bold text-[#222]">{myPosts.length}</span> posts
+ </span>
+ <span className="text-[11px] text-black/60 font-medium">
+ <span className="font-bold text-[#222]">{peers.filter((p) => p.status === "connected").length}</span> connections
+ </span>
+ </div>
+ </div>
+ </div>
+
+ {/* Section heading */}
+ <div className="flex items-center justify-between border-t border-white/50 pt-4">
+ <h4 className="text-xs font-bold uppercase tracking-wider text-black/40 flex items-center gap-1.5">
+ <Eye className="w-3.5 h-3.5" />
+ My Activity
+ </h4>
+ <button
+ type="button"
+ onClick={() => setActiveTab("feed")}
+ className="text-xs text-purple-600 font-semibold hover:underline"
+ >
+ + New Post
+ </button>
+ </div>
+
+ {/* Posts grid */}
+ {myPostsLoading ? (
+ <div className="flex items-center justify-center py-10">
+ <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+ </div>
+ ) : myPosts.length === 0 ? (
+ <div className="p-10 rounded-2xl bg-black/5 text-center space-y-2">
+ <Bookmark className="w-8 h-8 text-black/20 mx-auto" />
+ <p className="text-sm font-bold text-[#222]">No posts yet</p>
+ <p className="text-xs text-[#888]">Your posts will appear here. Go to Community Feed and share something!</p>
+ <button
+ type="button"
+ onClick={() => setActiveTab("feed")}
+ className="mt-2 px-5 py-2 rounded-full bg-purple-600 text-white font-bold text-xs hover:bg-purple-500 transition-colors cursor-pointer"
+ >
+ Write your first post
+ </button>
+ </div>
+ ) : (
+ <div className="space-y-4">
+ {myPosts.map((post) => (
+ <div
+ key={post.id}
+ className="p-4 rounded-2xl bg-black/5 border border-white/50 space-y-2 hover:border-black/15 transition-all"
+ >
+ {/* Post meta */}
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-2">
+ {post.hashtag && (
+ <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 text-[10px] font-bold">
+ #{post.hashtag}
+ </span>
+ )}
+ <span className="text-[11px] text-black/40">{post.timeAgo}</span>
+ </div>
+ <div className="flex items-center gap-3 text-[11px] text-black/50">
+ <span className="flex items-center gap-1">
+ <ThumbsUp className="w-3 h-3" />
+ {Object.values(post.reactions).reduce((a, b) => a + b, 0)}
+ </span>
+ <span className="flex items-center gap-1">
+ <MessageSquare className="w-3 h-3" />
+ {post.comments.length}
+ </span>
+ </div>
+ </div>
+ {/* Content */}
+ <p className="text-sm text-[#222] leading-relaxed">{post.content}</p>
+ {/* Skills */}
+ {post.skills.length > 0 && (
+ <div className="flex flex-wrap gap-1.5 pt-1">
+ {post.skills.map((s) => (
+ <span key={s} className="px-2 py-0.5 rounded-full bg-black/5 text-[11px] text-black/60 font-medium">{s}</span>
+ ))}
+ </div>
+ )}
+ </div>
+ ))}
+ </div>
+ )}
+ </div>
+
  {/* Pending Requests Section */}
  {peers.filter((p) => p.status === "pending").length > 0 && (
  <div className="bg-white/60 backdrop-blur-xl/60 backdrop-blur-xl p-6 rounded-[32px] border border-white/50 shadow-sm space-y-4">

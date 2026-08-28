@@ -71,12 +71,25 @@ export class NetworkService {
     if (!content.trim()) {
       throw new BadRequestError("Post content cannot be empty");
     }
-    
+
     return this.db.networkPost.create({
       data: {
         authorId: userId,
         content,
         postType,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+            candidateProfile: {
+              select: { headline: true },
+            },
+          },
+        },
       },
     });
   }
@@ -114,6 +127,48 @@ export class NetworkService {
         level: s.level,
         verified: s.verified,
       })),
+    }));
+  }
+
+  async getMyPosts(userId: string, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+
+    const posts = await this.db.networkPost.findMany({
+      where: { authorId: userId },
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: {
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+            candidateProfile: { select: { headline: true } },
+          },
+        },
+        reactions: {
+          where: { userId },
+          select: { id: true, type: true },
+        },
+        _count: {
+          select: { reactions: true, comments: true },
+        },
+      },
+    });
+
+    return posts.map((post: any) => ({
+      ...post,
+      author: post.author
+        ? {
+            id: post.author.id,
+            name: `${post.author.firstName} ${post.author.lastName}`.trim(),
+            avatar: post.author.avatarUrl,
+            headline: post.author.candidateProfile?.headline,
+          }
+        : null,
+      hasReacted: post.reactions.length > 0,
     }));
   }
 
