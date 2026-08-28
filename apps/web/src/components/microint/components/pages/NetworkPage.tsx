@@ -207,7 +207,7 @@ export const NetworkPage: React.FC = () => {
  "TypeScript",
  "AI & LLM",
  ]);
- const [newPostHashtag, setNewPostHashtag] = useState<string>("#AgenticAI");
+ const [newPostHashtag, setNewPostHashtag] = useState<string>("INSIGHT");
  const [newPostRepoUrl, setNewPostRepoUrl] = useState("");
  const [showAdvancedPostFields, setShowAdvancedPostFields] = useState(false);
 
@@ -589,12 +589,12 @@ export const NetworkPage: React.FC = () => {
  )}
  </div>
  <div className="flex items-center gap-1.5 overflow-x-auto py-1">
- {["#AgenticAI", "#SystemDesign", "#NextJS", "#AWS"].map((tag) => {
- const isActive = activeHashtag === tag;
+ {["#INSIGHT", "#PROJECT", "#ACHIEVEMENT", "#LEARNING", "#OPPORTUNITY"].map((tag) => {
+ const isActive = activeHashtag === tag.replace("#", "");
  return (
  <button
  key={tag}
- onClick={() => setActiveHashtag(isActive ? null : tag)}
+ onClick={() => setActiveHashtag(isActive ? null : tag.replace("#", ""))}
  className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
  isActive
  ? "bg-purple-600 text-white shadow-xs"
@@ -648,11 +648,11 @@ export const NetworkPage: React.FC = () => {
  onChange={(e) => setNewPostHashtag(e.target.value)}
  className="w-full px-3 py-2 rounded-xl bg-white/60 backdrop-blur-xl/60 backdrop-blur-xl border border-black/10 text-xs text-[#222]"
  >
- <option value="#AgenticAI">#AgenticAI</option>
- <option value="#SystemDesign">#SystemDesign</option>
- <option value="#NextJS">#NextJS</option>
- <option value="#AWS">#AWS</option>
- <option value="#FullStack">#FullStack</option>
+ <option value="INSIGHT">Insight</option>
+ <option value="PROJECT">Project</option>
+ <option value="ACHIEVEMENT">Achievement</option>
+ <option value="LEARNING">Learning</option>
+ <option value="OPPORTUNITY">Opportunity</option>
  </select>
  </div>
  <div>
