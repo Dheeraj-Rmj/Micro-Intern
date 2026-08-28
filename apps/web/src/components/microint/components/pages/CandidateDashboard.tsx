@@ -15,15 +15,23 @@ import {
   Briefcase,
   Users,
   FolderKanban,
+  Plus,
+  X,
 } from "lucide-react";
+import { InterviewSlot } from "../../types";
 
 export const CandidateDashboard: React.FC = () => {
-  const { userProfile, setCurrentRoute, applications, interviews, submissions } = useApp();
+  const { userProfile, setCurrentRoute, applications, interviews, submissions, scheduleInterview } = useApp();
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isEditingTimer, setIsEditingTimer] = useState(false);
   const [inputMinutes, setInputMinutes] = useState("");
   const [expandedAccordion, setExpandedAccordion] = useState<string>("devices");
+
+  // Event Modal States
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<InterviewSlot | null>(null);
+  const [eventForm, setEventForm] = useState({ title: "", date: "", time: "", notes: "" });
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -171,6 +179,47 @@ export const CandidateDashboard: React.FC = () => {
                 expanded={expandedAccordion}
                 setExpanded={setExpandedAccordion}
               />
+              <AccordionItem
+                title="AI Tools & Integrations"
+                id="ai-tools"
+                expanded={expandedAccordion}
+                setExpanded={setExpandedAccordion}
+              >
+                <div className="flex flex-col gap-3 py-3 px-2">
+                  <div className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm">
+                    <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
+                      <Monitor className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-[#222]">Jina AI</h4>
+                      <p className="text-[10px] text-[#666]">Search & Embeddings</p>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                      <Monitor className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-[#222]">Tavily</h4>
+                      <p className="text-[10px] text-[#666]">Automated Research</p>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm">
+                    <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600">
+                      <Monitor className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-[#222]">Open Source AI</h4>
+                      <p className="text-[10px] text-[#666]">Local Inference Models</p>
+                    </div>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
+                  </div>
+                </div>
+              </AccordionItem>
             </div>
           </div>
 
@@ -178,44 +227,45 @@ export const CandidateDashboard: React.FC = () => {
           <div className="col-span-12 lg:col-span-6 flex flex-col gap-6">
             <div className="grid grid-cols-1 gap-6 h-[320px]">
               {/* Time Tracker Card */}
-              <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm flex flex-col items-center relative overflow-hidden">
-                <div className="w-full flex justify-between items-start absolute top-6 left-6 right-6">
-                  <h2 className="text-xl font-medium text-[#222]">Time tracker</h2>
-                  <button className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center hover:bg-white transition-colors bg-white/50">
-                    <ArrowUpRight className="w-5 h-5 text-[#333]" />
+              <div className="bg-gradient-to-br from-[#FFFDF0] to-[#FFF2CC] rounded-[2.5rem] p-6 shadow-sm flex flex-col items-center relative overflow-hidden h-full">
+                <div className="w-full flex justify-between items-start z-10">
+                  <h2 className="text-[1.35rem] font-medium text-[#444] tracking-tight">Time tracker</h2>
+                  <button className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center hover:scale-105 transition-transform">
+                    <ArrowUpRight className="w-5 h-5 text-[#666] font-light" strokeWidth={1.5} />
                   </button>
                 </div>
 
-                <div className="relative flex-1 flex items-center justify-center w-full mt-10">
-                  <svg className="w-48 h-48 transform -rotate-90">
-                    {/* Subtle background track */}
+                <div className="relative flex-1 flex items-center justify-center w-full my-4">
+                  <svg className="w-56 h-56 transform -rotate-90">
+                    {/* Dashed background track */}
                     <circle
-                      cx="96"
-                      cy="96"
-                      r="86"
+                      cx="112"
+                      cy="112"
+                      r="90"
                       fill="none"
-                      stroke="rgba(0,0,0,0.05)"
-                      strokeWidth="6"
+                      stroke="rgba(0,0,0,0.15)"
+                      strokeWidth="2"
+                      strokeDasharray="4 8"
                     />
-                    {/* Solid orange progress (Apple Timer Style) */}
+                    {/* Solid yellow progress */}
                     <circle
-                      cx="96"
-                      cy="96"
-                      r="86"
+                      cx="112"
+                      cy="112"
+                      r="90"
                       fill="none"
-                      stroke="#FF9500"
-                      strokeWidth="6"
+                      stroke="#FDD15A"
+                      strokeWidth="14"
                       strokeLinecap="round"
-                      strokeDasharray="540"
-                      strokeDashoffset={540 - (540 * (elapsedSeconds % 3600)) / 3600}
-                      className="transition-all duration-1000"
+                      strokeDasharray="565.48"
+                      strokeDashoffset={565.48 - (565.48 * ((elapsedSeconds || 155) % 3600)) / 3600}
+                      className="transition-all duration-1000 ease-linear"
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center justify-center">
                     {isEditingTimer ? (
                       <input
                         type="number"
-                        className="w-28 bg-transparent border-b border-[#222] text-center text-5xl font-light tracking-tight text-[#222] outline-none mb-1 font-mono"
+                        className="w-32 bg-transparent border-b border-[#222] text-center text-[2.75rem] font-light tracking-tight text-[#333] outline-none mb-1"
                         value={inputMinutes}
                         onChange={(e) => setInputMinutes(e.target.value)}
                         onBlur={handleTimerSubmit}
@@ -225,7 +275,7 @@ export const CandidateDashboard: React.FC = () => {
                       />
                     ) : (
                       <span
-                        className={`text-5xl font-light tracking-tight text-[#222] font-mono ${!isPlaying ? 'cursor-pointer hover:opacity-70' : ''}`}
+                        className={`text-[2.75rem] leading-none font-light tracking-tight text-[#333] ${!isPlaying ? 'cursor-pointer hover:opacity-70' : ''}`}
                         onClick={() => {
                           if (!isPlaying) {
                             setInputMinutes(Math.floor(elapsedSeconds / 60).toString());
@@ -234,38 +284,38 @@ export const CandidateDashboard: React.FC = () => {
                         }}
                         title={!isPlaying ? "Click to set time" : ""}
                       >
-                        {formatTime(elapsedSeconds)}
+                        {formatTime(elapsedSeconds || 155)}
                       </span>
                     )}
+                    <span className="text-xs text-[#888] font-medium mt-1 tracking-wide">Work Time</span>
                   </div>
                 </div>
 
-                <div className="flex w-full items-center justify-between px-6 pb-2">
+                <div className="flex w-full items-end justify-between mt-auto z-10">
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => setIsPlaying(true)}
+                      className="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-[#444] hover:scale-105 transition-transform"
+                    >
+                      <Play className="w-5 h-5 ml-1" strokeWidth={1.5} fill="currentColor" />
+                    </button>
+                    <button 
+                      onClick={() => setIsPlaying(false)}
+                      className="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-[#444] hover:scale-105 transition-transform"
+                    >
+                      <Pause className="w-5 h-5" strokeWidth={1.5} fill="currentColor" />
+                    </button>
+                  </div>
+                  
                   <button 
                     onClick={() => {
                       setIsPlaying(false);
                       setElapsedSeconds(0);
                     }}
-                    className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center text-[#222] font-medium text-sm hover:bg-black/10 transition-colors"
+                    className="w-14 h-14 rounded-full bg-[#2A2A2A] shadow-lg flex items-center justify-center text-white hover:scale-105 transition-transform"
                   >
-                    Reset
+                    <Clock className="w-5 h-5" strokeWidth={1.5} />
                   </button>
-                  
-                  {!isPlaying ? (
-                    <button
-                      onClick={() => setIsPlaying(true)}
-                      className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-medium text-sm hover:bg-emerald-500/20 transition-colors"
-                    >
-                      Start
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setIsPlaying(false)}
-                      className="w-16 h-16 rounded-full bg-orange-500/10 text-orange-600 flex items-center justify-center font-medium text-sm hover:bg-orange-500/20 transition-colors"
-                    >
-                      Stop
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
@@ -273,13 +323,21 @@ export const CandidateDashboard: React.FC = () => {
             {/* Calendar View */}
             <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm flex-1 relative overflow-hidden flex flex-col min-h-[300px]">
               <div className="flex items-center justify-between mb-6">
-                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">
+                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium hidden sm:block">
                   {new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toLocaleString('default', { month: 'long' })}
                 </span>
-                <h3 className="text-lg font-medium text-[#222]">
-                  {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
-                </h3>
-                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium">
+                <div className="flex items-center gap-4">
+                  <h3 className="text-lg font-medium text-[#222]">
+                    {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+                  </h3>
+                  <button 
+                    onClick={() => { setSelectedEvent(null); setEventForm({ title: "", date: "", time: "", notes: "" }); setShowEventModal(true); }}
+                    className="p-1.5 bg-[#222] text-white rounded-full hover:bg-black transition-colors shadow-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium hidden sm:block">
                   {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleString('default', { month: 'long' })}
                 </span>
               </div>
@@ -361,7 +419,8 @@ export const CandidateDashboard: React.FC = () => {
                         return (
                           <div
                             key={interview.id}
-                            className={`absolute rounded-xl p-3 shadow-sm z-10 flex flex-col gap-1 overflow-hidden transition-all hover:scale-105 hover:z-20 ${
+                            onClick={() => { setSelectedEvent(interview); setShowEventModal(true); }}
+                            className={`absolute rounded-xl p-3 shadow-sm z-10 flex flex-col gap-1 overflow-hidden transition-all hover:scale-105 hover:z-20 cursor-pointer ${
                               idx % 2 === 0
                                 ? "bg-[#333] text-white shadow-lg"
                                 : "bg-white border border-black/10 text-[#222]"
@@ -448,8 +507,129 @@ export const CandidateDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-    </>
-  );
+
+        {/* Event Dialog Modal */}
+        {showEventModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div className="bg-white/90 backdrop-blur-xl border border-black/10 p-6 rounded-3xl w-full max-w-md shadow-2xl relative">
+              <button 
+                onClick={() => setShowEventModal(false)}
+                className="absolute top-6 right-6 text-[#888] hover:text-[#222]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <h2 className="text-2xl font-serif tracking-tight mb-6 text-[#111]">
+                {selectedEvent ? "Event Details" : "Add New Event"}
+              </h2>
+
+              {selectedEvent ? (
+                <div className="flex flex-col gap-4 text-sm">
+                  <div>
+                    <span className="text-[#888] block text-xs mb-1">Title</span>
+                    <p className="font-medium text-[#222]">{selectedEvent.trialTitle}</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <span className="text-[#888] block text-xs mb-1">Date</span>
+                      <p className="font-medium text-[#222]">{selectedEvent.date}</p>
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-[#888] block text-xs mb-1">Time</span>
+                      <p className="font-medium text-[#222]">{selectedEvent.time}</p>
+                    </div>
+                  </div>
+                  {selectedEvent.notes && (
+                    <div>
+                      <span className="text-[#888] block text-xs mb-1">Notes</span>
+                      <p className="text-[#222] bg-black/5 p-3 rounded-xl whitespace-pre-wrap">{selectedEvent.notes}</p>
+                    </div>
+                  )}
+                  <div className="mt-4 flex gap-3">
+                    <button 
+                      onClick={() => setShowEventModal(false)}
+                      className="flex-1 py-2.5 bg-black/5 hover:bg-black/10 text-[#222] rounded-xl font-medium transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4 text-sm">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs text-[#888]">Event Title</label>
+                    <input 
+                      type="text"
+                      value={eventForm.title}
+                      onChange={(e) => setEventForm(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="e.g. Study Session"
+                      className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 text-[#222]"
+                    />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex flex-col gap-1.5 flex-1">
+                      <label className="text-xs text-[#888]">Date</label>
+                      <input 
+                        type="date"
+                        value={eventForm.date}
+                        onChange={(e) => setEventForm(prev => ({ ...prev, date: e.target.value }))}
+                        className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 text-[#222]"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5 flex-1">
+                      <label className="text-xs text-[#888]">Time</label>
+                      <input 
+                        type="time"
+                        value={eventForm.time}
+                        onChange={(e) => setEventForm(prev => ({ ...prev, time: e.target.value }))}
+                        className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 text-[#222]"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs text-[#888]">Notes (Optional)</label>
+                    <textarea 
+                      value={eventForm.notes}
+                      onChange={(e) => setEventForm(prev => ({ ...prev, notes: e.target.value }))}
+                      placeholder="Add any prep notes here..."
+                      className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 min-h-[80px] resize-none text-[#222]"
+                    />
+                  </div>
+                  <button 
+                    onClick={() => {
+                      if (!eventForm.title || !eventForm.date || !eventForm.time) return;
+                      // Format time to 12-hour AM/PM to match parsing logic
+                      let [hours, mins] = eventForm.time.split(":");
+                      let h = parseInt(hours || "0");
+                      const ampm = h >= 12 ? 'PM' : 'AM';
+                      h = h % 12;
+                      h = h ? h : 12;
+                      const formattedTime = `${h}:${mins || "00"} ${ampm}`;
+                      
+                      scheduleInterview({
+                        candidateName: userProfile?.fullName || "Candidate",
+                        trialTitle: eventForm.title,
+                        date: eventForm.date,
+                        time: formattedTime,
+                        interviewer: "N/A",
+                        meetingUrl: "N/A",
+                        status: "upcoming",
+                        notes: eventForm.notes,
+                      });
+                      setShowEventModal(false);
+                    }}
+                    disabled={!eventForm.title || !eventForm.date || !eventForm.time}
+                    className="w-full py-2.5 mt-2 bg-[#222] hover:bg-black text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                  >
+                    Save Event
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </>
+    );
 };
 
 const AccordionItem = ({

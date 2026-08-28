@@ -28,7 +28,7 @@ export const SuperAdminOrganizationPage: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<
-    "all" | "candidate" | "company" | "recruiter"
+    "all" | "candidate" | "company_owner" | "recruiter"
   >("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [impersonateModalUser, setImpersonateModalUser] = useState<AdminUser | null>(null);
@@ -190,8 +190,8 @@ export const SuperAdminOrganizationPage: React.FC = () => {
               label: `Candidates (${users.filter((u) => u.role === "candidate").length})`,
             },
             {
-              id: "company",
-              label: `Enterprises (${users.filter((u) => u.role === "company").length})`,
+              id: "company_owner",
+              label: `Enterprises (${users.filter((u) => u.role === "company_owner").length})`,
             },
             {
               id: "recruiter",
@@ -252,7 +252,7 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm shadow-sm ${
-                          user.role === "company"
+                          user.role === "company_owner"
                             ? "bg-purple-500/10 text-purple-500 border border-purple-500/20"
                             : user.role === "recruiter"
                               ? "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
@@ -280,7 +280,7 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                   <td className="py-4 px-4">
                     <span
                       className={`px-2.5 py-1 rounded-full font-mono font-bold text-[10px] uppercase ${
-                        user.role === "company"
+                        user.role === "company_owner"
                           ? "bg-purple-500/10 text-purple-500"
                           : user.role === "recruiter"
                             ? "bg-indigo-500/10 text-indigo-500"

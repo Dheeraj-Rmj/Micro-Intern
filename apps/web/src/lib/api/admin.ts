@@ -37,6 +37,7 @@ export interface AdminUser {
   activeTrials?: number;
   escrowLocked?: number;
   ipAddress?: string;
+  companyName?: string;
 }
 
 export interface AdminTrial {

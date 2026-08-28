@@ -142,7 +142,13 @@ export class PrismaAdminRepository implements IAdminRepository {
         candidateProfile: true,
         companyMembership: {
           include: {
-            company: true,
+            company: {
+              include: {
+                assessments: {
+                  where: { deletedAt: null },
+                },
+              },
+            },
           },
         },
         devices: {
@@ -152,21 +158,27 @@ export class PrismaAdminRepository implements IAdminRepository {
       },
     });
 
-    return users.map((u) => ({
-      id: u.id,
-      name: `${u.firstName} ${u.lastName}`,
-      email: u.email,
-      role: u.role.toLowerCase(),
-      status: u.status.toLowerCase(),
-      verified: u.status === "ACTIVE",
-      trustScore: u.candidateProfile?.completionPercentage ?? 90,
-      joined: u.createdAt.toISOString().split("T")[0],
-      details:
-        u.role === "COMPANY_OWNER" || u.role === "RECRUITER"
-          ? `Company: ${u.companyMembership?.[0]?.company?.name ?? "Unassigned"}`
-          : `Bio: ${u.candidateProfile?.bio ?? "No bio"}`,
-      ipAddress: u.devices?.[0]?.ipAddress ?? "Unknown IP",
-    }));
+    return users.map((u) => {
+      const company = u.companyMembership?.[0]?.company;
+      return {
+        id: u.id,
+        name: `${u.firstName} ${u.lastName}`,
+        email: u.email,
+        role: u.role.toLowerCase(),
+        status: u.status.toLowerCase(),
+        verified: u.status === "ACTIVE",
+        trustScore: u.candidateProfile?.completionPercentage ?? 90,
+        joined: u.createdAt.toISOString().split("T")[0],
+        details:
+          u.role === "COMPANY_OWNER" || u.role === "RECRUITER"
+            ? `Company: ${company?.name ?? "Unassigned"}`
+            : `Bio: ${u.candidateProfile?.bio ?? "No bio"}`,
+        ipAddress: u.devices?.[0]?.ipAddress ?? "Unknown IP",
+        companyName: company?.name,
+        activeTrials: company?.assessments?.length ?? 0,
+        escrowLocked: company?.assessments?.reduce((acc: number, curr: any) => acc + (curr.passingScore || 0) * 10, 0) ?? 0,
+      };
+    });
   }
 
   async listTrials(filters: { search?: string; status?: string }): Promise<any[]> {

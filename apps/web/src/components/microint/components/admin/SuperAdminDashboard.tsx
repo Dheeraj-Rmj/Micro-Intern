@@ -98,7 +98,7 @@ export const SuperAdminDashboard: React.FC = () => {
         const results = await Promise.allSettled([
           adminApi.getStats(),
           adminApi.getAuditLogs(),
-          adminApi.getUsers({ role: "company" }),
+          adminApi.getUsers({ role: "company_owner" }),
           adminApi.getOnboardings(),
         ]);
 
@@ -109,8 +109,8 @@ export const SuperAdminDashboard: React.FC = () => {
         if (results[2].status === "fulfilled") {
           setTopEnterprises(
             results[2].value.slice(0, 4).map((c) => ({
-              name: c.name,
-              logo: c.name.charAt(0),
+              name: c.companyName || c.name,
+              logo: (c.companyName || c.name).charAt(0),
               activeTrials: c.activeTrials || 0,
               status: c.status === "active" ? "eKYC Approved" : "Pending",
               escrowLocked: c.escrowLocked ? `$${c.escrowLocked}` : "$0",
