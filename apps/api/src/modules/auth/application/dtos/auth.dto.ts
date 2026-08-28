@@ -81,7 +81,7 @@ export const ResetPasswordSchema = z.object({
 export type ResetPasswordDto = z.infer<typeof ResetPasswordSchema>;
 
 export const ChangePasswordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
+  currentPassword: z.string().optional(),
   newPassword: PasswordSchema,
 });
 
