@@ -33,6 +33,10 @@ export const CandidateDashboard: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<InterviewSlot | null>(null);
   const [eventForm, setEventForm] = useState({ title: "", date: "", time: "", notes: "" });
 
+  // AI Modal States
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [selectedAITool, setSelectedAITool] = useState<string | null>(null);
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isPlaying) {
@@ -186,34 +190,43 @@ export const CandidateDashboard: React.FC = () => {
                 setExpanded={setExpandedAccordion}
               >
                 <div className="flex flex-col gap-3 py-3 px-2">
-                  <div className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm">
+                  <div 
+                    onClick={() => { setSelectedAITool("AI Copilot"); setShowAIModal(true); }}
+                    className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm"
+                  >
                     <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
                       <Monitor className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222]">Jina AI</h4>
-                      <p className="text-[10px] text-[#666]">Search & Embeddings</p>
+                      <h4 className="text-sm font-semibold text-[#222]">AI Copilot</h4>
+                      <p className="text-[10px] text-[#666]">Smart Code Assistant</p>
                     </div>
                     <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
                   </div>
                   
-                  <div className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm">
+                  <div 
+                    onClick={() => { setSelectedAITool("Deep Research Agent"); setShowAIModal(true); }}
+                    className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm"
+                  >
                     <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
                       <Monitor className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222]">Tavily</h4>
+                      <h4 className="text-sm font-semibold text-[#222]">Deep Research Agent</h4>
                       <p className="text-[10px] text-[#666]">Automated Research</p>
                     </div>
                     <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm">
+                  <div 
+                    onClick={() => { setSelectedAITool("Local Inference Engine"); setShowAIModal(true); }}
+                    className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm"
+                  >
                     <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600">
                       <Monitor className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222]">Open Source AI</h4>
+                      <h4 className="text-sm font-semibold text-[#222]">Local Inference Engine</h4>
                       <p className="text-[10px] text-[#666]">Local Inference Models</p>
                     </div>
                     <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
@@ -257,7 +270,7 @@ export const CandidateDashboard: React.FC = () => {
                       strokeWidth="14"
                       strokeLinecap="round"
                       strokeDasharray="565.48"
-                      strokeDashoffset={565.48 - (565.48 * ((elapsedSeconds || 155) % 3600)) / 3600}
+                      strokeDashoffset={565.48 - (565.48 * (elapsedSeconds % 3600)) / 3600}
                       className="transition-all duration-1000 ease-linear"
                     />
                   </svg>
@@ -284,7 +297,7 @@ export const CandidateDashboard: React.FC = () => {
                         }}
                         title={!isPlaying ? "Click to set time" : ""}
                       >
-                        {formatTime(elapsedSeconds || 155)}
+                        {formatTime(elapsedSeconds)}
                       </span>
                     )}
                     <span className="text-xs text-[#888] font-medium mt-1 tracking-wide">Work Time</span>
@@ -625,6 +638,37 @@ export const CandidateDashboard: React.FC = () => {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* AI Tool Dialog Modal */}
+        {showAIModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white/90 backdrop-blur-xl border border-black/10 p-6 rounded-[2rem] w-full max-w-md shadow-2xl relative">
+              <button 
+                onClick={() => setShowAIModal(false)}
+                className="absolute top-6 right-6 text-[#888] hover:text-[#222]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 mb-4">
+                 <Monitor className="w-6 h-6" />
+              </div>
+              <h2 className="text-2xl font-medium tracking-tight mb-2 text-[#111]">
+                Launch {selectedAITool}
+              </h2>
+              <p className="text-sm text-[#666] mb-6">
+                This integration is currently pending activation for your account. Please complete your next trial stage to unlock access to the {selectedAITool}.
+              </p>
+
+              <button 
+                onClick={() => setShowAIModal(false)}
+                className="w-full py-3 bg-[#222] hover:bg-black text-white rounded-xl font-medium transition-colors"
+              >
+                Got it
+              </button>
             </div>
           </div>
         )}
