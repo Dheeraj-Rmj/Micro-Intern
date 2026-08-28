@@ -19,14 +19,41 @@ export async function POST(req: Request) {
         { role: "user", content: query }
       ];
     } else {
-      // Deep Research Agent - use Jina Reader + DuckDuckGo to get search results
-      const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
-      const jinaRes = await fetch(`https://r.jina.ai/${searchUrl}`);
-      const searchMarkdown = await jinaRes.text();
+      const trailsearchUrl = process.env['TRAILSEARCH_URL'];
+      let searchContext = "";
+
+      if (trailsearchUrl) {
+        // Use self-hosted tavily-open (TrailSearch) backend
+        const trailRes = await fetch(`${trailsearchUrl}/tavily/search`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: query,
+            max_results: 5,
+            include_raw_content: true,
+            mode: "crawl"
+          })
+        });
+        const trailData = await trailRes.json();
+        
+        // Extract raw content or snippets from results
+        if (trailData.results && trailData.results.length > 0) {
+          searchContext = trailData.results.map((r: any) => 
+            `Title: ${r.title}\nURL: ${r.url}\nContent: ${r.raw_content || r.content}`
+          ).join("\n\n");
+        } else {
+          searchContext = trailData.answer || "No search results found.";
+        }
+      } else {
+        // Fallback: use Jina Reader + DuckDuckGo to get search results directly
+        const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+        const jinaRes = await fetch(`https://r.jina.ai/${searchUrl}`);
+        searchContext = await jinaRes.text();
+      }
       
       messages = [
-        { role: "system", content: "You are a Deep Research Agent. You have been provided with web search results in Markdown format. Synthesize a detailed, factual, and comprehensive answer to the user's query using only the provided search results. Structure your response with clear headings or bullet points." },
-        { role: "user", content: `Search Results:\n\n${searchMarkdown.substring(0, 4000)}\n\nUser Query: ${query}` }
+        { role: "system", content: "You are a Deep Research Agent. You have been provided with web search results. Synthesize a detailed, factual, and comprehensive answer to the user's query using only the provided search results. Structure your response with clear headings or bullet points." },
+        { role: "user", content: `Search Results:\n\n${searchContext.substring(0, 4000)}\n\nUser Query: ${query}` }
       ];
     }
 
