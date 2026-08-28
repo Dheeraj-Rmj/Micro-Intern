@@ -170,6 +170,13 @@ export const CompanyApplicationsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5 dark:divide-white/10 text-xs">
+              {filteredApps.length === 0 && !loading && (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-black/50 dark:text-white/50">
+                    No applications found.
+                  </td>
+                </tr>
+              )}
               {filteredApps.map((a) => (
                 <tr
                   key={a.id}

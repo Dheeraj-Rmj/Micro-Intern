@@ -27,19 +27,19 @@ export const CompanyHiringAnalyticsPage: React.FC = () => {
           setAnalytics(res.data);
         } else {
           setAnalytics({
-            timeToHireDays: 24,
-            offerAcceptanceRate: 68,
-            candidateDropRate: 12,
-            totalPlacements: 142,
+            timeToHireDays: 0,
+            offerAcceptanceRate: 0,
+            candidateDropRate: 0,
+            totalPlacements: 0,
           });
         }
       } catch (err) {
         console.error("Failed to fetch analytics:", err);
         setAnalytics({
-          timeToHireDays: 24,
-          offerAcceptanceRate: 68,
-          candidateDropRate: 12,
-          totalPlacements: 142,
+          timeToHireDays: 0,
+          offerAcceptanceRate: 0,
+          candidateDropRate: 0,
+          totalPlacements: 0,
         });
       } finally {
         setLoading(false);

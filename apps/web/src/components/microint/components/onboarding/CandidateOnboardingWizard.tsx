@@ -92,24 +92,27 @@ export const CandidateOnboardingWizard: React.FC = () => {
         updateUser({ avatarUrl: url });
       }
       if (step === 2) {
-        const payload: Record<string, unknown> = {};
-        if (form["headline"]) payload["headline"] = form["headline"];
-        if (form["bio"]) payload["bio"] = form["bio"];
-        if (form["location"]) payload["location"] = form["location"];
-        if (Object.keys(payload).length) await candidateApi.updateProfile(payload as any);
+        const profile: Record<string, unknown> = {};
+        if (form["headline"]) profile["headline"] = form["headline"];
+        if (form["bio"]) profile["bio"] = form["bio"];
+        if (form["location"]) profile["location"] = form["location"];
+        if (Object.keys(profile).length) await candidateApi.updateProfile({ profile } as any);
       }
       if (step === 3 && form.skills.length > 0) {
         await candidateApi.updateProfile({
-          skills: form.skills.map((name) => ({ name, proficiencyLevel: "INTERMEDIATE" })),
+          profile: {},
+          skills: form.skills.map((skill) => ({ skill, level: 3, verified: false })),
         } as any);
       }
       if (step === 4 && (form.college || form.degree)) {
         await candidateApi.updateProfile({
+          profile: {},
           educations: [{
-            institution: form.college, degree: form.degree, fieldOfStudy: "",
-            startYear: 2020,
-            endYear: form.graduationYear ? parseInt(form.graduationYear) : undefined,
-            isCurrent: false,
+            institution: form.college || "Unknown",
+            degree: form.degree || "Unknown",
+            fieldOfStudy: "",
+            startDate: "2020-01-01T00:00:00.000Z",
+            endDate: form.graduationYear ? `${form.graduationYear}-05-01T00:00:00.000Z` : undefined,
           }],
         } as any);
       }
@@ -118,7 +121,7 @@ export const CandidateOnboardingWizard: React.FC = () => {
         if (form.linkedinUrl) socials.push({ platform: "LINKEDIN", url: form.linkedinUrl });
         if (form.githubUrl) socials.push({ platform: "GITHUB", url: form.githubUrl });
         if (form.portfolioUrl) socials.push({ platform: "PORTFOLIO", url: form.portfolioUrl });
-        if (socials.length) await candidateApi.updateProfile({ socials } as any);
+        if (socials.length) await candidateApi.updateProfile({ profile: {}, socials } as any);
       }
     } catch { /* non-critical */ }
     finally { setSaving(false); }

@@ -162,27 +162,29 @@ export const CompanyBillingPage: React.FC = () => {
               </div>
             </div>
             <div className="space-y-3">
-              {[
-                { date: "Sep 1, 2026", amount: "$4,999.00", status: "Paid" },
-                { date: "Aug 1, 2026", amount: "$4,999.00", status: "Paid" },
-                { date: "Jul 1, 2026", amount: "$4,999.00", status: "Paid" },
-              ].map((inv, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors group/inv cursor-pointer"
-                >
-                  <div>
-                    <div className="text-sm font-bold text-black dark:text-white">{inv.amount}</div>
-                    <div className="text-xs text-black/50 dark:text-white/50">{inv.date}</div>
+              {billing?.invoices && billing.invoices.length > 0 ? (
+                billing.invoices.map((inv: any, i: number) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors group/inv cursor-pointer"
+                  >
+                    <div>
+                      <div className="text-sm font-bold text-black dark:text-white">{inv.amount}</div>
+                      <div className="text-xs text-black/50 dark:text-white/50">{inv.date}</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                        {inv.status}
+                      </span>
+                      <Download className="w-4 h-4 text-black/30 dark:text-white/30 group-hover/inv:text-black dark:group-hover/inv:text-white transition-colors" />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                      {inv.status}
-                    </span>
-                    <Download className="w-4 h-4 text-black/30 dark:text-white/30 group-hover/inv:text-black dark:group-hover/inv:text-white transition-colors" />
-                  </div>
+                ))
+              ) : (
+                <div className="text-center py-6">
+                  <p className="text-xs font-semibold text-black/60 dark:text-white/70">No recent invoices.</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>

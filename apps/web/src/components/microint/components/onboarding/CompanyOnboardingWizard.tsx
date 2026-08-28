@@ -81,7 +81,7 @@ export const CompanyOnboardingWizard: React.FC = () => {
       if (form["headquarters"]) payload["headquarters"] = form["headquarters"];
       if (form["description"]) payload["description"] = form["description"];
       if (Object.keys(payload).length) {
-        await (companyApi as any).updateCompany?.(payload);
+        await companyApi.updateCompany(payload);
       }
     } catch { /* non-critical */ }
   };

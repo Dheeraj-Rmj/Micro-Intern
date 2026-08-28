@@ -370,13 +370,6 @@ export const CompanyDashboard: React.FC = () => {
                     VERIFIED
                   </span>
                 </div>
-                <button
-                  onClick={() => setCurrentRoute("company-manage-trials" as any)}
-                  className="w-full py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 font-semibold text-xs text-black dark:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <span>View Escrow Ledger</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </button>
               </>
             ) : (
               <div className="flex flex-col gap-2">
@@ -687,41 +680,6 @@ export const CompanyDashboard: React.FC = () => {
             >
               <span>View Applicant Pipeline Console</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Bento Card 5 (md:col-span-12) - Escrow Skill Trials & Bounty Governance */}
-        <div className="md:col-span-12 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col sm:flex-row items-center justify-between gap-6 hover:border-black/20 dark:hover:border-white/30 transition-all">
-          <div className="flex items-center gap-4">
-            <div className="p-4 rounded-3xl bg-amber-500/10 text-amber-500">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
-                Escrow Skill Trials & Bounty Architecture
-              </h3>
-              <p className="text-xs text-black/50 dark:text-white/50 mt-1 max-w-xl leading-relaxed">
-                Skill trials are backed by automated Stripe Connect escrow. Candidates only access
-                your GitHub trial repositories after algorithmic trust validation.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              onClick={() => setCurrentRoute("company-manage-trials" as any)}
-              className="px-5 py-2.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <Layers className="w-4 h-4" />
-              <span>Manage Escrow Trials ({trials.length})</span>
-            </button>
-            <button
-              onClick={() => setCurrentRoute("company-create-trial" as any)}
-              className="px-5 py-2.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-black font-bold text-xs hover:scale-105 transition-transform shadow-sm flex items-center gap-2 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Post New Skill Trial</span>
             </button>
           </div>
         </div>

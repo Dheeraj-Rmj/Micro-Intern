@@ -99,6 +99,10 @@ export const CompanyAIInsightsPage: React.FC = () => {
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-black/30 dark:text-white/30" />
               </div>
+            ) : insights.length === 0 ? (
+              <div className="text-center py-12 text-black/50 dark:text-white/50">
+                No active shortages detected.
+              </div>
             ) : (
               insights.map((item, i) => (
                 <div
@@ -139,40 +143,8 @@ export const CompanyAIInsightsPage: React.FC = () => {
             <h3 className="text-xl font-serif text-black dark:text-white">Market Hiring Trends</h3>
           </div>
 
-          <div className="space-y-6 relative z-10">
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-2">
-                <span className="text-black/70 dark:text-white/70">
-                  AI/ML Engineering Salaries (YoY)
-                </span>
-                <span className="text-emerald-500 font-bold">+18.4%</span>
-              </div>
-              <div className="w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full w-[85%]" />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-2">
-                <span className="text-black/70 dark:text-white/70">
-                  Remote Flexibility Preference
-                </span>
-                <span className="text-emerald-500 font-bold">92%</span>
-              </div>
-              <div className="w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 rounded-full w-[92%]" />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-2">
-                <span className="text-black/70 dark:text-white/70">
-                  Average Time-to-Fill (Tech Roles)
-                </span>
-                <span className="text-amber-500 font-bold">42 Days</span>
-              </div>
-              <div className="w-full h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500 rounded-full w-[65%]" />
-              </div>
-            </div>
+          <div className="space-y-6 relative z-10 text-center py-12 text-black/50 dark:text-white/50">
+            Run Deep Analysis to generate market trends.
           </div>
         </div>
       </div>
@@ -187,30 +159,8 @@ export const CompanyAIInsightsPage: React.FC = () => {
           </h3>
         </div>
 
-        <div className="prose prose-sm dark:prose-invert max-w-none font-mono text-black/70 dark:text-white/70 leading-relaxed">
-          <p>
-            Based on current pipeline telemetry, MicroIntern AI recommends shifting focus to{" "}
-            <strong className="text-indigo-600 dark:text-indigo-400">
-              Mid-Level React Developers
-            </strong>
-            . Your current applicant pool shows a high concentration of entry-level candidates, but
-            internal performance metrics indicate that teams are bottlenecked on architecture
-            decisions typically handled by mid-to-senior roles.
-          </p>
-          <ul className="mt-4 space-y-2">
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              Adjust Job Descriptions to emphasize system design and ownership.
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              Deploy &apos;React Advanced Architecture&apos; Skill Trial to active candidates.
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              Increase referral bonus by 1.5x for Senior Engineering roles.
-            </li>
-          </ul>
+        <div className="prose prose-sm dark:prose-invert max-w-none font-mono text-black/70 dark:text-white/70 leading-relaxed text-center py-6">
+          <p>Not enough data to formulate a strategy. Try increasing trial volume.</p>
         </div>
       </div>
     </div>

@@ -121,14 +121,14 @@ export const CompanyTrialsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500 font-mono text-xs font-bold uppercase tracking-wider">
-              ENTERPRISE ESCROW TRIALS
+              ENTERPRISE TRIALS
             </span>
             <span className="text-xs font-mono text-black/50 dark:text-white/50">
               ENTERPRISE ORGANIZATION
             </span>
           </div>
           <h1 className="text-3xl font-bold font-serif text-black dark:text-white">
-            Manage Skill Trials & Escrow Pools
+            Manage Skill Trials
           </h1>
           <p className="text-sm text-black/60 dark:text-white/70 mt-1">
             Create practical skill trials to discover top engineering and design talent.
@@ -155,7 +155,7 @@ export const CompanyTrialsPage: React.FC = () => {
         </div>
         <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
           <p className="text-xs text-black/50 dark:text-white/60 font-medium">
-            Total Locked Escrow
+            Total Budget Allocated
           </p>
           <p className="text-3xl font-serif font-bold text-amber-500 mt-1">$4,800</p>
         </div>
@@ -195,9 +195,9 @@ export const CompanyTrialsPage: React.FC = () => {
                 <Users className="w-4 h-4 text-indigo-500" />
                 <span>{t.applicantsCount} Candidates Applied</span>
               </div>
-              <div className="flex items-center gap-1 text-amber-500 font-bold">
-                <Lock className="w-3.5 h-3.5" />
-                <span>{t.stipend} Escrow Locked</span>
+              <div className="flex items-center gap-1 text-emerald-500 font-bold">
+                <DollarSign className="w-3.5 h-3.5" />
+                <span>{t.stipend} Budgeted</span>
               </div>
             </div>
           </div>
@@ -255,7 +255,7 @@ export const CompanyTrialsPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Stipend Amount (Locked in Escrow)
+                  Stipend Amount (Allocated)
                 </label>
                 <input
                   type="text"

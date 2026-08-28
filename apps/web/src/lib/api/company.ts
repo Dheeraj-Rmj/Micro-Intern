@@ -124,4 +124,9 @@ export const companyApi = {
       return null;
     }
   },
+
+  updateCompany: async (payload: Record<string, unknown>) => {
+    const response = await apiClient.put("/companies/me", payload);
+    return response.data;
+  },
 };
