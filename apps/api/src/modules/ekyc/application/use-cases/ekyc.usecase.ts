@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { PrismaClient } from "@microintern/database";
 import { config } from "@/core/config.js";
+import { logger } from "@/core/logger.js";
 import { NotFoundError, BadRequestError } from "@/shared/errors/index.js";
 
 import Tesseract from "tesseract.js";
@@ -90,7 +91,7 @@ export class EkycUseCase {
     try {
       event = this.stripe.webhooks.constructEvent(payload, signature, config.STRIPE_WEBHOOK_SECRET);
     } catch (err: any) {
-      console.error("Stripe Webhook Signature Verification Failed.", err.message);
+      logger.error({ err }, "Stripe Webhook Signature Verification Failed.");
       throw new BadRequestError(`Webhook Error: ${err.message}`);
     }
 
@@ -105,7 +106,7 @@ export class EkycUseCase {
             ekycStatus: "VERIFIED_STRIPE",
           },
         });
-        console.log(`[Stripe Webhook] Company ${companyId} successfully verified via Identity`);
+        logger.info({ companyId }, "[Stripe Webhook] Company successfully verified via Identity");
       }
     } else if (
       event.type === "identity.verification_session.canceled" ||

@@ -19,7 +19,7 @@ const log = createModuleLogger("Redis");
 let redisClient: Redis | null = null;
 
 export function createRedisClient(options?: { maxRetriesPerRequest?: null }): Redis {
-  console.log("createRedisClient options:", options);
+  log.debug({ options }, "createRedisClient options");
   const client = new Redis(config.REDIS_URL, {
     password: config.REDIS_PASSWORD ?? undefined,
     db: config.REDIS_DB,

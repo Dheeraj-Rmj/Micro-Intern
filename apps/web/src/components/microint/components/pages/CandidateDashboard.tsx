@@ -155,34 +155,7 @@ export const CandidateDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Accordion Menu */}
-            <div className="flex flex-col gap-2">
-              <AccordionItem
-                title="Active Micro-Trials"
-                id="trials"
-                expanded={expandedAccordion}
-                setExpanded={setExpandedAccordion}
-              />
-              <AccordionItem
-                title="Trust Score & Verification"
-                id="trust"
-                expanded={expandedAccordion}
-                setExpanded={setExpandedAccordion}
-              />
-              <AccordionItem
-                title="Earnings & Payouts"
-                id="earnings"
-                expanded={expandedAccordion}
-                setExpanded={setExpandedAccordion}
-              />
-              <AccordionItem
-                title="My Applications"
-                id="applications"
-                expanded={expandedAccordion}
-                setExpanded={setExpandedAccordion}
-              />
 
-            </div>
           </div>
 
           {/* Middle Content */}
@@ -306,7 +279,7 @@ export const CandidateDashboard: React.FC = () => {
 
               <div className="flex-1 flex">
                 {/* Time Axis (9 AM - 5 PM) */}
-                <div className="flex flex-col justify-between py-12 pr-4 w-20 text-xs text-[#888] font-mono border-r border-black/5 border-dashed">
+                <div className="flex flex-col justify-between py-12 pr-4 w-20 text-xs text-[#888] dark:text-[#AAAAAA] font-mono border-r border-black/5 dark:border-white/5 border-dashed">
                   <span>9:00 am</span>
                   <span>11:00 am</span>
                   <span>1:00 pm</span>
@@ -405,7 +378,7 @@ export const CandidateDashboard: React.FC = () => {
                       })
                     ) : (
                        <div className="absolute inset-0 flex items-center justify-center">
-                          <p className="text-sm text-[#888]">No upcoming events this week</p>
+                          <p className="text-sm text-[#888] dark:text-[#AAAAAA]">No upcoming events this week</p>
                        </div>
                     )}
                   </div>
@@ -426,7 +399,7 @@ export const CandidateDashboard: React.FC = () => {
                 <div className="flex-1 flex flex-col gap-2">
                   <span className="text-[10px] font-mono text-[#888] dark:text-[#AAAAAA]">30%</span>
                   <div className="h-full bg-[#FFD166] rounded-l-full w-full flex items-center px-3">
-                    <span className="text-xs font-medium text-[#222]">Task</span>
+                    <span className="text-xs font-medium text-[#222] dark:text-white">Task</span>
                   </div>
                 </div>
                 <div className="flex-1 flex flex-col gap-2">
@@ -653,7 +626,7 @@ const TaskItem = ({
       <div className="shrink-0">
         {completed ? (
           <div className="w-5 h-5 rounded-full bg-[#FFD166] flex items-center justify-center">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#333]" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#333] dark:text-white" />
           </div>
         ) : (
           <Circle className="w-5 h-5 text-white/20" />
