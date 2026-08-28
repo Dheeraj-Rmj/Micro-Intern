@@ -72,7 +72,7 @@ export const CandidateDashboard: React.FC = () => {
       {/* Header Section */}
         <div className="mt-4 mb-10 flex flex-col xl:flex-row items-start xl:items-end justify-between gap-8">
           <div>
-            <h1 className="text-[3.5rem] leading-none font-serif tracking-tight text-[#111111]">
+            <h1 className="text-[3.5rem] leading-none font-serif tracking-tight text-[#111111] dark:text-white">
               Welcome in, {displayName.split(" ")[0]}
             </h1>
           </div>
@@ -81,37 +81,37 @@ export const CandidateDashboard: React.FC = () => {
             {/* Stats Left */}
             <div className="flex items-center gap-6 flex-1 xl:flex-none">
               <div className="flex flex-col gap-2">
-                <span className="text-sm text-[#555555]">Active</span>
-                <div className="px-6 py-2.5 rounded-full bg-[#333333] text-white text-sm font-medium">
+                <span className="text-sm text-[#555555] dark:text-[#AAAAAA]">Active</span>
+                <div className="px-6 py-2.5 rounded-full bg-[#333333] dark:bg-[#222222] text-white text-sm font-medium">
                   {applications.filter(a => a.status === "applied" || a.status === "interviewing").length * 10}%
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <span className="text-sm text-[#555555]">Completed</span>
-                <div className="px-6 py-2.5 rounded-full bg-[#FFD166] text-[#222] text-sm font-medium">
+                <span className="text-sm text-[#555555] dark:text-[#AAAAAA]">Completed</span>
+                <div className="px-6 py-2.5 rounded-full bg-[#FFD166] dark:bg-[#FFD166] text-[#222] text-sm font-medium">
                   {submissions.filter(s => s.status === "Evaluated" || s.status === "Approved").length * 10}%
                 </div>
               </div>
               <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
-                <span className="text-sm text-[#555555]">Escrow time</span>
-                <div className="h-[40px] rounded-full overflow-hidden flex relative border border-black/10">
-                  <div className="w-[60%] bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(0,0,0,0.03)_4px,rgba(0,0,0,0.03)_8px)] bg-white/50 backdrop-blur-sm" />
+                <span className="text-sm text-[#555555] dark:text-[#AAAAAA]">Escrow time</span>
+                <div className="h-[40px] rounded-full overflow-hidden flex relative border border-black/10 dark:border-white/10">
+                  <div className="w-[60%] bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(0,0,0,0.03)_4px,rgba(0,0,0,0.03)_8px)] dark:bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(255,255,255,0.03)_4px,rgba(255,255,255,0.03)_8px)] bg-white/50 dark:bg-white/10 backdrop-blur-sm" />
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <span className="text-sm text-[#555555]">Output</span>
-                <div className="px-6 py-2.5 rounded-full border border-black/20 text-[#222] text-sm font-medium bg-transparent">
+                <span className="text-sm text-[#555555] dark:text-[#AAAAAA]">Output</span>
+                <div className="px-6 py-2.5 rounded-full border border-black/20 dark:border-white/20 text-[#222] dark:text-white text-sm font-medium bg-transparent">
                   {submissions.length * 10}%
                 </div>
               </div>
             </div>
 
             {/* Big Stats Right */}
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-8 text-[#111111] dark:text-white">
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
                   <span className="text-[3rem] font-light leading-none tracking-tight">{applications.length}</span>
-                  <span className="text-xs text-[#555555] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
+                  <span className="text-xs text-[#555555] dark:text-[#AAAAAA] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
                     <Users className="w-3 h-3" /> Applications
                   </span>
                 </div>
@@ -119,7 +119,7 @@ export const CandidateDashboard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
                   <span className="text-[3rem] font-light leading-none tracking-tight">{interviews.length}</span>
-                  <span className="text-xs text-[#555555] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
+                  <span className="text-xs text-[#555555] dark:text-[#AAAAAA] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
                     <Briefcase className="w-3 h-3" /> Interviews
                   </span>
                 </div>
@@ -127,7 +127,7 @@ export const CandidateDashboard: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
                   <span className="text-[3rem] font-light leading-none tracking-tight">{submissions.length}</span>
-                  <span className="text-xs text-[#555555] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
+                  <span className="text-xs text-[#555555] dark:text-[#AAAAAA] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
                     <FolderKanban className="w-3 h-3" /> Submissions
                   </span>
                 </div>
@@ -192,44 +192,44 @@ export const CandidateDashboard: React.FC = () => {
                 <div className="flex flex-col gap-3 py-3 px-2">
                   <div 
                     onClick={() => { setSelectedAITool("AI Copilot"); setShowAIModal(true); }}
-                    className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm"
+                    className="flex items-center gap-3 p-3 bg-black/[0.03] dark:bg-white/[0.03] rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors cursor-pointer border border-black/5 dark:border-white/5 shadow-sm"
                   >
-                    <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
+                    <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
                       <Monitor className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222]">AI Copilot</h4>
-                      <p className="text-[10px] text-[#666]">Smart Code Assistant</p>
+                      <h4 className="text-sm font-semibold text-[#222] dark:text-white">AI Copilot</h4>
+                      <p className="text-[10px] text-[#666] dark:text-[#AAAAAA]">Smart Code Assistant</p>
                     </div>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888] dark:text-[#666]" />
                   </div>
                   
                   <div 
                     onClick={() => { setSelectedAITool("Deep Research Agent"); setShowAIModal(true); }}
-                    className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm"
+                    className="flex items-center gap-3 p-3 bg-black/[0.03] dark:bg-white/[0.03] rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors cursor-pointer border border-black/5 dark:border-white/5 shadow-sm"
                   >
-                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                       <Monitor className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222]">Deep Research Agent</h4>
-                      <p className="text-[10px] text-[#666]">Automated Research</p>
+                      <h4 className="text-sm font-semibold text-[#222] dark:text-white">Deep Research Agent</h4>
+                      <p className="text-[10px] text-[#666] dark:text-[#AAAAAA]">Automated Research</p>
                     </div>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888] dark:text-[#666]" />
                   </div>
 
                   <div 
                     onClick={() => { setSelectedAITool("Local Inference Engine"); setShowAIModal(true); }}
-                    className="flex items-center gap-3 p-3 bg-black/[0.03] rounded-xl hover:bg-black/[0.05] transition-colors cursor-pointer border border-black/5 shadow-sm"
+                    className="flex items-center gap-3 p-3 bg-black/[0.03] dark:bg-white/[0.03] rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors cursor-pointer border border-black/5 dark:border-white/5 shadow-sm"
                   >
-                    <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600">
+                    <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
                       <Monitor className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222]">Local Inference Engine</h4>
-                      <p className="text-[10px] text-[#666]">Local Inference Models</p>
+                      <h4 className="text-sm font-semibold text-[#222] dark:text-white">Local Inference Engine</h4>
+                      <p className="text-[10px] text-[#666] dark:text-[#AAAAAA]">Local Inference Models</p>
                     </div>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888]" />
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888] dark:text-[#666]" />
                   </div>
                 </div>
               </AccordionItem>
@@ -240,11 +240,11 @@ export const CandidateDashboard: React.FC = () => {
           <div className="col-span-12 lg:col-span-6 flex flex-col gap-6">
             <div className="grid grid-cols-1 gap-6 h-[320px]">
               {/* Time Tracker Card */}
-              <div className="bg-gradient-to-br from-[#FFFDF0] to-[#FFF2CC] rounded-[2.5rem] p-6 shadow-sm flex flex-col items-center relative overflow-hidden h-full">
+              <div className="bg-gradient-to-br from-[#FFFDF0] to-[#FFF2CC] dark:from-[#2A2615] dark:to-[#1A180C] rounded-[2.5rem] p-6 shadow-sm flex flex-col items-center relative overflow-hidden h-full">
                 <div className="w-full flex justify-between items-start z-10">
-                  <h2 className="text-[1.35rem] font-medium text-[#444] tracking-tight">Time tracker</h2>
-                  <button className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center hover:scale-105 transition-transform">
-                    <ArrowUpRight className="w-5 h-5 text-[#666] font-light" strokeWidth={1.5} />
+                  <h2 className="text-[1.35rem] font-medium text-[#444] dark:text-white tracking-tight">Time tracker</h2>
+                  <button className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center hover:scale-105 transition-transform">
+                    <ArrowUpRight className="w-5 h-5 text-[#666] dark:text-white/70 font-light" strokeWidth={1.5} />
                   </button>
                 </div>
 
@@ -256,9 +256,9 @@ export const CandidateDashboard: React.FC = () => {
                       cy="112"
                       r="90"
                       fill="none"
-                      stroke="rgba(0,0,0,0.15)"
                       strokeWidth="2"
                       strokeDasharray="4 8"
+                      className="stroke-black/15 dark:stroke-white/15"
                     />
                     {/* Solid yellow progress */}
                     <circle
@@ -278,7 +278,7 @@ export const CandidateDashboard: React.FC = () => {
                     {isEditingTimer ? (
                       <input
                         type="number"
-                        className="w-32 bg-transparent border-b border-[#222] text-center text-[2.75rem] font-light tracking-tight text-[#333] outline-none mb-1"
+                        className="w-32 bg-transparent border-b border-[#222] dark:border-white/50 text-center text-[2.75rem] font-light tracking-tight text-[#333] dark:text-white outline-none mb-1"
                         value={inputMinutes}
                         onChange={(e) => setInputMinutes(e.target.value)}
                         onBlur={handleTimerSubmit}
@@ -288,7 +288,7 @@ export const CandidateDashboard: React.FC = () => {
                       />
                     ) : (
                       <span
-                        className={`text-[2.75rem] leading-none font-light tracking-tight text-[#333] ${!isPlaying ? 'cursor-pointer hover:opacity-70' : ''}`}
+                        className={`text-[2.75rem] leading-none font-light tracking-tight text-[#333] dark:text-white ${!isPlaying ? 'cursor-pointer hover:opacity-70' : ''}`}
                         onClick={() => {
                           if (!isPlaying) {
                             setInputMinutes(Math.floor(elapsedSeconds / 60).toString());
@@ -300,7 +300,7 @@ export const CandidateDashboard: React.FC = () => {
                         {formatTime(elapsedSeconds)}
                       </span>
                     )}
-                    <span className="text-xs text-[#888] font-medium mt-1 tracking-wide">Work Time</span>
+                    <span className="text-xs text-[#888] dark:text-white/60 font-medium mt-1 tracking-wide">Work Time</span>
                   </div>
                 </div>
 
@@ -308,13 +308,13 @@ export const CandidateDashboard: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <button 
                       onClick={() => setIsPlaying(true)}
-                      className="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-[#444] hover:scale-105 transition-transform"
+                      className="w-14 h-14 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center text-[#444] dark:text-white hover:scale-105 transition-transform"
                     >
                       <Play className="w-5 h-5 ml-1" strokeWidth={1.5} fill="currentColor" />
                     </button>
                     <button 
                       onClick={() => setIsPlaying(false)}
-                      className="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-[#444] hover:scale-105 transition-transform"
+                      className="w-14 h-14 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center text-[#444] dark:text-white hover:scale-105 transition-transform"
                     >
                       <Pause className="w-5 h-5" strokeWidth={1.5} fill="currentColor" />
                     </button>
@@ -325,7 +325,7 @@ export const CandidateDashboard: React.FC = () => {
                       setIsPlaying(false);
                       setElapsedSeconds(0);
                     }}
-                    className="w-14 h-14 rounded-full bg-[#2A2A2A] shadow-lg flex items-center justify-center text-white hover:scale-105 transition-transform"
+                    className="w-14 h-14 rounded-full bg-[#2A2A2A] dark:bg-black/40 shadow-lg flex items-center justify-center text-white hover:scale-105 transition-transform"
                   >
                     <Clock className="w-5 h-5" strokeWidth={1.5} />
                   </button>
@@ -334,23 +334,23 @@ export const CandidateDashboard: React.FC = () => {
             </div>
 
             {/* Calendar View */}
-            <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm flex-1 relative overflow-hidden flex flex-col min-h-[300px]">
+            <div className="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-[2rem] p-6 shadow-sm flex-1 relative overflow-hidden flex flex-col min-h-[300px]">
               <div className="flex items-center justify-between mb-6">
-                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium hidden sm:block">
+                <span className="px-4 py-1.5 rounded-full bg-white dark:bg-[#222] shadow-sm text-xs font-medium hidden sm:block dark:text-[#AAAAAA]">
                   {new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toLocaleString('default', { month: 'long' })}
                 </span>
                 <div className="flex items-center gap-4">
-                  <h3 className="text-lg font-medium text-[#222]">
+                  <h3 className="text-lg font-medium text-[#222] dark:text-white">
                     {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
                   </h3>
                   <button 
                     onClick={() => { setSelectedEvent(null); setEventForm({ title: "", date: "", time: "", notes: "" }); setShowEventModal(true); }}
-                    className="p-1.5 bg-[#222] text-white rounded-full hover:bg-black transition-colors shadow-sm"
+                    className="p-1.5 bg-[#222] dark:bg-white text-white dark:text-black rounded-full hover:bg-black dark:hover:bg-gray-200 transition-colors shadow-sm"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
-                <span className="px-4 py-1.5 rounded-full bg-white shadow-sm text-xs font-medium hidden sm:block">
+                <span className="px-4 py-1.5 rounded-full bg-white dark:bg-[#222] shadow-sm text-xs font-medium hidden sm:block dark:text-[#AAAAAA]">
                   {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleString('default', { month: 'long' })}
                 </span>
               </div>
@@ -377,8 +377,8 @@ export const CandidateDashboard: React.FC = () => {
                       const n = date.getDate().toString();
                       return (
                         <div key={i} className="flex flex-col items-center gap-1 flex-1">
-                          <span className="text-xs text-[#888]">{d}</span>
-                          <span className={`text-sm font-medium ${new Date().getDate() === parseInt(n) ? 'text-blue-600 bg-blue-50 px-2 rounded-full' : 'text-[#222]'}`}>{n}</span>
+                          <span className="text-xs text-[#888] dark:text-[#AAAAAA]">{d}</span>
+                          <span className={`text-sm font-medium ${new Date().getDate() === parseInt(n) ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 rounded-full' : 'text-[#222] dark:text-white'}`}>{n}</span>
                         </div>
                       );
                     })}
@@ -435,8 +435,8 @@ export const CandidateDashboard: React.FC = () => {
                             onClick={() => { setSelectedEvent(interview); setShowEventModal(true); }}
                             className={`absolute rounded-xl p-3 shadow-sm z-10 flex flex-col gap-1 overflow-hidden transition-all hover:scale-105 hover:z-20 cursor-pointer ${
                               idx % 2 === 0
-                                ? "bg-[#333] text-white shadow-lg"
-                                : "bg-white border border-black/10 text-[#222]"
+                                ? "bg-[#333] dark:bg-[#444] text-white shadow-lg"
+                                : "bg-white dark:bg-[#222] border border-black/10 dark:border-white/10 text-[#222] dark:text-white"
                             }`}
                             style={{
                               top: `${Math.max(5, Math.min(85, top))}%`,
@@ -445,10 +445,10 @@ export const CandidateDashboard: React.FC = () => {
                               minHeight: '60px'
                             }}
                           >
-                            <h4 className={`text-xs font-semibold truncate ${idx % 2 === 0 ? "text-white" : "text-[#222]"}`}>
+                            <h4 className={`text-xs font-semibold truncate ${idx % 2 === 0 ? "text-white" : "text-[#222] dark:text-white"}`}>
                               {interview.trialTitle}
                             </h4>
-                            <p className={`text-[10px] mt-auto truncate ${idx % 2 === 0 ? "text-white/70" : "text-[#666]"}`}>
+                            <p className={`text-[10px] mt-auto truncate ${idx % 2 === 0 ? "text-white/70" : "text-[#666] dark:text-[#AAAAAA]"}`}>
                               {interview.time}
                             </p>
                           </div>
@@ -468,31 +468,31 @@ export const CandidateDashboard: React.FC = () => {
           {/* Right Column (Tasks) */}
           <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
             {/* Onboarding Mini Card */}
-            <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[2rem] p-6 shadow-sm">
+            <div className="bg-white/60 dark:bg-[#1A1A1A]/60 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-[2rem] p-6 shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-medium text-[#222]">Onboarding</h2>
-                <span className="text-2xl font-light text-[#222]">18%</span>
+                <h2 className="text-lg font-medium text-[#222] dark:text-white">Onboarding</h2>
+                <span className="text-2xl font-light text-[#222] dark:text-white">18%</span>
               </div>
               <div className="flex gap-2 w-full h-8">
                 <div className="flex-1 flex flex-col gap-2">
-                  <span className="text-[10px] font-mono text-[#888]">30%</span>
+                  <span className="text-[10px] font-mono text-[#888] dark:text-[#AAAAAA]">30%</span>
                   <div className="h-full bg-[#FFD166] rounded-l-full w-full flex items-center px-3">
                     <span className="text-xs font-medium text-[#222]">Task</span>
                   </div>
                 </div>
                 <div className="flex-1 flex flex-col gap-2">
-                  <span className="text-[10px] font-mono text-[#888]">25%</span>
-                  <div className="h-full bg-[#333] w-full rounded-r-sm" />
+                  <span className="text-[10px] font-mono text-[#888] dark:text-[#AAAAAA]">25%</span>
+                  <div className="h-full bg-[#333] dark:bg-[#444] w-full rounded-r-sm" />
                 </div>
                 <div className="flex-1 flex flex-col gap-2">
-                  <span className="text-[10px] font-mono text-[#888]">0%</span>
-                  <div className="h-full bg-black/10 rounded-r-full w-full" />
+                  <span className="text-[10px] font-mono text-[#888] dark:text-[#AAAAAA]">0%</span>
+                  <div className="h-full bg-black/10 dark:bg-white/10 rounded-r-full w-full" />
                 </div>
               </div>
             </div>
 
             {/* Task List */}
-            <div className="bg-[#333333] text-white rounded-[2rem] p-6 shadow-xl flex-1 flex flex-col relative overflow-hidden">
+            <div className="bg-[#333333] dark:bg-[#222222] text-white rounded-[2rem] p-6 shadow-xl flex-1 flex flex-col relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20" />
 
               <div className="flex justify-between items-center mb-8 relative z-10">
@@ -524,88 +524,78 @@ export const CandidateDashboard: React.FC = () => {
         {/* Event Dialog Modal */}
         {showEventModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <div className="bg-white/90 backdrop-blur-xl border border-black/10 p-6 rounded-3xl w-full max-w-md shadow-2xl relative">
+            <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-xl border border-black/10 dark:border-white/10 p-6 rounded-3xl w-full max-w-md shadow-2xl relative">
               <button 
                 onClick={() => setShowEventModal(false)}
-                className="absolute top-6 right-6 text-[#888] hover:text-[#222]"
+                className="absolute top-6 right-6 text-[#888] dark:text-[#AAAAAA] hover:text-[#222] dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
               
-              <h2 className="text-2xl font-serif tracking-tight mb-6 text-[#111]">
+              <h2 className="text-2xl font-serif tracking-tight mb-6 text-[#111] dark:text-white">
                 {selectedEvent ? "Event Details" : "Add New Event"}
               </h2>
 
               {selectedEvent ? (
                 <div className="flex flex-col gap-4 text-sm">
                   <div>
-                    <span className="text-[#888] block text-xs mb-1">Title</span>
-                    <p className="font-medium text-[#222]">{selectedEvent.trialTitle}</p>
+                    <span className="text-[#888] dark:text-[#AAAAAA] block text-xs mb-1">Title</span>
+                    <p className="font-medium text-[#222] dark:text-white">{selectedEvent.trialTitle}</p>
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <span className="text-[#888] block text-xs mb-1">Date</span>
-                      <p className="font-medium text-[#222]">{selectedEvent.date}</p>
+                      <span className="text-[#888] dark:text-[#AAAAAA] block text-xs mb-1">Date</span>
+                      <p className="font-medium text-[#222] dark:text-white">{selectedEvent.date}</p>
                     </div>
                     <div className="flex-1">
-                      <span className="text-[#888] block text-xs mb-1">Time</span>
-                      <p className="font-medium text-[#222]">{selectedEvent.time}</p>
+                      <span className="text-[#888] dark:text-[#AAAAAA] block text-xs mb-1">Time</span>
+                      <p className="font-medium text-[#222] dark:text-white">{selectedEvent.time}</p>
                     </div>
                   </div>
-                  {selectedEvent.notes && (
-                    <div>
-                      <span className="text-[#888] block text-xs mb-1">Notes</span>
-                      <p className="text-[#222] bg-black/5 p-3 rounded-xl whitespace-pre-wrap">{selectedEvent.notes}</p>
-                    </div>
-                  )}
-                  <div className="mt-4 flex gap-3">
-                    <button 
-                      onClick={() => setShowEventModal(false)}
-                      className="flex-1 py-2.5 bg-black/5 hover:bg-black/10 text-[#222] rounded-xl font-medium transition-colors"
-                    >
-                      Close
-                    </button>
+                  <div>
+                    <span className="text-[#888] dark:text-[#AAAAAA] block text-xs mb-1">Notes</span>
+                    <p className="text-[#444] dark:text-gray-300 whitespace-pre-wrap">{selectedEvent.notes || "No notes provided."}</p>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col gap-4 text-sm">
+                <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs text-[#888]">Event Title</label>
+                    <label className="text-xs text-[#888] dark:text-[#AAAAAA]">Event Title</label>
                     <input 
                       type="text"
                       value={eventForm.title}
                       onChange={(e) => setEventForm(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="e.g. Study Session"
-                      className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 text-[#222]"
+                      placeholder="e.g. Design Sync"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-[#222] border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-[#222] dark:text-white"
                     />
                   </div>
                   <div className="flex gap-4">
-                    <div className="flex flex-col gap-1.5 flex-1">
-                      <label className="text-xs text-[#888]">Date</label>
+                    <div className="flex-1 flex flex-col gap-1.5">
+                      <label className="text-xs text-[#888] dark:text-[#AAAAAA]">Date</label>
                       <input 
                         type="date"
                         value={eventForm.date}
                         onChange={(e) => setEventForm(prev => ({ ...prev, date: e.target.value }))}
-                        className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 text-[#222]"
+                        className="w-full px-4 py-2.5 bg-white dark:bg-[#222] border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-[#222] dark:text-white"
                       />
                     </div>
-                    <div className="flex flex-col gap-1.5 flex-1">
-                      <label className="text-xs text-[#888]">Time</label>
+                    <div className="flex-1 flex flex-col gap-1.5">
+                      <label className="text-xs text-[#888] dark:text-[#AAAAAA]">Time</label>
                       <input 
                         type="time"
                         value={eventForm.time}
                         onChange={(e) => setEventForm(prev => ({ ...prev, time: e.target.value }))}
-                        className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 text-[#222]"
+                        className="w-full px-4 py-2.5 bg-white dark:bg-[#222] border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-[#222] dark:text-white"
                       />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs text-[#888]">Notes (Optional)</label>
+                    <label className="text-xs text-[#888] dark:text-[#AAAAAA]">Notes (Optional)</label>
                     <textarea 
                       value={eventForm.notes}
                       onChange={(e) => setEventForm(prev => ({ ...prev, notes: e.target.value }))}
                       placeholder="Add any prep notes here..."
-                      className="w-full px-4 py-2.5 bg-white border border-black/10 rounded-xl focus:outline-none focus:border-black/30 min-h-[80px] resize-none text-[#222]"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-[#222] border border-black/10 dark:border-white/10 rounded-xl focus:outline-none focus:border-black/30 dark:focus:border-white/30 min-h-[80px] resize-none text-[#222] dark:text-white"
                     />
                   </div>
                   <button 
@@ -632,7 +622,7 @@ export const CandidateDashboard: React.FC = () => {
                       setShowEventModal(false);
                     }}
                     disabled={!eventForm.title || !eventForm.date || !eventForm.time}
-                    className="w-full py-2.5 mt-2 bg-[#222] hover:bg-black text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                    className="w-full py-2.5 mt-2 bg-[#222] dark:bg-white hover:bg-black dark:hover:bg-gray-200 text-white dark:text-black rounded-xl font-medium transition-colors disabled:opacity-50"
                   >
                     Save Event
                   </button>
@@ -645,27 +635,27 @@ export const CandidateDashboard: React.FC = () => {
         {/* AI Tool Dialog Modal */}
         {showAIModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white/90 backdrop-blur-xl border border-black/10 p-6 rounded-[2rem] w-full max-w-md shadow-2xl relative">
+            <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-xl border border-black/10 dark:border-white/10 p-6 rounded-[2rem] w-full max-w-md shadow-2xl relative">
               <button 
                 onClick={() => setShowAIModal(false)}
-                className="absolute top-6 right-6 text-[#888] hover:text-[#222]"
+                className="absolute top-6 right-6 text-[#888] dark:text-[#AAAAAA] hover:text-[#222] dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
               
-              <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 mb-4">
+              <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4">
                  <Monitor className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-medium tracking-tight mb-2 text-[#111]">
+              <h2 className="text-2xl font-medium tracking-tight mb-2 text-[#111] dark:text-white">
                 Launch {selectedAITool}
               </h2>
-              <p className="text-sm text-[#666] mb-6">
+              <p className="text-sm text-[#666] dark:text-[#AAAAAA] mb-6">
                 This integration is currently pending activation for your account. Please complete your next trial stage to unlock access to the {selectedAITool}.
               </p>
 
               <button 
                 onClick={() => setShowAIModal(false)}
-                className="w-full py-3 bg-[#222] hover:bg-black text-white rounded-xl font-medium transition-colors"
+                className="w-full py-3 bg-[#222] dark:bg-white hover:bg-black dark:hover:bg-gray-200 text-white dark:text-black rounded-xl font-medium transition-colors"
               >
                 Got it
               </button>
@@ -691,16 +681,16 @@ const AccordionItem = ({
 }) => {
   const isExpanded = expanded === id;
   return (
-    <div className="border-b border-black/10 last:border-0 py-2">
+    <div className="border-b border-black/10 dark:border-white/10 last:border-0 py-2">
       <button
         onClick={() => setExpanded(isExpanded ? "" : id)}
         className="w-full flex items-center justify-between py-2 text-left group"
       >
-        <span className="text-sm font-medium text-[#222] group-hover:text-black transition-colors">
+        <span className="text-sm font-medium text-[#222] dark:text-white group-hover:text-black dark:group-hover:text-gray-200 transition-colors">
           {title}
         </span>
         <ChevronDown
-          className={`w-4 h-4 text-[#888] transition-transform duration-300 ${
+          className={`w-4 h-4 text-[#888] dark:text-[#AAAAAA] transition-transform duration-300 ${
             isExpanded ? "rotate-180" : ""
           }`}
         />
