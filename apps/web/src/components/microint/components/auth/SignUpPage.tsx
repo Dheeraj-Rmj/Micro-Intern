@@ -22,7 +22,7 @@ const ErrorMsg = ({ msg }: { msg?: string }) =>
   ) : null;
 
 export const SignUpPage: React.FC = () => {
-  const { setCurrentRoute, showToast, setUserProfile, setRole } = useApp();
+  const { setCurrentRoute, showToast, setUserProfile, setRole, darkMode, setDarkMode } = useApp();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -35,7 +35,7 @@ export const SignUpPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const isDark = darkMode;
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
@@ -171,7 +171,7 @@ export const SignUpPage: React.FC = () => {
       {/* ── Top Right Theme Toggle Button ────────────────────────────── */}
       <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
         <button
-          onClick={() => setIsDark(!isDark)}
+          onClick={() => setDarkMode(!darkMode)}
           className={`w-10 h-10 rounded-full shadow-sm flex items-center justify-center transition-all cursor-pointer ${
             isDark
               ? "bg-[#262626] hover:bg-[#333333] text-white"

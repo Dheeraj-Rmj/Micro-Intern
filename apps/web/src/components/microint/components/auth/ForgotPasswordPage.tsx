@@ -5,14 +5,14 @@ import { ArrowLeft, CheckCircle2, Sun, Moon } from "lucide-react";
 import { authService } from "../../../../features/auth/services/auth.service";
 
 export const ForgotPasswordPage: React.FC = () => {
-  const { setCurrentRoute, showToast } = useApp();
+  const { setCurrentRoute, showToast, darkMode, setDarkMode } = useApp();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isSent, setIsSent] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDark, setIsDark] = useState(true);
+  const isDark = darkMode;
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +91,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
       <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
         <button
-          onClick={() => setIsDark(!isDark)}
+          onClick={() => setDarkMode(!darkMode)}
           className={`w-10 h-10 rounded-full shadow-sm flex items-center justify-center transition-all cursor-pointer ${
             isDark
               ? "bg-[#262626] hover:bg-[#333333] text-white"
