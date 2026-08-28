@@ -39,6 +39,31 @@ export const CandidateDashboard: React.FC = () => {
   const [selectedAITool, setSelectedAITool] = useState("");
   const [aiQuery, setAiQuery] = useState("");
   const [aiResponses, setAiResponses] = useState<{role: 'user' | 'assistant', text: string}[]>([]);
+  const [isAILoading, setIsAILoading] = useState(false);
+
+  const handleAIQuery = async (query: string) => {
+    if (!query.trim() || isAILoading) return;
+    
+    const userQuery = query.trim();
+    setAiResponses(prev => [...prev, { role: 'user', text: userQuery }]);
+    setAiQuery("");
+    setIsAILoading(true);
+
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: userQuery, tool: selectedAITool }),
+      });
+      
+      const data = await res.json();
+      setAiResponses(prev => [...prev, { role: 'assistant', text: data.text }]);
+    } catch (error) {
+      setAiResponses(prev => [...prev, { role: 'assistant', text: "Sorry, I encountered an error communicating with the server." }]);
+    } finally {
+      setIsAILoading(false);
+    }
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -666,11 +691,20 @@ export const CandidateDashboard: React.FC = () => {
                   ) : (
                     aiResponses.map((msg, idx) => (
                       <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${msg.role === 'user' ? 'bg-[#222] dark:bg-white text-white dark:text-black rounded-br-none' : 'bg-black/5 dark:bg-white/10 text-[#222] dark:text-white rounded-bl-none'}`}>
+                        <div className={`max-w-[85%] p-3 rounded-2xl text-sm whitespace-pre-wrap ${msg.role === 'user' ? 'bg-[#222] dark:bg-white text-white dark:text-black rounded-br-none' : 'bg-black/5 dark:bg-white/10 text-[#222] dark:text-white rounded-bl-none'}`}>
                           {msg.text}
                         </div>
                       </div>
                     ))
+                  )}
+                  {isAILoading && (
+                    <div className="flex w-full justify-start">
+                      <div className="max-w-[85%] p-3 rounded-2xl text-sm bg-black/5 dark:bg-white/10 text-[#222] dark:text-white rounded-bl-none flex gap-1 items-center">
+                        <div className="w-1.5 h-1.5 bg-[#888] rounded-full animate-bounce" />
+                        <div className="w-1.5 h-1.5 bg-[#888] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-1.5 h-1.5 bg-[#888] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
@@ -682,29 +716,17 @@ export const CandidateDashboard: React.FC = () => {
                   value={aiQuery}
                   onChange={(e) => setAiQuery(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && aiQuery.trim()) {
-                      const query = aiQuery.trim();
-                      setAiResponses(prev => [...prev, { role: 'user', text: query }]);
-                      setAiQuery("");
-                      setTimeout(() => {
-                        setAiResponses(prev => [...prev, { role: 'assistant', text: `Here are the search results for "${query}" from the ${selectedAITool}.` }]);
-                      }, 600);
+                    if (e.key === 'Enter') {
+                      handleAIQuery(aiQuery);
                     }
                   }}
                   className="flex-1 px-4 py-3 bg-black/5 dark:bg-white/5 border border-transparent focus:border-black/10 dark:focus:border-white/20 rounded-xl focus:outline-none text-[#222] dark:text-white"
+                  disabled={isAILoading}
                 />
                 <button
-                  onClick={() => {
-                    if (aiQuery.trim()) {
-                      const query = aiQuery.trim();
-                      setAiResponses(prev => [...prev, { role: 'user', text: query }]);
-                      setAiQuery("");
-                      setTimeout(() => {
-                        setAiResponses(prev => [...prev, { role: 'assistant', text: `Here are the search results for "${query}" from the ${selectedAITool}.` }]);
-                      }, 600);
-                    }
-                  }}
-                  className="w-12 h-12 rounded-xl bg-[#222] dark:bg-white text-white dark:text-black flex items-center justify-center hover:scale-105 transition-transform shrink-0"
+                  onClick={() => handleAIQuery(aiQuery)}
+                  disabled={isAILoading}
+                  className="w-12 h-12 rounded-xl bg-[#222] dark:bg-white text-white dark:text-black flex items-center justify-center hover:scale-105 transition-transform shrink-0 disabled:opacity-50 disabled:hover:scale-100"
                 >
                   <Send className="w-5 h-5 -ml-0.5" />
                 </button>
