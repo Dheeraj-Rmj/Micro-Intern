@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { InterviewSlot } from "../../types";
 import { authService } from "../../../../features/auth/services/auth.service";
+import { useAuthStore } from "../../../../stores/auth.store";
 
 export const CandidateDashboard: React.FC = () => {
   const { userProfile, setCurrentRoute, applications, interviews, submissions, scheduleInterview } = useApp();
@@ -70,10 +71,14 @@ export const CandidateDashboard: React.FC = () => {
   const handleLogout = async () => {
     try {
       await authService.logout();
-      window.location.href = "/auth";
     } catch (error) {
       console.error("Logout failed:", error);
     }
+    useAuthStore.getState().clearAuth();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("microintern_current_route");
+    }
+    setCurrentRoute("landing");
   };
 
   return (

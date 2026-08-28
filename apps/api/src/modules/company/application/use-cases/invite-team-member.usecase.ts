@@ -69,9 +69,8 @@ export class InviteTeamMemberUseCase {
       // Ensure role is correctly set on user record
       await this.userRepository.updateStatus(user.id, "ACTIVE");
       
-      // We must also update user role to RECRUITER
-      // PrismaUserRepository does not have updateRole, so we rely on CompanyMembership for role validation,
-      // but let's make sure they can login.
+      // Update user role to RECRUITER so they are routed correctly on login
+      await this.userRepository.updateRole(user.id, "RECRUITER");
     }
 
     const newMember = await this.companyRepository.inviteMember(

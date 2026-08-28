@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
+import { authService } from "../../../../features/auth/services/auth.service";
+import { useAuthStore } from "../../../../stores/auth.store";
 import {
   Search,
   Bell,
@@ -45,8 +47,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setProfileDropdownOpen(false);
+    try {
+      await authService.logout();
+    } catch (e) {
+      console.error(e);
+    }
+    useAuthStore.getState().clearAuth();
     if (typeof window !== "undefined") {
       localStorage.removeItem("microintern_current_route");
     }

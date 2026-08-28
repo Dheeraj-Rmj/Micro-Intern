@@ -291,6 +291,13 @@ export class PrismaUserRepository implements IUserRepository {
     });
   }
 
+  async updateRole(userId: string, role: string): Promise<void> {
+    await this.db.user.update({
+      where: { id: userId },
+      data: { role: role as any },
+    });
+  }
+
   // ── Profile Updates ───────────────────────────────────────────────────────
 
   async setEmailVerified(userId: string): Promise<void> {

@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { useApp } from "../../context/AppContext";
+import { authService } from "../../../../features/auth/services/auth.service";
+import { useAuthStore } from "../../../../stores/auth.store";
 import { PageRoute } from "../../types";
 import {
   Sparkles,
@@ -37,7 +39,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
     if (setMobileOpen) setMobileOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch (e) {
+      console.error(e);
+    }
+    useAuthStore.getState().clearAuth();
     if (typeof window !== "undefined") {
       localStorage.removeItem("microintern_current_route");
     }
