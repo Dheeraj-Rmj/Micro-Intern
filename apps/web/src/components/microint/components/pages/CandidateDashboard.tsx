@@ -17,6 +17,7 @@ import {
   FolderKanban,
   Plus,
   X,
+  Send,
 } from "lucide-react";
 import { InterviewSlot } from "../../types";
 
@@ -35,7 +36,9 @@ export const CandidateDashboard: React.FC = () => {
 
   // AI Modal States
   const [showAIModal, setShowAIModal] = useState(false);
-  const [selectedAITool, setSelectedAITool] = useState<string | null>(null);
+  const [selectedAITool, setSelectedAITool] = useState("");
+  const [aiQuery, setAiQuery] = useState("");
+  const [aiResponses, setAiResponses] = useState<{role: 'user' | 'assistant', text: string}[]>([]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -637,7 +640,11 @@ export const CandidateDashboard: React.FC = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-xl border border-black/10 dark:border-white/10 p-6 rounded-[2rem] w-full max-w-md shadow-2xl relative">
               <button 
-                onClick={() => setShowAIModal(false)}
+                onClick={() => {
+                  setShowAIModal(false);
+                  setAiResponses([]);
+                  setAiQuery("");
+                }}
                 className="absolute top-6 right-6 text-[#888] dark:text-[#AAAAAA] hover:text-[#222] dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
@@ -647,18 +654,61 @@ export const CandidateDashboard: React.FC = () => {
                  <Monitor className="w-6 h-6" />
               </div>
               <h2 className="text-2xl font-medium tracking-tight mb-2 text-[#111] dark:text-white">
-                Launch {selectedAITool}
+                {selectedAITool}
               </h2>
-              <p className="text-sm text-[#666] dark:text-[#AAAAAA] mb-6">
-                This integration is currently pending activation for your account. Please complete your next trial stage to unlock access to the {selectedAITool}.
-              </p>
+              
+              <div className="flex flex-col h-[300px] mb-4">
+                <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-3">
+                  {aiResponses.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center text-sm text-[#666] dark:text-[#AAAAAA] text-center p-4">
+                      Start searching or ask a question. The {selectedAITool} is ready to assist you.
+                    </div>
+                  ) : (
+                    aiResponses.map((msg, idx) => (
+                      <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${msg.role === 'user' ? 'bg-[#222] dark:bg-white text-white dark:text-black rounded-br-none' : 'bg-black/5 dark:bg-white/10 text-[#222] dark:text-white rounded-bl-none'}`}>
+                          {msg.text}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
 
-              <button 
-                onClick={() => setShowAIModal(false)}
-                className="w-full py-3 bg-[#222] dark:bg-white hover:bg-black dark:hover:bg-gray-200 text-white dark:text-black rounded-xl font-medium transition-colors"
-              >
-                Got it
-              </button>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  placeholder="Ask anything..."
+                  value={aiQuery}
+                  onChange={(e) => setAiQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && aiQuery.trim()) {
+                      const query = aiQuery.trim();
+                      setAiResponses(prev => [...prev, { role: 'user', text: query }]);
+                      setAiQuery("");
+                      setTimeout(() => {
+                        setAiResponses(prev => [...prev, { role: 'assistant', text: `Here are the search results for "${query}" from the ${selectedAITool}.` }]);
+                      }, 600);
+                    }
+                  }}
+                  className="flex-1 px-4 py-3 bg-black/5 dark:bg-white/5 border border-transparent focus:border-black/10 dark:focus:border-white/20 rounded-xl focus:outline-none text-[#222] dark:text-white"
+                />
+                <button
+                  onClick={() => {
+                    if (aiQuery.trim()) {
+                      const query = aiQuery.trim();
+                      setAiResponses(prev => [...prev, { role: 'user', text: query }]);
+                      setAiQuery("");
+                      setTimeout(() => {
+                        setAiResponses(prev => [...prev, { role: 'assistant', text: `Here are the search results for "${query}" from the ${selectedAITool}.` }]);
+                      }, 600);
+                    }
+                  }}
+                  className="w-12 h-12 rounded-xl bg-[#222] dark:bg-white text-white dark:text-black flex items-center justify-center hover:scale-105 transition-transform shrink-0"
+                >
+                  <Send className="w-5 h-5 -ml-0.5" />
+                </button>
+              </div>
             </div>
           </div>
         )}
