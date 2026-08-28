@@ -34,36 +34,6 @@ export const CandidateDashboard: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<InterviewSlot | null>(null);
   const [eventForm, setEventForm] = useState({ title: "", date: "", time: "", notes: "" });
 
-  // AI Modal States
-  const [showAIModal, setShowAIModal] = useState(false);
-  const [selectedAITool, setSelectedAITool] = useState("");
-  const [aiQuery, setAiQuery] = useState("");
-  const [aiResponses, setAiResponses] = useState<{role: 'user' | 'assistant', text: string}[]>([]);
-  const [isAILoading, setIsAILoading] = useState(false);
-
-  const handleAIQuery = async (query: string) => {
-    if (!query.trim() || isAILoading) return;
-    
-    const userQuery = query.trim();
-    setAiResponses(prev => [...prev, { role: 'user', text: userQuery }]);
-    setAiQuery("");
-    setIsAILoading(true);
-
-    try {
-      const res = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: userQuery, tool: selectedAITool }),
-      });
-      
-      const data = await res.json();
-      setAiResponses(prev => [...prev, { role: 'assistant', text: data.text }]);
-    } catch (error) {
-      setAiResponses(prev => [...prev, { role: 'assistant', text: "Sorry, I encountered an error communicating with the server." }]);
-    } finally {
-      setIsAILoading(false);
-    }
-  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -211,56 +181,7 @@ export const CandidateDashboard: React.FC = () => {
                 expanded={expandedAccordion}
                 setExpanded={setExpandedAccordion}
               />
-              <AccordionItem
-                title="AI Tools & Integrations"
-                id="ai-tools"
-                expanded={expandedAccordion}
-                setExpanded={setExpandedAccordion}
-              >
-                <div className="flex flex-col gap-3 py-3 px-2">
-                  <div 
-                    onClick={() => { setSelectedAITool("AI Copilot"); setShowAIModal(true); }}
-                    className="flex items-center gap-3 p-3 bg-black/[0.03] dark:bg-white/[0.03] rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors cursor-pointer border border-black/5 dark:border-white/5 shadow-sm"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                      <Monitor className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222] dark:text-white">AI Copilot</h4>
-                      <p className="text-[10px] text-[#666] dark:text-[#AAAAAA]">Smart Code Assistant</p>
-                    </div>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888] dark:text-[#666]" />
-                  </div>
-                  
-                  <div 
-                    onClick={() => { setSelectedAITool("Deep Research Agent"); setShowAIModal(true); }}
-                    className="flex items-center gap-3 p-3 bg-black/[0.03] dark:bg-white/[0.03] rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors cursor-pointer border border-black/5 dark:border-white/5 shadow-sm"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                      <Monitor className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222] dark:text-white">Deep Research Agent</h4>
-                      <p className="text-[10px] text-[#666] dark:text-[#AAAAAA]">Automated Research</p>
-                    </div>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888] dark:text-[#666]" />
-                  </div>
 
-                  <div 
-                    onClick={() => { setSelectedAITool("Local Inference Engine"); setShowAIModal(true); }}
-                    className="flex items-center gap-3 p-3 bg-black/[0.03] dark:bg-white/[0.03] rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.05] transition-colors cursor-pointer border border-black/5 dark:border-white/5 shadow-sm"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                      <Monitor className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-[#222] dark:text-white">Local Inference Engine</h4>
-                      <p className="text-[10px] text-[#666] dark:text-[#AAAAAA]">Local Inference Models</p>
-                    </div>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#888] dark:text-[#666]" />
-                  </div>
-                </div>
-              </AccordionItem>
             </div>
           </div>
 
@@ -660,80 +581,7 @@ export const CandidateDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* AI Tool Dialog Modal */}
-        {showAIModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-xl border border-black/10 dark:border-white/10 p-6 rounded-[2rem] w-full max-w-md shadow-2xl relative">
-              <button 
-                onClick={() => {
-                  setShowAIModal(false);
-                  setAiResponses([]);
-                  setAiQuery("");
-                }}
-                className="absolute top-6 right-6 text-[#888] dark:text-[#AAAAAA] hover:text-[#222] dark:hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              
-              <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-4">
-                 <Monitor className="w-6 h-6" />
-              </div>
-              <h2 className="text-2xl font-medium tracking-tight mb-2 text-[#111] dark:text-white">
-                {selectedAITool}
-              </h2>
-              
-              <div className="flex flex-col h-[300px] mb-4">
-                <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-3">
-                  {aiResponses.length === 0 ? (
-                    <div className="flex-1 flex items-center justify-center text-sm text-[#666] dark:text-[#AAAAAA] text-center p-4">
-                      Start searching or ask a question. The {selectedAITool} is ready to assist you.
-                    </div>
-                  ) : (
-                    aiResponses.map((msg, idx) => (
-                      <div key={idx} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] p-3 rounded-2xl text-sm whitespace-pre-wrap ${msg.role === 'user' ? 'bg-[#222] dark:bg-white text-white dark:text-black rounded-br-none' : 'bg-black/5 dark:bg-white/10 text-[#222] dark:text-white rounded-bl-none'}`}>
-                          {msg.text}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                  {isAILoading && (
-                    <div className="flex w-full justify-start">
-                      <div className="max-w-[85%] p-3 rounded-2xl text-sm bg-black/5 dark:bg-white/10 text-[#222] dark:text-white rounded-bl-none flex gap-1 items-center">
-                        <div className="w-1.5 h-1.5 bg-[#888] rounded-full animate-bounce" />
-                        <div className="w-1.5 h-1.5 bg-[#888] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-1.5 h-1.5 bg-[#888] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              <div className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  placeholder="Ask anything..."
-                  value={aiQuery}
-                  onChange={(e) => setAiQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleAIQuery(aiQuery);
-                    }
-                  }}
-                  className="flex-1 px-4 py-3 bg-black/5 dark:bg-white/5 border border-transparent focus:border-black/10 dark:focus:border-white/20 rounded-xl focus:outline-none text-[#222] dark:text-white"
-                  disabled={isAILoading}
-                />
-                <button
-                  onClick={() => handleAIQuery(aiQuery)}
-                  disabled={isAILoading}
-                  className="w-12 h-12 rounded-xl bg-[#222] dark:bg-white text-white dark:text-black flex items-center justify-center hover:scale-105 transition-transform shrink-0 disabled:opacity-50 disabled:hover:scale-100"
-                >
-                  <Send className="w-5 h-5 -ml-0.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </>
     );
 };
