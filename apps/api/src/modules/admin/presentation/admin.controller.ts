@@ -49,9 +49,13 @@ export class AdminController {
   }
 
   async createCompanyManually(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const data = req.body;
-    const result = await this.createCompanyManuallyUseCase.execute(req.user!.id, data);
-    ResponseFormatter.success(res, result);
+    try {
+      const data = req.body;
+      const result = await this.createCompanyManuallyUseCase.execute(req.user!.id, data);
+      ResponseFormatter.success(res, result);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async suspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {

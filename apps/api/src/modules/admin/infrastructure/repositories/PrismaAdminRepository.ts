@@ -3,6 +3,7 @@ import type { PlatformStatsProps } from "../../domain/index.js";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import type { PrismaClient } from "@microintern/database";
+import { ConflictError } from "@/shared/errors/index.js";
 
 export class PrismaAdminRepository implements IAdminRepository {
   constructor(private readonly db: PrismaClient) {}
@@ -184,6 +185,15 @@ export class PrismaAdminRepository implements IAdminRepository {
   }
 
   async createCompanyManually(data: { companyName: string; adminEmail: string; adminName: string }): Promise<any> {
+    // ── Pre-checks (give friendly errors instead of raw Prisma P2002) ──────
+    const existingUser = await this.db.user.findUnique({ where: { email: data.adminEmail } });
+    if (existingUser) {
+      throw new ConflictError(
+        `A user with email "${data.adminEmail}" already exists. Use a different email address.`,
+        "COMPANY_ALREADY_EXISTS",
+      );
+    }
+
     const slug = data.companyName.toLowerCase().replace(/[\s_]+/g, "-") + "-" + crypto.randomUUID().substring(0, 8);
     
     return await this.db.$transaction(async (tx) => {
