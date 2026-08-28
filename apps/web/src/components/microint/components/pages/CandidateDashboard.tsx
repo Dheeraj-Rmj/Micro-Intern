@@ -241,7 +241,7 @@ export const CandidateDashboard: React.FC = () => {
 
           {/* Middle Content */}
           <div className="col-span-12 lg:col-span-6 flex flex-col gap-6">
-            <div className="grid grid-cols-1 gap-6 h-[320px]">
+            <div className="grid grid-cols-1 gap-6 min-h-[400px]">
               {/* Time Tracker Card */}
               <div className="bg-gradient-to-br from-[#FFFDF0] to-[#FFF2CC] dark:from-[#2A2615] dark:to-[#1A180C] rounded-[2.5rem] p-6 shadow-sm flex flex-col items-center relative overflow-hidden h-full">
                 <div className="w-full flex justify-between items-start z-10">
