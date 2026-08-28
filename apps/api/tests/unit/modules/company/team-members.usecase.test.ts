@@ -14,6 +14,8 @@ import { eventBus, DOMAIN_EVENTS } from "@/shared/events/EventBus.js";
 
 describe("Company Team Member Management Use Cases", () => {
   let mockRepo: any;
+  let mockUserRepo: any;
+  let mockPasswordService: any;
 
   beforeEach(() => {
     mockRepo = {
@@ -24,12 +26,19 @@ describe("Company Team Member Management Use Cases", () => {
       listMembers: vi.fn(),
       removeMember: vi.fn(),
     };
+    mockUserRepo = {
+      findByEmail: vi.fn(),
+      create: vi.fn(),
+    };
+    mockPasswordService = {
+      hash: vi.fn(),
+    };
     vi.spyOn(eventBus, "emit").mockImplementation(async () => true as any);
   });
 
   describe("InviteTeamMemberUseCase", () => {
     it("should reject invitation attempt if requesting user is not COMPANY_OWNER", async () => {
-      const useCase = new InviteTeamMemberUseCase(mockRepo);
+      const useCase = new InviteTeamMemberUseCase(mockRepo, mockUserRepo, mockPasswordService);
       mockRepo.findByUserId.mockResolvedValue({ id: "comp-1" });
       mockRepo.findMember.mockResolvedValue({ isOwner: () => false }); // Non-owner
 
@@ -39,7 +48,7 @@ describe("Company Team Member Management Use Cases", () => {
     });
 
     it("should throw MemberAlreadyExistsError if target email is already invited or a registered team member", async () => {
-      const useCase = new InviteTeamMemberUseCase(mockRepo);
+      const useCase = new InviteTeamMemberUseCase(mockRepo, mockUserRepo, mockPasswordService);
       mockRepo.findByUserId.mockResolvedValue({ id: "comp-1" });
       mockRepo.findMember.mockResolvedValue({ isOwner: () => true });
       mockRepo.findMemberByEmail.mockResolvedValue({ id: "mem-existing" });
@@ -50,10 +59,11 @@ describe("Company Team Member Management Use Cases", () => {
     });
 
     it("should invite new RECRUITER, normalize email address, and emit COMPANY_MEMBER_INVITED event", async () => {
-      const useCase = new InviteTeamMemberUseCase(mockRepo);
+      const useCase = new InviteTeamMemberUseCase(mockRepo, mockUserRepo, mockPasswordService);
       mockRepo.findByUserId.mockResolvedValue({ id: "comp-1", name: "Acme AI" });
       mockRepo.findMember.mockResolvedValue({ isOwner: () => true });
       mockRepo.findMemberByEmail.mockResolvedValue(null);
+      mockUserRepo.findByEmail.mockResolvedValue({ id: "user-123" });
       mockRepo.inviteMember.mockResolvedValue({ id: "mem-new", role: Role.RECRUITER });
 
       const res = await useCase.execute("user-owner", "   Recruiter@Company.COM   ");
