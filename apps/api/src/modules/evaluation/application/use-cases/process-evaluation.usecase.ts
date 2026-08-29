@@ -212,7 +212,10 @@ export class ProcessEvaluationUseCase {
         };
         promptVersion = PROMPTS.ADVANCED_EVALUATION.version;
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message?.includes("Security violation")) {
+        throw error;
+      }
       log.warn(
         { err: error, submissionId },
         "AI evaluation failed, utilizing fallback heuristic",
