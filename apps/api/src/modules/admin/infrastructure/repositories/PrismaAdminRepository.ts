@@ -307,21 +307,6 @@ export class PrismaAdminRepository implements IAdminRepository {
     }));
   }
 
-  async getEscrowMetrics(): Promise<any> {
-    const activeCount = await this.db.assessment.count({
-      where: { status: "PUBLISHED" as any, deletedAt: null },
-    });
-    const pendingCount = await this.db.submission.count({
-      where: { status: "SUBMITTED" as any, deletedAt: null },
-    });
-
-    return {
-      totalValueLocked: 0,
-      activeContracts: activeCount,
-      payoutsPending: 0,
-    };
-  }
-
   async getSubscriptionMetrics(): Promise<any> {
     const activeCompanies = await this.db.company.count({
       where: { status: "ACTIVE" as any, deletedAt: null },

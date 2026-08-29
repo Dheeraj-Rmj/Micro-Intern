@@ -21,6 +21,7 @@ import {
   Plus,
   ArrowRight,
   Key,
+  Trash2,
 } from "lucide-react";
 
 export const SuperAdminOrganizationPage: React.FC = () => {
@@ -143,6 +144,19 @@ export const SuperAdminOrganizationPage: React.FC = () => {
       `AI evaluation weights for ${name} reset to default baseline (90).`,
       "info",
     );
+  };
+
+  const handleDeleteUser = async (userId: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete user ${name}? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await adminApi.deleteUser(userId);
+      showToast("Account Deleted", `User ${name} has been permanently deleted.`, "success");
+      fetchUsers();
+    } catch (err: any) {
+      showToast("Error", err.message || "Failed to delete user.", "warning");
+    }
   };
 
   return (
@@ -391,6 +405,15 @@ export const SuperAdminOrganizationPage: React.FC = () => {
                         }
                       >
                         <Ban className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Delete User Button */}
+                      <button
+                        onClick={() => handleDeleteUser(user.id, user.name)}
+                        className="p-2 rounded-xl border border-red-500/20 hover:bg-red-500/10 text-red-500 hover:text-red-600 transition-colors cursor-pointer ml-1"
+                        title="Delete User Account Permanently"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>

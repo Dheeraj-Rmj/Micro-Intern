@@ -8,13 +8,13 @@ import type {
   ListUsersUseCase,
   ListTrialsUseCase,
   ListAuditLogsUseCase,
-  GetEscrowMetricsUseCase,
   GetSubscriptionMetricsUseCase,
   GetPaymentMetricsUseCase,
   GetGlobalAnalyticsUseCase,
   CreateCompanyManuallyUseCase,
   UnsuspendUserUseCase,
 } from "../application/index.js";
+import type { DeleteAccountUseCase } from "@/modules/auth/application/use-cases/delete-account.usecase.js";
 import type { Request, Response, NextFunction } from "express";
 
 export class AdminController {
@@ -26,12 +26,12 @@ export class AdminController {
     private readonly listUsersUseCase: ListUsersUseCase,
     private readonly listTrialsUseCase: ListTrialsUseCase,
     private readonly listAuditLogsUseCase: ListAuditLogsUseCase,
-    private readonly getEscrowMetricsUseCase: GetEscrowMetricsUseCase,
     private readonly getSubscriptionMetricsUseCase: GetSubscriptionMetricsUseCase,
     private readonly getPaymentMetricsUseCase: GetPaymentMetricsUseCase,
     private readonly getGlobalAnalyticsUseCase: GetGlobalAnalyticsUseCase,
     private readonly createCompanyManuallyUseCase: CreateCompanyManuallyUseCase,
     private readonly unsuspendUserUseCase: UnsuspendUserUseCase,
+    private readonly deleteAccountUseCase: DeleteAccountUseCase,
   ) {}
 
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -70,6 +70,12 @@ export class AdminController {
     const targetUserId = req.params["id"] as string;
     const unsuspended = await this.unsuspendUserUseCase.execute(req.user!.id, targetUserId);
     ResponseFormatter.success(res, unsuspended);
+  }
+
+  async deleteUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const targetUserId = req.params["id"] as string;
+    await this.deleteAccountUseCase.execute(targetUserId);
+    ResponseFormatter.success(res, { deleted: true, id: targetUserId });
   }
 
   async listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -111,11 +117,6 @@ export class AdminController {
   async updateSettings(req: Request, res: Response, next: NextFunction): Promise<void> {
     const updated = ConfigManager.getInstance().saveConfig(req.body);
     ResponseFormatter.success(res, updated);
-  }
-
-  async getEscrowMetrics(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const metrics = await this.getEscrowMetricsUseCase.execute();
-    ResponseFormatter.success(res, metrics);
   }
 
   async getSubscriptionMetrics(req: Request, res: Response, next: NextFunction): Promise<void> {

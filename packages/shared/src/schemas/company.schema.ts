@@ -57,9 +57,18 @@ export type UpdateCompanyInput = z.infer<typeof UpdateCompanySchema>;
 
 /**
  * Validation schema for inviting a recruiter to the team.
+ * Uses a relaxed email regex to support internal corporate domains
+ * like @company.microintern which Zod's strict .email() rejects.
  */
 export const InviteTeamMemberSchema = z.object({
-  email: EmailSchema,
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      { message: "Invalid email address" },
+    ),
   name: z.string().min(1, "Name is required").optional(),
   role: z.string().optional(),
 });

@@ -113,7 +113,6 @@ export const SuperAdminDashboard: React.FC = () => {
               logo: (c.companyName || c.name).charAt(0),
               activeTrials: c.activeTrials || 0,
               status: c.status === "active" ? "eKYC Approved" : "Pending",
-              escrowLocked: c.escrowLocked ? `$${c.escrowLocked}` : "$0",
             })),
           );
         }

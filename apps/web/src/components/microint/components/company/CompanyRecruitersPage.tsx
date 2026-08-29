@@ -35,12 +35,14 @@ export const CompanyRecruitersPage: React.FC = () => {
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await companyApi.getMembers();
-        if (res.data?.members) {
-          const mapped = res.data.members.map((m: any) => ({
+  const fetchMembers = React.useCallback(async () => {
+    try {
+      const res = await companyApi.getMembers();
+      if (res.data?.members) {
+        const mapped = res.data.members
+          // Only show RECRUITER-role members (exclude the COMPANY_OWNER themselves)
+          .filter((m: any) => m.role === "RECRUITER")
+          .map((m: any) => ({
             id: m.userId,
             name: m.userDetails?.firstName
               ? `${m.userDetails.firstName} ${m.userDetails.lastName}`
@@ -48,20 +50,22 @@ export const CompanyRecruitersPage: React.FC = () => {
             email: m.userDetails?.email || `pending-${m.id}@company.microintern`,
             roleTitle: m.role,
             assignedTrials: 0,
-            status: m.status || "ACTIVE",
+            status: m.userDetails?.status || "ACTIVE",
             created: new Date(m.joinedAt || m.createdAt).toLocaleDateString(),
           }));
-          setRecruiters(mapped);
-        }
-      } catch (err) {
-        console.error("Failed to fetch members:", err);
-        showToast("Error", "Failed to load team members", "error");
-      } finally {
-        setLoading(false);
+        setRecruiters(mapped);
       }
-    };
+    } catch (err) {
+      console.error("Failed to fetch members:", err);
+      showToast("Error", "Failed to load team members", "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
+
+  React.useEffect(() => {
     fetchMembers();
-  }, []);
+  }, [fetchMembers]);
 
   const handleGenerateLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,31 +78,27 @@ export const CompanyRecruitersPage: React.FC = () => {
     const newEmail = `${cleanedHandle}@company.microintern`;
 
     try {
-      const res = await companyApi.inviteMember(newEmail, roleTitle, fullName);
+      await companyApi.inviteMember(newEmail, roleTitle, fullName);
 
-      const newRecruiter: RecruiterSeat = {
-        id: res.data.userId || `REC-${Math.floor(100 + Math.random() * 900)}`,
-        name: fullName,
-        email: newEmail,
-        roleTitle: roleTitle,
-        assignedTrials: 0,
-        status: "ACTIVE",
-        created: "Just now",
-      };
+      // Re-fetch from API so the list stays in sync with the database
+      await fetchMembers();
 
-      setRecruiters([newRecruiter, ...recruiters]);
       setFullName("");
       setHandle("");
-      setRoleTitle("Technical Talent Recruiter");
+      setRoleTitle("Technical Recruiter");
 
       showToast(
         "Recruiter Seat Created!",
-        `Generated corporate credentials: ${newEmail}. Login password ready to copy.`,
+        `Generated corporate credentials: ${newEmail}. Temp password: MicroIntern#Recruit2026!`,
         "success",
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      showToast("Error", "Failed to invite team member", "error");
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to invite team member";
+      showToast("Error", msg, "error");
     }
   };
 

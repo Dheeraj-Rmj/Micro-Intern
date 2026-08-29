@@ -35,7 +35,6 @@ export interface AdminUser {
   joined: string;
   details: string;
   activeTrials?: number;
-  escrowLocked?: number;
   ipAddress?: string;
   companyName?: string;
 }
@@ -46,7 +45,6 @@ export interface AdminTrial {
   company: string;
   stipend: string;
   candidate: string;
-  escrowStatus: "LOCKED" | "RELEASED" | "DISPUTED" | "REVIEW_PENDING";
   aiScore: number;
   submittedAt: string;
   category: string;
@@ -106,6 +104,11 @@ export const adminApi = {
     return data.data;
   },
 
+  deleteUser: async (id: string): Promise<any> => {
+    const { data } = await apiClient.delete<any>(`/admin/users/${id}`);
+    return data.data;
+  },
+
   broadcastAlert: async (message: string): Promise<any> => {
     const { data } = await apiClient.post<any>("/admin/broadcast", { message });
     return data.data;
@@ -138,11 +141,6 @@ export const adminApi = {
 
   updateSettings: async (settings: any): Promise<any> => {
     const { data } = await apiClient.post<any>("/admin/settings", settings);
-    return data.data;
-  },
-
-  getEscrowMetrics: async (): Promise<any> => {
-    const { data } = await apiClient.get<any>("/admin/metrics/escrow");
     return data.data;
   },
 

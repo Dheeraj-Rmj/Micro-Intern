@@ -160,6 +160,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const role = state.user!.role;
           if (role === "COMPANY_OWNER") {
             setCurrentRoute("company-onboarding");
+          } else if (role === "RECRUITER") {
+            // Recruiters skip onboarding wizard — go straight to company dashboard
+            setCurrentRoute("company-dashboard");
           } else if (role === "CANDIDATE") {
             setCurrentRoute("candidate-onboarding");
           }
@@ -198,6 +201,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           if (!savedRoute || !exemptRoutes.includes(savedRoute)) {
             if (state.user!.role === "COMPANY_OWNER") {
               setCurrentRoute("company-onboarding");
+            } else if (state.user!.role === "RECRUITER") {
+              // Recruiters skip onboarding wizard — go straight to company dashboard
+              setCurrentRoute("company-dashboard");
             } else if (state.user!.role === "CANDIDATE") {
               setCurrentRoute("candidate-onboarding");
             }

@@ -15,7 +15,6 @@ import {
   ListUsersUseCase,
   ListTrialsUseCase,
   ListAuditLogsUseCase,
-  GetEscrowMetricsUseCase,
   GetSubscriptionMetricsUseCase,
   GetPaymentMetricsUseCase,
   GetGlobalAnalyticsUseCase,
@@ -23,6 +22,7 @@ import {
   UnsuspendUserUseCase,
 } from "../application/index.js";
 import { PrismaAdminRepository } from "../infrastructure/index.js";
+import { DeleteAccountUseCase } from "@/modules/auth/application/use-cases/delete-account.usecase.js";
 
 import { AdminController } from "./admin.controller.js";
 
@@ -83,10 +83,6 @@ export function createAdminRouter(): Router {
     );
 
     container.register(
-      "GetEscrowMetricsUseCase",
-      () => new GetEscrowMetricsUseCase(container.get("IAdminRepository")),
-    );
-    container.register(
       "GetSubscriptionMetricsUseCase",
       () => new GetSubscriptionMetricsUseCase(container.get("IAdminRepository")),
     );
@@ -105,6 +101,11 @@ export function createAdminRouter(): Router {
     );
 
     container.register(
+      "AdminDeleteAccountUseCase",
+      () => new DeleteAccountUseCase(container.get("IUserRepository")),
+    );
+
+    container.register(
       "AdminController",
       () =>
         new AdminController(
@@ -115,12 +116,12 @@ export function createAdminRouter(): Router {
           container.get("ListUsersUseCase"),
           container.get("ListTrialsUseCase"),
           container.get("ListAuditLogsUseCase"),
-          container.get("GetEscrowMetricsUseCase"),
           container.get("GetSubscriptionMetricsUseCase"),
           container.get("GetPaymentMetricsUseCase"),
           container.get("GetGlobalAnalyticsUseCase"),
           container.get("CreateCompanyManuallyUseCase"),
           container.get("UnsuspendUserUseCase"),
+          container.get("AdminDeleteAccountUseCase"),
         ),
     );
   }
@@ -178,6 +179,15 @@ export function createAdminRouter(): Router {
     },
   );
 
+  // DELETE /api/v1/admin/users/:id
+  router.delete(
+    "/users/:id" as unknown as string,
+    audit(AuditAction.DELETE, "User") as RequestHandler,
+    (req, res, next) => {
+      controller.deleteUser(req, res, next).catch(next);
+    },
+  );
+
   // GET /api/v1/admin/users
   router.get("/users", (req, res, next) => {
     controller.listUsers(req, res, next).catch(next);
@@ -224,11 +234,6 @@ export function createAdminRouter(): Router {
       controller.updateSettings(req, res, next).catch(next);
     },
   );
-
-  // GET /api/v1/admin/metrics/escrow
-  router.get("/metrics/escrow", (req, res, next) => {
-    controller.getEscrowMetrics(req, res, next).catch(next);
-  });
 
   // GET /api/v1/admin/metrics/subscriptions
   router.get("/metrics/subscriptions", (req, res, next) => {

@@ -106,12 +106,6 @@ export const CandidateDashboard: React.FC = () => {
                   {submissions.filter(s => s.status === "Evaluated" || s.status === "Approved").length * 10}%
                 </div>
               </div>
-              <div className="flex flex-col gap-2 flex-1 min-w-[200px]">
-                <span className="text-sm text-[#555555] dark:text-[#AAAAAA]">Escrow time</span>
-                <div className="h-[40px] rounded-full overflow-hidden flex relative border border-black/10 dark:border-white/10">
-                  <div className="w-[60%] bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(0,0,0,0.03)_4px,rgba(0,0,0,0.03)_8px)] dark:bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(255,255,255,0.03)_4px,rgba(255,255,255,0.03)_8px)] bg-white/50 dark:bg-white/10 backdrop-blur-sm" />
-                </div>
-              </div>
               <div className="flex flex-col gap-2">
                 <span className="text-sm text-[#555555] dark:text-[#AAAAAA]">Output</span>
                 <div className="px-6 py-2.5 rounded-full border border-black/20 dark:border-white/20 text-[#222] dark:text-white text-sm font-medium bg-transparent">

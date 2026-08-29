@@ -25,7 +25,6 @@ export interface IAdminRepository {
   listUsers(filters: { search?: string; role?: string }): Promise<any[]>;
   listTrials(filters: { search?: string; status?: string }): Promise<any[]>;
   listAuditLogs(filters: { search?: string; severity?: string }): Promise<any[]>;
-  getEscrowMetrics(): Promise<any>;
   getSubscriptionMetrics(): Promise<any>;
   getPaymentMetrics(): Promise<any>;
   getGlobalAnalytics(): Promise<any>;

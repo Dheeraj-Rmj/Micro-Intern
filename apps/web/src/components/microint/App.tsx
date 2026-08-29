@@ -28,7 +28,6 @@ import {
   SuperAdminPaymentsPage,
   SuperAdminGlobalAnalyticsPage,
   SuperAdminSystemPage,
-  SuperAdminEscrowTrialsPage,
 } from "./components/admin";
 import {
   CompanyDashboard,
@@ -204,8 +203,6 @@ const MainRouter: React.FC = () => {
         return <CompanyTrialsPage />;
       case "admin-dashboard":
         return <SuperAdminDashboard />;
-      case "admin-trials":
-        return <SuperAdminEscrowTrialsPage />;
       case "admin-users":
       case "admin-organization":
         return <SuperAdminOrganizationPage />;
@@ -221,6 +218,9 @@ const MainRouter: React.FC = () => {
       case "admin-system":
         return <SuperAdminSystemPage />;
       default:
+        // Role-aware fallback: prevent recruiters/owners from landing on candidate dashboard
+        if (role === "company") return <CompanyDashboard />;
+        if (role === "admin") return <SuperAdminDashboard />;
         return <CandidateDashboard />;
     }
   };

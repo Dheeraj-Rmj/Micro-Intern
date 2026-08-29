@@ -6,7 +6,6 @@ export * from "./use-cases/suspend-user.usecase.js";
 export * from "./use-cases/list-users.usecase.js";
 export * from "./use-cases/list-trials.usecase.js";
 export * from "./use-cases/list-audit-logs.usecase.js";
-export * from "./use-cases/get-escrow-metrics.usecase.js";
 export * from "./use-cases/get-subscription-metrics.usecase.js";
 export * from "./use-cases/get-payment-metrics.usecase.js";
 export * from "./use-cases/get-global-analytics.usecase.js";

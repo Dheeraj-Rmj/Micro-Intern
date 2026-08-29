@@ -308,27 +308,6 @@ export const SuperAdminSystemPage: React.FC = () => {
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
                     <div className="font-semibold text-sm text-black dark:text-white">
-                      Stripe Connect Escrow Payouts
-                    </div>
-                    <p className="text-xs text-black/60 dark:text-white/70">
-                      Hold and disburse trial stipends to candidates
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => toggleFlag("stripeLiveMode", "Stripe Escrow")}
-                    className="hover:scale-105 transition-transform cursor-pointer"
-                  >
-                    {featureFlags.stripeLiveMode ? (
-                      <ToggleRight className="w-8 h-8 text-emerald-500" />
-                    ) : (
-                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">
                       AI Plagiarism Anti-Cheat Engine
                     </div>
                     <p className="text-xs text-black/60 dark:text-white/70">
