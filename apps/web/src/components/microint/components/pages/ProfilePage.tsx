@@ -404,30 +404,43 @@ export const ProfilePage: React.FC = () => {
  setTimeout(async () => {
  setIsAnalyzingResume(false);
  setResumeName(file.name);
+  const loadPDFJS = async () => {
+  const globalObj = window as any;
+  // Temporarily disable AMD to force PDF.js to load globally
+  const tempDefine = globalObj.define;
+  if (tempDefine && tempDefine.amd) {
+  globalObj.define = undefined;
+  }
 
- // Dynamic import of PDF.js from CDN to bypass package manager issues
- const loadPDFJS = async () => {
- const getLib = () => window.pdfjsLib || (window as any)["pdfjs-dist/build/pdf"];
- if (getLib()) return getLib();
- return new Promise((resolve, reject) => {
- const script = document.createElement("script");
- script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
- script.onload = () => {
- const lib = getLib();
- if (!lib) {
- reject(new Error("pdfjsLib not found after script load"));
- return;
- }
- // Ensure it's globally available as pdfjsLib
- window.pdfjsLib = lib;
- lib.GlobalWorkerOptions.workerSrc =
- "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
- resolve(lib);
- };
- script.onerror = reject;
- document.body.appendChild(script);
- });
- };
+  const getLib = () => globalObj.pdfjsLib || globalObj["pdfjs-dist/build/pdf"];
+  if (getLib()) {
+  globalObj.define = tempDefine;
+  return getLib();
+  }
+
+  return new Promise((resolve, reject) => {
+  const script = document.createElement("script");
+  script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  script.onload = () => {
+  const lib = getLib();
+  globalObj.define = tempDefine; // Restore AMD loader
+  if (!lib) {
+  reject(new Error("pdfjsLib not found after script load"));
+  return;
+  }
+  // Ensure it's globally available as pdfjsLib
+  globalObj.pdfjsLib = lib;
+  lib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  resolve(lib);
+  };
+  script.onerror = (e) => {
+  globalObj.define = tempDefine;
+  reject(new Error("Failed to load pdf.js script from CDN"));
+  };
+  document.body.appendChild(script);
+  });
+  };
 
  try {
  const pdfjsLib = await loadPDFJS();
@@ -468,7 +481,7 @@ export const ProfilePage: React.FC = () => {
  const lowerText = fullText.toLowerCase();
  const keywordCount = resumeKeywords.filter((kw) => lowerText.includes(kw)).length;
 
- if (keywordCount < 2) {
+ if (keywordCount < 1) {
  setResumeError("Upload a real resume");
  showToast(
  "Nice Try",
@@ -673,7 +686,8 @@ export const ProfilePage: React.FC = () => {
  );
  } catch (error) {
  console.error("PDF Parsing Error:", error);
- showToast("Extraction Failed", "Could not parse the PDF file.", "warning");
+ const msg = error instanceof Error ? error.message : "Unknown error";
+ showToast("Extraction Failed", `Could not parse the PDF file. ${msg}`, "warning");
  }
  }, 200);
  }
