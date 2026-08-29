@@ -120,6 +120,7 @@ export const CompanyTrialsPage: React.FC = () => {
       const res = await companyApi.createAssessment({
         title,
         description: `${category} skill trial`,
+        instructions: `Please complete this ${category} trial.`,
         skillsRequired: [category],
         durationMinutes: 120,
         passingScore: 70,
@@ -139,8 +140,10 @@ export const CompanyTrialsPage: React.FC = () => {
         `"${title}" has been created. Publish it to make it live.`,
         "success",
       );
-    } catch {
-      showToast("Error", "Failed to save trial to backend. Showing locally.", "warning");
+    } catch (err: any) {
+      console.error(err);
+      const msg = err?.response?.data?.error?.message || err?.message || "Failed to save trial to backend. Showing locally.";
+      showToast("Error", msg, "error");
     }
   };
 
