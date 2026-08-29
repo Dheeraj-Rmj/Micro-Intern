@@ -38,8 +38,8 @@ export const CompanyRecruitersPage: React.FC = () => {
   const fetchMembers = React.useCallback(async () => {
     try {
       const res = await companyApi.getMembers();
-      if (res.data?.members) {
-        const mapped = res.data.members
+      if (Array.isArray(res.data)) {
+        const mapped = res.data
           // Only show RECRUITER-role members (exclude the COMPANY_OWNER themselves)
           .filter((m: any) => m.role === "RECRUITER")
           .map((m: any) => ({
@@ -95,7 +95,7 @@ export const CompanyRecruitersPage: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       const msg =
-        err?.response?.data?.message ||
+        err?.response?.data?.error?.message ||
         err?.message ||
         "Failed to invite team member";
       showToast("Error", msg, "error");
