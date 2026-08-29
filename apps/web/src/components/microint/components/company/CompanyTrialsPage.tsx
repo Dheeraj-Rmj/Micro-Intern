@@ -34,7 +34,7 @@ export const CompanyTrialsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("Full Stack");
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     const fetchAssessments = async () => {
@@ -287,18 +287,14 @@ export const CompanyTrialsPage: React.FC = () => {
                 <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
                   Category
                 </label>
-                <select
+                <input
+                  type="text"
+                  placeholder="e.g. Data Science, iOS Dev, Full Stack"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
-                >
-                  <option value="Full Stack">Full Stack</option>
-                  <option value="Frontend">Frontend</option>
-                  <option value="AI / ML">AI / ML</option>
-                  <option value="Backend">Backend</option>
-                  <option value="UI/UX Design">UI/UX Design</option>
-                  <option value="DevOps">DevOps</option>
-                </select>
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                  required
+                />
               </div>
 
               <div className="flex gap-3 pt-2">
