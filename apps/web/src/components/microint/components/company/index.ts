@@ -7,3 +7,4 @@ export * from "./CompanyHiringAnalyticsPage";
 export * from "./CompanyBillingPage";
 export * from "./CompanyAIInsightsPage";
 export * from "./CompanyAIGeneratorPage";
+export * from "./CompanyProfilePage";

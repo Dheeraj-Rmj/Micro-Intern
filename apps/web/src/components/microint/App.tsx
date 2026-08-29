@@ -28,6 +28,7 @@ import {
   SuperAdminPaymentsPage,
   SuperAdminGlobalAnalyticsPage,
   SuperAdminSystemPage,
+  SuperAdminProfilePage,
 } from "./components/admin";
 import {
   CompanyDashboard,
@@ -39,6 +40,7 @@ import {
   CompanyBillingPage,
   CompanyAIInsightsPage,
   CompanyAIGeneratorPage,
+  CompanyProfilePage,
 } from "./components/company";
 import { ForcePasswordChangeModal } from "../../features/auth/components/ForcePasswordChangeModal";
 import { CandidateOnboardingWizard } from "./components/onboarding/CandidateOnboardingWizard";
@@ -199,6 +201,8 @@ const MainRouter: React.FC = () => {
         return <CompanyAIInsightsPage />;
       case "company-ai-generator":
         return <CompanyAIGeneratorPage />;
+      case "company-profile":
+        return <CompanyProfilePage />;
       // Kept for backward compatibility/internal routing if needed
       case "company-applications":
       case "company-evaluations":
@@ -225,6 +229,8 @@ const MainRouter: React.FC = () => {
         return <SuperAdminGlobalAnalyticsPage />;
       case "admin-system":
         return <SuperAdminSystemPage />;
+      case "admin-profile":
+        return <SuperAdminProfilePage />;
       default:
         // Role-aware fallback: prevent recruiters/owners from landing on candidate dashboard
         if (role === "company") return <CompanyDashboard />;

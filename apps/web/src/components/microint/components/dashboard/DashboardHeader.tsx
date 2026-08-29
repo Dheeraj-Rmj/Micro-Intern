@@ -233,9 +233,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
                   onClick={() => {
                     setProfileDropdownOpen(false);
                     if (isSuperAdminView || (role as string) === "admin") {
-                      setCurrentRoute("admin-organization");
+                      setCurrentRoute("admin-profile");
                     } else if (isCompanyView || (role as string) === "company") {
-                      setCurrentRoute("company-settings");
+                      setCurrentRoute("company-profile");
                     } else {
                       setCurrentRoute("profile");
                     }

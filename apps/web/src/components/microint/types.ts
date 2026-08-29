@@ -57,6 +57,7 @@ export type PageRoute =
   | "admin-trials"
   | "admin-users"
   | "admin-trust-ai"
+  | "admin-profile"
   // Onboarding Routes
   | "candidate-onboarding"
   | "company-onboarding";

@@ -5,3 +5,4 @@ export { SuperAdminAIAnalyticsPage } from "./SuperAdminAIAnalyticsPage";
 export * from "./SuperAdminPaymentsPage";
 export { SuperAdminGlobalAnalyticsPage } from "./SuperAdminGlobalAnalyticsPage";
 export * from "./SuperAdminSystemPage";
+export * from "./SuperAdminProfilePage";
