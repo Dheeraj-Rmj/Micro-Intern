@@ -38,7 +38,7 @@ export const CompanyProfilePage: React.FC = () => {
 
   return (
     <div className="p-6 md:p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <Breadcrumbs items={[{ label: "Enterprise Portal" }, { label: "My Profile" }]} />
+      <Breadcrumbs currentTitle="My Profile" />
 
       <div className="bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 rounded-[32px] p-8 shadow-sm">
         <div className="flex items-center gap-6 mb-8 pb-8 border-b border-black/5 dark:border-white/10">
