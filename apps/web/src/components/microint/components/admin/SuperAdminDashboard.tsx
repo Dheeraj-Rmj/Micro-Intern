@@ -593,7 +593,27 @@ export const SuperAdminDashboard: React.FC = () => {
                                 );
                                 adminApi.getOnboardings().then(setOnboardings);
                               } catch (e: any) {
-                                showToast("Error", e.message || "Failed to approve", "error");
+                                let errorMessage = e.message || "Failed to approve";
+                                if (e.response?.data?.error?.code === "MFA_REQUIRED") {
+                                  const mfaCode = window.prompt("MFA Required for this sensitive action. Please enter your 6-digit authenticator code:");
+                                  if (mfaCode) {
+                                    try {
+                                      await apiClient.post(`/ekyc/admin/${ob.id}/approve`, {}, {
+                                        headers: { "x-mfa-totp": mfaCode.trim() }
+                                      });
+                                      showToast("Approved", "Company approved and MoU generated.", "success");
+                                      adminApi.getOnboardings().then(setOnboardings);
+                                      return;
+                                    } catch (mfaErr: any) {
+                                      errorMessage = mfaErr.response?.data?.error?.message || "Invalid MFA code";
+                                    }
+                                  } else {
+                                    return; // Cancelled
+                                  }
+                                } else {
+                                  errorMessage = e.response?.data?.error?.message || errorMessage;
+                                }
+                                showToast("Error", errorMessage, "error");
                               }
                             }
                           }}
