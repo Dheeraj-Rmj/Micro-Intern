@@ -35,37 +35,23 @@ export const WorkspacePage: React.FC = () => {
  // Hooks declared unconditionally at top level
  const [secondsLeft, setSecondsLeft] = useState(9930); // ~2h 45m 30s
  const [codeContent, setCodeContent] = useState(`/**
- * MicroIntern Skill Trial Deliverable
- * Company: ${trial ? trial.company : "TechCorp"}
+ * Candidate Workspace
  * Task: ${trial ? trial.title : "Fullstack Feature"}
  */
 
 import React, { useState } from 'react';
 
-export default function SubscriptionBillingEngine() {
- const [plan, setPlan] = useState<'free' | 'pro' | 'enterprise'>('pro');
- const [apiUsage, setApiUsage] = useState(1420);
-
- const handleUpgrade = (newPlan: 'pro' | 'enterprise') => {
- setPlan(newPlan);
- console.log(\`Upgraded candidate account to \${newPlan}\`);
- };
-
- return (
- <div className="p-6 bg-[#0A0A0A] text-white rounded-[32px] border border-white/10">
- <h2 className="text-xl font-serif tracking-tight">Billing Dashboard</h2>
- <p className="text-xs text-white/50 mt-1">Current Active Tier: <span className="font-bold text-white">{plan.toUpperCase()}</span></p>
- 
- <div className="mt-4 p-4 rounded-3xl bg-white/60 backdrop-blur-xl/5">
- <p className="text-xs text-white/60">API Calls Consumed This Month</p>
- <p className="text-2xl font-serif text-white">{apiUsage} / 10,000</p>
- </div>
- </div>
- );
+export default function App() {
+  return (
+    <div className="p-6 bg-[#0A0A0A] text-white rounded-[32px] border border-white/10">
+      <h2 className="text-xl font-serif tracking-tight">Hello, World!</h2>
+      <p className="text-xs text-white/50 mt-1">Start building your solution here.</p>
+    </div>
+  );
 }`);
 
  const [uploadedFiles, setUploadedFiles] = useState<string[]>([
- "subscription_engine.tsx",
+ "app.tsx",
  "package.json",
  ]);
  const [isTestRunning, setIsTestRunning] = useState(false);

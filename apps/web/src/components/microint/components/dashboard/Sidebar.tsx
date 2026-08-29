@@ -76,15 +76,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
     { id: "settings" as PageRoute, label: "Settings", icon: Settings },
   ];
 
-  const companyMenuItems: MenuItem[] = [
-    { id: "company-dashboard" as PageRoute, label: "Dashboard", icon: LayoutDashboard },
-    { id: "company-recruiters" as PageRoute, label: "Recruiter Management", icon: Users },
-    { id: "company-departments" as PageRoute, label: "Department Management", icon: Sparkles },
-    { id: "company-hiring-analytics" as PageRoute, label: "Hiring Analytics", icon: Compass },
-    { id: "company-billing" as PageRoute, label: "Billing & Subscription", icon: FileCheck },
-    { id: "company-ai-insights" as PageRoute, label: "AI Insights", icon: Code2 },
-    { id: "company-ai-generator" as PageRoute, label: "AI Task Generator", icon: Bot },
-  ];
+  const authUser = useAuthStore((s) => s.user);
+  const isRecruiter = authUser?.role === "RECRUITER";
+
+  const companyMenuItems: MenuItem[] = isRecruiter 
+    ? [
+        { id: "company-dashboard" as PageRoute, label: "Dashboard", icon: LayoutDashboard },
+        { id: "company-ai-generator" as PageRoute, label: "AI Task Generator", icon: Bot },
+        { id: "company-hiring-analytics" as PageRoute, label: "Hiring Analytics", icon: Compass },
+      ]
+    : [
+        { id: "company-dashboard" as PageRoute, label: "Dashboard", icon: LayoutDashboard },
+        { id: "company-recruiters" as PageRoute, label: "Recruiter Management", icon: Users },
+        { id: "company-departments" as PageRoute, label: "Department Management", icon: Sparkles },
+        { id: "company-hiring-analytics" as PageRoute, label: "Hiring Analytics", icon: Compass },
+        { id: "company-billing" as PageRoute, label: "Billing & Subscription", icon: FileCheck },
+        { id: "company-ai-insights" as PageRoute, label: "AI Insights", icon: Code2 },
+        { id: "company-ai-generator" as PageRoute, label: "AI Task Generator", icon: Bot },
+      ];
 
   const adminMenuItems: MenuItem[] = [
     { id: "admin-dashboard" as PageRoute, label: "Dashboard", icon: LayoutDashboard },

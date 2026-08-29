@@ -54,7 +54,7 @@ const GOVERNANCE_INSIGHT_QUOTES: MotivationalQuote[] = [
 
 export const SuperAdminDashboard: React.FC = () => {
   const { setCurrentRoute, showToast, darkMode } = useApp();
-  const [activeTab, setActiveTab] = useState<"overview" | "escrow" | "security" | "users" | "ekyc">(
+  const [activeTab, setActiveTab] = useState<"overview" | "security" | "users" | "ekyc">(
     "overview",
   );
   const [isDiagnosticRunning, setIsDiagnosticRunning] = useState(false);
