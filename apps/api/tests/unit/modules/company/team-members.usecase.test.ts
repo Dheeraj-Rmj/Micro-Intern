@@ -29,6 +29,7 @@ describe("Company Team Member Management Use Cases", () => {
     mockUserRepo = {
       findByEmail: vi.fn(),
       create: vi.fn(),
+      delete: vi.fn(),
     };
     mockPasswordService = {
       hash: vi.fn(),
@@ -110,7 +111,7 @@ describe("Company Team Member Management Use Cases", () => {
 
   describe("RemoveTeamMemberUseCase", () => {
     it("should throw CannotRemoveOwnerError if owner attempts to remove themselves or another owner", async () => {
-      const useCase = new RemoveTeamMemberUseCase(mockRepo);
+      const useCase = new RemoveTeamMemberUseCase(mockRepo, mockUserRepo);
       mockRepo.findByUserId.mockResolvedValue({ id: "comp-1" });
       mockRepo.findMember.mockImplementation((comp: any, userId: any) => {
         if (userId === "user-owner") return { isOwner: () => true };
@@ -128,7 +129,7 @@ describe("Company Team Member Management Use Cases", () => {
     });
 
     it("should throw MemberNotFoundError if target user to remove is not in the company", async () => {
-      const useCase = new RemoveTeamMemberUseCase(mockRepo);
+      const useCase = new RemoveTeamMemberUseCase(mockRepo, mockUserRepo);
       mockRepo.findByUserId.mockResolvedValue({ id: "comp-1" });
       mockRepo.findMember.mockImplementation((comp: any, userId: any) => {
         if (userId === "user-owner") return { isOwner: () => true };
@@ -141,7 +142,7 @@ describe("Company Team Member Management Use Cases", () => {
     });
 
     it("should execute removal cleanly for regular team recruiters", async () => {
-      const useCase = new RemoveTeamMemberUseCase(mockRepo);
+      const useCase = new RemoveTeamMemberUseCase(mockRepo, mockUserRepo);
       mockRepo.findByUserId.mockResolvedValue({ id: "comp-1" });
       mockRepo.findMember.mockImplementation((comp: any, userId: any) => {
         if (userId === "user-owner") return { isOwner: () => true };
