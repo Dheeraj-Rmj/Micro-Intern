@@ -154,6 +154,14 @@ const MainRouter: React.FC = () => {
 
   // 4. Candidate & Super Admin Dashboard Layout
   const renderDashboardView = () => {
+    // Role-based Route Guards
+    if (currentRoute.startsWith("admin-") && role !== "admin") {
+      return role === "company" ? <CompanyDashboard /> : <CandidateDashboard />;
+    }
+    if (currentRoute.startsWith("company-") && role !== "company") {
+      return role === "admin" ? <SuperAdminDashboard /> : <CandidateDashboard />;
+    }
+
     switch (currentRoute) {
       // Candidate Routes
       case "dashboard":
