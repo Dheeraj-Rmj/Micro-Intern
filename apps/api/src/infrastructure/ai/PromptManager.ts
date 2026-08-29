@@ -855,4 +855,116 @@ Generate the offer letter JSON.`,
     salary: string;
     additionalTerms: string;
   }>,
+
+  SKILL_TRAIL_MCQ_GENERATOR: {
+    id: "skill-trail-mcq-generator-v1",
+    version: "1.0.0",
+    description: "Generates objective MCQ questions directly tied to Skill Trail rules",
+    inputSchema: z.object({
+      skillTrailName: z.string(),
+      skillTrailDescription: z.string(),
+      skills: z.string(),
+      competencies: z.string(),
+      difficulty: z.string(),
+      count: z.number(),
+    }),
+    systemPrompt: `You are a strict, expert technical assessment generator.
+Your ONLY job is to produce a JSON object containing exactly the requested number of MCQ questions.
+Rules:
+- Generate EXACTLY the requested number of questions.
+- Never duplicate questions.
+- Return ONLY valid JSON matching this schema:
+{
+  "questions": [
+    {
+      "question": "The question text",
+      "options": ["A", "B", "C", "D"],
+      "correctOption": "Exact string matching one of the options",
+      "skillId": "Matching skill name from the input",
+      "competencyId": "Matching competency name from the input",
+      "difficulty": "Easy, Intermediate, or Hard",
+      "explanation": "Why this is correct"
+    }
+  ]
+}
+No other text outside the JSON.`,
+    userPromptTemplate: `Skill Trail: {{skillTrailName}}
+Description: {{skillTrailDescription}}
+Skills to test: {{skills}}
+Competencies to test: {{competencies}}
+Target Difficulty: {{difficulty}}
+Number of Questions to Generate: {{count}}
+
+Generate the JSON array of questions now.`,
+  } satisfies PromptTemplate<{
+    skillTrailName: string;
+    skillTrailDescription: string;
+    skills: string;
+    competencies: string;
+    difficulty: string;
+    count: number;
+  }>,
+
+  SKILL_TRAIL_CANDIDATE_ANALYSIS: {
+    id: "skill-trail-candidate-analysis-v1",
+    version: "1.0.0",
+    description: "Analyzes candidate MCQ performance for skill gaps",
+    inputSchema: z.object({
+      roleProfile: z.string(),
+      totalScore: z.number(),
+      maxScore: z.number(),
+      resultsJSON: z.string(),
+    }),
+    systemPrompt: `You are an expert technical hiring manager analyzing a candidate's deterministic MCQ results.
+Your job is to identify what the candidate knows, where they are weak, and what their next steps should be.
+Return ONLY valid JSON matching this schema:
+{
+  "summary": "A 2-3 sentence overall performance interpretation.",
+  "strengths": ["string", "string"],
+  "weaknesses": ["string", "string"],
+  "learningGaps": ["string", "string"],
+  "learningRecommendations": ["string", "string"]
+}
+Do not fabricate URLs or course links. Provide learning topics only.`,
+    userPromptTemplate: `Role Profile: {{roleProfile}}
+Score: {{totalScore}} / {{maxScore}}
+
+Detailed Deterministic Results:
+{{resultsJSON}}
+
+Generate the candidate analysis JSON now.`,
+  } satisfies PromptTemplate<{
+    roleProfile: string;
+    totalScore: number;
+    maxScore: number;
+    resultsJSON: string;
+  }>,
+
+  SKILL_TRAIL_TASK_RECOMMENDER: {
+    id: "skill-trail-task-recommender-v1",
+    version: "1.0.0",
+    description: "Recommends an existing task based on candidate weaknesses",
+    inputSchema: z.object({
+      candidateAnalysisJSON: z.string(),
+      availableTasksJSON: z.string(),
+    }),
+    systemPrompt: `You are an intelligent task routing engine.
+You must recommend the MOST suitable task from the provided list of AVAILABLE tasks to test the candidate's weaknesses or validate their strengths.
+If NO available tasks are suitable, you must explicitly state that. Do NOT invent task IDs.
+Return ONLY valid JSON matching this schema:
+{
+  "recommendedTaskId": "The exact ID of the recommended task, or null if none",
+  "rationale": "Why this task was selected based on the candidate's skill gaps"
+}`,
+    userPromptTemplate: `Candidate Analysis:
+{{candidateAnalysisJSON}}
+
+Available Configured Tasks:
+{{availableTasksJSON}}
+
+Generate the task recommendation JSON now.`,
+  } satisfies PromptTemplate<{
+    candidateAnalysisJSON: string;
+    availableTasksJSON: string;
+  }>,
 } as const;

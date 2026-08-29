@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { Breadcrumbs } from "../common/Breadcrumbs";
+import { ExamProctoringLayout } from "../proctoring/ExamProctoringLayout";
 const safeConfetti = () => {
  if (typeof window !== "undefined" && (window as unknown as { confetti?: () => void }).confetti) {
  (window as unknown as { confetti: (opt?: object) => void }).confetti({
@@ -132,7 +133,16 @@ export default function App() {
  setTimeout(() => setCopied(false), 2000);
  };
 
+ const handleViolation = (type: string) => {
+ showToast("Proctoring Violation", `Recorded: ${type}`, "error");
+ // We would log to backend here.
+ };
+
  return (
+ <ExamProctoringLayout
+ isProctored={(trial as any).isProctored ?? true} // Mocking true for the frontend demo
+ onViolation={handleViolation}
+ >
  <div className="pb-12 text-[#222] max-w-[1200px] mx-auto w-full font-sans">
  <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6 mt-4">
  <div>
@@ -320,5 +330,6 @@ export default function App() {
  </div>
  </div>
  </div>
+ </ExamProctoringLayout>
  );
 };

@@ -27,6 +27,7 @@ import {
 } from "../application/use-cases/assessment-templates.usecase.js";
 import { GetAssessmentAnalyticsUseCase } from "../application/use-cases/get-assessment-analytics.usecase.js";
 import { GenerateMicroTasksUseCase } from "../application/use-cases/generate-micro-tasks.usecase.js";
+import { GenerateSkillTrailAssessmentUseCase } from "../application/use-cases/generate-skill-trail-assessment.usecase.js";
 import { PrismaAssessmentRepository } from "../infrastructure/repositories/PrismaAssessmentRepository.js";
 
 import { AssessmentController } from "./assessment.controller.js";
@@ -39,6 +40,7 @@ import {
   SaveAsTemplateSchema,
   AIJobRequestSchema,
   GenerateMicroTasksSchema,
+  GenerateSkillTrailAssessmentSchema,
 } from "./assessment.schemas.js";
 
 import type { InfrastructureDependencies } from "@/core/container.js";
@@ -142,6 +144,14 @@ export function registerAssessmentModuleDependencies(): void {
         ),
     );
     container.register(
+      "GenerateSkillTrailAssessmentUseCase",
+      (_infra: InfrastructureDependencies) =>
+        new GenerateSkillTrailAssessmentUseCase(
+          container.get("AIFallbackEngine"),
+          _infra.db,
+        ),
+    );
+    container.register(
       "AssessmentController",
       () =>
         new AssessmentController(
@@ -160,6 +170,7 @@ export function registerAssessmentModuleDependencies(): void {
           container.get("ListTemplatesUseCase"),
           container.get("GetAssessmentAnalyticsUseCase"),
           container.get("GenerateMicroTasksUseCase"),
+          container.get("GenerateSkillTrailAssessmentUseCase"),
         ),
     );
   }
@@ -201,6 +212,18 @@ export function createAssessmentRouter(): Router {
     audit(AuditAction.CREATE, "Assessment") as RequestHandler,
     (req, res, next) => {
       controller.generateMicroTasks(req, res, next).catch(next);
+    },
+  );
+
+  // POST /api/v1/assessments/generate-skill-trail-assessment - Generate Skill Trail Assessment from AI
+  router.post(
+    "/generate-skill-trail-assessment",
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
+    validate("body", GenerateSkillTrailAssessmentSchema),
+    audit(AuditAction.CREATE, "Assessment") as RequestHandler,
+    (req, res, next) => {
+      controller.generateSkillTrailAssessment(req, res, next).catch(next);
     },
   );
 

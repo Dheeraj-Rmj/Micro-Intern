@@ -165,27 +165,97 @@ export const SubmissionsPage: React.FC = () => {
  Evaluation Details
  </h3>
 
- <div className="space-y-4 mb-8">
- <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5 flex items-center justify-between">
- <span className="text-sm font-semibold text-black/60 ">
- Automated Score
- </span>
- <span className="font-bold text-2xl text-[#222]">
- {selectedSub.score}%
- </span>
- </div>
+  <div className="space-y-4 mb-8">
+  <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div>
+      <span className="text-sm font-semibold text-black/60 ">
+        Automated Score
+      </span>
+      <p className="font-bold text-2xl text-[#222]">
+        {selectedSub.score !== undefined ? `${selectedSub.score}%` : "Pending"}
+      </p>
+    </div>
+    {selectedSub.performanceClassification && (
+      <div>
+        <span className="text-sm font-semibold text-black/60 block mb-1">
+          Performance
+        </span>
+        <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 font-bold text-sm">
+          {selectedSub.performanceClassification}
+        </span>
+      </div>
+    )}
+  </div>
 
- {selectedSub.feedback && (
- <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5">
- <span className="text-xs font-bold text-black/40 uppercase tracking-widest block mb-1">
- Feedback Note
- </span>
- <p className="text-sm text-black/80 leading-relaxed">
- {selectedSub.feedback}
- </p>
- </div>
- )}
- </div>
+  {selectedSub.aiSummary && (
+    <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5">
+      <span className="text-xs font-bold text-black/40 uppercase tracking-widest block mb-1">
+        AI Evaluation Summary
+      </span>
+      <p className="text-sm text-black/80 leading-relaxed">
+        {selectedSub.aiSummary}
+      </p>
+    </div>
+  )}
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {selectedSub.strengths && selectedSub.strengths.length > 0 && (
+      <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5">
+        <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-2">
+          Strengths
+        </span>
+        <ul className="space-y-1.5">
+          {selectedSub.strengths.map((s, i) => (
+            <li key={i} className="text-sm text-black/80 flex gap-2">
+              <span className="text-emerald-500">•</span> {s}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+    
+    {selectedSub.improvements && selectedSub.improvements.length > 0 && (
+      <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5">
+        <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block mb-2">
+          Areas to Improve
+        </span>
+        <ul className="space-y-1.5">
+          {selectedSub.improvements.map((s, i) => (
+            <li key={i} className="text-sm text-black/80 flex gap-2">
+              <span className="text-amber-500">•</span> {s}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+
+  {selectedSub.learningRecommendations && selectedSub.learningRecommendations.length > 0 && (
+    <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5">
+      <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest block mb-2">
+        Learning Recommendations
+      </span>
+      <ul className="space-y-1.5">
+        {selectedSub.learningRecommendations.map((rec, i) => (
+          <li key={i} className="text-sm text-black/80 flex gap-2">
+            <span className="text-indigo-500">•</span> {rec}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {selectedSub.feedback && !selectedSub.aiSummary && (
+  <div className="p-4 rounded-2xl bg-black/5 backdrop-blur-xl/5">
+  <span className="text-xs font-bold text-black/40 uppercase tracking-widest block mb-1">
+  Feedback Note
+  </span>
+  <p className="text-sm text-black/80 leading-relaxed">
+  {selectedSub.feedback}
+  </p>
+  </div>
+  )}
+  </div>
 
  <button
  onClick={() => setSelectedSub(null)}

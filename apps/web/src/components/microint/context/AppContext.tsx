@@ -325,6 +325,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             score: s.score ?? undefined,
             feedback: s.feedback ?? undefined,
             fileNames: [],
+            performanceClassification: s.evaluation?.rawResponse?.performanceClassification,
+            strengths: s.evaluation?.strengths,
+            improvements: s.evaluation?.improvements,
+            learningRecommendations: s.evaluation?.rawResponse?.learningRecommendations,
+            aiSummary: s.evaluation?.summary,
           }));
           setSubmissions(mapped);
         }

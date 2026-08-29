@@ -49,9 +49,9 @@ export class ListCompanySubmissionsUseCase {
       email: sub.candidate.user.email,
       avatarUrl: sub.candidate.user.avatarUrl,
       trialTitle: sub.assessment.title,
-      trustScore: sub.integrityScore || 95,
+      trustScore: sub.integrityScore ?? 0,
       submittedAt: sub.submittedAt || sub.createdAt,
-      githubUrl: "https://github.com/candidate", // mock until github integration
+      githubUrl: sub.repoUrl ?? "",
       status:
         sub.status === "EVALUATED" || sub.status === "PASSED"
           ? "APPROVED"
@@ -60,6 +60,10 @@ export class ListCompanySubmissionsUseCase {
             : "PENDING",
       aiRecommendation:
         sub.evaluation?.aiRecommendation || (sub.isPassed ? "STRONG_HIRE" : "REVIEW_NEEDED"),
+      performanceClassification: sub.evaluation?.rawResponse?.performanceClassification || "Unknown",
+      aiSummary: sub.evaluation?.summary || "",
+      strengths: sub.evaluation?.strengths || [],
+      improvements: sub.evaluation?.improvements || [],
     }));
 
     return {

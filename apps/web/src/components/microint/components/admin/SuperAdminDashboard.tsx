@@ -67,6 +67,8 @@ export const SuperAdminDashboard: React.FC = () => {
   const [logs, setLogs] = useState<AdminAuditLog[]>([]);
   const [topEnterprises, setTopEnterprises] = useState<any[]>([]);
   const [onboardings, setOnboardings] = useState<any[]>([]);
+  const [subscriptionMetrics, setSubscriptionMetrics] = useState<any>(null);
+  const [paymentMetrics, setPaymentMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -100,11 +102,15 @@ export const SuperAdminDashboard: React.FC = () => {
           adminApi.getAuditLogs(),
           adminApi.getUsers({ role: "company_owner" }),
           adminApi.getOnboardings(),
+          adminApi.getSubscriptionMetrics(),
+          adminApi.getPaymentMetrics(),
         ]);
 
         if (results[0].status === "fulfilled") setStats(results[0].value);
         if (results[1].status === "fulfilled") setLogs(results[1].value);
         if (results[3].status === "fulfilled") setOnboardings(results[3].value);
+        if (results[4].status === "fulfilled") setSubscriptionMetrics(results[4].value);
+        if (results[5].status === "fulfilled") setPaymentMetrics(results[5].value);
 
         if (results[2].status === "fulfilled") {
           setTopEnterprises(
@@ -440,6 +446,65 @@ export const SuperAdminDashboard: React.FC = () => {
               <Users className="w-4 h-4" />
               <span>Open User Governance Console →</span>
             </button>
+          </div>
+
+          {/* Bento Card X (md:col-span-7) - Financial Operations */}
+          <div className="md:col-span-7 rounded-[40px] bg-white dark:bg-[#0A0A0A] shadow-sm border border-black/5 dark:border-white/10 p-8 flex flex-col justify-between hover:border-black/20 dark:hover:border-white/30 transition-all">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500">
+                  <DollarSign className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">
+                  FINANCIAL OPERATIONS
+                </span>
+              </div>
+              <h3 className="text-xl font-medium tracking-tight text-black dark:text-white font-serif">
+                Live Revenue & Subscriptions
+              </h3>
+              <p className="text-xs text-black/50 dark:text-white/50 mt-1 leading-relaxed">
+                Real-time metrics strictly derived from database billing records. Zero mock data. Multi-currency aggregated.
+              </p>
+            </div>
+
+            <div className="my-6 grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col justify-center">
+                <span className="text-[10px] font-mono uppercase text-black/50 dark:text-white/50 mb-1">
+                  Global ARR (Approx USD)
+                </span>
+                <span className="text-2xl font-serif text-black dark:text-white font-medium">
+                  ${subscriptionMetrics?.arr?.toLocaleString() || "0"}
+                </span>
+              </div>
+              <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex flex-col justify-center">
+                <span className="text-[10px] font-mono uppercase text-black/50 dark:text-white/50 mb-1">
+                  Successful Txns
+                </span>
+                <span className="text-2xl font-serif text-black dark:text-white font-medium">
+                  {paymentMetrics?.successfulTransactions?.toLocaleString() || "0"}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <span className="text-[10px] font-mono uppercase text-black/50 dark:text-white/50 px-2">
+                Revenue Volume by Currency
+              </span>
+              <div className="grid grid-cols-2 gap-3">
+                {paymentMetrics?.recentPayouts?.length ? (
+                  paymentMetrics.recentPayouts.map((payout: any, idx: number) => (
+                    <div key={idx} className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
+                      <span className="text-xs font-bold text-black dark:text-white">{payout.currency}</span>
+                      <span className="text-sm font-mono text-black dark:text-white">{Number(payout.amount).toLocaleString()}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-2 p-3 text-center text-xs opacity-50 border border-black/5 dark:border-white/10 rounded-2xl">
+                    No active transactions found.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Bento Card 5 (md:col-span-12) - Live SOC-2 Audit & Security Stream */}

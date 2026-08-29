@@ -503,6 +503,7 @@ model Company {
   departments    CompanyDepartment[]
   analytics      CompanyAnalyticsSnapshot[]
   billing        CompanyBilling?
+  transactions   PaymentTransaction[]
   aiInsights     AIInsightRecommendation[]
 
   @@index([slug])
@@ -577,6 +578,7 @@ model CompanyBilling {
   companyId        String   @unique @map("company_id") @db.Uuid
   stripeCustomerId String?  @map("stripe_customer_id")
   planName         String   @default("Free Plan") @db.VarChar(100)
+  baseCurrency     String   @default("USD") @db.VarChar(3) @map("base_currency")
   renewalDate      DateTime? @map("renewal_date")
   
   recruiterSeatsUsed Int    @default(1) @map("recruiter_seats_used")
@@ -594,6 +596,23 @@ model CompanyBilling {
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map("company_billing")
+}
+
+model PaymentTransaction {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  amount      Decimal  @db.Decimal(10,2)
+  currency    String   @default("USD") @db.VarChar(3)
+  status      String   @default("SUCCESS") @db.VarChar(50) // SUCCESS, FAILED, REFUNDED
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([currency])
+  @@index([createdAt])
+  @@map("payment_transactions")
 }
 
 model AIInsightRecommendation {
@@ -640,6 +659,8 @@ model Assessment {
   maxAttempts     Int     @default(1) @map("max_attempts")
   isPublic        Boolean @default(false) @map("is_public")
   stipendAmount   Decimal? @db.Decimal(10,2) @map("stipend_amount")
+  isProctored     Boolean @default(false) @map("is_proctored")
+  difficulty      String? @default("Medium") @db.VarChar(50)
 
   // CTO Architectural Extensions
   complexityScore            Int? @map("complexity_score")

@@ -27,9 +27,14 @@ interface RecruiterSeat {
 import { companyApi } from "../../../../lib/api/company";
 
 export const CompanyRecruitersPage: React.FC = () => {
-  const { showToast } = useApp();
+  const { showToast, companyProfile } = useApp();
   const [recruiters, setRecruiters] = useState<RecruiterSeat[]>([]);
   const [fullName, setFullName] = useState("");
+
+  const companyDomain = companyProfile?.companyName
+    ? companyProfile.companyName.toLowerCase().replace(/[^a-z0-9]/g, "") || "company"
+    : "company";
+  const companyEmailDomain = `${companyDomain}.microintern`;
   const [handle, setHandle] = useState("");
   const [roleTitle, setRoleTitle] = useState("Technical Recruiter");
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
@@ -47,7 +52,7 @@ export const CompanyRecruitersPage: React.FC = () => {
             name: m.userDetails?.firstName
               ? `${m.userDetails.firstName} ${m.userDetails.lastName}`
               : "Pending User",
-            email: m.userDetails?.email || `pending-${m.id}@company.microintern`,
+            email: m.userDetails?.email || `pending-${m.id}@${companyEmailDomain}`,
             roleTitle: m.role,
             assignedTrials: 0,
             status: m.userDetails?.status || "ACTIVE",
@@ -61,7 +66,7 @@ export const CompanyRecruitersPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, [showToast, companyEmailDomain]);
 
   React.useEffect(() => {
     fetchMembers();
@@ -75,7 +80,7 @@ export const CompanyRecruitersPage: React.FC = () => {
     }
 
     const cleanedHandle = handle.toLowerCase().replace(/\s+/g, ".");
-    const newEmail = `${cleanedHandle}@company.microintern`;
+    const newEmail = `${cleanedHandle}@${companyEmailDomain}`;
 
     try {
       await companyApi.inviteMember(newEmail, roleTitle, fullName);
@@ -95,9 +100,7 @@ export const CompanyRecruitersPage: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       const msg =
-        err?.response?.data?.error?.message ||
-        err?.message ||
-        "Failed to invite team member";
+        err?.response?.data?.error?.message || err?.message || "Failed to invite team member";
       showToast("Error", msg, "error");
     }
   };
@@ -131,7 +134,7 @@ export const CompanyRecruitersPage: React.FC = () => {
               ENTERPRISE RECRUITER GOVERNANCE
             </span>
             <span className="text-xs font-mono text-black/50 dark:text-white/50">
-              DOMAIN: @company.microintern
+              DOMAIN: @{companyEmailDomain}
             </span>
           </div>
           <h1 className="text-3xl font-bold font-serif text-black dark:text-white">
@@ -176,7 +179,7 @@ export const CompanyRecruitersPage: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Login Handle (Domain: @company.microintern)
+                  Login Handle (Domain: @{companyEmailDomain})
                 </label>
                 <div className="flex items-center rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 overflow-hidden">
                   <input
@@ -187,7 +190,7 @@ export const CompanyRecruitersPage: React.FC = () => {
                     className="w-full px-3 py-2.5 bg-transparent text-xs text-black dark:text-white focus:outline-none font-mono"
                   />
                   <span className="px-3 py-2.5 bg-black/5 dark:bg-white/5 text-[11px] font-mono font-bold text-amber-500 shrink-0">
-                    @company.microintern
+                    @{companyEmailDomain}
                   </span>
                 </div>
               </div>

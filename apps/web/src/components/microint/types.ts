@@ -109,6 +109,11 @@ export interface Submission {
   feedback?: string;
   fileNames: string[];
   repoUrl?: string;
+  performanceClassification?: string;
+  strengths?: string[];
+  improvements?: string[];
+  learningRecommendations?: string[];
+  aiSummary?: string;
 }
 
 export interface AppNotification {

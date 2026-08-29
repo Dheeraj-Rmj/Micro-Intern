@@ -38,9 +38,11 @@ export class CreateAssessmentUseCase {
       roleTitle?: string;
       level?: ExperienceLevel;
       durationMinutes: number;
-      passingScore?: number;
       maxAttempts?: number;
       isPublic?: boolean;
+      isProctored?: boolean;
+      difficulty?: string;
+      passingScore?: number;
       tasks?: Array<{
         title: string;
         description: string;
@@ -80,6 +82,8 @@ export class CreateAssessmentUseCase {
       passingScore: input.passingScore ?? 70,
       maxAttempts: input.maxAttempts ?? 1,
       isPublic: input.isPublic ?? false,
+      isProctored: input.isProctored ?? false,
+      difficulty: input.difficulty ?? "Medium",
       tasks: input.tasks,
     };
 

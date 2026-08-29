@@ -327,6 +327,38 @@ export function AssessmentStudio({ initialAssessment }: AssessmentStudioProps) {
                     className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 focus:border-brand-500 focus:outline-none"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">
+                    AI Difficulty Level
+                  </label>
+                  <select
+                    value={currentAssessment.difficulty || "Medium"}
+                    onChange={(e) => updateAssessmentField("difficulty", e.target.value)}
+                    className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-2 text-sm text-slate-100 focus:border-brand-500 focus:outline-none"
+                  >
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                    <option value="Expert">Expert</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center space-x-3 mt-4">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentAssessment.isProctored || false}
+                      onChange={(e) => updateAssessmentField("isProctored", e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-300 after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500" />
+                  </label>
+                  <span className="text-sm font-medium text-slate-300 flex items-center gap-1.5">
+                    <span className="text-brand-400">🔒</span>
+                    Secure Exam Proctoring (Fullscreen, Camera, Mic)
+                  </span>
+                </div>
               </div>
 
               <div>

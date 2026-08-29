@@ -41,6 +41,15 @@ export interface CandidateSubmission {
     title: string;
     company?: { id: string; name: string };
   };
+  evaluation?: {
+    summary?: string;
+    strengths?: string[];
+    improvements?: string[];
+    rawResponse?: {
+      performanceClassification?: string;
+      learningRecommendations?: string[];
+    };
+  };
 }
 
 export interface PublicAssessment {

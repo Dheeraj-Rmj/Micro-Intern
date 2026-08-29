@@ -22,10 +22,15 @@ export function parseDeviceFromRequest(req: Request): ParsedDeviceInfo {
   // 1. IP Address extraction
   let ipAddress = "127.0.0.1";
   const forwarded = req.headers["x-forwarded-for"];
-  if (typeof forwarded === "string" && forwarded.length > 0) {
-    ipAddress = forwarded.split(",")[0]?.trim() ?? "127.0.0.1";
-  } else if (typeof req.headers["x-real-ip"] === "string") {
-    ipAddress = req.headers["x-real-ip"];
+  const realIp = req.headers["x-real-ip"];
+  
+  if (forwarded) {
+    const forwardedString = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+    if (forwardedString && forwardedString.length > 0) {
+      ipAddress = forwardedString.split(",")[0]?.trim() ?? "127.0.0.1";
+    }
+  } else if (realIp) {
+    ipAddress = (Array.isArray(realIp) ? realIp[0] : realIp) ?? "127.0.0.1";
   } else if (req.ip) {
     ipAddress = req.ip;
   } else if (req.socket?.remoteAddress) {

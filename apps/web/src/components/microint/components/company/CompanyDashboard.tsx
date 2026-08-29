@@ -68,6 +68,11 @@ export const CompanyDashboard: React.FC = () => {
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [activeTabFilter, setActiveTabFilter] = useState<"all" | "pending" | "approved">("all");
 
+  const companyDomain = companyProfile?.companyName
+    ? companyProfile.companyName.toLowerCase().replace(/[^a-z0-9]/g, "") || "company"
+    : "company";
+  const companyEmailDomain = `${companyDomain}.microintern`;
+
   // AI Give Task state
   const [giveTaskCandidate, setGiveTaskCandidate] = useState<CandidateApplication | null>(null);
   const [aiRecommendations, setAiRecommendations] = useState<any[]>([]);
@@ -212,7 +217,7 @@ export const CompanyDashboard: React.FC = () => {
               Enterprise Admin Center • eKYC Verified
             </span>
             <span className="text-[11px] font-mono text-black/50 dark:text-white/60">
-              EIN-VERIFIED • @company.microintern
+              EIN-VERIFIED • @{companyEmailDomain}
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-serif text-black dark:text-white tracking-tight">
@@ -529,7 +534,7 @@ export const CompanyDashboard: React.FC = () => {
               Generate credentials for recruiters representing your organization. Recruiter logins
               follow format{" "}
               <span className="font-mono text-amber-600 dark:text-amber-400">
-                name@company.microintern
+                name@{companyEmailDomain}
               </span>
               .
             </p>

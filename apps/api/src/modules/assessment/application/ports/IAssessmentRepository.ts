@@ -15,6 +15,8 @@ export interface CreateAssessmentData {
   passingScore?: number;
   maxAttempts?: number;
   isPublic?: boolean;
+  isProctored?: boolean;
+  difficulty?: string;
   complexityScore?: number;
   aiDifficultyScore?: number;
   tasks?: Array<{
@@ -55,6 +57,8 @@ export interface UpdateAssessmentData {
   passingScore?: number;
   maxAttempts?: number;
   isPublic?: boolean;
+  isProctored?: boolean;
+  difficulty?: string;
   complexityScore?: number;
   aiDifficultyScore?: number;
   tasks?: Array<{

@@ -45,6 +45,8 @@ export interface AssessmentDto {
   passingScore: number;
   maxAttempts: number;
   isPublic: boolean;
+  isProctored?: boolean;
+  difficulty?: string;
   complexityScore?: number | null;
   aiDifficultyScore?: number | null;
   tasks: AssessmentTaskDto[];

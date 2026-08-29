@@ -67,6 +67,14 @@ export async function connectRedis(): Promise<void> {
   if (client.status === "wait" || client.status === "close") {
     await client.connect();
   }
+  
+  try {
+    await client.config("SET", "maxmemory-policy", "noeviction");
+    log.info("Redis maxmemory-policy set to noeviction");
+  } catch (error) {
+    log.warn({ err: error }, "Failed to set Redis maxmemory-policy. Ensure Redis has necessary permissions.");
+  }
+
   log.info("Redis client connected successfully");
 }
 

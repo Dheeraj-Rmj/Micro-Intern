@@ -107,3 +107,7 @@ export const GenerateMicroTasksSchema = z.object({
   techStack: z.string().min(2),
   difficulty: z.string().min(2),
 });
+
+export const GenerateSkillTrailAssessmentSchema = z.object({
+  skillTrailId: z.string().uuid(),
+});

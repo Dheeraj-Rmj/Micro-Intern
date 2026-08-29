@@ -72,6 +72,8 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
         passingScore: data.passingScore ?? 70,
         maxAttempts: data.maxAttempts ?? 1,
         isPublic: data.isPublic ?? false,
+        isProctored: data.isProctored ?? false,
+        difficulty: data.difficulty ?? "Medium",
         complexityScore: data.complexityScore,
         aiDifficultyScore: data.aiDifficultyScore,
         tasks: data.tasks?.length
@@ -140,6 +142,8 @@ export class PrismaAssessmentRepository implements IAssessmentRepository {
           passingScore: data.passingScore,
           maxAttempts: data.maxAttempts,
           isPublic: data.isPublic,
+          isProctored: data.isProctored,
+          difficulty: data.difficulty,
           complexityScore: data.complexityScore,
           aiDifficultyScore: data.aiDifficultyScore,
           tasks: data.tasks?.length

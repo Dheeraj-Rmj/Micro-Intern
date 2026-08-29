@@ -311,25 +311,77 @@ export class PrismaAdminRepository implements IAdminRepository {
     const activeCompanies = await this.db.company.count({
       where: { status: "ACTIVE" as any, deletedAt: null },
     });
+
+    const activeSubscriptions = await this.db.companyBilling.findMany({
+      where: { company: { status: "ACTIVE" as any, deletedAt: null } },
+      select: { planName: true, baseCurrency: true },
+    });
+
+    // We calculate approximate MRR from plans without mocks. 
+    // Usually this comes from Stripe. We will derive it from the plan names.
+    const planPrices: Record<string, number> = {
+      "Free Plan": 0,
+      "Pro Plan": 49,
+      "Enterprise Plan": 299,
+    };
+
+    let mrrUSD = 0;
+    const plans: Record<string, number> = {};
+
+    activeSubscriptions.forEach((sub) => {
+      // Aggregating plan types
+      plans[sub.planName] = (plans[sub.planName] || 0) + 1;
+      
+      // Calculate MRR (simplistic translation to base USD for now, real exchange logic could be used)
+      let price = planPrices[sub.planName] || 0;
+      mrrUSD += price;
+    });
+
     return {
-      mrr: 0,
-      arr: 0,
+      mrr: mrrUSD,
+      arr: mrrUSD * 12,
       activePlans: activeCompanies,
-      growthRate: 0,
-      plans: [],
+      growthRate: 0, // Requires historical data table
+      plans: Object.entries(plans).map(([name, count]) => ({ name, count })),
     };
   }
 
   async getPaymentMetrics(): Promise<any> {
-    const activeCompanies = await this.db.company.count({
-      where: { status: "ACTIVE" as any, deletedAt: null },
+    const allTransactions = await this.db.paymentTransaction.findMany({
+      where: { status: "SUCCESS" },
     });
+
+    const revenueByCurrency: Record<string, number> = {};
+    let successfulTransactions = 0;
+    
+    allTransactions.forEach((t) => {
+      successfulTransactions++;
+      const curr = t.currency || "USD";
+      revenueByCurrency[curr] = (revenueByCurrency[curr] || 0) + Number(t.amount);
+    });
+
+    const failedTransactions = await this.db.paymentTransaction.count({
+      where: { status: "FAILED" }
+    });
+
+    const refundedTransactions = await this.db.paymentTransaction.count({
+      where: { status: "REFUNDED" }
+    });
+
+    const total = successfulTransactions + failedTransactions + refundedTransactions;
+    const refundRate = total > 0 ? (refundedTransactions / total) * 100 : 0;
+
+    const recentPayouts = Object.entries(revenueByCurrency).map(([currency, amount]) => ({
+      currency,
+      amount,
+    }));
+
     return {
-      monthlyVolume: 0,
-      successfulTransactions: 0,
-      failedTransactions: 0,
-      refundRate: 0,
-      recentPayouts: [],
+      monthlyVolume: recentPayouts,
+      successfulTransactions,
+      failedTransactions,
+      refundRate,
+      recentPayouts, // Exposing multi-currency array
     };
   }
 

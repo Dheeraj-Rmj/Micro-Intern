@@ -25,6 +25,10 @@ interface ApplicationRow {
   githubUrl: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
   aiRecommendation: "STRONG_HIRE" | "INTERVIEW" | "REVIEW_NEEDED";
+  performanceClassification?: string;
+  aiSummary?: string;
+  strengths?: string[];
+  improvements?: string[];
 }
 
 export const CompanyApplicationsPage: React.FC = () => {
@@ -48,11 +52,15 @@ export const CompanyApplicationsPage: React.FC = () => {
             candidateName: s.candidateName || s.candidate?.name || "Candidate",
             email: s.candidateEmail || s.candidate?.email || "",
             trialTitle: s.trialTitle || s.assessment?.title || "Assessment",
-            trustScore: s.trustScore ?? s.score ?? Math.floor(Math.random() * 15) + 80,
+            trustScore: s.trustScore ?? s.score ?? 0,
             submittedAt: s.submittedAt || s.createdAt || "",
             githubUrl: s.repoUrl || s.githubUrl || "",
             status: (s.status === "APPROVED" ? "APPROVED" : s.status === "REJECTED" ? "REJECTED" : "PENDING") as ApplicationRow["status"],
             aiRecommendation: (s.aiRecommendation || "REVIEW_NEEDED") as ApplicationRow["aiRecommendation"],
+            performanceClassification: s.performanceClassification,
+            aiSummary: s.aiSummary,
+            strengths: s.strengths,
+            improvements: s.improvements,
           }));
           setApps(mapped);
         }
@@ -93,6 +101,8 @@ export const CompanyApplicationsPage: React.FC = () => {
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: "REJECTED" } : a)));
     showToast("Candidate Rejected", `${name}'s submission marked as reviewed.`, "info");
   };
+
+  const [selectedCandidate, setSelectedCandidate] = useState<ApplicationRow | null>(null);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-16">
@@ -231,6 +241,12 @@ export const CompanyApplicationsPage: React.FC = () => {
                     {a.status === "PENDING" ? (
                       <div className="flex items-center justify-end gap-2">
                         <button
+                          onClick={() => setSelectedCandidate(a)}
+                          className="px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold text-xs hover:bg-blue-500/20 transition-colors"
+                        >
+                          View Details
+                        </button>
+                        <button
                           onClick={() => handleApprove(a.id, a.candidateName)}
                           className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-all cursor-pointer"
                         >
@@ -255,6 +271,132 @@ export const CompanyApplicationsPage: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Candidate Details Modal */}
+      {selectedCandidate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setSelectedCandidate(null)}
+          />
+          <div className="relative bg-white dark:bg-[#111111] rounded-[36px] p-8 max-w-3xl w-full border border-black/10 dark:border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setSelectedCandidate(null)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            >
+              <XCircle className="w-6 h-6 text-black/40 dark:text-white/40" />
+            </button>
+            <h2 className="text-3xl font-serif text-[#222] dark:text-white mb-2">
+              {selectedCandidate.candidateName}
+            </h2>
+            <p className="text-sm text-black/60 dark:text-white/60 font-mono mb-8">
+              {selectedCandidate.email}
+            </p>
+
+            <div className="space-y-8">
+              <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-black/50 dark:text-white/50 mb-4">
+                  AI Evaluation Results
+                </h3>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <p className="text-xs text-black/50 dark:text-white/50 uppercase tracking-widest mb-1">
+                      Performance
+                    </p>
+                    <p className="text-xl font-medium text-black dark:text-white">
+                      {selectedCandidate.performanceClassification || "Pending"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-black/50 dark:text-white/50 uppercase tracking-widest mb-1">
+                      Recommendation
+                    </p>
+                    <p className="text-xl font-medium text-black dark:text-white">
+                      {selectedCandidate.aiRecommendation.replace("_", " ")}
+                    </p>
+                  </div>
+                </div>
+
+                {selectedCandidate.aiSummary ? (
+                  <div className="mb-6">
+                    <p className="text-xs text-black/50 dark:text-white/50 uppercase tracking-widest mb-2">
+                      Summary
+                    </p>
+                    <p className="text-sm leading-relaxed text-black/80 dark:text-white/80">
+                      {selectedCandidate.aiSummary}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mb-6">
+                    <p className="text-xs text-black/50 dark:text-white/50 uppercase tracking-widest mb-2">
+                      Summary
+                    </p>
+                    <p className="text-sm text-black/40 dark:text-white/40 italic">
+                      No summary available.
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {selectedCandidate.strengths && selectedCandidate.strengths.length > 0 && (
+                    <div>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest mb-3">
+                        Key Strengths
+                      </p>
+                      <ul className="space-y-2">
+                        {selectedCandidate.strengths.map((str, i) => (
+                          <li key={i} className="flex gap-2 text-sm text-black/70 dark:text-white/70">
+                            <span className="text-emerald-500">•</span> {str}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {selectedCandidate.improvements && selectedCandidate.improvements.length > 0 && (
+                    <div>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 font-bold uppercase tracking-widest mb-3">
+                        Areas for Improvement
+                      </p>
+                      <ul className="space-y-2">
+                        {selectedCandidate.improvements.map((imp, i) => (
+                          <li key={i} className="flex gap-2 text-sm text-black/70 dark:text-white/70">
+                            <span className="text-amber-500">•</span> {imp}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 mt-8">
+                {selectedCandidate.status === "PENDING" && (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleReject(selectedCandidate.id, selectedCandidate.candidateName);
+                        setSelectedCandidate(null);
+                      }}
+                      className="px-6 py-2.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold text-sm hover:bg-rose-500/20 transition-colors"
+                    >
+                      Reject Application
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleApprove(selectedCandidate.id, selectedCandidate.candidateName);
+                        setSelectedCandidate(null);
+                      }}
+                      className="px-6 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20"
+                    >
+                      Approve & Invite
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
