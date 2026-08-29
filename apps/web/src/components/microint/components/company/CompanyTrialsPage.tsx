@@ -34,7 +34,6 @@ export const CompanyTrialsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [title, setTitle] = useState("");
-  const [stipend, setStipend] = useState("$3,500");
   const [category, setCategory] = useState("Full Stack");
 
   useEffect(() => {
@@ -107,7 +106,7 @@ export const CompanyTrialsPage: React.FC = () => {
       id: tempId,
       title,
       category,
-      stipend,
+      stipend: "Merit-Based",
       applicantsCount: 0,
       status: "DRAFT",
       deadline: "Pending",
@@ -300,18 +299,6 @@ export const CompanyTrialsPage: React.FC = () => {
                   <option value="UI/UX Design">UI/UX Design</option>
                   <option value="DevOps">DevOps</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Stipend Amount (Allocated)
-                </label>
-                <input
-                  type="text"
-                  value={stipend}
-                  onChange={(e) => setStipend(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
-                />
               </div>
 
               <div className="flex gap-3 pt-2">
