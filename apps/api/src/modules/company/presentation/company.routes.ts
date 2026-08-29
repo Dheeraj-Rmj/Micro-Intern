@@ -82,7 +82,10 @@ export function createCompanyRouter(): Router {
     );
     container.register(
       "RemoveTeamMemberUseCase",
-      () => new RemoveTeamMemberUseCase(container.get("ICompanyRepository")),
+      () => new RemoveTeamMemberUseCase(
+        container.get("ICompanyRepository"),
+        container.get("IUserRepository")
+      ),
     );
     container.register(
       "GetDepartmentsUseCase",

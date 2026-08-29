@@ -8,11 +8,15 @@ import {
 } from "../../domain/errors/company.errors.js";
 
 import type { ICompanyRepository } from "../../domain/repositories/ICompanyRepository.js";
+import type { IUserRepository } from "../../../auth/domain/repositories/IUserRepository.js";
 
 const log = createModuleLogger("RemoveTeamMemberUseCase");
 
 export class RemoveTeamMemberUseCase {
-  constructor(private readonly companyRepository: ICompanyRepository) {}
+  constructor(
+    private readonly companyRepository: ICompanyRepository,
+    private readonly userRepository: IUserRepository,
+  ) {}
 
   async execute(requestingUserId: string, targetUserId: string): Promise<void> {
     log.info({ requestingUserId, targetUserId }, "Attempting to remove team member");
@@ -40,6 +44,9 @@ export class RemoveTeamMemberUseCase {
     if (!removed) {
       throw new MemberNotFoundError(targetUserId);
     }
+
+    // Hard delete the user account from the system to fully remove the recruiter credentials
+    await this.userRepository.delete(targetUserId);
 
     log.info({ companyId: company.id, targetUserId }, "Team member removed successfully");
   }

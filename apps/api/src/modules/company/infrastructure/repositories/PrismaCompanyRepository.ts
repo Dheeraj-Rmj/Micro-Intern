@@ -98,7 +98,7 @@ export class PrismaCompanyRepository implements ICompanyRepository, IDomainCompa
         include: { user: true },
         skip: pagination.skip,
         take: pagination.take,
-        orderBy: { joinedAt: "desc" },
+        orderBy: { createdAt: "desc" },
       }),
     ]);
     const members = records.map((r) => CompanyMember.fromPrisma(r as any));
