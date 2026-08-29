@@ -173,7 +173,7 @@ export const CompanyTrialsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
           <p className="text-xs text-black/50 dark:text-white/60 font-medium">
             Active Skill Trials
@@ -181,12 +181,6 @@ export const CompanyTrialsPage: React.FC = () => {
           <p className="text-3xl font-serif font-bold text-black dark:text-white mt-1">
             {trials.length}
           </p>
-        </div>
-        <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
-          <p className="text-xs text-black/50 dark:text-white/60 font-medium">
-            Total Budget Allocated
-          </p>
-          <p className="text-3xl font-serif font-bold text-amber-500 mt-1">$4,800</p>
         </div>
         <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
           <p className="text-xs text-black/50 dark:text-white/60 font-medium">
@@ -223,10 +217,6 @@ export const CompanyTrialsPage: React.FC = () => {
               <div className="flex items-center gap-1.5">
                 <Users className="w-4 h-4 text-indigo-500" />
                 <span>{t.applicantsCount} Candidates Applied</span>
-              </div>
-              <div className="flex items-center gap-1 text-emerald-500 font-bold">
-                <DollarSign className="w-3.5 h-3.5" />
-                <span>{t.stipend} Budgeted</span>
               </div>
             </div>
 
