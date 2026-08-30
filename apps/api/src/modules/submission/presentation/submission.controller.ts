@@ -29,7 +29,7 @@ export class SubmissionController {
   async submitAssessment(req: Request, res: Response, _next: NextFunction): Promise<void> {
     const userId = req.user!.id;
     const { id: assessmentId } = req.params as unknown as AssessmentParamDto;
-    const { answers } = req.body as unknown as SubmitAssessmentBodyDto;
+    const { answers, proctoringEvents } = req.body as unknown as SubmitAssessmentBodyDto;
     const files = (req.files as Express.Multer.File[]) || [];
 
     const formattedAnswers: SubmitAnswerInput[] = answers.map((ans, idx) => {
@@ -49,6 +49,7 @@ export class SubmissionController {
       userId,
       assessmentId,
       formattedAnswers,
+      proctoringEvents,
     );
     ResponseFormatter.success(res, submitted);
   }

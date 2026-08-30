@@ -57,7 +57,7 @@ interface AppContextType {
   setSearchQuery: (query: string) => void;
   toggleBookmark: (trialId: string) => void;
   applyForTrial: (trialId: string) => void;
-  submitWorkspaceTask: (trialId: string, solutionText: string, fileNames: string[]) => void;
+  submitWorkspaceTask: (trialId: string, solutionText: string, fileNames: string[], proctoringEvents?: string[]) => void;
   markNotificationRead: (id: string) => void;
   unreadNotificationsCount: number;
 
@@ -507,11 +507,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       "success",
     );
   };
-
   const submitWorkspaceTask = async (
     trialId: string,
     solutionText: string,
     fileNames: string[],
+    proctoringEvents?: string[],
   ) => {
     const targetTrial = trials.find((t) => t.id === trialId) || activeWorkspaceTrial;
     const title = targetTrial ? targetTrial.title : "MicroIntern Trial Task";
@@ -523,6 +523,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         apiSubmission = await submissionApi.submitAssessment(targetTrial.id, {
           solutionText,
           fileNames,
+          proctoringEvents,
         });
       }
     } catch (err) {

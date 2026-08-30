@@ -37,6 +37,7 @@ export class SubmitAssessmentUseCase {
     userId: string,
     assessmentId: string,
     answersInput: SubmitAnswerInput[],
+    proctoringEvents?: string[],
   ): Promise<Submission> {
     log.info(
       { userId, assessmentId, answerCount: answersInput.length },
@@ -84,10 +85,21 @@ export class SubmitAssessmentUseCase {
     }
 
     await this.submissionRepository.saveAnswers(submission.id, formattedAnswers);
+    
+    // Process proctoring events
+    const updateData: any = { submittedAt: new Date() };
+    if (proctoringEvents && proctoringEvents.length > 0) {
+      updateData.integrityFlags = { events: proctoringEvents };
+      updateData.integrityScore = Math.max(0, 100 - (proctoringEvents.length * 10)); // Deduct 10 points per violation
+      if (proctoringEvents.length >= 3) {
+        updateData.isSuspicious = true;
+      }
+    }
+
     const submitted = await this.submissionRepository.updateStatus(
       submission.id,
       SubmissionStatus.SUBMITTED,
-      { submittedAt: new Date() },
+      updateData,
     );
 
     log.info(

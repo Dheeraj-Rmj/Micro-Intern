@@ -1,7 +1,7 @@
 import { QUEUE_NAMES, AI } from "@microintern/shared";
 import { prisma } from "@/core/database.js";
 import { createModuleLogger } from "@/core/logger.js";
-import { getAIGateway } from "@/infrastructure/ai/index.js";
+import { CompanyAIGatewayFactory } from "@/infrastructure/ai/CompanyAIGatewayFactory.js";
 
 import { createWorker, type AssessmentAIJobData } from "../queues.js";
 import type { Job } from "bullmq";
@@ -15,7 +15,16 @@ export function startAssessmentAIWorker() {
       const { assessmentId, recruiterId, action, input } = job.data;
       log.info({ jobId: job.id, assessmentId, action }, "Processing Assessment AI Assistant job");
 
-      const aiGateway = getAIGateway();
+      const assessment = await prisma.assessment.findUnique({
+        where: { id: assessmentId },
+        select: { companyId: true },
+      });
+
+      if (!assessment) {
+        throw new Error(`Assessment ${assessmentId} not found`);
+      }
+
+      const aiGateway = await CompanyAIGatewayFactory.getGatewayForCompany(assessment.companyId);
 
       // 1. Build prompt for requested action
       const promptMessages = buildPromptForAction(action, input);

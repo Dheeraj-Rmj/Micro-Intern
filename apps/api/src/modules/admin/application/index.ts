@@ -11,3 +11,4 @@ export * from "./use-cases/get-payment-metrics.usecase.js";
 export * from "./use-cases/get-global-analytics.usecase.js";
 export * from "./use-cases/create-company-manually.usecase.js";
 export * from "./use-cases/unsuspend-user.usecase.js";
+export * from "./use-cases/ask-ai-auditor.usecase.js";

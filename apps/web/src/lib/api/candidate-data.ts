@@ -121,11 +121,12 @@ export const submissionApi = {
 
   submitAssessment: async (
     assessmentId: string,
-    payload: { solutionText?: string; repoUrl?: string; fileNames?: string[] },
+    payload: { solutionText?: string; repoUrl?: string; fileNames?: string[]; proctoringEvents?: string[] },
   ): Promise<CandidateSubmission> => {
     const formData = new FormData();
     if (payload.solutionText) formData.append("solutionText", payload.solutionText);
     if (payload.repoUrl) formData.append("repoUrl", payload.repoUrl);
+    if (payload.proctoringEvents) formData.append("proctoringEvents", JSON.stringify(payload.proctoringEvents));
     const { data } = await apiClient.post<{ data: CandidateSubmission }>(
       `/assessments/${assessmentId}/submit`,
       formData,

@@ -8,3 +8,4 @@ export * from "./CompanyBillingPage";
 export * from "./CompanyAIInsightsPage";
 export * from "./CompanyAIGeneratorPage";
 export * from "./CompanyProfilePage";
+export * from "./CompanyAIProvidersSettingsPage";

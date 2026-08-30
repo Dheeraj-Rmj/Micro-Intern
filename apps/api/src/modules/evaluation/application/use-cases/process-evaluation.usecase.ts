@@ -2,13 +2,12 @@ import { SubmissionStatus, EvaluationStatus, TaskType, prisma } from "@microinte
 
 import { createModuleLogger } from "@/core/logger.js";
 import {
-  getAIGateway,
   getAISafetyLayer,
   compilePrompt,
   PROMPTS,
-  type AIFallbackEngine,
   type AISafetyLayer,
 } from "@/infrastructure/ai/index.js";
+import { CompanyAIGatewayFactory } from "@/infrastructure/ai/CompanyAIGatewayFactory.js";
 import { AssessmentNotFoundError } from "@/modules/assessment/domain/errors/assessment.errors.js";
 import { eventBus, DOMAIN_EVENTS } from "@/shared/events/EventBus.js";
 
@@ -30,7 +29,6 @@ export class ProcessEvaluationUseCase {
     private readonly submissionRepository: ISubmissionRepository,
     private readonly evaluationRepository: IEvaluationRepository,
     private readonly assessmentRepository: IAssessmentRepository,
-    private readonly aiEngine: AIFallbackEngine = getAIGateway(),
     private readonly aiSafetyLayer: AISafetyLayer = getAISafetyLayer(),
   ) {}
 
@@ -47,6 +45,8 @@ export class ProcessEvaluationUseCase {
     if (!assessment) {
       throw new AssessmentNotFoundError(submission.assessmentId);
     }
+
+    const aiEngine = await CompanyAIGatewayFactory.getGatewayForCompany(assessment.companyId);
 
     await this.submissionRepository.updateStatus(submission.id, SubmissionStatus.UNDER_EVALUATION);
 
@@ -137,7 +137,7 @@ export class ProcessEvaluationUseCase {
           resultsJSON: JSON.stringify(compiledTasksAndAnswers, null, 2),
         });
 
-        const aiRes = await this.aiEngine.complete({
+        const aiRes = await aiEngine.complete({
           messages: [
             { role: "system", content: prompt.systemMessage },
             { role: "user", content: prompt.userMessage },
@@ -182,9 +182,10 @@ export class ProcessEvaluationUseCase {
           assessmentTitle: assessment.title,
           passingScore: assessment.passingScore,
           candidateSubmissionJSON: JSON.stringify(compiledTasksAndAnswers, null, 2),
+          proctoringDataJSON: submission.integrityFlags ? JSON.stringify(submission.integrityFlags, null, 2) : "No proctoring violations recorded.",
         });
 
-        const aiRes = await this.aiEngine.complete({
+        const aiRes = await aiEngine.complete({
           messages: [
             { role: "system", content: prompt.systemMessage },
             { role: "user", content: prompt.userMessage },

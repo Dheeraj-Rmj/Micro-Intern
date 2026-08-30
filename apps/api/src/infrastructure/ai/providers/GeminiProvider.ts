@@ -25,10 +25,11 @@ export class GeminiProvider implements IAIProvider {
 
   private readonly client: GoogleGenerativeAI | null;
 
-  constructor() {
+  constructor(apiKey?: string) {
+    const keyToUse = apiKey ?? config.GEMINI_API_KEY;
     this.client =
-      config.GEMINI_API_KEY !== undefined && config.GEMINI_API_KEY.length > 0
-        ? new GoogleGenerativeAI(config.GEMINI_API_KEY)
+      keyToUse !== undefined && keyToUse.length > 0
+        ? new GoogleGenerativeAI(keyToUse)
         : null;
   }
 

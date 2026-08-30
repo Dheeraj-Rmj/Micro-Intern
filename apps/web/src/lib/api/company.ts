@@ -43,6 +43,21 @@ export const companyApi = {
     return response.data;
   },
 
+  getAIProviders: async () => {
+    const response = await apiClient.get("/companies/ai/providers");
+    return response.data;
+  },
+
+  addAIProvider: async (data: { provider: string; apiKey: string; isFallback: boolean }) => {
+    const response = await apiClient.post("/companies/ai/providers", data);
+    return response.data;
+  },
+
+  deleteAIProvider: async (provider: string) => {
+    const response = await apiClient.delete(`/companies/ai/providers/${provider}`);
+    return response.data;
+  },
+
   // ── Assessments ───────────────────────────────────────────────────────────
 
   getAssessments: async () => {

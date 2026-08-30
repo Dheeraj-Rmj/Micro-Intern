@@ -13,6 +13,7 @@ import type {
   GetGlobalAnalyticsUseCase,
   CreateCompanyManuallyUseCase,
   UnsuspendUserUseCase,
+  AskAIAuditorUseCase,
 } from "../application/index.js";
 import type { DeleteAccountUseCase } from "@/modules/auth/application/use-cases/delete-account.usecase.js";
 import type { Request, Response, NextFunction } from "express";
@@ -32,6 +33,7 @@ export class AdminController {
     private readonly createCompanyManuallyUseCase: CreateCompanyManuallyUseCase,
     private readonly unsuspendUserUseCase: UnsuspendUserUseCase,
     private readonly deleteAccountUseCase: DeleteAccountUseCase,
+    private readonly askAIAuditorUseCase: AskAIAuditorUseCase,
   ) {}
 
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -132,5 +134,19 @@ export class AdminController {
   async getGlobalAnalytics(req: Request, res: Response, next: NextFunction): Promise<void> {
     const metrics = await this.getGlobalAnalyticsUseCase.execute();
     ResponseFormatter.success(res, metrics);
+  }
+
+  async askAIAuditor(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const prompt = req.body.prompt as string;
+      if (!prompt) {
+        res.status(400).json({ success: false, error: "Prompt is required" });
+        return;
+      }
+      const response = await this.askAIAuditorUseCase.execute(prompt);
+      ResponseFormatter.success(res, { text: response });
+    } catch (error) {
+      next(error);
+    }
   }
 }

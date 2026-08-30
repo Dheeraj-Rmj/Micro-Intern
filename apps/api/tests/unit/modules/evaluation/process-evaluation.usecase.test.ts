@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { ProcessEvaluationUseCase } from "@/modules/evaluation/application/use-cases/process-evaluation.usecase.js";
 import { eventBus, DOMAIN_EVENTS } from "@/shared/events/EventBus.js";
+import { CompanyAIGatewayFactory } from "@/infrastructure/ai/CompanyAIGatewayFactory.js";
 
 describe("ProcessEvaluationUseCase", () => {
   let useCase: ProcessEvaluationUseCase;
@@ -65,8 +66,9 @@ describe("ProcessEvaluationUseCase", () => {
       mockSubRepo,
       mockEvalRepo,
       mockAssessmentRepo,
-      mockAiEngine,
+      // aiSafetyLayer not passed, defaults to standard
     );
+    vi.spyOn(CompanyAIGatewayFactory, "getGatewayForCompany").mockResolvedValue(mockAiEngine as any);
     vi.spyOn(eventBus, "emit").mockResolvedValue(undefined);
   });
 

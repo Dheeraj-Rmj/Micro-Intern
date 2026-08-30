@@ -25,6 +25,9 @@ export class Submission {
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
     public readonly deletedAt: Date | null,
+    public readonly integrityScore: number | null,
+    public readonly integrityFlags: any | null,
+    public readonly isSuspicious: boolean | null,
     public readonly answers?: SubmissionAnswer[],
     public readonly evaluation?: Evaluation | null,
   ) {}
@@ -82,6 +85,9 @@ export class Submission {
       record.createdAt,
       record.updatedAt,
       record.deletedAt ?? null,
+      record.integrityScore != null ? Number(record.integrityScore) : null,
+      record.integrityFlags ?? null,
+      record.isSuspicious ?? null,
       record.answers ? record.answers.map((a: any) => SubmissionAnswer.fromPrisma(a)) : undefined,
       record.evaluation ? Evaluation.fromPrisma(record.evaluation) : null,
     );

@@ -58,6 +58,7 @@ export default function App() {
  const [isTestRunning, setIsTestRunning] = useState(false);
  const [testLog, setTestLog] = useState<string | null>(null);
  const [copied, setCopied] = useState(false);
+ const [proctoringEvents, setProctoringEvents] = useState<string[]>([]);
 
  useEffect(() => {
  const timer = setInterval(() => {
@@ -123,7 +124,7 @@ export default function App() {
  const handleSubmitTrial = () => {
  safeConfetti();
 
- submitWorkspaceTask(trial.id, codeContent, uploadedFiles);
+ submitWorkspaceTask(trial.id, codeContent, uploadedFiles, proctoringEvents);
  setTimeout(() => setCurrentRoute("submissions"), 1200);
  };
 
@@ -135,7 +136,7 @@ export default function App() {
 
  const handleViolation = (type: string) => {
  showToast("Proctoring Violation", `Recorded: ${type}`, "error");
- // We would log to backend here.
+ setProctoringEvents((prev) => [...prev, `${type} at ${new Date().toISOString()}`]);
  };
 
  return (

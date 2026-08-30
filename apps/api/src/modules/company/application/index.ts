@@ -10,3 +10,4 @@ export { GetDepartmentsUseCase } from "./use-cases/get-departments.usecase.js";
 export { GetHiringAnalyticsUseCase } from "./use-cases/get-hiring-analytics.usecase.js";
 export { GetBillingUseCase } from "./use-cases/get-billing.usecase.js";
 export { GetAIInsightsUseCase } from "./use-cases/get-ai-insights.usecase.js";
+export { ManageAIProvidersUseCase } from "./use-cases/manage-ai-providers.usecase.js";

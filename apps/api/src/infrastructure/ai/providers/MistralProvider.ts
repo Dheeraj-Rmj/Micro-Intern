@@ -1,8 +1,6 @@
 import { AIProvider } from "@microintern/shared";
 
-import { config } from "@/core/config.js";
 import { createModuleLogger } from "@/core/logger.js";
-
 import { AIProviderError } from "../interfaces/IAIProvider.js";
 
 import type {
@@ -12,24 +10,16 @@ import type {
   AIProviderHealth,
 } from "../interfaces/IAIProvider.js";
 
-const log = createModuleLogger("OpenRouterProvider");
+const log = createModuleLogger("MistralProvider");
 
-/**
- * OpenRouter Provider — second fallback.
- *
- * OpenRouter is an OpenAI-compatible API that provides access to 100+ models
- * across multiple providers (Anthropic, Meta, Mistral, etc.) under one API key.
- * Excellent for cost-optimized fallback.
- */
-export class OpenRouterProvider implements IAIProvider {
-  readonly name = AIProvider.OPENROUTER;
-  readonly defaultModel = config.OPENROUTER_DEFAULT_MODEL;
-  private readonly baseUrl = "https://openrouter.ai/api/v1";
-
+export class MistralProvider implements IAIProvider {
+  readonly name = AIProvider.MISTRAL;
+  readonly defaultModel = "mistral-small-latest";
+  private readonly baseUrl = "https://api.mistral.ai/v1";
   private readonly apiKey: string | undefined;
 
   constructor(apiKey?: string) {
-    this.apiKey = apiKey ?? config.OPENROUTER_API_KEY;
+    this.apiKey = apiKey;
   }
 
   isConfigured(): boolean {
@@ -38,7 +28,7 @@ export class OpenRouterProvider implements IAIProvider {
 
   async complete(request: AICompletionRequest): Promise<AICompletionResponse> {
     if (!this.isConfigured()) {
-      throw new AIProviderError(AIProvider.OPENROUTER, "OpenRouter API key not configured", false);
+      throw new AIProviderError(AIProvider.MISTRAL, "Mistral API key not configured", false);
     }
 
     const start = Date.now();
@@ -49,13 +39,11 @@ export class OpenRouterProvider implements IAIProvider {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.apiKey}`,
-          "HTTP-Referer": config.OPENROUTER_SITE_URL ?? "https://microintern.io",
-          "X-Title": config.OPENROUTER_SITE_NAME ?? "MicroIntern",
         },
         body: JSON.stringify({
           model: request.model ?? this.defaultModel,
           messages: request.messages,
-          max_tokens: request.maxTokens ?? 8192,
+          max_tokens: request.maxTokens ?? 4096,
           temperature: request.temperature ?? 0.1,
           top_p: request.topP ?? 1,
           response_format: request.responseFormat,
@@ -68,8 +56,8 @@ export class OpenRouterProvider implements IAIProvider {
         const errorBody = await response.text();
         const isRateLimited = response.status === 429;
         throw new AIProviderError(
-          AIProvider.OPENROUTER,
-          `OpenRouter API error ${response.status}: ${errorBody}`,
+          AIProvider.MISTRAL,
+          `Mistral API error ${response.status}: ${errorBody}`,
           isRateLimited,
         );
       }
@@ -82,13 +70,13 @@ export class OpenRouterProvider implements IAIProvider {
 
       const choice = data.choices[0];
       if (choice === undefined) {
-        throw new AIProviderError(AIProvider.OPENROUTER, "No completion choices returned", true);
+        throw new AIProviderError(AIProvider.MISTRAL, "No completion choices returned", true);
       }
 
       return {
         content: choice.message.content,
         model: data.model,
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.MISTRAL,
         usage: {
           promptTokens: data.usage.prompt_tokens,
           completionTokens: data.usage.completion_tokens,
@@ -99,10 +87,10 @@ export class OpenRouterProvider implements IAIProvider {
       };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
-      log.warn({ err: error }, "OpenRouter API error");
+      log.warn({ err: error }, "Mistral API error");
       throw new AIProviderError(
-        AIProvider.OPENROUTER,
-        error instanceof Error ? error.message : "OpenRouter request failed",
+        AIProvider.MISTRAL,
+        error instanceof Error ? error.message : "Mistral request failed",
         true,
         error instanceof Error ? error : undefined,
       );
@@ -112,7 +100,7 @@ export class OpenRouterProvider implements IAIProvider {
   async healthCheck(): Promise<AIProviderHealth> {
     if (!this.isConfigured()) {
       return {
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.MISTRAL,
         status: "unavailable",
         error: "Not configured",
         checkedAt: new Date(),
@@ -122,14 +110,14 @@ export class OpenRouterProvider implements IAIProvider {
     try {
       await this.complete({ messages: [{ role: "user", content: "Reply ok" }], maxTokens: 5 });
       return {
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.MISTRAL,
         status: "available",
         latencyMs: Date.now() - start,
         checkedAt: new Date(),
       };
     } catch {
       return {
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.MISTRAL,
         status: "unavailable",
         latencyMs: Date.now() - start,
         error: "Health check failed",

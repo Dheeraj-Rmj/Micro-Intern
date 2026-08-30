@@ -21,6 +21,8 @@ import {
   Key,
   Save,
   ShieldAlert,
+  Bot,
+  Send,
 } from "lucide-react";
 import { SuperAdminSecurityTab } from "./SuperAdminSecurityTab";
 
@@ -49,7 +51,7 @@ interface ApiKeyConfig {
 
 export const SuperAdminSystemPage: React.FC = () => {
   const { showToast } = useApp();
-  const [activeTab, setActiveTab] = useState<"flags" | "emails" | "gateways" | "security">("flags");
+  const [activeTab, setActiveTab] = useState<"flags" | "emails" | "gateways" | "security" | "ai_auditor">("flags");
 
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
     aiReader: true,
@@ -68,6 +70,11 @@ export const SuperAdminSystemPage: React.FC = () => {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("candidate_onboarding");
   const [editSubject, setEditSubject] = useState("");
   const [editBody, setEditBody] = useState("");
+
+  // AI Auditor State
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiResponse, setAiResponse] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const fetchSettings = async () => {
     setLoading(true);
@@ -136,6 +143,21 @@ export const SuperAdminSystemPage: React.FC = () => {
       );
     } catch (err: any) {
       showToast("Error", err.message || "Failed to save template changes", "warning");
+    }
+  };
+
+  const handleAskAIAuditor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    setAiResponse("");
+    try {
+      const res = await adminApi.askAIAuditor(aiPrompt);
+      setAiResponse(res.text);
+    } catch (err: any) {
+      showToast("Error", err.message || "Failed to query AI Auditor", "error");
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -216,6 +238,17 @@ export const SuperAdminSystemPage: React.FC = () => {
         >
           <ShieldAlert className="w-3.5 h-3.5 inline mr-1.5" />
           Security & MFA
+        </button>
+        <button
+          onClick={() => setActiveTab("ai_auditor")}
+          className={`px-5 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            activeTab === "ai_auditor"
+              ? "bg-[#111111] dark:bg-white text-white dark:text-black shadow-sm"
+              : "text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white"
+          }`}
+        >
+          <Bot className="w-3.5 h-3.5 inline mr-1.5" />
+          AI Auditor
         </button>
       </div>
 
@@ -523,6 +556,56 @@ export const SuperAdminSystemPage: React.FC = () => {
           )}
           {/* ── Security & MFA Tab ── */}
           {activeTab === "security" && <SuperAdminSecurityTab />}
+          {/* ── AI Auditor Tab ── */}
+          {activeTab === "ai_auditor" && (
+            <div className="p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
+              <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-4">
+                <div>
+                  <h3 className="text-xl font-serif text-black dark:text-white flex items-center gap-2">
+                    <Bot className="w-5 h-5 text-indigo-500" />
+                    <span>AI Auditor & Accountability Extractor</span>
+                  </h3>
+                  <p className="text-xs text-black/50 dark:text-white/60 mt-0.5">
+                    Query system history, admin actions, and accountability logs using natural language.
+                  </p>
+                </div>
+              </div>
+
+              <div className="max-w-3xl space-y-6">
+                <form onSubmit={handleAskAIAuditor} className="relative">
+                  <input
+                    type="text"
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
+                    placeholder="E.g., Who changed the billing settings yesterday?"
+                    className="w-full pl-5 pr-14 py-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl focus:outline-none focus:border-indigo-500 text-sm font-medium"
+                    disabled={aiLoading}
+                  />
+                  <button
+                    type="submit"
+                    disabled={aiLoading || !aiPrompt.trim()}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-50 transition-colors"
+                  >
+                    {aiLoading ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                  </button>
+                </form>
+
+                {aiResponse && (
+                  <div className="p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-black dark:text-white text-sm leading-relaxed prose dark:prose-invert">
+                    <div className="flex items-center gap-2 mb-4 text-indigo-600 dark:text-indigo-400 font-semibold">
+                      <Bot className="w-4 h-4" />
+                      AI Auditor Response
+                    </div>
+                    <div className="whitespace-pre-wrap">{aiResponse}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

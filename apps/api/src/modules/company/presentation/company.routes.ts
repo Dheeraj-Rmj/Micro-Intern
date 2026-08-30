@@ -30,6 +30,7 @@ import {
   GetBillingUseCase,
   GetAIInsightsUseCase,
   ListCompanySubmissionsUseCase,
+  ManageAIProvidersUseCase,
 } from "../application/index.js";
 import { PrismaCompanyRepository, registerCompanyEventListeners } from "../infrastructure/index.js";
 
@@ -107,6 +108,10 @@ export function createCompanyRouter(): Router {
       "ListCompanySubmissionsUseCase",
       (_infra: InfrastructureDependencies) => new ListCompanySubmissionsUseCase(_infra.db),
     );
+    container.register(
+      "ManageAIProvidersUseCase",
+      () => new ManageAIProvidersUseCase(),
+    );
 
     container.register(
       "CompanyController",
@@ -124,6 +129,7 @@ export function createCompanyRouter(): Router {
           container.get("GetBillingUseCase"),
           container.get("GetAIInsightsUseCase"),
           container.get("ListCompanySubmissionsUseCase"),
+          container.get("ManageAIProvidersUseCase"),
         ),
     );
 
@@ -281,6 +287,38 @@ export function createCompanyRouter(): Router {
     requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
     (req, res, next) => {
       controller.getAIInsights(req, res, next).catch(next);
+    },
+  );
+
+  // POST /api/v1/companies/ai/providers
+  router.post(
+    "/ai/providers",
+    authMiddleware as RequestHandler,
+    requireRole(Role.COMPANY_OWNER) as RequestHandler,
+    audit(AuditAction.UPDATE, "CompanyAIProvider") as RequestHandler,
+    (req, res, next) => {
+      controller.addAIProvider(req, res, next).catch(next);
+    },
+  );
+
+  // DELETE /api/v1/companies/ai/providers/:provider
+  router.delete(
+    "/ai/providers/:provider",
+    authMiddleware as RequestHandler,
+    requireRole(Role.COMPANY_OWNER) as RequestHandler,
+    audit(AuditAction.DELETE, "CompanyAIProvider") as RequestHandler,
+    (req, res, next) => {
+      controller.deleteAIProvider(req, res, next).catch(next);
+    },
+  );
+
+  // GET /api/v1/companies/ai/providers
+  router.get(
+    "/ai/providers",
+    authMiddleware as RequestHandler,
+    requireRole(Role.COMPANY_OWNER) as RequestHandler,
+    (req, res, next) => {
+      controller.getAIProviders(req, res, next).catch(next);
     },
   );
 

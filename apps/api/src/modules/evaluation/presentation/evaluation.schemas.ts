@@ -34,6 +34,7 @@ export const SubmitAssessmentBodySchema = z.object({
     },
     z.array(AnswerItemSchema).min(1, "At least one answer must be provided"),
   ),
+  proctoringEvents: z.array(z.string()).optional(),
 });
 
 export type AssessmentParamDto = z.infer<typeof AssessmentParamSchema>;

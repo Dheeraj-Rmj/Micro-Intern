@@ -93,6 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
         { id: "company-billing" as PageRoute, label: "Billing & Subscription", icon: FileCheck },
         { id: "company-ai-insights" as PageRoute, label: "AI Insights", icon: Code2 },
         { id: "company-ai-generator" as PageRoute, label: "AI Task Generator", icon: Bot },
+        { id: "company-ai-settings" as PageRoute, label: "AI Providers (BYOK)", icon: Terminal },
       ];
 
   const adminMenuItems: MenuItem[] = [

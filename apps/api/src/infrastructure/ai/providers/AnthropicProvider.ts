@@ -1,8 +1,6 @@
 import { AIProvider } from "@microintern/shared";
 
-import { config } from "@/core/config.js";
 import { createModuleLogger } from "@/core/logger.js";
-
 import { AIProviderError } from "../interfaces/IAIProvider.js";
 
 import type {
@@ -12,24 +10,16 @@ import type {
   AIProviderHealth,
 } from "../interfaces/IAIProvider.js";
 
-const log = createModuleLogger("OpenRouterProvider");
+const log = createModuleLogger("AnthropicProvider");
 
-/**
- * OpenRouter Provider — second fallback.
- *
- * OpenRouter is an OpenAI-compatible API that provides access to 100+ models
- * across multiple providers (Anthropic, Meta, Mistral, etc.) under one API key.
- * Excellent for cost-optimized fallback.
- */
-export class OpenRouterProvider implements IAIProvider {
-  readonly name = AIProvider.OPENROUTER;
-  readonly defaultModel = config.OPENROUTER_DEFAULT_MODEL;
-  private readonly baseUrl = "https://openrouter.ai/api/v1";
-
+export class AnthropicProvider implements IAIProvider {
+  readonly name = AIProvider.ANTHROPIC;
+  readonly defaultModel = "claude-3-5-haiku-latest";
+  private readonly baseUrl = "https://api.anthropic.com/v1";
   private readonly apiKey: string | undefined;
 
   constructor(apiKey?: string) {
-    this.apiKey = apiKey ?? config.OPENROUTER_API_KEY;
+    this.apiKey = apiKey;
   }
 
   isConfigured(): boolean {
@@ -38,28 +28,38 @@ export class OpenRouterProvider implements IAIProvider {
 
   async complete(request: AICompletionRequest): Promise<AICompletionResponse> {
     if (!this.isConfigured()) {
-      throw new AIProviderError(AIProvider.OPENROUTER, "OpenRouter API key not configured", false);
+      throw new AIProviderError(AIProvider.ANTHROPIC, "Anthropic API key not configured", false);
     }
 
     const start = Date.now();
 
     try {
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
+      // Convert standard OpenAI messages to Anthropic format
+      let systemMessage = "";
+      const anthropicMessages: { role: string; content: string }[] = [];
+
+      for (const msg of request.messages) {
+        if (msg.role === "system") {
+          systemMessage += msg.content + "\n";
+        } else {
+          anthropicMessages.push({ role: msg.role, content: msg.content });
+        }
+      }
+
+      const response = await fetch(`${this.baseUrl}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-          "HTTP-Referer": config.OPENROUTER_SITE_URL ?? "https://microintern.io",
-          "X-Title": config.OPENROUTER_SITE_NAME ?? "MicroIntern",
+          "x-api-key": this.apiKey!,
+          "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({
           model: request.model ?? this.defaultModel,
-          messages: request.messages,
-          max_tokens: request.maxTokens ?? 8192,
+          system: systemMessage.trim() || undefined,
+          messages: anthropicMessages,
+          max_tokens: request.maxTokens ?? 4096,
           temperature: request.temperature ?? 0.1,
           top_p: request.topP ?? 1,
-          response_format: request.responseFormat,
-          stream: false,
         }),
         signal: AbortSignal.timeout(30_000),
       });
@@ -68,41 +68,42 @@ export class OpenRouterProvider implements IAIProvider {
         const errorBody = await response.text();
         const isRateLimited = response.status === 429;
         throw new AIProviderError(
-          AIProvider.OPENROUTER,
-          `OpenRouter API error ${response.status}: ${errorBody}`,
+          AIProvider.ANTHROPIC,
+          `Anthropic API error ${response.status}: ${errorBody}`,
           isRateLimited,
         );
       }
 
       const data = (await response.json()) as {
-        choices: Array<{ message: { content: string }; finish_reason: string }>;
+        content: Array<{ text: string }>;
         model: string;
-        usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+        usage: { input_tokens: number; output_tokens: number };
+        stop_reason: string;
       };
 
-      const choice = data.choices[0];
+      const choice = data.content[0];
       if (choice === undefined) {
-        throw new AIProviderError(AIProvider.OPENROUTER, "No completion choices returned", true);
+        throw new AIProviderError(AIProvider.ANTHROPIC, "No completion choices returned", true);
       }
 
       return {
-        content: choice.message.content,
+        content: choice.text,
         model: data.model,
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.ANTHROPIC,
         usage: {
-          promptTokens: data.usage.prompt_tokens,
-          completionTokens: data.usage.completion_tokens,
-          totalTokens: data.usage.total_tokens,
+          promptTokens: data.usage.input_tokens,
+          completionTokens: data.usage.output_tokens,
+          totalTokens: data.usage.input_tokens + data.usage.output_tokens,
         },
         latencyMs: Date.now() - start,
-        finishReason: (choice.finish_reason as AICompletionResponse["finishReason"]) ?? "stop",
+        finishReason: data.stop_reason === "end_turn" ? "stop" : "length",
       };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
-      log.warn({ err: error }, "OpenRouter API error");
+      log.warn({ err: error }, "Anthropic API error");
       throw new AIProviderError(
-        AIProvider.OPENROUTER,
-        error instanceof Error ? error.message : "OpenRouter request failed",
+        AIProvider.ANTHROPIC,
+        error instanceof Error ? error.message : "Anthropic request failed",
         true,
         error instanceof Error ? error : undefined,
       );
@@ -112,7 +113,7 @@ export class OpenRouterProvider implements IAIProvider {
   async healthCheck(): Promise<AIProviderHealth> {
     if (!this.isConfigured()) {
       return {
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.ANTHROPIC,
         status: "unavailable",
         error: "Not configured",
         checkedAt: new Date(),
@@ -122,14 +123,14 @@ export class OpenRouterProvider implements IAIProvider {
     try {
       await this.complete({ messages: [{ role: "user", content: "Reply ok" }], maxTokens: 5 });
       return {
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.ANTHROPIC,
         status: "available",
         latencyMs: Date.now() - start,
         checkedAt: new Date(),
       };
     } catch {
       return {
-        provider: AIProvider.OPENROUTER,
+        provider: AIProvider.ANTHROPIC,
         status: "unavailable",
         latencyMs: Date.now() - start,
         error: "Health check failed",

@@ -28,10 +28,11 @@ export class GroqProvider implements IAIProvider {
 
   private readonly client: Groq | null;
 
-  constructor() {
-    if (config.GROQ_API_KEY !== undefined && config.GROQ_API_KEY.length > 0) {
+  constructor(apiKey?: string) {
+    const keyToUse = apiKey ?? config.GROQ_API_KEY;
+    if (keyToUse !== undefined && keyToUse.length > 0) {
       this.client = new Groq({
-        apiKey: config.GROQ_API_KEY,
+        apiKey: keyToUse,
         timeout: config.GROQ_TIMEOUT_MS,
         maxRetries: 0, // Retries handled by the fallback engine
       });

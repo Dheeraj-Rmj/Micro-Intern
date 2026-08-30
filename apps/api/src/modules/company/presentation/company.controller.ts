@@ -14,6 +14,7 @@ import type {
   GetBillingUseCase,
   GetAIInsightsUseCase,
   ListCompanySubmissionsUseCase,
+  ManageAIProvidersUseCase,
 } from "../application/index.js";
 import type {
   CreateCompanyInput,
@@ -36,6 +37,7 @@ export class CompanyController {
     private readonly getBillingUseCase: GetBillingUseCase,
     private readonly getAIInsightsUseCase: GetAIInsightsUseCase,
     private readonly listCompanySubmissionsUseCase: ListCompanySubmissionsUseCase,
+    private readonly manageAIProvidersUseCase: ManageAIProvidersUseCase,
   ) {}
 
   private getAuthenticatedUserId(req: Request): string {
@@ -185,6 +187,41 @@ export class CompanyController {
         req.query,
       );
       ResponseFormatter.paginated(res, submissions, pagination);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  addAIProvider = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const { provider, apiKey, isFallback } = req.body;
+      const result = await this.manageAIProvidersUseCase.addProvider(company.id, provider, apiKey, isFallback);
+      ResponseFormatter.created(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteAIProvider = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const { provider } = req.params;
+      await this.manageAIProvidersUseCase.deleteProvider(company.id, provider as any);
+      ResponseFormatter.noContent(res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAIProviders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = this.getAuthenticatedUserId(req);
+      const company = await this.getContextCompanyUseCase.execute(userId);
+      const result = await this.manageAIProvidersUseCase.getTenantStatus(company.id);
+      ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);
     }

@@ -40,6 +40,7 @@ import {
   CompanyBillingPage,
   CompanyAIInsightsPage,
   CompanyAIGeneratorPage,
+  CompanyAIProvidersSettingsPage,
   CompanyProfilePage,
 } from "./components/company";
 import { ForcePasswordChangeModal } from "../../features/auth/components/ForcePasswordChangeModal";
@@ -201,6 +202,8 @@ const MainRouter: React.FC = () => {
         return <CompanyAIInsightsPage />;
       case "company-ai-generator":
         return <CompanyAIGeneratorPage />;
+      case "company-ai-settings":
+        return <CompanyAIProvidersSettingsPage />;
       case "company-profile":
         return <CompanyProfilePage />;
       // Kept for backward compatibility/internal routing if needed

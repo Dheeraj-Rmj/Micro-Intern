@@ -290,6 +290,7 @@ Generate a micro-internship assessment containing 1-3 tasks that can be complete
       assessmentTitle: z.string(),
       candidateSubmissionJSON: z.string(),
       passingScore: z.number(),
+      proctoringDataJSON: z.string().optional(),
     }),
     systemPrompt: `You are an expert Senior Engineering Manager grading candidate submissions.
 You must objectively evaluate the candidate's work and output a detailed performance classification.
@@ -303,7 +304,10 @@ Do not include markdown code blocks, just raw JSON.`,
 ## Candidate Submission (Tasks & Answers):
 {{candidateSubmissionJSON}}
 
-Analyze all answers. Provide an aggregate evaluation and classify the candidate.
+## Proctoring & Integrity Data:
+{{proctoringDataJSON}}
+
+Analyze all answers. Provide an aggregate evaluation and classify the candidate. If proctoring violations exist, reference them in the summary.
 
 Performance Classifications: "Exceptional", "Outstanding", "Above Average", "Good", "Average", "Below Average", "Needs Improvement".
 
@@ -322,6 +326,7 @@ Performance Classifications: "Exceptional", "Outstanding", "Above Average", "Goo
     assessmentTitle: string;
     candidateSubmissionJSON: string;
     passingScore: number;
+    proctoringDataJSON?: string;
   }>,
 
   // ── Phase 3: AI Hiring OS Prompts ──────────────────────────────────────────

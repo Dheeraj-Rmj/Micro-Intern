@@ -89,6 +89,11 @@ export const adminApi = {
     return data.data;
   },
 
+  askAIAuditor: async (prompt: string): Promise<{ text: string }> => {
+    const { data } = await apiClient.post<{ data: { text: string } }>("/admin/ai-auditor", { prompt });
+    return data.data;
+  },
+
   verifyCompany: async (id: string): Promise<any> => {
     const { data } = await apiClient.post<any>(`/admin/companies/${id}/verify`);
     return data.data;

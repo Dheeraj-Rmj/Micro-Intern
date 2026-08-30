@@ -20,6 +20,7 @@ import {
   GetGlobalAnalyticsUseCase,
   CreateCompanyManuallyUseCase,
   UnsuspendUserUseCase,
+  AskAIAuditorUseCase,
 } from "../application/index.js";
 import { PrismaAdminRepository } from "../infrastructure/index.js";
 import { DeleteAccountUseCase } from "@/modules/auth/application/use-cases/delete-account.usecase.js";
@@ -101,6 +102,11 @@ export function createAdminRouter(): Router {
     );
 
     container.register(
+      "AskAIAuditorUseCase",
+      () => new AskAIAuditorUseCase(container.get("IAdminRepository")),
+    );
+
+    container.register(
       "AdminDeleteAccountUseCase",
       () => new DeleteAccountUseCase(container.get("IUserRepository")),
     );
@@ -122,6 +128,7 @@ export function createAdminRouter(): Router {
           container.get("CreateCompanyManuallyUseCase"),
           container.get("UnsuspendUserUseCase"),
           container.get("AdminDeleteAccountUseCase"),
+          container.get("AskAIAuditorUseCase"),
         ),
     );
   }
@@ -249,6 +256,15 @@ export function createAdminRouter(): Router {
   router.get("/metrics/ai-analytics", (req, res, next) => {
     controller.getGlobalAnalytics(req, res, next).catch(next);
   });
+
+  // POST /api/v1/admin/ai-auditor
+  router.post(
+    "/ai-auditor",
+    audit(AuditAction.UPDATE, "AiAuditorQuery") as RequestHandler,
+    (req, res, next) => {
+      controller.askAIAuditor(req, res, next).catch(next);
+    },
+  );
 
   return router;
 }

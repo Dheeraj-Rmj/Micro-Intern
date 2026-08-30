@@ -85,6 +85,9 @@ export enum AIProvider {
   GEMINI = "gemini",
   OLLAMA = "ollama",
   HUGGINGFACE = "huggingface",
+  OPENAI = "openai",
+  ANTHROPIC = "anthropic",
+  MISTRAL = "mistral",
 }
 
 /**
