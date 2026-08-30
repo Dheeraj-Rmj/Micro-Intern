@@ -194,7 +194,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
             }}
             className="w-11 h-11 rounded-full p-0.5 bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm hover:scale-105 transition-transform overflow-hidden cursor-pointer"
           >
-            {userProfile.avatar && !imgError ? (
+            {userProfile.avatar && !imgError && !isSuperAdminView ? (
               <img
                 src={userProfile.avatar}
                 alt="Avatar"
@@ -203,13 +203,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
               />
             ) : (
               <div className="w-full h-full rounded-full bg-white text-black font-bold flex items-center justify-center text-sm">
-                {userProfile.fullName && userProfile.fullName !== "Avatar"
+                {isSuperAdminView 
+                  ? "SA" 
+                  : userProfile.fullName && userProfile.fullName !== "Avatar"
                   ? userProfile.fullName.charAt(0).toUpperCase()
-                  : isSuperAdminView
-                    ? "S"
-                    : isCompanyView
-                      ? "E"
-                      : "C"}
+                  : isCompanyView
+                    ? "E"
+                    : "C"}
               </div>
             )}
           </button>
@@ -218,10 +218,10 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
             <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 rounded-[24px] shadow-2xl p-3 z-50">
               <div className="p-3 mb-2">
                 <p className="font-bold text-sm text-black dark:text-white">
-                  {userProfile.fullName && userProfile.fullName !== "Avatar"
-                    ? userProfile.fullName
-                    : isSuperAdminView
-                      ? "Super Admin"
+                  {isSuperAdminView
+                    ? "Super Admin"
+                    : userProfile.fullName && userProfile.fullName !== "Avatar"
+                      ? userProfile.fullName
                       : isCompanyView
                         ? "Enterprise Admin"
                         : "Candidate"}

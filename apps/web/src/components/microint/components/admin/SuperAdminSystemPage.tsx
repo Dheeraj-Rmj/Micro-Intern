@@ -27,8 +27,6 @@ import {
 import { SuperAdminSecurityTab } from "./SuperAdminSecurityTab";
 
 interface FeatureFlags {
-  aiReader: boolean;
-  aiSearch: boolean;
   zenQuotes: boolean;
   stripeLiveMode: boolean;
   antiCheatDaemon: boolean;
@@ -54,8 +52,6 @@ export const SuperAdminSystemPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"flags" | "emails" | "gateways" | "security" | "ai_auditor">("flags");
 
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
-    aiReader: true,
-    aiSearch: true,
     zenQuotes: true,
     stripeLiveMode: true,
     antiCheatDaemon: true,
@@ -275,47 +271,7 @@ export const SuperAdminSystemPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">
-                      AI Web Reader (Jina Markdown)
-                    </div>
-                    <p className="text-xs text-black/60 dark:text-white/70">
-                      Convert candidate links to LLM-ready markdown
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => toggleFlag("aiReader", "AI Web Reader")}
-                    className="hover:scale-105 transition-transform cursor-pointer"
-                  >
-                    {featureFlags.aiReader ? (
-                      <ToggleRight className="w-8 h-8 text-emerald-500" />
-                    ) : (
-                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
-                    )}
-                  </button>
-                </div>
 
-                <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="font-semibold text-sm text-black dark:text-white">
-                      AI Web Search (Tavily Engine)
-                    </div>
-                    <p className="text-xs text-black/60 dark:text-white/70">
-                      Real-time code search and citations in workspace
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => toggleFlag("aiSearch", "AI Web Search")}
-                    className="hover:scale-105 transition-transform cursor-pointer"
-                  >
-                    {featureFlags.aiSearch ? (
-                      <ToggleRight className="w-8 h-8 text-emerald-500" />
-                    ) : (
-                      <ToggleLeft className="w-8 h-8 text-black/30 dark:text-white/30" />
-                    )}
-                  </button>
-                </div>
 
                 <div className="p-5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/10 flex items-center justify-between">
                   <div className="space-y-1">
