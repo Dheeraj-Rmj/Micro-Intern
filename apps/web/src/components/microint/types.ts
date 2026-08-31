@@ -17,6 +17,7 @@ export type PageRoute =
   | "my-applications"
   | "workspace"
   | "submissions"
+  | "interview-session"
   | "notifications"
   | "achievements"
   | "settings"
@@ -32,6 +33,7 @@ export type PageRoute =
   | "company-profile"
   | "company-create-trial"
   | "company-manage-trials"
+  | "company-skill-trails"
   | "company-applications"
   | "company-candidate-search"
   | "company-evaluations"
@@ -39,6 +41,7 @@ export type PageRoute =
   | "company-reports"
   | "company-notifications"
   | "company-settings"
+  | "company-integrations"
   // Recruiter Portal Routes
   | "recruiter-dashboard"
   | "recruiter-pipeline"

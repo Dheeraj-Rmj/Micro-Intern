@@ -311,6 +311,7 @@ export class NetworkService {
         })) || [],
         status: c.status === "PENDING" ? (c.requesterId === userId ? "pending_sent" : "pending_received") : c.status.toLowerCase(),
         mutualCount: 0,
+        connectionId: c.id,
       };
     });
   }

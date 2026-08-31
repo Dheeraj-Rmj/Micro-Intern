@@ -4,6 +4,8 @@ import type { IMailerService } from "../infrastructure/MockMailerService.js";
 import { PrismaClient, CandidateJourneyStatus } from "@microintern/database";
 import { GenerateCandidateRecoveryReportUseCase } from "../../learning/application/use-cases/GenerateCandidateRecoveryReportUseCase.js";
 import { GenerateAIOnboardingPlanUseCase } from "../../learning/application/use-cases/GenerateAIOnboardingPlanUseCase.js";
+import { NotificationService } from "./NotificationService.js";
+import { NotificationChannel } from "@microintern/database";
 
 const log = createModuleLogger("NotificationEventSubscriber");
 
@@ -13,6 +15,7 @@ export class NotificationEventSubscriber {
     private readonly prisma: PrismaClient,
     private readonly recoveryReportGenerator: GenerateCandidateRecoveryReportUseCase,
     private readonly onboardingPlanGenerator: GenerateAIOnboardingPlanUseCase,
+    private readonly notificationService: NotificationService,
   ) {}
 
   public async handle(event: IDomainEvent): Promise<void> {
@@ -47,6 +50,10 @@ export class NotificationEventSubscriber {
       });
 
       if (!candidate || !company) return;
+
+      const recruiters = await this.prisma.companyMember.findMany({
+        where: { companyId: company.id, role: "RECRUITER" },
+      });
 
       const candidateEmail = candidate.userId + "@mockcandidate.com"; // Using userId as mock email
       const recruiterEmail =
@@ -100,6 +107,14 @@ Keep building!
           body,
           type: "RECOVERY_REPORT",
         });
+
+        await this.notificationService.createNotification({
+          userId: candidate.userId,
+          channel: NotificationChannel.IN_APP,
+          type: "SYSTEM_ALERT",
+          title: "AI Recovery Report Available",
+          body: `We have generated an AI Recovery Report based on your application for ${journey.roleProfile.title} at ${company.name}. Check it out to see your skill gaps.`,
+        });
       } else if (newStatus === CandidateJourneyStatus.INTERVIEW) {
         // NOTIFY CANDIDATE
         await this.mailer.sendEmail({
@@ -116,6 +131,24 @@ Keep building!
           body: `Hi Hiring Team,\n\nCandidate (ID: ${candidate.id}) has successfully passed the AI Assessment for ${journey.roleProfile.title} with flying colors.\n\nPlease review their generated Interview Kit and prepare for the technical round.`,
           type: "RECRUITER_ALERT",
         });
+
+        await this.notificationService.createNotification({
+          userId: candidate.userId,
+          channel: NotificationChannel.IN_APP,
+          type: "SYSTEM_ALERT",
+          title: "Interview Invitation!",
+          body: `Congratulations! Your assessment for ${journey.roleProfile.title} was Exceptional. You are invited to an interview.`,
+        });
+
+        for (const recruiter of recruiters) {
+          await this.notificationService.createNotification({
+            userId: recruiter.userId,
+            channel: NotificationChannel.IN_APP,
+            type: "SYSTEM_ALERT",
+            title: "Candidate Ready for Interview",
+            body: `Candidate ${candidate.id} has passed the AI Assessment for ${journey.roleProfile.title} and is ready for the technical round.`,
+          });
+        }
       } else if (newStatus === CandidateJourneyStatus.HIRED) {
         // TRIGGER PHASE 7 AI ONBOARDING PLAN
         log.info("Candidate HIRED. Triggering AI Onboarding Plan generation...");
@@ -155,6 +188,24 @@ See you on Day 1!
             body: `Hi Hiring Team,\n\nCandidate (ID: ${candidate.id}) has accepted the offer for ${journey.roleProfile.title}.\n\nThe AI has automatically generated and sent them a 30-Day Technical Onboarding Plan to close their skill gaps in: ${onboardingPlan.skillGapsIdentified.join(", ")}.\n\nThey are ready for Day 1!`,
             type: "RECRUITER_ALERT",
           });
+
+          await this.notificationService.createNotification({
+            userId: candidate.userId,
+            channel: NotificationChannel.IN_APP,
+            type: "SYSTEM_ALERT",
+            title: "Your 30-Day AI Onboarding Plan",
+            body: `Welcome to ${company.name}! Your customized 30-Day Onboarding Plan is ready to help you hit the ground running.`,
+          });
+
+          for (const recruiter of recruiters) {
+            await this.notificationService.createNotification({
+              userId: recruiter.userId,
+              channel: NotificationChannel.IN_APP,
+              type: "SYSTEM_ALERT",
+              title: "Onboarding Plan Generated",
+              body: `Candidate ${candidate.id} accepted the offer for ${journey.roleProfile.title}. Their 30-Day Technical Onboarding Plan has been generated.`,
+            });
+          }
         }
       }
     } catch (error) {

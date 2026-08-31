@@ -74,6 +74,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onToggleMobile
     { id: "company-applications", label: "Applicant Pipeline", icon: Users },
     { id: "company-recruiters", label: "Recruiter Logins", icon: Key },
     { id: "company-manage-trials", label: "Skill Trials", icon: Sparkles },
+    { id: "company-skill-trails", label: "AI Config", icon: Settings },
   ];
 
   const adminNavTabs = [

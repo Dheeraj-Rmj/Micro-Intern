@@ -385,7 +385,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const mapped: AppNotification[] = notifs.map((n) => ({
             id: n.id,
             title: n.title,
-            message: n.message,
+            message: n.body,
             timestamp: new Date(n.createdAt).toLocaleString(),
             category: (
               n.type?.toLowerCase().includes("trial") ? "trial"

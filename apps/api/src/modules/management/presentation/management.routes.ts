@@ -14,6 +14,7 @@ import {
   AcceptInvitationUseCase,
 } from "@/modules/auth/application/use-cases/invitation.usecase.js";
 import { ManagementLoginUseCase } from "@/modules/auth/application/use-cases/management-auth.usecase.js";
+import { ConfigureSkillTrailUseCase } from "../application/use-cases/ConfigureSkillTrailUseCase.js";
 import { PrismaUserRepository } from "@/modules/auth/infrastructure/repositories/PrismaUserRepository.js";
 import {
   BcryptPasswordService,
@@ -105,6 +106,11 @@ export function createManagementRouter(): Router {
     );
 
     container.register(
+      "ConfigureSkillTrailUseCase",
+      (infra: InfrastructureDependencies) => new ConfigureSkillTrailUseCase(infra.db),
+    );
+
+    container.register(
       "ManagementController",
       () =>
         new ManagementController(
@@ -112,6 +118,7 @@ export function createManagementRouter(): Router {
           container.get("InviteRecruiterUseCase"),
           container.get("InviteAdminUseCase"),
           container.get("AcceptInvitationUseCase"),
+          container.get("ConfigureSkillTrailUseCase"),
         ),
     );
   }
@@ -162,6 +169,17 @@ export function createManagementRouter(): Router {
     audit(AuditAction.CREATE, "Invitation"),
     (req, res, next) => {
       controller.inviteAdmin(req, res, next).catch(next);
+    },
+  );
+
+  // POST /api/v1/management/skill-trails/config
+  router.post(
+    "/skill-trails/config",
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.ADMIN]) as RequestHandler,
+    audit(AuditAction.UPDATE, "SkillTrailConfig"),
+    (req, res, next) => {
+      controller.configureSkillTrail(req, res, next).catch(next);
     },
   );
 

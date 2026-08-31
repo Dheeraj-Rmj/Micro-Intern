@@ -171,7 +171,7 @@ export interface ApiNotification {
   id: string;
   type: string;
   title: string;
-  message: string;
+  body: string;
   isRead: boolean;
   createdAt: string;
   metadata?: Record<string, unknown>;
@@ -188,10 +188,10 @@ export const notificationsApi = {
   },
 
   markRead: async (id: string): Promise<void> => {
-    await apiClient.put(`/notifications/${id}/read`, {});
+    await apiClient.patch(`/notifications/${id}/read`, {});
   },
 
   markAllRead: async (): Promise<void> => {
-    await apiClient.put("/notifications/read-all", {});
+    await apiClient.patch("/notifications/read-all", {});
   },
 };

@@ -58,6 +58,18 @@ export const companyApi = {
     return response.data;
   },
 
+  // ── Skill Trails ──────────────────────────────────────────────────────────
+
+  configureSkillTrail: async (payload: Record<string, unknown>) => {
+    const response = await apiClient.post("/management/skill-trails/config", payload);
+    return response.data;
+  },
+
+  generateAssessmentBlueprint: async (payload: Record<string, unknown>) => {
+    const response = await apiClient.post("/assessments/generate-assessment-blueprint", payload);
+    return response.data;
+  },
+
   // ── Assessments ───────────────────────────────────────────────────────────
 
   getAssessments: async () => {

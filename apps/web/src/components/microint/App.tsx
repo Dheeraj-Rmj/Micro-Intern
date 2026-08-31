@@ -16,6 +16,7 @@ import { DiscoverTrialsPage } from "./components/pages/DiscoverTrialsPage";
 import { MyApplicationsPage } from "./components/pages/MyApplicationsPage";
 import { WorkspacePage } from "./components/pages/WorkspacePage";
 import { SubmissionsPage } from "./components/pages/SubmissionsPage";
+import { InterviewSessionPage } from "./components/pages/InterviewSessionPage";
 import { NotificationsPage } from "./components/pages/NotificationsPage";
 import { AchievementsPage } from "./components/pages/AchievementsPage";
 import { SettingsPage } from "./components/pages/SettingsPage";
@@ -34,6 +35,7 @@ import {
   CompanyDashboard,
   CompanyApplicationsPage,
   CompanyTrialsPage,
+  CompanySkillTrailsPage,
   CompanyRecruitersPage,
   CompanyDepartmentsPage,
   CompanyHiringAnalyticsPage,
@@ -42,6 +44,8 @@ import {
   CompanyAIGeneratorPage,
   CompanyAIProvidersSettingsPage,
   CompanyProfilePage,
+  CompanyInterviewsPage,
+  CompanyIntegrationsPage,
 } from "./components/company";
 import { ForcePasswordChangeModal } from "../../features/auth/components/ForcePasswordChangeModal";
 import { CandidateOnboardingWizard } from "./components/onboarding/CandidateOnboardingWizard";
@@ -181,6 +185,8 @@ const MainRouter: React.FC = () => {
         return <WorkspacePage />;
       case "submissions":
         return <SubmissionsPage />;
+      case "interview-session":
+        return <InterviewSessionPage />;
       case "notifications":
         return <NotificationsPage />;
       case "achievements":
@@ -204,18 +210,23 @@ const MainRouter: React.FC = () => {
         return <CompanyAIGeneratorPage />;
       case "company-ai-settings":
         return <CompanyAIProvidersSettingsPage />;
+      case "company-integrations":
+        return <CompanyIntegrationsPage />;
       case "company-profile":
         return <CompanyProfilePage />;
       // Kept for backward compatibility/internal routing if needed
       case "company-applications":
       case "company-evaluations":
-      case "company-interviews":
         return <CompanyApplicationsPage />;
+      case "company-interviews":
+        return <CompanyInterviewsPage />;
       case "company-settings":
         return <CompanyRecruitersPage />;
       case "company-create-trial":
       case "company-manage-trials":
         return <CompanyTrialsPage />;
+      case "company-skill-trails":
+        return <CompanySkillTrailsPage />;
       case "admin-dashboard":
         return <SuperAdminDashboard />;
       case "admin-users":

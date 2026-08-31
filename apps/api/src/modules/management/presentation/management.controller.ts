@@ -9,6 +9,8 @@ import type {
   AcceptInvitationUseCase,
 } from "@/modules/auth/application/use-cases/invitation.usecase.js";
 import type { ManagementLoginUseCase } from "@/modules/auth/application/use-cases/management-auth.usecase.js";
+import type { ConfigureSkillTrailUseCase } from "../application/use-cases/ConfigureSkillTrailUseCase.js";
+import { SkillTrailConfigSchema } from "../application/use-cases/ConfigureSkillTrailUseCase.js";
 import type { Request, Response, NextFunction } from "express";
 
 export const AcceptInvitationSchema = z.object({
@@ -28,6 +30,12 @@ export const InviteAdminSchema = z.object({
   email: z.string().email(),
 });
 
+export const ConfigureSkillTrailSchema = z.object({
+  roleProfileId: z.string().uuid(),
+  title: z.string().min(1),
+  configuration: SkillTrailConfigSchema,
+});
+
 /**
  * Management Auth & Invitations Controller — presentation layer.
  *
@@ -40,6 +48,7 @@ export class ManagementController {
     private readonly inviteRecruiterUseCase: InviteRecruiterUseCase,
     private readonly inviteAdminUseCase: InviteAdminUseCase,
     private readonly acceptInvitationUseCase: AcceptInvitationUseCase,
+    private readonly configureSkillTrailUseCase?: ConfigureSkillTrailUseCase,
   ) {}
 
   login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -112,6 +121,33 @@ export class ManagementController {
       });
 
       ResponseFormatter.created(res, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  configureSkillTrail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const dto = ConfigureSkillTrailSchema.parse(req.body);
+      const companyId = req.user?.companyId;
+
+      if (!companyId) {
+        res.status(401).json({ success: false, error: { message: "Unauthorized: Missing company context" } });
+        return;
+      }
+
+      if (!this.configureSkillTrailUseCase) {
+         throw new Error("ConfigureSkillTrailUseCase not initialized");
+      }
+
+      const result = await this.configureSkillTrailUseCase.execute({
+        companyId,
+        roleProfileId: dto.roleProfileId,
+        title: dto.title,
+        configuration: dto.configuration,
+      });
+
+      ResponseFormatter.success(res, result);
     } catch (error) {
       next(error);
     }

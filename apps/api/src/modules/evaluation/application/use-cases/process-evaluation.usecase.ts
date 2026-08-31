@@ -273,6 +273,7 @@ export class ProcessEvaluationUseCase {
       candidateId: submission.candidateId,
       percentageScore,
       isPassed,
+      performanceClassification,
     });
 
     return evaluation;

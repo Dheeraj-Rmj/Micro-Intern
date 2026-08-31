@@ -23,6 +23,7 @@ import {
 import { InterviewSlot } from "../../types";
 import { authService } from "../../../../features/auth/services/auth.service";
 import { useAuthStore } from "../../../../stores/auth.store";
+import { interviewsApi, InterviewSession } from "../../../../lib/api/interviews";
 
 export const CandidateDashboard: React.FC = () => {
   const { userProfile, setCurrentRoute, applications, interviews, submissions, scheduleInterview } = useApp();
@@ -36,6 +37,20 @@ export const CandidateDashboard: React.FC = () => {
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<InterviewSlot | null>(null);
   const [eventForm, setEventForm] = useState({ title: "", date: "", time: "", notes: "" });
+
+  const [realSessions, setRealSessions] = useState<InterviewSession[]>([]);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const res = await interviewsApi.getMySessions();
+        if (res.data) setRealSessions(res.data);
+      } catch (err) {
+        console.error("Failed to load interview sessions", err);
+      }
+    };
+    fetchSessions();
+  }, []);
 
 
   useEffect(() => {
@@ -126,7 +141,7 @@ export const CandidateDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex flex-col text-right">
-                  <span className="text-[3rem] font-light leading-none tracking-tight">{interviews.length}</span>
+                  <span className="text-[3rem] font-light leading-none tracking-tight">{realSessions.length}</span>
                   <span className="text-xs text-[#555555] dark:text-[#AAAAAA] font-medium flex items-center justify-end gap-1 uppercase tracking-wider">
                     <Briefcase className="w-3 h-3" /> Interviews
                   </span>
@@ -438,19 +453,28 @@ export const CandidateDashboard: React.FC = () => {
 
               <div className="flex justify-between items-center mb-8 relative z-10">
                 <h2 className="text-lg font-medium">Upcoming Events</h2>
-                <span className="text-3xl font-light text-white/90">{interviews.length}</span>
+                <span className="text-3xl font-light text-white/90">{realSessions.length}</span>
               </div>
 
               <div className="flex flex-col gap-4 relative z-10">
-                {interviews.length > 0 ? (
-                  interviews.map((interview) => (
-                     <TaskItem
-                        key={interview.id}
-                        title={interview.trialTitle}
-                        time={`${interview.date} ${interview.time}`}
-                        icon={<Briefcase className="w-4 h-4" />}
-                        completed={interview.status === "completed"}
-                     />
+                {realSessions.length > 0 ? (
+                  realSessions.map((session) => (
+                     <div key={session.id} className="flex flex-col gap-2">
+                       <TaskItem
+                          title={session.interview.title}
+                          time={`Status: ${session.status}`}
+                          icon={<Briefcase className="w-4 h-4" />}
+                          completed={session.status === "SUBMITTED" || session.status === "EVALUATED"}
+                       />
+                       {(session.status === "INVITED" || session.status === "STARTED") && (
+                         <button
+                           onClick={() => setCurrentRoute("interview-session")}
+                           className="text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white py-1.5 px-3 rounded-full self-start"
+                         >
+                           Join Interview
+                         </button>
+                       )}
+                     </div>
                   ))
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-white/50 text-sm">

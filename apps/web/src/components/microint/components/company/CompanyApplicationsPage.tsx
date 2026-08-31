@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { companyApi } from "../../../../lib/api/company";
+import { matchingApi, RoleMatchResult } from "../../../../lib/api/matching";
 import {
   Users,
   CheckCircle2,
@@ -39,6 +40,8 @@ export const CompanyApplicationsPage: React.FC = () => {
     "ALL",
   );
   const [loading, setLoading] = useState(true);
+  const [matchLoading, setMatchLoading] = useState(false);
+  const [matchResult, setMatchResult] = useState<RoleMatchResult | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -103,6 +106,23 @@ export const CompanyApplicationsPage: React.FC = () => {
   };
 
   const [selectedCandidate, setSelectedCandidate] = useState<ApplicationRow | null>(null);
+
+  const handleGenerateRecommendation = async (candidateId: string) => {
+    setMatchLoading(true);
+    setMatchResult(null);
+    try {
+      // Mock roleProfileId for now since we don't have a role selector UI yet
+      const mockRoleProfileId = "cm0e8p2u10000abc123"; 
+      const res = await matchingApi.matchCandidate(mockRoleProfileId, candidateId);
+      setMatchResult(res);
+      showToast("AI Recommendation Ready", "Candidate skill matching completed.", "success");
+    } catch (e) {
+      console.error(e);
+      showToast("Error", "Failed to generate AI recommendation", "error");
+    } finally {
+      setMatchLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pb-16">
@@ -281,7 +301,10 @@ export const CompanyApplicationsPage: React.FC = () => {
           />
           <div className="relative bg-white dark:bg-[#111111] rounded-[36px] p-8 max-w-3xl w-full border border-black/10 dark:border-white/10 shadow-2xl max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => setSelectedCandidate(null)}
+              onClick={() => {
+                setSelectedCandidate(null);
+                setMatchResult(null);
+              }}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
               <XCircle className="w-6 h-6 text-black/40 dark:text-white/40" />
@@ -367,6 +390,50 @@ export const CompanyApplicationsPage: React.FC = () => {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* AI Match Result Section */}
+              <div className="p-6 rounded-2xl bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/20">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                    Role Fit Analysis
+                  </h3>
+                  <button
+                    onClick={() => handleGenerateRecommendation(selectedCandidate.id)}
+                    disabled={matchLoading}
+                    className="px-4 py-2 rounded-xl bg-indigo-500 text-white font-semibold text-xs hover:bg-indigo-600 transition-colors disabled:opacity-50"
+                  >
+                    {matchLoading ? "Analyzing..." : "Generate Match Report"}
+                  </button>
+                </div>
+                {matchResult && (
+                  <div className="space-y-4 animate-in fade-in">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <p className="text-xs text-black/50 dark:text-white/50 uppercase tracking-widest mb-1">Overall Match</p>
+                        <p className="text-2xl font-bold text-black dark:text-white">{matchResult.overallMatchScore}%</p>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-black/50 dark:text-white/50 uppercase tracking-widest mb-1">Recommendation</p>
+                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white dark:bg-black border border-black/10 dark:border-white/10 text-black dark:text-white">
+                          {matchResult.recommendation.replace("_", " ")}
+                        </span>
+                      </div>
+                    </div>
+                    {matchResult.skillGaps.length > 0 && (
+                      <div>
+                        <p className="text-xs text-rose-500 uppercase tracking-widest mb-2 font-bold">Skill Gaps</p>
+                        <ul className="space-y-1">
+                          {matchResult.skillGaps.map((gap, i) => (
+                            <li key={i} className="text-xs text-black/70 dark:text-white/70">
+                              <span className="font-semibold">{gap.skillName || gap.skillId}</span>: Scored {gap.actualScore} (needs {gap.minimumScore}) {gap.isCritical && <span className="text-rose-500 font-bold ml-1">*Critical</span>}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-4 mt-8">

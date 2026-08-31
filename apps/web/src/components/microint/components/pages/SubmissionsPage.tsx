@@ -2,7 +2,9 @@
 import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { Breadcrumbs } from "../common/Breadcrumbs";
-import { Submission } from "../../types";
+import { submissionsApi, Submission as ApiSubmission } from "../../../../lib/api/submissions";
+import { learningApi, LearningRecommendationResult } from "../../../../lib/api/learning";
+import { Submission as AppContextSubmission } from "../../types";
 import {
  Send,
  Clock,
@@ -13,13 +15,34 @@ import {
  AlertCircle,
  FileText,
  X,
+ BookOpen,
+ Target,
+ ArrowRight
 } from "lucide-react";
 
-export const SubmissionsPage: React.FC = () => {
- const { submissions, trials } = useApp();
- const [selectedSub, setSelectedSub] = useState<Submission | null>(null);
+ export const SubmissionsPage: React.FC = () => {
+  const { trials } = useApp();
+  const [realSubmissions, setRealSubmissions] = useState<ApiSubmission[]>([]);
+  const [selectedSub, setSelectedSub] = useState<any>(null);
+  const [learningResult, setLearningResult] = useState<LearningRecommendationResult | null>(null);
+  
+  React.useEffect(() => {
+    const loadSubs = async () => {
+      try {
+        const [subsRes, learningRes] = await Promise.all([
+          submissionsApi.listMySubmissions().catch(() => ({ data: [] })),
+          learningApi.getRecommendations().catch(() => null)
+        ]);
+        setRealSubmissions(subsRes.data || []);
+        if (learningRes) setLearningResult(learningRes);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    loadSubs();
+  }, []);
 
- const getStatusBadge = (status: Submission["status"]) => {
+ const getStatusBadge = (status: string) => {
  switch (status) {
  case "Evaluated":
  return (
@@ -63,12 +86,61 @@ export const SubmissionsPage: React.FC = () => {
  </div>
 
  <div className="px-6 py-3 rounded-full bg-black/5 A0A0A] border border-white/50 shadow-sm text-black/60 font-bold text-sm flex items-center gap-2">
- <span>Total Submitted: {submissions.length}</span>
+ <span>Total Submitted: {realSubmissions.length}</span>
  </div>
  </div>
 
+ {/* Learning Path Recommendations */}
+ {learningResult && learningResult.missingSkills.length > 0 && (
+    <div className="mb-12 p-8 rounded-[40px] bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/20 shadow-sm animate-in fade-in">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-3 bg-indigo-500 rounded-2xl text-white">
+          <BookOpen className="w-6 h-6" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-serif text-[#222] dark:text-white">Your Learning Path</h2>
+          <p className="text-sm text-black/60 dark:text-white/60">Based on your recent skill verifications</p>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-black/40 dark:text-white/40 mb-4 flex items-center gap-2">
+            <Target className="w-4 h-4" /> Skills to Master
+          </h3>
+          <div className="space-y-3">
+            {learningResult.missingSkills.map(skill => (
+              <div key={skill.skillId} className="flex items-center justify-between p-4 rounded-2xl bg-white/60 dark:bg-black/20 border border-white/50 dark:border-white/10">
+                <span className="font-bold text-sm text-[#222] dark:text-white">{skill.skillName}</span>
+                <span className="text-xs font-mono px-2 py-1 bg-black/5 dark:bg-white/10 rounded text-black/60 dark:text-white/60">
+                  Target: {skill.targetScore}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-black/40 dark:text-white/40 mb-4">
+            Recommended Resources
+          </h3>
+          <div className="space-y-3">
+            {learningResult.recommendedResources.map((res, i) => (
+              <a key={i} href={res.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 rounded-2xl bg-white/60 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:border-indigo-300 transition-colors group">
+                <div>
+                  <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{res.type.replace("_", " ")}</span>
+                  <p className="font-bold text-sm text-[#222] dark:text-white mt-0.5">{res.title}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-black/20 dark:text-white/20 group-hover:text-indigo-500 transition-colors" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
  {/* Submissions List */}
- {submissions.length === 0 ? (
+ {realSubmissions.length === 0 ? (
  <div className="py-24 px-6 text-center rounded-[40px] bg-white/60 backdrop-blur-xl/60 backdrop-blur-xl shadow-sm border border-white/50">
  <Send className="w-12 h-12 text-black/20 mx-auto mb-4" />
  <h3 className="text-2xl font-serif text-[#222]">No submissions yet</h3>
@@ -79,8 +151,19 @@ export const SubmissionsPage: React.FC = () => {
  </div>
  ) : (
  <div className="grid gap-4">
- {submissions.map((sub) => {
- const trial = trials.find((t) => t.id === sub.trialId);
+ {realSubmissions.map((sub) => {
+ const trial = trials.find((t) => t.id === sub.assessmentId);
+ const details = sub.evaluation?.details || {};
+ const mappedSub = {
+   ...sub,
+   score: sub.evaluation?.score,
+   performanceClassification: sub.evaluation?.performanceClassification,
+   aiSummary: sub.evaluation?.aiSummary,
+    strengths: (details as any).strengths || [],
+    improvements: (details as any).improvements || [],
+    learningRecommendations: (details as any).learningRecommendations || [],
+    feedback: (details as any).feedback
+ };
  return (
  <div
  key={sub.id}
@@ -92,7 +175,7 @@ export const SubmissionsPage: React.FC = () => {
  {trial?.company || "Company"}
  </span>
  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-black/5 backdrop-blur-xl/5 text-black/50 ">
- Submitted {sub.submittedAt}
+ Submitted {new Date(sub.submittedAt || sub.createdAt).toLocaleDateString()}
  </span>
  </div>
 
@@ -115,13 +198,13 @@ export const SubmissionsPage: React.FC = () => {
  </div>
 
  <div className="flex items-center justify-between sm:justify-end gap-6 pt-4 md:pt-0 border-t md:border-t-0 border-white/50">
- {sub.score !== undefined && (
+ {mappedSub.score !== undefined && (
  <div className="text-right">
  <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
  Evaluation Score
  </p>
  <p className="text-2xl font-light tracking-tight text-[#222]">
- {sub.score}%
+ {mappedSub.score}%
  </p>
  </div>
  )}
@@ -130,7 +213,7 @@ export const SubmissionsPage: React.FC = () => {
  {getStatusBadge(sub.status)}
 
  <button
- onClick={() => setSelectedSub(sub)}
+ onClick={() => setSelectedSub(mappedSub)}
  className="px-6 py-2.5 rounded-full bg-[#111111] backdrop-blur-xl text-white font-bold text-xs shadow-sm transition-transform hover:scale-105 cursor-pointer"
  >
  View Details
@@ -205,7 +288,7 @@ export const SubmissionsPage: React.FC = () => {
           Strengths
         </span>
         <ul className="space-y-1.5">
-          {selectedSub.strengths.map((s, i) => (
+          {selectedSub.strengths.map((s: string, i: number) => (
             <li key={i} className="text-sm text-black/80 flex gap-2">
               <span className="text-emerald-500">•</span> {s}
             </li>
@@ -220,7 +303,7 @@ export const SubmissionsPage: React.FC = () => {
           Areas to Improve
         </span>
         <ul className="space-y-1.5">
-          {selectedSub.improvements.map((s, i) => (
+          {selectedSub.improvements.map((s: string, i: number) => (
             <li key={i} className="text-sm text-black/80 flex gap-2">
               <span className="text-amber-500">•</span> {s}
             </li>
@@ -236,7 +319,7 @@ export const SubmissionsPage: React.FC = () => {
         Learning Recommendations
       </span>
       <ul className="space-y-1.5">
-        {selectedSub.learningRecommendations.map((rec, i) => (
+        {selectedSub.learningRecommendations.map((rec: string, i: number) => (
           <li key={i} className="text-sm text-black/80 flex gap-2">
             <span className="text-indigo-500">•</span> {rec}
           </li>

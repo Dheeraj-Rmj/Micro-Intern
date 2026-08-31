@@ -22,6 +22,7 @@ import {
   Terminal,
   Key,
   Bot,
+  Video,
 } from "lucide-react";
 import { Logo } from "../common/Logo";
 
@@ -63,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
 
   const candidateMenuItems: MenuItem[] = [
     { id: "profile" as PageRoute, label: "My Profile", icon: User },
-    { id: "network" as PageRoute, label: "Professional Network & Feed", icon: Users },
+    { id: "network" as PageRoute, label: "Verra Network", icon: Users },
     { id: "workspace" as PageRoute, label: "Workspace", icon: Code2 },
     { id: "submissions" as PageRoute, label: "Submissions", icon: Send },
     {
@@ -82,22 +83,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, setMobileOpen }) =
   const companyMenuItems: MenuItem[] = isRecruiter 
     ? [
         { id: "company-dashboard" as PageRoute, label: "Dashboard", icon: LayoutDashboard },
+        { id: "network" as PageRoute, label: "Verra Network", icon: Users },
+        { id: "company-interviews" as PageRoute, label: "AI Interviews", icon: Video },
         { id: "company-ai-generator" as PageRoute, label: "AI Task Generator", icon: Bot },
         { id: "company-hiring-analytics" as PageRoute, label: "Hiring Analytics", icon: Compass },
       ]
     : [
         { id: "company-dashboard" as PageRoute, label: "Dashboard", icon: LayoutDashboard },
+        { id: "network" as PageRoute, label: "Verra Network", icon: Users },
         { id: "company-recruiters" as PageRoute, label: "Recruiter Management", icon: Users },
         { id: "company-departments" as PageRoute, label: "Department Management", icon: Sparkles },
         { id: "company-hiring-analytics" as PageRoute, label: "Hiring Analytics", icon: Compass },
+        { id: "company-interviews" as PageRoute, label: "AI Interviews", icon: Video },
         { id: "company-billing" as PageRoute, label: "Billing & Subscription", icon: FileCheck },
         { id: "company-ai-insights" as PageRoute, label: "AI Insights", icon: Code2 },
         { id: "company-ai-generator" as PageRoute, label: "AI Task Generator", icon: Bot },
         { id: "company-ai-settings" as PageRoute, label: "AI Providers (BYOK)", icon: Terminal },
+        { id: "company-integrations" as PageRoute, label: "Integrations", icon: Settings },
       ];
 
   const adminMenuItems: MenuItem[] = [
     { id: "admin-dashboard" as PageRoute, label: "Dashboard", icon: LayoutDashboard },
+    { id: "network" as PageRoute, label: "Verra Network", icon: Users },
     { id: "admin-organization" as PageRoute, label: "Organization Management", icon: Users },
     { id: "admin-subscriptions" as PageRoute, label: "Subscription Management", icon: Award },
     { id: "admin-ai-analytics" as PageRoute, label: "AI Usage Analytics", icon: Sparkles },

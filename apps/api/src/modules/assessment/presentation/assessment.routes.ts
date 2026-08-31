@@ -28,6 +28,7 @@ import {
 import { GetAssessmentAnalyticsUseCase } from "../application/use-cases/get-assessment-analytics.usecase.js";
 import { GenerateMicroTasksUseCase } from "../application/use-cases/generate-micro-tasks.usecase.js";
 import { GenerateSkillTrailAssessmentUseCase } from "../application/use-cases/generate-skill-trail-assessment.usecase.js";
+import { GenerateAssessmentBlueprintUseCase } from "../application/use-cases/GenerateAssessmentBlueprintUseCase.js";
 import { PrismaAssessmentRepository } from "../infrastructure/repositories/PrismaAssessmentRepository.js";
 
 import { AssessmentController } from "./assessment.controller.js";
@@ -152,6 +153,10 @@ export function registerAssessmentModuleDependencies(): void {
         ),
     );
     container.register(
+      "GenerateAssessmentBlueprintUseCase",
+      () => new GenerateAssessmentBlueprintUseCase(container.get("AIFallbackEngine")),
+    );
+    container.register(
       "AssessmentController",
       () =>
         new AssessmentController(
@@ -171,6 +176,7 @@ export function registerAssessmentModuleDependencies(): void {
           container.get("GetAssessmentAnalyticsUseCase"),
           container.get("GenerateMicroTasksUseCase"),
           container.get("GenerateSkillTrailAssessmentUseCase"),
+          container.get("GenerateAssessmentBlueprintUseCase"),
         ),
     );
   }
@@ -224,6 +230,17 @@ export function createAssessmentRouter(): Router {
     audit(AuditAction.CREATE, "Assessment") as RequestHandler,
     (req, res, next) => {
       controller.generateSkillTrailAssessment(req, res, next).catch(next);
+    },
+  );
+
+  // POST /api/v1/assessments/generate-assessment-blueprint - Generate Blueprint from AI
+  router.post(
+    "/generate-assessment-blueprint",
+    authMiddleware as RequestHandler,
+    requireAnyRole([Role.COMPANY_OWNER, Role.RECRUITER]) as RequestHandler,
+    audit(AuditAction.CREATE, "Assessment") as RequestHandler,
+    (req, res, next) => {
+      controller.generateAssessmentBlueprint(req, res, next).catch(next);
     },
   );
 

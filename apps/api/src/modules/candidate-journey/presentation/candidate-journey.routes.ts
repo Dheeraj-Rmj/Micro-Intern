@@ -6,6 +6,7 @@ import { Role } from "@microintern/shared";
 import { PrismaCandidateJourneyRepository } from "../infrastructure/PrismaCandidateJourneyRepository.js";
 import { CandidateJourneyService } from "../application/CandidateJourneyService.js";
 import { CandidateJourneyAutomationListener } from "../application/CandidateJourneyAutomationListener.js";
+import { ProcessSkillTrailProgressionUseCase } from "../application/use-cases/ProcessSkillTrailProgressionUseCase.js";
 import { CandidateJourneyController } from "./candidate-journey.controller.js";
 import type { InfrastructureDependencies } from "@/core/container.js";
 import { EvidenceService } from "@/modules/evidence/application/EvidenceService.js";
@@ -41,11 +42,16 @@ export function registerCandidateJourneyModuleDependencies(): void {
         const verificationService = new SkillVerificationService(
           new PrismaSkillVerificationRepository(infra.db),
         );
+        const processSkillTrailProgressionUseCase = new ProcessSkillTrailProgressionUseCase(
+          infra.db,
+          journeyService,
+        );
         const listener = new CandidateJourneyAutomationListener(
           journeyRepo,
           journeyService,
           evidenceService,
           verificationService,
+          processSkillTrailProgressionUseCase,
         );
         listener.registerListeners();
         return listener;

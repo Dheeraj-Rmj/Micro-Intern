@@ -29,6 +29,7 @@ import type {
 import type { GetAssessmentAnalyticsUseCase } from "../application/use-cases/get-assessment-analytics.usecase.js";
 import type { GenerateMicroTasksUseCase } from "../application/use-cases/generate-micro-tasks.usecase.js";
 import type { GenerateSkillTrailAssessmentUseCase } from "../application/use-cases/generate-skill-trail-assessment.usecase.js";
+import type { GenerateAssessmentBlueprintUseCase } from "../application/use-cases/GenerateAssessmentBlueprintUseCase.js";
 import type { Request, Response, NextFunction } from "express";
 
 export class AssessmentController {
@@ -49,6 +50,7 @@ export class AssessmentController {
     private readonly getAssessmentAnalyticsUseCase?: GetAssessmentAnalyticsUseCase,
     private readonly generateMicroTasksUseCase?: GenerateMicroTasksUseCase,
     private readonly generateSkillTrailAssessmentUseCase?: GenerateSkillTrailAssessmentUseCase,
+    private readonly generateAssessmentBlueprintUseCase?: GenerateAssessmentBlueprintUseCase,
   ) {}
 
   async createAssessment(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -293,7 +295,24 @@ export class AssessmentController {
       skillTrailId: req.body.skillTrailId,
       companyId: req.user!.companyId!,
       createdById: req.user!.id,
+      difficulty: req.body.difficulty,
     });
+    ResponseFormatter.success(res, result);
+  }
+
+  async generateAssessmentBlueprint(req: Request, res: Response, next: NextFunction): Promise<void> {
+    if (!this.generateAssessmentBlueprintUseCase) {
+      throw new Error("GenerateAssessmentBlueprintUseCase not initialized");
+    }
+
+    const { roleProfile, competencies, configurationRules } = req.body;
+    
+    const result = await this.generateAssessmentBlueprintUseCase.execute({
+      roleProfile,
+      competencies,
+      configurationRules,
+    });
+    
     ResponseFormatter.success(res, result);
   }
 }

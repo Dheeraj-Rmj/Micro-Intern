@@ -10,6 +10,7 @@ import type { CandidateJourneyService } from "./CandidateJourneyService.js";
 import type { EvidenceService } from "@/modules/evidence/application/EvidenceService.js";
 import type { SkillVerificationService } from "@/modules/skill-verification/application/SkillVerificationService.js";
 import type { ICandidateJourneyRepository } from "../domain/ICandidateJourneyRepository.js";
+import type { ProcessSkillTrailProgressionUseCase } from "./use-cases/ProcessSkillTrailProgressionUseCase.js";
 
 const log = createModuleLogger("CandidateJourneyAutomationListener");
 
@@ -19,6 +20,7 @@ export class CandidateJourneyAutomationListener {
     private readonly journeyService: CandidateJourneyService,
     private readonly evidenceService: EvidenceService,
     private readonly verificationService: SkillVerificationService,
+    private readonly processSkillTrailProgressionUseCase: ProcessSkillTrailProgressionUseCase,
   ) {}
 
   registerListeners(): void {
@@ -115,6 +117,14 @@ export class CandidateJourneyAutomationListener {
             },
             "system-ai",
           );
+
+          if (payload.performanceClassification) {
+            await this.processSkillTrailProgressionUseCase.execute({
+              journeyId: activeJourney.id,
+              performanceClassification: payload.performanceClassification,
+              actorId: "system-ai",
+            });
+          }
         }
       } catch (err) {
         log.error({ err, payload }, "Failed to process EVALUATION_COMPLETED automation");

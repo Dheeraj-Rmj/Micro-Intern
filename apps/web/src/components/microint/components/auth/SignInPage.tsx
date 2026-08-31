@@ -782,7 +782,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ initialPortal = "candida
                 },
                 {
                   title: "4. Professional Conduct",
-                  body: "Users in the Professional Network and Direct Messaging must maintain courteous, respectful, and professional communication with peers and hiring partners.",
+                  body: "Users in the Verra Network and Direct Messaging must maintain courteous, respectful, and professional communication with peers and hiring partners.",
                 },
                 {
                   title: "5. Intellectual Property",

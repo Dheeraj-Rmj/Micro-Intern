@@ -56,6 +56,8 @@ async function bootstrap(): Promise<void> {
     await import("../modules/notifications/infrastructure/MockMailerService.js");
   const { NotificationEventSubscriber } =
     await import("../modules/notifications/application/NotificationEventSubscriber.js");
+  const { NotificationService } =
+    await import("../modules/notifications/application/NotificationService.js");
   const { prisma } = await import("./database.js");
   const { GenerateCandidateRecoveryReportUseCase } =
     await import("../modules/learning/application/use-cases/GenerateCandidateRecoveryReportUseCase.js");
@@ -67,11 +69,13 @@ async function bootstrap(): Promise<void> {
   const aiEngine = new AIFallbackEngine([]);
   const recoveryGenerator = new GenerateCandidateRecoveryReportUseCase(aiEngine);
   const onboardingGenerator = new GenerateAIOnboardingPlanUseCase(prisma, aiEngine);
+  const notificationService = new NotificationService(prisma);
   const notificationSubscriber = new NotificationEventSubscriber(
     mailer,
     prisma,
     recoveryGenerator,
     onboardingGenerator,
+    notificationService,
   );
 
   DomainEventDispatcher.getInstance().subscribe("CandidateJourneyStatusChanged", (e) =>

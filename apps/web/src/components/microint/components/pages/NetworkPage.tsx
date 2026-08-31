@@ -33,6 +33,7 @@ import {
  Calendar,
 } from "lucide-react";
 import { networkApi } from "../../../../lib/api/network";
+import { messagingApi } from "../../../../lib/api/messaging";
 import { SkillBadge } from "../common/SkillBadge";
 import { TechSkillIcon } from "../common/TechSkillIcon";
 
@@ -127,11 +128,11 @@ interface Peer {
  skills: Array<{ name: string; endorsedCount: number; endorsedByMe: boolean; status?: any }>;
  status: "none" | "pending" | "connected";
  mutualCount: number;
+ connectionId?: string;
 }
 
 const STORAGE_POSTS_KEY = "microintern_network_posts_nomock_v1";
 const STORAGE_PEERS_KEY = "microintern_network_peers_nomock_v1";
-const STORAGE_CHATS_KEY = "microintern_network_chats_nomock_v1";
 
 // Completely empty default state (zero mockup data)
 const INITIAL_POSTS: NetworkPost[] = [];
@@ -168,7 +169,7 @@ export const NetworkPage: React.FC = () => {
  id: p.id,
  authorName: p.author?.name || "Unknown User",
  authorHeadline: p.author?.headline || "",
- authorAvatar: p.author?.avatar,
+ authorAvatar: p.author?.avatar || "",
  timeAgo: new Date(p.createdAt).toLocaleDateString(),
  content: p.content,
  skills: ["MicroIntern"],
@@ -178,7 +179,7 @@ export const NetworkPage: React.FC = () => {
  celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
  },
  userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
- comments: p.comments || [],
+ comments: (p as any).comments || [],
  }));
  setPosts(mappedPosts);
  }).catch(console.error);
@@ -224,18 +225,18 @@ export const NetworkPage: React.FC = () => {
  id: p.id,
  authorName: p.author?.name || userProfile.fullName || "Me",
  authorHeadline: p.author?.headline || "",
-        authorAvatar: p.author?.avatar || userProfile.avatar,
-        timeAgo: new Date(p.createdAt).toLocaleDateString(),
-        content: p.content,
-        skills: [] as string[],
-        hashtag: p.postType,
-        reactions: {
-          like: p._count?.reactions || 0,
-          celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
-        },
-        userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
-        comments: p.comments || [],
-      }));
+ authorAvatar: p.author?.avatar || userProfile.avatar || "",
+ timeAgo: new Date(p.createdAt).toLocaleDateString(),
+ content: p.content,
+ skills: [] as string[],
+ hashtag: p.postType,
+ reactions: {
+ like: p._count?.reactions || 0,
+ celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
+ },
+ userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
+ comments: (p as any).comments || [],
+ }));
  setMyPosts(mapped);
  }).catch(console.error).finally(() => setMyPostsLoading(false));
  }, [activeTab]);
@@ -258,19 +259,7 @@ export const NetworkPage: React.FC = () => {
  const [activeChatPeer, setActiveChatPeer] = useState<Peer | null>(null);
  const [chatMessages, setChatMessages] = useState<
  Record<string, Array<{ id: string; sender: "me" | "peer"; text: string; time: string }>>
- >(() => {
- if (typeof window !== "undefined") {
- const saved = localStorage.getItem(STORAGE_CHATS_KEY);
- if (saved) {
- try {
- return JSON.parse(saved);
- } catch (e) {
- console.error(e);
- }
- }
- }
- return {};
- });
+ >({});
  const [chatInput, setChatInput] = useState("");
 
  // LinkedIn Public Profile Modal state (for viewing another person's account)
@@ -291,13 +280,6 @@ export const NetworkPage: React.FC = () => {
  document.body.style.overflow = "unset";
  };
  }, [activeChatPeer, selectedPublicPeer]);
-
- // Save chats
- useEffect(() => {
- if (typeof window !== "undefined") {
- localStorage.setItem(STORAGE_CHATS_KEY, JSON.stringify(chatMessages));
- }
- }, [chatMessages]);
 
  // Handle LinkedIn Reaction click (toggle or change reaction)
  const handleSelectReaction = (postId: string, reactionType: ReactionType) => {
@@ -371,7 +353,7 @@ export const NetworkPage: React.FC = () => {
  setShowAdvancedPostFields(false);
  showToast(
  "Post Published 🚀",
- "Your update is now live in the professional network feed.",
+ "Your update is now live in the Verra feed.",
  "success",
  );
  }
@@ -447,42 +429,90 @@ export const NetworkPage: React.FC = () => {
  showToast("Skill Endorsed 👏", `You endorsed ${skillName}. Endorsement saved!`, "success");
  };
 
- // Open Messaging
- const handleOpenChat = (peer: Peer) => {
- setActiveChatPeer(peer);
- if (!chatMessages[peer.id]) {
- setChatMessages((prev) => ({
- ...prev,
- [peer.id]: [
- {
- id: `m-init-${Date.now()}`,
- sender: "peer",
- text: `Hey! Thanks for connecting on MicroIntern. Let's discuss AI & Full Stack projects!`,
- time: "Just now",
- },
- ],
- }));
- }
- };
+  // Open Messaging
+  const handleOpenChat = async (peer: Peer) => {
+    setActiveChatPeer(peer);
+    if (!peer.connectionId) {
+      // Fallback if no connectionId (e.g. mock directory peers)
+      if (!chatMessages[peer.id]) {
+        setChatMessages((prev) => ({
+          ...prev,
+          [peer.id]: [
+            {
+              id: `m-init-${Date.now()}`,
+              sender: "peer",
+              text: `Hey! Thanks for connecting on MicroIntern. Let's discuss AI & Full Stack projects!`,
+              time: "Just now",
+            },
+          ],
+        }));
+      }
+      return;
+    }
 
- const handleSendMessage = () => {
- if (!chatInput.trim() || !activeChatPeer) return;
- const currentList = chatMessages[activeChatPeer.id] || [];
- const updatedList = [
- ...currentList,
- {
- id: `m-${Date.now()}`,
- sender: "me" as const,
- text: chatInput.trim(),
- time: "Just now",
- },
- ];
- setChatMessages((prev) => ({
- ...prev,
- [activeChatPeer.id]: updatedList,
- }));
- setChatInput("");
- };
+    try {
+      const res = await messagingApi.getThread(peer.connectionId);
+      if (res.success && res.data) {
+        const mappedMsgs = res.data.messages.map((m) => ({
+          id: m.id,
+          sender: (m.senderId === peer.id ? "peer" : "me") as "me" | "peer",
+          text: m.body,
+          time: new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        }));
+        setChatMessages((prev) => ({
+          ...prev,
+          [peer.id]: mappedMsgs.length > 0 ? mappedMsgs : [
+            {
+              id: `m-init-${Date.now()}`,
+              sender: "peer",
+              text: `Hey! Thanks for connecting on MicroIntern. Let's discuss AI & Full Stack projects!`,
+              time: "Just now",
+            },
+          ],
+        }));
+        
+        // Mark as read in the background
+        messagingApi.markAsRead(peer.connectionId).catch(console.error);
+      }
+    } catch (e) {
+      console.error("Failed to load chat thread", e);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!chatInput.trim() || !activeChatPeer) return;
+    const body = chatInput.trim();
+    setChatInput("");
+
+    // Optimistic update
+    const tempId = `m-${Date.now()}`;
+    const optimisticMsg = {
+      id: tempId,
+      sender: "me" as const,
+      text: body,
+      time: "Just now",
+    };
+
+    setChatMessages((prev) => ({
+      ...prev,
+      [activeChatPeer.id]: [...(prev[activeChatPeer.id] || []), optimisticMsg],
+    }));
+
+    if (activeChatPeer.connectionId) {
+      try {
+        const res = await messagingApi.sendMessage(activeChatPeer.connectionId, body);
+        if (res.success) {
+          // Replace temp id with real id, though not strictly necessary since UI doesn't require it
+          setChatMessages((prev) => ({
+            ...prev,
+            [activeChatPeer.id]: (prev[activeChatPeer.id] || []).map(m => m.id === tempId ? { ...m, id: res.data.id } : m),
+          }));
+        }
+      } catch (e) {
+        console.error("Failed to send message", e);
+      }
+    }
+  };
 
   const handleAddComment = async (postId: string) => {
     if (!commentInput.trim()) return;
@@ -560,7 +590,7 @@ export const NetworkPage: React.FC = () => {
  <div>
  <h1 className="text-2xl font-bold text-[#222] flex items-center gap-2.5">
  <Users className="w-6 h-6 text-purple-500" />
- Professional Network & LinkedIn Feed
+ Verra Network & LinkedIn Feed
  </h1>
  <p className="text-xs text-black/50 mt-1">
  Real-time feed with LinkedIn multi-reactions, verified AI credentials, and full public
@@ -587,7 +617,7 @@ export const NetworkPage: React.FC = () => {
  : "text-[#666] hover:text-black :text-white"
  }`}
  >
- My Network
+ My Verra Network
  {peers.filter((p) => p.status === "pending").length > 0 && (
  <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
  {peers.filter((p) => p.status === "pending").length}
@@ -739,7 +769,8 @@ export const NetworkPage: React.FC = () => {
  <div className="flex items-center gap-2">
  <button
  type="button"
- onClick={() => setShowAdvancedPostFields(!showAdvancedPostFields)}
+ onClick={() => setShowAdvancedPostFields(!showAdvancedPostFields)
+ }
  className="px-3 py-1.5 rounded-full bg-black/5 backdrop-blur-xl/10 text-black/70 text-xs font-semibold hover:bg-black/10 transition-colors flex items-center gap-1"
  >
  <Code2 className="w-3.5 h-3.5" />
@@ -767,7 +798,7 @@ export const NetworkPage: React.FC = () => {
  <p className="text-sm font-bold text-[#222]">
  {posts.length === 0
  ? "No updates in your feed yet"
- : "No matching network updates"}
+ : "No matching Verra updates"}
  </p>
  <p className="text-xs text-[#888] max-w-sm mx-auto">
  {posts.length === 0
@@ -1055,7 +1086,7 @@ export const NetworkPage: React.FC = () => {
  <div className="bg-white/60 backdrop-blur-xl/60 backdrop-blur-xl p-6 rounded-[32px] border border-white/50 shadow-sm space-y-4">
  <h3 className="font-bold text-sm text-[#222] flex items-center gap-2">
  <Sparkles className="w-4 h-4 text-purple-500" />
- Your Verified Network Score
+ Your Verified Verra Score
  </h3>
  <p className="text-xs text-black/60 ">
  Candidates with AI-validated certifications and active community posts get 3.2x more
