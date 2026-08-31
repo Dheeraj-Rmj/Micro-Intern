@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import {
   Users,
-  UserPlus,
   Key,
   Mail,
   CheckCircle2,
@@ -12,7 +11,6 @@ import {
   Check,
   ShieldAlert,
   Building2,
-  Lock,
 } from "lucide-react";
 
 interface RecruiterSeat {
@@ -29,14 +27,12 @@ import { companyApi } from "../../../../lib/api/company";
 export const CompanyRecruitersPage: React.FC = () => {
   const { showToast, companyProfile } = useApp();
   const [recruiters, setRecruiters] = useState<RecruiterSeat[]>([]);
-  const [fullName, setFullName] = useState("");
 
   const companyDomain = companyProfile?.companyName
     ? companyProfile.companyName.toLowerCase().replace(/[^a-z0-9]/g, "") || "company"
     : "company";
   const companyEmailDomain = `${companyDomain}.microintern`;
-  const [handle, setHandle] = useState("");
-  const [roleTitle, setRoleTitle] = useState("Technical Recruiter");
+
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -72,38 +68,6 @@ export const CompanyRecruitersPage: React.FC = () => {
     fetchMembers();
   }, [fetchMembers]);
 
-  const handleGenerateLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fullName.trim() || !handle.trim()) {
-      showToast("Missing Details", "Please enter recruiter name and login handle.", "warning");
-      return;
-    }
-
-    const cleanedHandle = handle.toLowerCase().replace(/\s+/g, ".");
-    const newEmail = `${cleanedHandle}@${companyEmailDomain}`;
-
-    try {
-      await companyApi.inviteMember(newEmail, roleTitle, fullName);
-
-      // Re-fetch from API so the list stays in sync with the database
-      await fetchMembers();
-
-      setFullName("");
-      setHandle("");
-      setRoleTitle("Technical Recruiter");
-
-      showToast(
-        "Recruiter Seat Created!",
-        `Generated corporate credentials: ${newEmail}. Temp password: MicroIntern#Recruit2026!`,
-        "success",
-      );
-    } catch (err: any) {
-      console.error(err);
-      const msg =
-        err?.response?.data?.error?.message || err?.message || "Failed to invite team member";
-      showToast("Error", msg, "error");
-    }
-  };
 
   const handleCopyCredentials = (email: string) => {
     const textToCopy = `Login: ${email} | Password: MicroIntern#Recruit2026!`;
@@ -153,89 +117,8 @@ export const CompanyRecruitersPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Generate New Recruiter Login Form */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="p-7 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-5">
-            <div className="flex items-center gap-2.5 border-b border-black/5 dark:border-white/10 pb-4">
-              <UserPlus className="w-5 h-5 text-amber-500" />
-              <h2 className="text-lg font-serif text-black dark:text-white">
-                Generate Recruiter Login
-              </h2>
-            </div>
-
-            <form onSubmit={handleGenerateLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Recruiter Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Ananya Rao"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Login Handle (Domain: @{companyEmailDomain})
-                </label>
-                <div className="flex items-center rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 overflow-hidden">
-                  <input
-                    type="text"
-                    placeholder="e.g. ananya.r"
-                    value={handle}
-                    onChange={(e) => setHandle(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-transparent text-xs text-black dark:text-white focus:outline-none font-mono"
-                  />
-                  <span className="px-3 py-2.5 bg-black/5 dark:bg-white/5 text-[11px] font-mono font-bold text-amber-500 shrink-0">
-                    @{companyEmailDomain}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Role Title
-                </label>
-                <select
-                  value={roleTitle}
-                  onChange={(e) => setRoleTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none"
-                >
-                  <option value="Technical Recruiter">Technical Recruiter</option>
-                  <option value="Senior Engineering Recruiter">Senior Engineering Recruiter</option>
-                  <option value="University & Bootcamp Lead">University & Bootcamp Lead</option>
-                  <option value="AI Apprenticeship Director">AI Apprenticeship Director</option>
-                </select>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-600 dark:text-amber-400 space-y-1">
-                <div className="font-bold flex items-center gap-1">
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>Automated Credential Generation</span>
-                </div>
-                <p className="text-[11px] opacity-90">
-                  New seat will automatically receive temporary access key{" "}
-                  <code className="font-mono">MicroIntern#Recruit2026!</code> and access to
-                  enterprise candidate pipelines.
-                </p>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Key className="w-4 h-4" />
-                <span>Create & Authorize Recruiter Login</span>
-              </button>
-            </form>
-          </div>
-        </div>
-
         {/* Right Column: Active Recruiter Accounts List */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-12 space-y-6">
           <div className="p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-5">
               <div>
