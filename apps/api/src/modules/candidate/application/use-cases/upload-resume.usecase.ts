@@ -90,6 +90,19 @@ export class UploadResumeUseCase {
       });
     });
 
+    // 2.5 Extract text from PDF
+    let extractedText = "";
+    if (file.mimetype === "application/pdf") {
+      try {
+        const pdfParseModule = await import("pdf-parse");
+        const pdfParse = (pdfParseModule as any).default || pdfParseModule;
+        const pdfData = await (pdfParse as any)(file.buffer);
+        extractedText = pdfData.text;
+      } catch (err) {
+        log.error({ err, userId }, "Failed to extract text from PDF");
+      }
+    }
+
     // 3. Trigger Async AI Parsing via BullMQ
     log.info({ candidateId: currentProfile.id }, "Queueing resume for AI parsing");
     await this.resumeParserQueue.add(
@@ -97,6 +110,7 @@ export class UploadResumeUseCase {
       {
         candidateId: currentProfile.id,
         resumeKey: key,
+        resumeText: extractedText,
       },
       {
         attempts: 3,
