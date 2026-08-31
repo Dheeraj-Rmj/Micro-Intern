@@ -95,7 +95,7 @@ export class UploadResumeUseCase {
     if (file.mimetype === "application/pdf") {
       try {
         const pdfParseModule = await import("pdf-parse");
-        const pdfParse = (pdfParseModule as any).default || pdfParseModule;
+        const pdfParse = (pdfParseModule as any).default?.default || (pdfParseModule as any).default || pdfParseModule;
         const pdfData = await (pdfParse as any)(file.buffer);
         extractedText = pdfData.text;
       } catch (err) {
