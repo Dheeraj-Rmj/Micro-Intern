@@ -62,7 +62,7 @@ export const companyApi = {
 
   getAssessments: async () => {
     try {
-      const response = await apiClient.get("/assessments", { params: { limit: 50 } });
+      const response = await apiClient.get("/companies/me/assessments", { params: { limit: 50 } });
       return response.data?.data ?? { assessments: [], total: 0 };
     } catch {
       return { assessments: [], total: 0 };

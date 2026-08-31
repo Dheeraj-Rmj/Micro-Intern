@@ -60,8 +60,28 @@ export const networkApi = {
     return res.data;
   },
 
+  getConnections: async () => {
+    const res = await apiClient.get<{ success: boolean; data: any[] }>("/network/connections");
+    return res.data;
+  },
+
+  respondConnectionRequest: async (requesterId: string, status: "ACCEPTED" | "BLOCKED") => {
+    const res = await apiClient.put<{ success: boolean; data: any }>("/network/connections/respond", { requesterId, status });
+    return res.data;
+  },
+
   getPublicProfile: async (username: string) => {
     const res = await apiClient.get<{ success: boolean; data: any }>(`/network/profile/${username}`);
+    return res.data;
+  },
+
+  addReaction: async (postId: string, type: string) => {
+    const res = await apiClient.post<{ success: boolean; data: any }>(`/network/posts/${postId}/reactions`, { type });
+    return res.data;
+  },
+
+  addComment: async (postId: string, content: string) => {
+    const res = await apiClient.post<{ success: boolean; data: any }>(`/network/posts/${postId}/comments`, { content });
     return res.data;
   },
 };

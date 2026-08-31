@@ -141,7 +141,9 @@ export const CompanyTrialsPage: React.FC = () => {
       );
     } catch (err: any) {
       console.error(err);
-      const msg = err?.response?.data?.error?.message || err?.message || "Failed to save trial to backend. Showing locally.";
+      // Remove optimistic update on failure
+      setTrials((prev) => prev.filter((t) => t.id !== tempId));
+      const msg = err?.response?.data?.error?.message || err?.message || "Failed to save skill trial to backend.";
       showToast("Error", msg, "error");
     }
   };

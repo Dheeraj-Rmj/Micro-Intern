@@ -38,7 +38,9 @@ router.post("/posts", controller.createPost);
 router.post("/posts/:postId/comments", controller.addComment);
 router.post("/posts/:postId/reactions", controller.addReaction);
 router.get("/discover", controller.getDiscoverProfiles);
+router.get("/connections", controller.getConnections);
 router.post("/connections", controller.sendConnectionRequest);
+router.put("/connections/respond", controller.respondConnectionRequest);
 router.get("/profile/:username", controller.getPublicProfile);
 
   return router;

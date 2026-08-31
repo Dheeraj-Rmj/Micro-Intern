@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import { useAuthStore } from "@/stores/auth.store";
 import { journeyApi, submissionApi, notificationsApi } from "../../../lib/api/candidate-data";
 import { assessmentApi } from "../../../lib/api/assessment";
+import { companyApi } from "../../../lib/api/company";
 import {
   PageRoute,
   UserRole,
@@ -214,6 +215,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return unsub;
   }, []);
 
+  // Fetch Company Profile for Company Users
+  useEffect(() => {
+    const fetchCompany = async () => {
+      if (role === "company" || role === "admin") {
+        try {
+          const profile = await companyApi.getCompanyProfile();
+          if (profile) {
+            setCompanyProfile({
+              companyName: profile.name || "",
+              logo: profile.logoUrl || "",
+              website: profile.website || "",
+              industry: profile.industry || "",
+              companySize: profile.size || "",
+              headquarters: profile.headquarters || "",
+              description: profile.description || "",
+              linkedinUrl: profile.linkedinUrl || "",
+              twitterUrl: profile.twitterUrl || "",
+              githubUrl: profile.githubUrl || "",
+              ekycStatus: profile.ekycStatus || "UNVERIFIED",
+            });
+          }
+        } catch (error) {
+          console.error("Failed to fetch company profile:", error);
+        }
+      }
+    };
+    fetchCompany();
+  }, [role]);
+
   useEffect(() => {
     const fetchTrials = async () => {
       try {
@@ -338,6 +368,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     };
     fetchSubmissions();
+
+    // Poll every 10 seconds to update submissions that are under review
+    const intervalId = setInterval(fetchSubmissions, 10000);
+    return () => clearInterval(intervalId);
   }, []);
 
   // ── Fetch real notifications from API ──────────────────────────────────────

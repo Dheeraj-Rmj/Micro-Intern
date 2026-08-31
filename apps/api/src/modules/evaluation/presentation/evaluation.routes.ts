@@ -7,6 +7,7 @@ import { validate } from "@/middleware/validate.middleware.js";
 
 import { registerSubmissionModuleDependencies } from "@/modules/submission/presentation/submission.routes.js";
 import { GetSubmissionEvaluationUseCase } from "../application/use-cases/get-submission-evaluation.usecase.js";
+import { ProcessEvaluationUseCase } from "../application/use-cases/process-evaluation.usecase.js";
 import { PrismaEvaluationRepository } from "../infrastructure/repositories/PrismaEvaluationRepository.js";
 import { EvaluationController } from "./evaluation.controller.js";
 import { SubmissionParamSchema } from "./evaluation.schemas.js";
@@ -35,6 +36,16 @@ export function registerEvaluationModuleDependencies(): void {
           container.get("ISubmissionRepository"),
           container.get("IEvaluationRepository"),
           container.get("GetProfileUseCase"),
+        ),
+    );
+
+    container.register(
+      "ProcessEvaluationUseCase",
+      () =>
+        new ProcessEvaluationUseCase(
+          container.get("ISubmissionRepository"),
+          container.get("IEvaluationRepository"),
+          container.get("IAssessmentRepository"),
         ),
     );
 

@@ -168,39 +168,50 @@ export const NetworkPage: React.FC = () => {
  id: p.id,
  authorName: p.author?.name || "Unknown User",
  authorHeadline: p.author?.headline || "",
- authorAvatar: p.author?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+ authorAvatar: p.author?.avatar,
  timeAgo: new Date(p.createdAt).toLocaleDateString(),
  content: p.content,
- skills: ["MicroIntern"], // Just stub for now, as posts don't have skills directly yet
+ skills: ["MicroIntern"],
  hashtag: p.postType,
  reactions: {
  like: p._count?.reactions || 0,
  celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
  },
  userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
- comments: [],
+ comments: p.comments || [],
  }));
  setPosts(mappedPosts);
  }).catch(console.error);
 
+ // Fetch Connections
+ networkApi.getConnections().then((res) => {
+   setPeers(res.data);
+ }).catch(console.error);
+
  // Fetch Discover profiles
  networkApi.getDiscoverProfiles().then((res) => {
- const mappedPeers = res.data.map((p) => ({
- id: p.id,
- name: p.name,
- headline: p.headline || "Software Engineer",
- avatar: p.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
- trustScore: p.trustScore,
- skills: p.skills.map((s) => ({
- name: s.skill,
- endorsedCount: 1, // default
- endorsedByMe: false,
- status: s.verified ? "VERIFIED" : "CLAIMED"
- })),
- status: "none" as "none" | "pending" | "connected",
- mutualCount: 0,
- }));
- setPeers(mappedPeers);
+   // Filter out those who are already in our connections
+   setPeers(prev => {
+     const existingIds = new Set(prev.map(p => p.id));
+     const newPeers = res.data
+       .filter((p: any) => !existingIds.has(p.id))
+       .map((p: any) => ({
+         id: p.id,
+         name: p.name,
+         headline: p.headline || "Software Engineer",
+         avatar: p.avatar,
+         trustScore: p.trustScore,
+         skills: p.skills.map((s: any) => ({
+           name: s.skill,
+           endorsedCount: 1,
+           endorsedByMe: false,
+           status: s.verified ? "VERIFIED" : "CLAIMED"
+         })),
+         status: "none" as const,
+         mutualCount: 0,
+       }));
+     return [...prev, ...newPeers];
+   });
  }).catch(console.error);
  }, []);
 
@@ -213,18 +224,18 @@ export const NetworkPage: React.FC = () => {
  id: p.id,
  authorName: p.author?.name || userProfile.fullName || "Me",
  authorHeadline: p.author?.headline || "",
- authorAvatar: p.author?.avatar || userProfile.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
- timeAgo: new Date(p.createdAt).toLocaleDateString(),
- content: p.content,
- skills: [] as string[],
- hashtag: p.postType,
- reactions: {
- like: p._count?.reactions || 0,
- celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
- },
- userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
- comments: [],
- }));
+        authorAvatar: p.author?.avatar || userProfile.avatar,
+        timeAgo: new Date(p.createdAt).toLocaleDateString(),
+        content: p.content,
+        skills: [] as string[],
+        hashtag: p.postType,
+        reactions: {
+          like: p._count?.reactions || 0,
+          celebrate: 0, support: 0, love: 0, insightful: 0, curious: 0,
+        },
+        userReaction: (p.hasReacted ? "like" : null) as ReactionType | null,
+        comments: p.comments || [],
+      }));
  setMyPosts(mapped);
  }).catch(console.error).finally(() => setMyPostsLoading(false));
  }, [activeTab]);
@@ -297,30 +308,33 @@ export const NetworkPage: React.FC = () => {
  const newReactions = { ...p.reactions };
 
  // If clicking the same reaction, toggle it off
- if (currentReaction === reactionType) {
- newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
- return {
- ...p,
- reactions: newReactions,
- userReaction: null,
- };
- }
+      if (currentReaction === reactionType) {
+        newReactions[reactionType] = Math.max(0, newReactions[reactionType] - 1);
+        networkApi.addReaction(postId, reactionType).catch(console.error); // optimistic UI
+        return {
+          ...p,
+          reactions: newReactions,
+          userReaction: null,
+        };
+      }
 
- // If previously reacted with something else, decrement old and increment new
- if (currentReaction) {
- newReactions[currentReaction] = Math.max(0, newReactions[currentReaction] - 1);
- }
- newReactions[reactionType] = newReactions[reactionType] + 1;
+      // If previously reacted with something else, decrement old and increment new
+      if (currentReaction) {
+        newReactions[currentReaction] = Math.max(0, newReactions[currentReaction] - 1);
+      }
+      newReactions[reactionType] = newReactions[reactionType] + 1;
+      
+      networkApi.addReaction(postId, reactionType).catch(console.error); // optimistic UI
 
- return {
- ...p,
- reactions: newReactions,
- userReaction: reactionType,
- };
- }),
- );
- setActiveReactionPickerId(null);
- };
+      return {
+        ...p,
+        reactions: newReactions,
+        userReaction: reactionType,
+      };
+    }),
+  );
+  setActiveReactionPickerId(null);
+};
 
  // Handle Create Post
  const handleCreatePost = async () => {
@@ -367,15 +381,21 @@ export const NetworkPage: React.FC = () => {
  }
  };
 
- // Handle Accept Request
- const handleAcceptPeer = (peerId: string) => {
- setPeers((prev) => prev.map((p) => (p.id === peerId ? { ...p, status: "connected" } : p)));
- showToast(
- "Connection Accepted ✓",
- "You are now connected and can message directly.",
- "success",
- );
- };
+  // Handle Accept Request
+  const handleAcceptPeer = async (peerId: string) => {
+    try {
+      await networkApi.respondConnectionRequest(peerId, "ACCEPTED");
+      setPeers((prev) => prev.map((p) => (p.id === peerId ? { ...p, status: "connected" } : p)));
+      showToast(
+        "Connection Accepted ✓",
+        "You are now connected and can message directly.",
+        "success",
+      );
+    } catch (e) {
+      showToast("Error", "Failed to accept connection request.", "error");
+      console.error(e);
+    }
+  };
 
  // Handle Connect Request
  const handleConnectPeer = async (peerId: string) => {
@@ -464,29 +484,37 @@ export const NetworkPage: React.FC = () => {
  setChatInput("");
  };
 
- const handleAddComment = (postId: string) => {
- if (!commentInput.trim()) return;
- setPosts((prev) =>
- prev.map((p) => {
- if (p.id !== postId) return p;
- return {
- ...p,
- comments: [
- ...p.comments,
- {
- id: `c-${Date.now()}`,
- name: userProfile.fullName || "You",
- avatar: userProfile.avatar,
- text: commentInput.trim(),
- timeAgo: "Just now",
- },
- ],
- };
- }),
- );
- setCommentInput("");
- showToast("Comment Added", "Your comment has been posted.", "success");
- };
+  const handleAddComment = async (postId: string) => {
+    if (!commentInput.trim()) return;
+    try {
+      const res = await networkApi.addComment(postId, commentInput.trim());
+      if (res.success) {
+        setPosts((prev) =>
+          prev.map((p) => {
+            if (p.id !== postId) return p;
+            return {
+              ...p,
+              comments: [
+                ...p.comments,
+                {
+                  id: res.data.id,
+                  name: userProfile.fullName || "You",
+                  avatar: userProfile.avatar,
+                  text: commentInput.trim(),
+                  timeAgo: "Just now",
+                },
+              ],
+            };
+          }),
+        );
+        setCommentInput("");
+        showToast("Comment Added", "Your comment has been posted.", "success");
+      }
+    } catch (e) {
+      showToast("Error", "Failed to add comment.", "error");
+      console.error(e);
+    }
+  };
 
  // Total reactions helper for a post
  const getTotalReactions = (reactions: Record<ReactionType, number>) => {
@@ -499,36 +527,9 @@ export const NetworkPage: React.FC = () => {
  authorHeadline: string,
  authorAvatar: string,
  ) => {
- const existingPeer =
- peers.find((p) => p.name === authorName) ||
- DIRECTORY_PEERS.find((p) => p.name === authorName);
- if (existingPeer) {
- setSelectedPublicPeer(existingPeer);
- } else {
- // Dynamically create a viewable profile for this author
- setSelectedPublicPeer({
- id: `temp-${Date.now()}`,
- name: authorName,
- headline: authorHeadline,
- avatar: authorAvatar,
- about: `${authorHeadline}. Verified candidate member on MicroIntern demonstrating engineering and AI competencies.`,
- trustScore: 94,
- certifications: [
- {
- title: "MicroIntern Core Competency",
- issuer: "AI Credential Validator",
- score: "Verified ✓",
- },
- ],
- skills: [
- { name: "React", endorsedCount: 14, endorsedByMe: false },
- { name: "TypeScript", endorsedCount: 18, endorsedByMe: false },
- { name: "AI & LLM", endorsedCount: 22, endorsedByMe: false },
- ],
- status: "none",
- mutualCount: 9,
- });
- }
+ // Navigate to real profile page instead of faking data
+ const username = authorName.toLowerCase().replace(/ /g, "");
+ setCurrentRoute(`/u/${username}`);
  };
 
  // Add real directory peers so user can test viewing other profiles when starting from clean state
@@ -555,7 +556,7 @@ export const NetworkPage: React.FC = () => {
  return (
  <div className="max-w-6xl mx-auto py-6 px-4 space-y-6">
  {/* Header & Tabs */}
- <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/60 backdrop-blur-xl/60 backdrop-blur-xl p-6 rounded-[32px] border border-white/50 shadow-sm">
+ <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
  <div>
  <h1 className="text-2xl font-bold text-[#222] flex items-center gap-2.5">
  <Users className="w-6 h-6 text-purple-500" />
@@ -567,7 +568,7 @@ export const NetworkPage: React.FC = () => {
  </p>
  </div>
 
- <div className="flex items-center gap-2 bg-black/5 backdrop-blur-xl/5 p-1.5 rounded-full">
+ <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-full">
  <button
  onClick={() => setActiveTab("feed")}
  className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
@@ -601,7 +602,7 @@ export const NetworkPage: React.FC = () => {
  {/* Main Feed Column */}
  <div className="lg:col-span-2 space-y-6">
  {/* Search & Hashtag Bar */}
- <div className="bg-white/60 backdrop-blur-xl/60 backdrop-blur-xl p-4 rounded-2xl border border-white/50 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+ <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
  <div className="relative flex-1">
  <Search className="w-4 h-4 absolute left-3.5 top-3 text-black/40 " />
  <input
@@ -609,7 +610,7 @@ export const NetworkPage: React.FC = () => {
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  placeholder="Search updates, candidates, or skills..."
- className="w-full pl-10 pr-4 py-2 rounded-xl bg-black/5 backdrop-blur-xl/5 border border-black/5 text-xs text-[#222] focus:outline-none"
+ className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
  />
  {searchQuery && (
  <button
@@ -630,7 +631,7 @@ export const NetworkPage: React.FC = () => {
  className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
  isActive
  ? "bg-purple-600 text-white shadow-xs"
- : "bg-black/5 backdrop-blur-xl/10 text-black/70 hover:bg-black/10"
+ : "bg-slate-100 text-slate-700 hover:bg-slate-200"
  }`}
  >
  {tag}

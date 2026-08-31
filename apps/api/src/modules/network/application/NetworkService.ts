@@ -18,16 +18,23 @@ export class NetworkService {
           where: { userId }, // To check if the current user liked it
           select: { id: true, type: true },
         },
+        comments: {
+          orderBy: { createdAt: "asc" },
+        },
         _count: {
           select: { reactions: true, comments: true },
         },
       },
     });
 
-    // Populate author details
-    const authorIds = [...new Set(posts.map((p: any) => p.authorId))];
+    // Populate author details for posts and comments
+    const authorIds = new Set(posts.map((p: any) => p.authorId));
+    posts.forEach((p: any) => {
+      p.comments?.forEach((c: any) => authorIds.add(c.userId));
+    });
+
     const authors = await this.db.user.findMany({
-      where: { id: { in: authorIds } },
+      where: { id: { in: Array.from(authorIds) } },
       select: {
         id: true,
         firstName: true,
@@ -54,6 +61,16 @@ export class NetworkService {
             }
           : { name: "Unknown User" },
         hasReacted: post.reactions.length > 0,
+        comments: (post.comments || []).map((c: any) => {
+          const cAuthor = authorMap.get(c.userId);
+          return {
+            id: c.id,
+            name: cAuthor ? `${cAuthor.firstName} ${cAuthor.lastName}`.trim() : "Unknown User",
+            avatar: cAuthor?.avatarUrl,
+            text: c.content,
+            timeAgo: c.createdAt,
+          };
+        }),
       };
     });
 
@@ -152,11 +169,31 @@ export class NetworkService {
           where: { userId },
           select: { id: true, type: true },
         },
+        comments: {
+          orderBy: { createdAt: "asc" },
+        },
         _count: {
           select: { reactions: true, comments: true },
         },
       },
     });
+
+    const commentAuthorIds = new Set<string>();
+    posts.forEach((p: any) => {
+      p.comments?.forEach((c: any) => commentAuthorIds.add(c.userId));
+    });
+
+    const commentAuthors = await this.db.user.findMany({
+      where: { id: { in: Array.from(commentAuthorIds) } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+      },
+    });
+
+    const commentAuthorMap = new Map(commentAuthors.map((a: any) => [a.id, a]));
 
     return posts.map((post: any) => ({
       ...post,
@@ -169,6 +206,16 @@ export class NetworkService {
           }
         : null,
       hasReacted: post.reactions.length > 0,
+      comments: (post.comments || []).map((c: any) => {
+        const cAuthor = commentAuthorMap.get(c.userId);
+        return {
+          id: c.id,
+          name: cAuthor ? `${cAuthor.firstName} ${cAuthor.lastName}`.trim() : "Unknown User",
+          avatar: cAuthor?.avatarUrl,
+          text: c.content,
+          timeAgo: c.createdAt,
+        };
+      }),
     }));
   }
 
@@ -200,6 +247,74 @@ export class NetworkService {
     });
   }
 
+  async respondConnectionRequest(requesterId: string, recipientId: string, status: "ACCEPTED" | "BLOCKED") {
+    const existing = await this.db.connection.findUnique({
+      where: {
+        requesterId_recipientId: {
+          requesterId,
+          recipientId,
+        },
+      },
+    });
+
+    if (!existing) {
+      throw new NotFoundError("Connection request not found");
+    }
+
+    return this.db.connection.update({
+      where: { id: existing.id },
+      data: { status },
+    });
+  }
+
+  async getConnections(userId: string) {
+    const connections = await this.db.connection.findMany({
+      where: {
+        OR: [{ requesterId: userId }, { recipientId: userId }]
+      },
+    });
+
+    const peerIds = connections.map((c: any) => c.requesterId === userId ? c.recipientId : c.requesterId);
+    
+    if (peerIds.length === 0) return [];
+
+    const peers = await this.db.user.findMany({
+      where: { id: { in: peerIds } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        avatarUrl: true,
+        candidateProfile: {
+          select: { headline: true, completionPercentage: true, skills: true },
+        },
+      },
+    });
+
+    const peerMap = new Map(peers.map((p: any) => [p.id, p]));
+
+    return connections.map((c: any) => {
+      const peerId = c.requesterId === userId ? c.recipientId : c.requesterId;
+      const peer = peerMap.get(peerId) as any;
+      
+      return {
+        id: peer?.id || peerId,
+        name: peer ? `${peer.firstName} ${peer.lastName}`.trim() : "Unknown User",
+        avatar: peer?.avatarUrl,
+        headline: peer?.candidateProfile?.headline || "MicroIntern User",
+        trustScore: peer?.candidateProfile?.completionPercentage || 0,
+        skills: peer?.candidateProfile?.skills?.map((s: any) => ({
+          name: s.skill,
+          endorsedCount: 0,
+          endorsedByMe: false,
+          status: s.verified ? "VERIFIED" : "CLAIMED"
+        })) || [],
+        status: c.status === "PENDING" ? (c.requesterId === userId ? "pending_sent" : "pending_received") : c.status.toLowerCase(),
+        mutualCount: 0,
+      };
+    });
+  }
+
   async getPublicProfile(username: string): Promise<any> {
     const profile = await this.db.candidateProfile.findFirst({
       where: {
@@ -220,7 +335,16 @@ export class NetworkService {
       throw new NotFoundError("Profile not found");
     }
 
-    return profile;
+    const portfolio = await this.db.candidatePortfolio.findUnique({
+      where: { candidateId: profile.id },
+      include: { projects: true, achievements: true },
+    });
+
+    const evidence = await this.db.evidence.findMany({
+      where: { candidateId: profile.id },
+    });
+
+    return { ...profile, portfolio, evidence };
   }
 
   async addComment(userId: string, postId: string, content: string) {

@@ -9,6 +9,7 @@ import { connectRedis, disconnectRedis } from "./redis.js";
 import { startEmailWorker } from "../infrastructure/queue/workers/email.worker.js";
 import { startResumeParserWorker } from "../infrastructure/queue/workers/resume-parser.worker.js";
 import { startAssessmentAIWorker } from "../infrastructure/queue/workers/assessment-ai.worker.js";
+import { startEvaluationWorker } from "../infrastructure/queue/workers/evaluation.worker.js";
 
 /**
  * HTTP server bootstrap and graceful shutdown.
@@ -46,6 +47,7 @@ async function bootstrap(): Promise<void> {
   startEmailWorker();
   startResumeParserWorker();
   startAssessmentAIWorker();
+  startEvaluationWorker();
   logger.info("Background BullMQ workers started");
 
   // ── Register Event Listeners (Phase 6 Notification Pipeline) ──────────────

@@ -59,6 +59,25 @@ export class NetworkController {
     res.status(201).json({ success: true, data: connection });
   };
 
+  getConnections = async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new UnauthorizedError("Unauthorized");
+
+    const connections = await this.networkService.getConnections(userId);
+    res.json({ success: true, data: connections });
+  };
+
+  respondConnectionRequest = async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new UnauthorizedError("Unauthorized");
+
+    const { requesterId, status } = req.body;
+    if (!requesterId || !status) throw new BadRequestError("Requester ID and Status are required");
+
+    const connection = await this.networkService.respondConnectionRequest(requesterId, userId, status);
+    res.json({ success: true, data: connection });
+  };
+
   getPublicProfile = async (req: Request, res: Response) => {
     const username = req.params["username"];
     if (!username || typeof username !== "string") {
