@@ -15,6 +15,7 @@ export interface NetworkPost {
   createdAt: string;
   author: NetworkAuthor;
   hasReacted: boolean;
+  comments?: any[];
   _count?: {
     reactions: number;
     comments: number;

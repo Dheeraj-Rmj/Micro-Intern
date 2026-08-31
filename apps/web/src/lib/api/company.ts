@@ -45,7 +45,7 @@ export const companyApi = {
 
   getAIProviders: async () => {
     const response = await apiClient.get("/companies/ai/providers");
-    return response.data;
+    return response.data?.data ?? [];
   },
 
   addAIProvider: async (data: { provider: string; apiKey: string; isFallback: boolean }) => {

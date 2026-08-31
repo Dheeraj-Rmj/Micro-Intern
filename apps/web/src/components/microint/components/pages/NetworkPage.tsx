@@ -103,7 +103,7 @@ interface NetworkPost {
  id: string;
  authorName: string;
  authorHeadline: string;
- authorAvatar: string;
+ authorAvatar?: string;
  timeAgo: string;
  content: string;
  skills: string[];
@@ -521,16 +521,16 @@ export const NetworkPage: React.FC = () => {
  return Object.values(reactions).reduce((acc, count) => acc + count, 0);
  };
 
- // Open LinkedIn Public Profile View for ANY person clicked
- const handleOpenProfileByName = (
- authorName: string,
- authorHeadline: string,
- authorAvatar: string,
- ) => {
- // Navigate to real profile page instead of faking data
- const username = authorName.toLowerCase().replace(/ /g, "");
- setCurrentRoute(`/u/${username}`);
- };
+  // Open LinkedIn Public Profile View for ANY person clicked
+  const handleOpenProfileByName = (
+    authorName: string,
+    authorHeadline: string,
+    authorAvatar: string | undefined,
+  ) => {
+    // Navigate to real profile page instead of faking data
+    const username = authorName.toLowerCase().replace(/ /g, "");
+    window.location.href = `/u/${username}`;
+  };
 
  // Add real directory peers so user can test viewing other profiles when starting from clean state
  const handleDiscoverDirectory = () => {
