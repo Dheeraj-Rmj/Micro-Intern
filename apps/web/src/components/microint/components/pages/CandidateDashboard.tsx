@@ -453,29 +453,41 @@ export const CandidateDashboard: React.FC = () => {
 
               <div className="flex justify-between items-center mb-8 relative z-10">
                 <h2 className="text-lg font-medium">Upcoming Events</h2>
-                <span className="text-3xl font-light text-white/90">{realSessions.length}</span>
+                <span className="text-3xl font-light text-white/90">{realSessions.length + interviews.length}</span>
               </div>
 
               <div className="flex flex-col gap-4 relative z-10">
-                {realSessions.length > 0 ? (
-                  realSessions.map((session) => (
-                     <div key={session.id} className="flex flex-col gap-2">
-                       <TaskItem
-                          title={session.interview.title}
-                          time={`Status: ${session.status}`}
-                          icon={<Briefcase className="w-4 h-4" />}
-                          completed={session.status === "SUBMITTED" || session.status === "EVALUATED"}
-                       />
-                       {(session.status === "INVITED" || session.status === "STARTED") && (
-                         <button
-                           onClick={() => setCurrentRoute("interview-session")}
-                           className="text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white py-1.5 px-3 rounded-full self-start"
-                         >
-                           Join Interview
-                         </button>
-                       )}
-                     </div>
-                  ))
+                {realSessions.length > 0 || interviews.length > 0 ? (
+                  <>
+                    {realSessions.map((session) => (
+                       <div key={session.id} className="flex flex-col gap-2">
+                         <TaskItem
+                            title={session.interview.title}
+                            time={`Status: ${session.status}`}
+                            icon={<Briefcase className="w-4 h-4" />}
+                            completed={session.status === "SUBMITTED" || session.status === "EVALUATED"}
+                         />
+                         {(session.status === "INVITED" || session.status === "STARTED") && (
+                           <button
+                             onClick={() => setCurrentRoute("interview-session")}
+                             className="text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white py-1.5 px-3 rounded-full self-start"
+                           >
+                             Join Interview
+                           </button>
+                         )}
+                       </div>
+                    ))}
+                    {interviews.map((interview) => (
+                       <div key={interview.id} className="flex flex-col gap-2">
+                         <TaskItem
+                            title={interview.trialTitle}
+                            time={`${interview.date} at ${interview.time}`}
+                            icon={<Briefcase className="w-4 h-4" />}
+                            completed={false}
+                         />
+                       </div>
+                    ))}
+                  </>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-white/50 text-sm">
                     No upcoming events

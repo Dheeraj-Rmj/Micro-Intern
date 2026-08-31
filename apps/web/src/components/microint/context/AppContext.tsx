@@ -292,7 +292,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [achievements] = useState<AchievementBadge[]>([]);
-  const [interviews, setInterviews] = useState<InterviewSlot[]>([]);
+  const [interviews, setInterviews] = useState<InterviewSlot[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("microintern_interviews");
+      if (saved) {
+        try {
+          return JSON.parse(saved) as InterviewSlot[];
+        } catch { }
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("microintern_interviews", JSON.stringify(interviews));
+    }
+  }, [interviews]);
   const [candidateSearchPool, setCandidateSearchPool] = useState<CandidateSearchResult[]>([]);
 
   // ── Fetch real applications (candidate journeys) from API ──────────────────
