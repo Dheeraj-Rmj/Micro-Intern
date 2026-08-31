@@ -93,6 +93,7 @@
     "@types/passport-linkedin-oauth2": "^1.5.6",
     "@types/passport-microsoft": "^2.1.1",
     "@types/passport-oauth2": "^1.8.0",
+    "@types/pdf-parse": "^1.1.5",
     "@types/qrcode": "^1.5.6",
     "@types/supertest": "^6.0.2",
     "@types/tesseract.js": "^2.0.0",
