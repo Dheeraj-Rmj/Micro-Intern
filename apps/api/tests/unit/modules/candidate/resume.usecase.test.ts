@@ -74,7 +74,7 @@ describe("Candidate Resume Use Cases", () => {
       });
       expect(mockQueue.add).toHaveBeenCalledWith(
         "parse-resume",
-        { candidateId: "prof-1", resumeKey: expect.any(String) },
+        { candidateId: "prof-1", resumeKey: expect.any(String), resumeText: expect.any(String) },
         expect.any(Object),
       );
       expect(mockTx.auditLog.create).toHaveBeenCalled();
