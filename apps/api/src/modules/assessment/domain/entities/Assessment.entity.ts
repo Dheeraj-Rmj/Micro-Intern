@@ -57,13 +57,12 @@ export class Assessment {
   }
 
   /**
-   * Validates publishing readiness.
-   * Tasks requirement temporarily disabled to allow publishing basic skill trials.
+   * Validates publishing readiness (must have at least 1 assessment task configured).
    */
   validateCanPublish(): void {
-    // if (!this.tasks || this.tasks.length === 0) {
-    //   throw new AssessmentCannotPublishWithoutTasksError();
-    // }
+    if (!this.tasks || this.tasks.length === 0) {
+      throw new AssessmentCannotPublishWithoutTasksError();
+    }
   }
 
   /**
