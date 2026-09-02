@@ -319,9 +319,9 @@ export class NetworkService {
   async getPublicProfile(username: string): Promise<any> {
     const profile = await this.db.candidateProfile.findFirst({
       where: {
-        OR: [
-          { userId: username },
-        ],
+        user: {
+          username: username,
+        },
       },
       include: {
         user: { select: { firstName: true, lastName: true, avatarUrl: true } },
