@@ -26,7 +26,12 @@ export const DiscoverTrialsPage: React.FC = () => {
  setCurrentRoute,
  searchQuery,
  setSearchQuery,
+ refreshTrials,
  } = useApp();
+
+ React.useEffect(() => {
+   refreshTrials();
+ }, [refreshTrials]);
 
  const [selectedCategory, setSelectedCategory] = useState<string>("All");
  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");

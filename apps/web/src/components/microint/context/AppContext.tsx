@@ -61,6 +61,7 @@ interface AppContextType {
   submitWorkspaceTask: (trialId: string, solutionText: string, fileNames: string[], proctoringEvents?: string[]) => void;
   markNotificationRead: (id: string) => void;
   unreadNotificationsCount: number;
+  refreshTrials: () => Promise<void>;
 
   // Company Portal Operations
   createTrial: (trialData: Omit<Trial, "id" | "applicantsCount">) => void;
@@ -244,49 +245,50 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     fetchCompany();
   }, [role]);
 
-  useEffect(() => {
-    const fetchTrials = async () => {
-      try {
-        const { assessments } = await assessmentApi.listPublicAssessments({ status: "PUBLISHED" });
-        if (assessments && assessments.length > 0) {
-          const apiTrials = assessments.map((a: any) => ({
-            id: a.id,
-            title: a.title,
-            company: a.company?.name || "Company",
-            roleTitle: a.roleTitle || "Role",
-            difficulty: (a.complexityScore && a.complexityScore > 7
-              ? "Advanced"
-              : a.complexityScore && a.complexityScore < 4
-                ? "Beginner"
-                : "Intermediate") as "Beginner" | "Intermediate" | "Advanced",
-            category: a.category || "All",
-            skillsRequired: a.skillsRequired || [],
-            timeCommitment: `${a.durationMinutes || 120} mins`,
-            reward: "$0", // default mock
-            applicantsCount: 0,
-            status: (a.status === "PUBLISHED" ? "open" : "closed") as "open" | "closed",
-            bookmarked: false,
-            matchScore: 90, // mock score
-            description: a.description,
-            tasks: a.tasks?.map((t: any) => ({ title: t.title, description: t.description })) || [],
-            logo: "https://cdn-icons-png.flaticon.com/512/25/25231.png",
-            stipend: "$0",
-            duration: "48 Hours",
-            deadline: "Rolling",
-            deliverables: ["Code"],
-          }));
-          // Merge with mock trials to not break UI if there are no assessments
-          setTrials((prev) => {
-            const apiIds = apiTrials.map((a: any) => a.id);
-            const filteredMocks = prev.filter((m) => !apiIds.includes(m.id));
-            return [...apiTrials, ...filteredMocks];
-          });
-        }
-      } catch (e) {
-        console.error("Failed to fetch public trials:", e);
+  const refreshTrials = async () => {
+    try {
+      const { assessments } = await assessmentApi.listPublicAssessments({ status: "PUBLISHED" });
+      if (assessments && assessments.length > 0) {
+        const apiTrials = assessments.map((a: any) => ({
+          id: a.id,
+          title: a.title,
+          company: a.company?.name || "Company",
+          roleTitle: a.roleTitle || "Role",
+          difficulty: (a.complexityScore && a.complexityScore > 7
+            ? "Advanced"
+            : a.complexityScore && a.complexityScore < 4
+              ? "Beginner"
+              : "Intermediate") as "Beginner" | "Intermediate" | "Advanced",
+          category: (a.skillsRequired && a.skillsRequired.length > 0) ? a.skillsRequired[0] : "All",
+          skillsRequired: a.skillsRequired || [],
+          timeCommitment: `${a.durationMinutes || 120} mins`,
+          reward: "$0", // default mock
+          applicantsCount: 0,
+          status: (a.status === "PUBLISHED" ? "open" : "closed") as "open" | "closed",
+          bookmarked: false,
+          matchScore: 90, // mock score
+          description: a.description,
+          tasks: a.tasks?.map((t: any) => ({ title: t.title, description: t.description })) || [],
+          logo: a.company?.logoUrl || "https://cdn-icons-png.flaticon.com/512/25/25231.png",
+          stipend: a.stipendAmount ? `$${a.stipendAmount}` : "$0",
+          duration: "48 Hours",
+          deadline: "Rolling",
+          deliverables: ["Code"],
+        }));
+        // Merge with mock trials to not break UI if there are no assessments
+        setTrials((prev) => {
+          const apiIds = apiTrials.map((a: any) => a.id);
+          const filteredMocks = prev.filter((m) => !apiIds.includes(m.id));
+          return [...apiTrials, ...filteredMocks];
+        });
       }
-    };
-    fetchTrials();
+    } catch (e) {
+      console.error("Failed to fetch public trials:", e);
+    }
+  };
+
+  useEffect(() => {
+    refreshTrials();
   }, []);
   const [applications, setApplications] = useState<Application[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -838,6 +840,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         unreadNotificationsCount,
 
         // Company
+        refreshTrials,
         createTrial,
         updateTrial,
         deleteTrial,

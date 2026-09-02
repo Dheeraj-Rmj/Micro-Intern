@@ -253,7 +253,7 @@ const MainRouter: React.FC = () => {
     }
   };
 
-  const isCandidateRoute = [
+  const isCandidateRoute = role === "candidate" && [
     "dashboard",
     "network",
     "profile",
