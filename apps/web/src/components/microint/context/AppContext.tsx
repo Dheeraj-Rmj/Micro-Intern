@@ -268,6 +268,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           bookmarked: false,
           matchScore: 90, // mock score
           description: a.description,
+          location: a.location || "Remote",
+          workSetting: a.workSetting || "Remote",
+          employmentType: a.employmentType || "Full-time",
+          publishedAt: a.publishedAt ? new Date(a.publishedAt).toISOString() : new Date().toISOString(),
           tasks: a.tasks?.map((t: any) => ({ title: t.title, description: t.description })) || [],
           logo: a.company?.logoUrl || "https://cdn-icons-png.flaticon.com/512/25/25231.png",
           stipend: a.stipendAmount ? `$${a.stipendAmount}` : "$0",

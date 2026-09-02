@@ -11,6 +11,9 @@ export interface CreateAssessmentData {
   skillsRequired?: string[];
   roleTitle?: string;
   level?: ExperienceLevel;
+  location?: string;
+  workSetting?: string;
+  employmentType?: string;
   durationMinutes: number;
   passingScore?: number;
   maxAttempts?: number;

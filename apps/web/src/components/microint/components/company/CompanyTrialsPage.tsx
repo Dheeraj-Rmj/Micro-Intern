@@ -34,7 +34,15 @@ export const CompanyTrialsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [title, setTitle] = useState("");
+  const [roleTitle, setRoleTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [location, setLocation] = useState("");
+  const [workSetting, setWorkSetting] = useState("On-site");
+  const [employmentType, setEmploymentType] = useState("Full-time");
+  const [level, setLevel] = useState("ENTRY");
+  const [description, setDescription] = useState("");
+  const [stipendAmount, setStipendAmount] = useState<number>(0);
+  const [durationMinutes, setDurationMinutes] = useState<number>(120);
 
   useEffect(() => {
     const fetchAssessments = async () => {
@@ -119,10 +127,16 @@ export const CompanyTrialsPage: React.FC = () => {
     try {
       const res = await companyApi.createAssessment({
         title,
-        description: `${category} skill trial`,
+        roleTitle: roleTitle || title,
+        description: description || `${category} skill trial`,
         instructions: `Please complete this ${category} trial.`,
         skillsRequired: [category],
-        durationMinutes: 120,
+        location,
+        workSetting,
+        employmentType,
+        level,
+        stipendAmount: stipendAmount || undefined,
+        durationMinutes: durationMinutes || 120,
         passingScore: 70,
         isPublic: true,
         tasks: [
@@ -261,7 +275,7 @@ export const CompanyTrialsPage: React.FC = () => {
       {/* Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95">
+          <div className="w-full max-w-2xl p-8 rounded-[36px] bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-serif font-bold text-black dark:text-white">
                 Post New Enterprise Trial
@@ -275,35 +289,123 @@ export const CompanyTrialsPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleCreateTrial} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Trial Title
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. AI Copilot UI Component / GraphQL Sync"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Trial Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. AI Copilot UI Component"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Role Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Frontend Engineer"
+                    value={roleTitle}
+                    onChange={(e) => setRoleTitle(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Category (Tags)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. React, Full Stack"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Gurugram, India"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Work Setting
+                  </label>
+                  <select
+                    value={workSetting}
+                    onChange={(e) => setWorkSetting(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                  >
+                    <option value="On-site">On-site</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Employment Type
+                  </label>
+                  <select
+                    value={employmentType}
+                    onChange={(e) => setEmploymentType(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                  >
+                    <option value="Full-time">Full-time</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Contract">Contract</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
+                    Experience Level
+                  </label>
+                  <select
+                    value={level}
+                    onChange={(e) => setLevel(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                  >
+                    <option value="INTERNSHIP">Internship</option>
+                    <option value="ENTRY">Entry Level</option>
+                    <option value="MID">Mid Level</option>
+                    <option value="SENIOR">Senior Level</option>
+                  </select>
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-black/70 dark:text-white/80 mb-1">
-                  Category
+                  About the Job
                 </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Data Science, iOS Dev, Full Stack"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500"
+                <textarea
+                  placeholder="Provide a rich description of the role, team, and expectations..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/10 dark:border-white/10 text-xs text-black dark:text-white focus:outline-none focus:border-amber-500 h-32 resize-none"
                   required
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-4 border-t border-black/5 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}

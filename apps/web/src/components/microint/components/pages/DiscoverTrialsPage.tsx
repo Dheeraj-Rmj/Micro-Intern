@@ -15,6 +15,7 @@ import {
  Sparkles,
  ArrowRight,
  ChevronRight,
+  Building2,
 } from "lucide-react";
 
 export const DiscoverTrialsPage: React.FC = () => {
@@ -213,91 +214,138 @@ export const DiscoverTrialsPage: React.FC = () => {
  )}
 
  {/* Trial Brief Modal */}
- {activeModalTrial && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
- <div
- className="absolute inset-0 bg-black/60 backdrop-blur-sm"
- onClick={() => setActiveModalTrial(null)}
- />
- <div className="bg-white/60 backdrop-blur-xl/60 backdrop-blur-xl border border-white/50 rounded-[40px] max-w-2xl w-full p-8 sm:p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto z-10 text-[#222]">
- <button
- onClick={() => setActiveModalTrial(null)}
- className="absolute right-6 top-6 w-10 h-10 rounded-full bg-black/5 backdrop-blur-xl/5 flex items-center justify-center text-[#666] hover:text-black :text-white cursor-pointer"
- >
- <X className="w-5 h-5" />
- </button>
+  {activeModalTrial && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+    <div
+      className="absolute inset-0 bg-black/70 backdrop-blur-md"
+      onClick={() => setActiveModalTrial(null)}
+    />
+    <div className="bg-[#1C1D1F] border border-white/10 rounded-[20px] max-w-[800px] w-full shadow-2xl relative max-h-[90vh] flex flex-col z-10 text-white overflow-hidden">
+      
+      {/* Header section fixed */}
+      <div className="p-6 sm:px-10 sm:pt-10 pb-6 border-b border-white/10 shrink-0">
+        <button
+          onClick={() => setActiveModalTrial(null)}
+          className="absolute right-6 top-6 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
 
- <span className="text-xs font-bold text-black/40 uppercase tracking-widest block mb-2">
- {activeModalTrial.company} • {activeModalTrial.category}
- </span>
- <h2 className="text-3xl font-serif text-[#222] mb-4">
- {activeModalTrial.title}
- </h2>
- <p className="text-sm text-black/70 leading-relaxed mb-8">
- {activeModalTrial.description}
- </p>
+        <div className="flex items-start gap-4 mb-4">
+          <img 
+            src={activeModalTrial.logo || "https://cdn-icons-png.flaticon.com/512/25/25231.png"} 
+            alt="Company Logo" 
+            className="w-16 h-16 rounded-xl object-contain bg-white p-2"
+          />
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+              {activeModalTrial.title}
+            </h2>
+            <div className="text-sm text-white/70 flex flex-wrap items-center gap-1.5">
+              <span className="font-semibold text-white">{activeModalTrial.company}</span>
+              <span>•</span>
+              <span>{activeModalTrial.location || "Remote"}</span>
+              <span>•</span>
+              <span>
+                {(() => {
+                  const daysAgo = activeModalTrial.publishedAt 
+                    ? Math.floor((new Date().getTime() - new Date(activeModalTrial.publishedAt).getTime()) / (1000 * 3600 * 24))
+                    : 0;
+                  return daysAgo === 0 ? "Today" : `${daysAgo} day${daysAgo > 1 ? "s" : ""} ago`;
+                })()}
+              </span>
+              <span>•</span>
+              <span className="text-emerald-400 font-medium">Over {activeModalTrial.applicantsCount + 100} people clicked apply</span>
+            </div>
+          </div>
+        </div>
 
- <div className="grid grid-cols-2 gap-4 mb-8">
- <div className="p-5 rounded-3xl bg-[#111111] backdrop-blur-xl text-white ">
- <span className="text-[10px] font-bold uppercase tracking-widest opacity-70 block mb-1">
- Stipend & Reward
- </span>
- <span className="text-xl font-bold">{activeModalTrial.stipend}</span>
- </div>
- <div className="p-5 rounded-3xl bg-black/5 backdrop-blur-xl/5 border border-white/50">
- <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest block mb-1">
- Time Commitment
- </span>
- <span className="text-xl font-bold text-[#222]">
- {activeModalTrial.duration}
- </span>
- </div>
- </div>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <span className="px-4 py-1.5 rounded-full border border-white/20 text-sm font-medium flex items-center gap-2">
+            <Building2 className="w-4 h-4" />
+            {activeModalTrial.workSetting || "On-site"}
+          </span>
+          <span className="px-4 py-1.5 rounded-full border border-white/20 text-sm font-medium flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" />
+            {activeModalTrial.employmentType || "Internship"}
+          </span>
+        </div>
 
- <div className="space-y-4 mb-8">
- <h4 className="font-bold text-sm uppercase tracking-widest text-[#666]">
- Deliverables Required
- </h4>
- <ul className="space-y-2">
- {[
- "Clean, documented source code or design files",
- "Brief 2-minute walkthrough recording of solution",
- "Test cases or verification checklist",
- ].map((item, i) => (
- <li
- key={i}
- className="flex items-center gap-3 text-sm text-black/80 "
- >
- <CheckCircle2 className="w-5 h-5 text-[#222] shrink-0" />
- <span>{item}</span>
- </li>
- ))}
- </ul>
- </div>
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              applyForTrial(activeModalTrial.id);
+              setActiveWorkspaceTrial(activeModalTrial);
+              setActiveModalTrial(null);
+              setCurrentRoute("workspace");
+            }}
+            className="px-8 py-2.5 rounded-full bg-[#0a66c2] hover:bg-[#004182] text-white font-bold text-base transition-colors flex items-center gap-2"
+          >
+            <span>Apply</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => toggleBookmark(activeModalTrial.id)}
+            className="px-6 py-2.5 rounded-full border border-white/30 hover:border-white hover:bg-white/5 text-white font-bold text-base transition-colors"
+          >
+            {activeModalTrial.isBookmarked ? "Saved" : "Save"}
+          </button>
+        </div>
+      </div>
 
- <div className="flex items-center justify-end gap-3 pt-6 border-t border-white/50">
- <button
- onClick={() => setActiveModalTrial(null)}
- className="px-6 py-3 rounded-full font-bold text-sm text-[#666] hover:text-black :text-white cursor-pointer"
- >
- Cancel
- </button>
- <button
- onClick={() => {
- applyForTrial(activeModalTrial.id);
- setActiveWorkspaceTrial(activeModalTrial);
- setActiveModalTrial(null);
- setCurrentRoute("workspace");
- }}
- className="px-8 py-3 rounded-full bg-[#111111] backdrop-blur-xl text-white text-sm font-bold shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center gap-2"
- >
- <span>Start Trial Now</span>
- <ArrowRight className="w-4 h-4" />
- </button>
- </div>
- </div>
- </div>
- )}
+      {/* Scrollable content */}
+      <div className="p-6 sm:px-10 overflow-y-auto custom-scrollbar">
+        
+        {/* Determine Fit Mock */}
+        <div className="mb-8">
+          <h3 className="text-xl font-bold mb-2">Determine your fit and how to stand out</h3>
+          <p className="text-sm text-white/70 mb-4">
+            Get AI-powered advice on this role and more exclusive features with MicroIntern Premium. 
+            <span className="text-[#0a66c2] hover:underline cursor-pointer ml-1">Learn more</span>
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm font-medium flex items-center gap-2 transition-colors">
+              <Sparkles className="w-4 h-4 text-amber-400" /> Show match details
+            </button>
+            <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm font-medium flex items-center gap-2 transition-colors">
+              <Sparkles className="w-4 h-4 text-amber-400" /> Tailor my resume
+            </button>
+            <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm font-medium flex items-center gap-2 transition-colors">
+              <Sparkles className="w-4 h-4 text-amber-400" /> Help me stand out
+            </button>
+          </div>
+        </div>
+
+        {/* About the job */}
+        <div>
+          <h3 className="text-xl font-bold mb-4">About the job</h3>
+          <div className="text-sm text-white/80 leading-relaxed space-y-4 whitespace-pre-wrap">
+            {activeModalTrial.description}
+          </div>
+        </div>
+
+        <div className="mt-8 pt-8 border-t border-white/10">
+          <h3 className="text-base font-bold mb-4 text-white/90">Required Deliverables for Application</h3>
+          <ul className="space-y-3">
+            {[
+              "Clean, documented source code or design files",
+              "Brief 2-minute walkthrough recording of solution",
+              "Test cases or verification checklist",
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-3 text-sm text-white/70">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+)}
  </div>
  );
 };

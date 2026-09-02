@@ -37,6 +37,9 @@ export class CreateAssessmentUseCase {
       skillsRequired?: string[];
       roleTitle?: string;
       level?: ExperienceLevel;
+      location?: string;
+      workSetting?: string;
+      employmentType?: string;
       durationMinutes: number;
       maxAttempts?: number;
       isPublic?: boolean;
@@ -78,6 +81,9 @@ export class CreateAssessmentUseCase {
       skillsRequired: input.skillsRequired || [],
       roleTitle: input.roleTitle,
       level: input.level,
+      location: input.location,
+      workSetting: input.workSetting,
+      employmentType: input.employmentType,
       durationMinutes: input.durationMinutes,
       passingScore: input.passingScore ?? 70,
       maxAttempts: input.maxAttempts ?? 1,

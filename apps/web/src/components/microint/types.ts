@@ -82,6 +82,10 @@ export interface Trial {
   skillsRequired: string[];
   description: string;
   deliverables: string[];
+  location?: string;
+  workSetting?: string;
+  employmentType?: string;
+  publishedAt?: string;
   isBookmarked?: boolean;
   status?: "open" | "applied" | "in_progress" | "completed" | "draft" | "paused" | "closed";
   evaluationCriteria?: string[];

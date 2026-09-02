@@ -655,6 +655,11 @@ model Assessment {
   roleTitle      String?          @map("role_title") @db.VarChar(255)
   level          ExperienceLevel?
 
+  // Job Posting Info
+  location       String?          @db.VarChar(255)
+  workSetting    String?          @map("work_setting") @db.VarChar(50) // Remote, On-site, Hybrid
+  employmentType String?          @map("employment_type") @db.VarChar(50) // Full-time, Internship, Contract
+
   // Configuration
   durationMinutes Int      @map("duration_minutes")
   passingScore    Int      @default(70) @map("passing_score")
