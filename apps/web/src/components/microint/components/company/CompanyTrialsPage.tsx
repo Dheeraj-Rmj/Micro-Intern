@@ -124,6 +124,15 @@ export const CompanyTrialsPage: React.FC = () => {
         durationMinutes: 120,
         passingScore: 70,
         isPublic: true,
+        tasks: [
+          {
+            title: "Initial Assessment",
+            description: `Complete the initial required steps for this ${category} trial.`,
+            taskType: "SHORT_ANSWER",
+            sortOrder: 1,
+            maxPoints: 100,
+          }
+        ]
       });
       const created = res?.data;
       if (created?.id) {
