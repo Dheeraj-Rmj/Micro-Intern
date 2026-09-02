@@ -187,7 +187,7 @@ export const CompanyTrialsPage: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
           <p className="text-xs text-black/50 dark:text-white/60 font-medium">
             Active Skill Trials
@@ -195,12 +195,6 @@ export const CompanyTrialsPage: React.FC = () => {
           <p className="text-3xl font-serif font-bold text-black dark:text-white mt-1">
             {trials.length}
           </p>
-        </div>
-        <div className="p-6 rounded-[28px] bg-white dark:bg-[#0A0A0A] border border-black/5 dark:border-white/10 shadow-sm">
-          <p className="text-xs text-black/50 dark:text-white/60 font-medium">
-            Trial Completion Rate
-          </p>
-          <p className="text-3xl font-serif font-bold text-emerald-500 mt-1">94.2%</p>
         </div>
       </div>
 
