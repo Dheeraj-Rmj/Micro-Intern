@@ -40,7 +40,8 @@ export const CompanyTrialsPage: React.FC = () => {
     const fetchAssessments = async () => {
       try {
         const result = await companyApi.getAssessments();
-        const list = result?.assessments ?? [];
+        // Result could be an array of assessments or an object depending on the API client mapping
+        const list = Array.isArray(result) ? result : (result?.assessments ?? []);
         if (list.length > 0) {
           const mapped: CompanyTrialItem[] = list.map((a: any) => ({
             id: a.id,
