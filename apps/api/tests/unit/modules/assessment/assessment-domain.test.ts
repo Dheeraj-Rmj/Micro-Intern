@@ -40,6 +40,9 @@ describe("Assessment & AssessmentTask Domain Entities", () => {
       ["TypeScript", "Node.js"],
       "Senior Backend Developer",
       null,
+      null, // location
+      null, // workSetting
+      null, // employmentType
       90,
       75,
       2,
