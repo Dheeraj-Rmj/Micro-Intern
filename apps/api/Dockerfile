@@ -96,11 +96,14 @@ COPY --from=prod-deps --chown=microintern:nodejs /app/apps/api/node_modules ./ap
 # Copy compiled output
 COPY --from=build --chown=microintern:nodejs /app/packages/shared/dist ./packages/shared/dist
 COPY --from=build --chown=microintern:nodejs /app/packages/database/src/generated ./packages/database/src/generated
+COPY --from=build --chown=microintern:nodejs /app/packages/database/dist ./packages/database/dist
 COPY --from=build --chown=microintern:nodejs /app/apps/api/dist ./apps/api/dist
 
 # Copy package.json files so Node.js can read "type": "module"
 COPY --from=prod-deps --chown=microintern:nodejs /app/package.json ./package.json
 COPY --from=prod-deps --chown=microintern:nodejs /app/apps/api/package.json ./apps/api/package.json
+COPY --from=prod-deps --chown=microintern:nodejs /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=prod-deps --chown=microintern:nodejs /app/packages/database/package.json ./packages/database/package.json
 
 # Copy email templates (runtime assets)
 COPY --from=build --chown=microintern:nodejs /app/apps/api/src/infrastructure/email/templates ./apps/api/dist/infrastructure/email/templates
