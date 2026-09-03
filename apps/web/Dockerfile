@@ -19,6 +19,7 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY package.json ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/config/package.json ./packages/config/
+COPY packages/database/package.json ./packages/database/
 COPY apps/web/package.json ./apps/web/
 RUN npm pkg delete scripts.prepare && \
     pnpm install --frozen-lockfile
