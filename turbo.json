@@ -33,6 +33,10 @@
       "outputs": ["coverage/**"],
       "cache": false
     },
+    "test:coverage": {
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
     "test:integration": {
       "cache": false,
       "outputs": []
