@@ -91,6 +91,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=prod-deps --chown=microintern:nodejs /app/node_modules ./node_modules
 COPY --from=prod-deps --chown=microintern:nodejs /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY --from=prod-deps --chown=microintern:nodejs /app/packages/database/node_modules ./packages/database/node_modules
+COPY --from=prod-deps --chown=microintern:nodejs /app/apps/api/node_modules ./apps/api/node_modules
 
 # Copy compiled output
 COPY --from=build --chown=microintern:nodejs /app/packages/shared/dist ./packages/shared/dist
