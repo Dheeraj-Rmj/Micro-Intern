@@ -54,8 +54,8 @@ COPY tsconfig.base.json ./
 COPY packages/ ./packages/
 COPY apps/api/ ./apps/api/
 
-# Generate Prisma client
-RUN corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm --filter @microintern/database db:generate
+# Generate Prisma client and build database package
+RUN corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm --filter @microintern/database db:generate && pnpm --filter @microintern/database build
 
 # Build shared package first (API depends on it)
 RUN pnpm --filter @microintern/shared build

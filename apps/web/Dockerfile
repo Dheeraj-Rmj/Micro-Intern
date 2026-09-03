@@ -34,6 +34,7 @@ ARG NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
+RUN pnpm --filter @microintern/database db:generate && pnpm --filter @microintern/database build
 RUN pnpm --filter @microintern/shared build
 RUN pnpm --filter @microintern/web build
 
